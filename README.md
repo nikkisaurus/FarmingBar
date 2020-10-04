@@ -13,6 +13,6 @@ Farming Bar was inspired by [FarmIt](https://www.curseforge.com/wow/addons/farmi
 You can access the configuration interface by shift+right-clicking any bar's anchor button. You can also open the main interface using */farmingbar* or  */farmingbar help*.
 
 ##### **Feedback**
-Please use the [issue tracker](https://github.com/niketa-wow/farming-bar/issues) for all feature requests and bugs. Any other comments are welcomed below.
+Please use the [issue tracker](https://github.com/niketa-wow/farmingbar/issues) for all feature requests and bugs. Any other comments are welcomed below.
 
 **[Donate](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=NYN3WUR4A68SE&currency_code=USD&source=url)**
