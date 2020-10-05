@@ -5,11 +5,15 @@
 ## Interface: 11304
 #@end-non-retail@
 ## Title: FarmingBar
-## Author: Nikketa-Hyjal-US
+
 ## Notes: Action bar to display and track objective goals.
+
 ## Version: @project-version@
+## Author: Nikketa-Hyjal-US
 ## SavedVariables: FarmingBarDB
-## SavedVariablesPerCharacter: FarmingBarCharacterDB
+# SavedVariablesPerCharacter: FarmingBarCharacterDB
+# OptionalDeps: DataStore
+
 ## X-Curse-Project-ID: 351688
 ## X-WoWI-ID: 25440
 
@@ -34,26 +38,19 @@ Libs\LibAddonUtils\LibAddonUtils.xml
 Locales\Locale-enUS.lua
 
 # Core
-Core\Core.lua
-Data\Database.lua
-Core\Frames.xml
-Core\Bars.lua
-Core\Buttons.lua
+Core.lua
+Database.lua
+
+# Widgets
+Widgets\FarmingBar.xml
+Widgets\Widgets.xml
+
+# Modules
+Modules\Bars.lua
+Modules\Buttons.lua
+Modules\Objectives\Objectives.lua
+Modules\Objectives\ObjectiveBuilder.lua
 
 # Options
 Options\Commands.lua
-Options\Interface.lua
-
-#@retail@
-Data\FileDataRetail.lua
-#@end-retail@
-#@non-retail@
-Data\FileDataClassic.lua
-#@end-non-retail@
-
-# Modules
-Modules\ItemMover.lua
-Modules\ObjectiveBuilder.lua
-Modules\Skin.lua
-Modules\Templates.lua
-Modules\Tooltips.lua
+Options\Options.lua

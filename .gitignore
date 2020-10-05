@@ -1,3 +1,4 @@
-Libs/
 .release/
+.vscode/
+Libs/
 TODO.md
