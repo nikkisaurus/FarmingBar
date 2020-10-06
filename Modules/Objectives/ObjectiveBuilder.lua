@@ -8,7 +8,7 @@ local tinsert, pairs = table.insert, pairs
 
 --*------------------------------------------------------------------------
 
-local methods = {
+local ObjectiveBuilderMethods = {
     Load = function(self)
         self:Show()
         self:LoadObjectives()
@@ -28,9 +28,31 @@ local methods = {
             button:SetIcon(objective.icon)
             button:SetStatusTable(self.objectives)
             sideContent:AddChild(button)
+
+            button:SetCallback("OnClick", function(self, event, ...)
+                mainContent:ReleaseChildren()
+                mainContent:Load(title)
+            end)
         end
     end,
 }
+
+--*------------------------------------------------------------------------
+
+local function LoadMainContent(self, objectiveTitle)
+    ------------------------------------------------------------
+    --Debug-----------------------------------------------------
+    ------------------------------------------------------------
+    if FarmingBar.db.global.debug.ObjectiveBuilder then
+        local test = AceGUI:Create("Label")
+        test:SetFullWidth(true)
+        test:SetText("Test main panel "..objectiveTitle)
+        self:AddChild(test)
+    end
+    ------------------------------------------------------------
+    ------------------------------------------------------------
+end
+
 
 --*------------------------------------------------------------------------
 
@@ -43,7 +65,7 @@ function addon:Initialize_ObjectiveBuilder()
     self.ObjectiveBuilder = ObjectiveBuilder
     ObjectiveBuilder.objectives = {}
 
-    for method, func in pairs(methods) do
+    for method, func in pairs(ObjectiveBuilderMethods) do
         ObjectiveBuilder[method] = func
     end
 
@@ -91,6 +113,8 @@ function addon:Initialize_ObjectiveBuilder()
     mainPanel:AddChild(mainContent)
     ObjectiveBuilder.mainContent = mainContent
 
+    mainContent["Load"] = LoadMainContent
+
     ------------------------------------------------------------
     --Debug-----------------------------------------------------
     ------------------------------------------------------------
@@ -101,11 +125,6 @@ function addon:Initialize_ObjectiveBuilder()
         test:SetFullWidth(true)
         test:SetText("Top panel")
         topContent:AddChild(test)
-
-        test = AceGUI:Create("Label")
-        test:SetFullWidth(true)
-        test:SetText("Test main panel ")
-        mainContent:AddChild(test)
     end
     ------------------------------------------------------------
     ------------------------------------------------------------
