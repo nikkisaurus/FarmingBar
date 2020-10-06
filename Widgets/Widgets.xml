@@ -12,6 +12,7 @@
 	<Script file="Widgets\Container-Window.lua"/>
 	<!-- Widgets -->
 	<Script file="Widgets\Widget-Button.lua"/>
+	<Script file="Widgets\Widget-ObjectiveButton.lua"/>
 	<Script file="Widgets\Widget-CheckBox.lua"/>
 	<Script file="Widgets\Widget-ColorPicker.lua"/>
 	<Script file="Widgets\Widget-DropDown.lua"/>

@@ -11,10 +11,33 @@ local tinsert, pairs = table.insert, pairs
 local methods = {
     Load = function(self)
         self:Show()
+        self:LoadObjectives()
     end,
 
     Release = function(self)
         AceGUI:Release(self)
+    end,
+
+    LoadObjectives = function(self)
+        local topContent, sideContent, mainContent = self.topContent, self.sideContent, self.mainContent
+
+        local test = AceGUI:Create("Label")
+        test:SetFullWidth(true)
+        test:SetText("Top panel")
+        topContent:AddChild(test)
+
+        for i = 1, 50 do
+            test = AceGUI:Create("FB30_ObjectiveButton")
+            test:SetFullWidth(true)
+            test:SetText("Test side panel blah blah blah blah"..i)
+            test:SetIcon(math.fmod(i, 2) == 0 and 132320)
+            sideContent:AddChild(test)
+
+            test = AceGUI:Create("Label")
+            test:SetFullWidth(true)
+            test:SetText("Test main panel "..i)
+            mainContent:AddChild(test)
+        end
     end,
 }
 
@@ -81,23 +104,6 @@ function addon:Initialize_ObjectiveBuilder()
     ------------------------------------------------------------
     if FarmingBar.db.global.debug.ObjectiveBuilder then
         C_Timer.After(1, function() ObjectiveBuilder:Load() end)
-
-        local test = AceGUI:Create("Label")
-        test:SetFullWidth(true)
-        test:SetText("Top panel")
-        topContent:AddChild(test)
-
-        for i = 1, 50 do
-            test = AceGUI:Create("Label")
-            test:SetFullWidth(true)
-            test:SetText("Test side panel ", i)
-            sideContent:AddChild(test)
-
-            test = AceGUI:Create("Label")
-            test:SetFullWidth(true)
-            test:SetText("Test main panel ", i)
-            mainContent:AddChild(test)
-        end
     end
     ------------------------------------------------------------
     ------------------------------------------------------------
