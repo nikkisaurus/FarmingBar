@@ -5,6 +5,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 local AceGUI = LibStub("AceGUI-3.0", true)
 
 local tinsert, pairs = table.insert, pairs
+local strfind, strupper = string.find, string.upper
 
 --*------------------------------------------------------------------------
 
@@ -18,21 +19,24 @@ local ObjectiveBuilderMethods = {
         AceGUI:Release(self)
     end,
 
-    LoadObjectives = function(self)
+    LoadObjectives = function(self, filter)
         local topContent, sideContent, mainContent = self.topContent, self.sideContent, self.mainContent
+        sideContent:ReleaseChildren()
 
         for title, objective in addon.pairs(FarmingBar.db.global.objectives) do
-            local button = AceGUI:Create("FB30_ObjectiveButton")
-            button:SetFullWidth(true)
-            button:SetText(title)
-            button:SetIcon(objective.icon)
-            button:SetStatusTable(self.objectives)
-            sideContent:AddChild(button)
+            if not filter or strfind(strupper(title), strupper(filter)) then
+                local button = AceGUI:Create("FB30_ObjectiveButton")
+                button:SetFullWidth(true)
+                button:SetText(title)
+                button:SetIcon(objective.icon)
+                button:SetStatusTable(self.objectives)
+                sideContent:AddChild(button)
 
-            button:SetCallback("OnClick", function(self, event, ...)
-                mainContent:ReleaseChildren()
-                mainContent:Load(title)
-            end)
+                button:SetCallback("OnClick", function(self, event, ...)
+                    mainContent:ReleaseChildren()
+                    mainContent:Load(title)
+                end)
+            end
         end
     end,
 }
@@ -87,9 +91,23 @@ function addon:Initialize_ObjectiveBuilder()
     sidePanel:SetLayout("FB30_2RowFill")
     ObjectiveBuilder:AddChild(sidePanel)
 
+    ------------------------------------------------------------
+
     local objectiveSearchBox = AceGUI:Create("EditBox")
     objectiveSearchBox:SetFullWidth(true)
     sidePanel:AddChild(objectiveSearchBox)
+
+    objectiveSearchBox:SetCallback("OnTextChanged", function(self, event, ...)
+        ObjectiveBuilder:LoadObjectives(self:GetText())
+    end)
+
+    objectiveSearchBox:SetCallback("OnEnterPressed", function(self, event, ...)
+        self:ClearFocus()
+    end)
+
+    -- TODO: Implement an x button next to searchbox to clear the filter
+
+    ------------------------------------------------------------
 
     local sideContainer = AceGUI:Create("SimpleGroup")
     sideContainer:SetLayout("Fill")
