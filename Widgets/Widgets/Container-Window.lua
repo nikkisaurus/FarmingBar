@@ -187,12 +187,6 @@ do
 		self.OnHeightSet = OnHeightSet
 		self.EnableResize = EnableResize
 
-		--*Custom--------------------------------
-		self.SetSize = SetSize
-
-		tinsert(UISpecialFrames, frame:GetName())
-		--*--------------------------------------
-
 		self.localstatus = {}
 
 		self.frame = frame
@@ -210,6 +204,11 @@ do
 		frame:SetScript("OnHide",frameOnClose)
 		frame:SetMinResize(240,240)
 		frame:SetToplevel(true)
+
+		--*Custom--------------------------------
+		tinsert(UISpecialFrames, frame:GetName())
+		self.SetSize = SetSize
+		--*--------------------------------------
 
 		local titlebg = frame:CreateTexture(nil, "BACKGROUND")
 		titlebg:SetTexture(251966) -- Interface\\PaperDollInfoFrame\\UI-GearManager-Title-Background
@@ -348,7 +347,7 @@ do
 		self.content = content
 		content.obj = self
 		content:SetPoint("TOPLEFT",frame,"TOPLEFT",12,-32)
-		content:SetPoint("BOTTOMRIGHT",frame,"BOTTOMRIGHT",-12,13)
+		content:SetPoint("BOTTOMRIGHT",frame,"BOTTOMRIGHT",-12,32)
 
 		AceGUI:RegisterAsContainer(self)
 		return self

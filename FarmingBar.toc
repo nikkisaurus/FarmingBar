@@ -43,6 +43,7 @@ Database.lua
 
 # Widgets
 Widgets\FarmingBar.xml
+Widgets\Layouts.lua
 Widgets\Widgets.xml
 
 # Skins
