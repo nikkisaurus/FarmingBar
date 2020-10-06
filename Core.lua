@@ -1,12 +1,21 @@
 local addonName, addon = ...
 local FarmingBar = LibStub("AceAddon-3.0"):NewAddon("FarmingBar", "AceConsole-3.0", "AceEvent-3.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
-local db = FarmingBar.db
+
+local pairs = pairs
+local strupper = strupper
+
+--*------------------------------------------------------------------------
 
 function FarmingBar:OnInitialize()
-    addon:Initialize_DB()
-    self:RegisterChatCommand("farmingbar", "SlashCommandFunc")
     LibStub("LibAddonUtils-1.0"):Embed(addon)
+
+    addon:Initialize_DB()
+    for command, enabled in pairs(FarmingBar.db.global.commands) do
+        if enabled then
+            self:RegisterChatCommand(command, "SlashCommandFunc")
+        end
+    end
 end
 
 function FarmingBar:OnEnable()
@@ -18,10 +27,15 @@ end
 function FarmingBar:OnDisable()
     addon.ObjectiveBuilder:Release()
     -- addon:ReleaseBars()
+    -- addon.Options:Release()
 end
 
+--*------------------------------------------------------------------------
+
 function FarmingBar:SlashCommandFunc(input)
-    if strupper(input) == "BUILD" then
+    --Debug--------------------------------------
+    if FarmingBar.db.global.debug.ObjectiveBuilder and strupper(input) == "BUILD" then
         addon.ObjectiveBuilder:Load()
     end
+    ---------------------------------------------
 end

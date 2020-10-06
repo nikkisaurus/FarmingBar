@@ -45,6 +45,9 @@ Database.lua
 Widgets\FarmingBar.xml
 Widgets\Widgets.xml
 
+# Skins
+Modules\Skins.lua
+
 # Modules
 Modules\Bars.lua
 Modules\Buttons.lua
