@@ -21,22 +21,13 @@ local methods = {
     LoadObjectives = function(self)
         local topContent, sideContent, mainContent = self.topContent, self.sideContent, self.mainContent
 
-        local test = AceGUI:Create("Label")
-        test:SetFullWidth(true)
-        test:SetText("Top panel")
-        topContent:AddChild(test)
-
-        for i = 1, 50 do
-            test = AceGUI:Create("FB30_ObjectiveButton")
-            test:SetFullWidth(true)
-            test:SetText("Test side panel blah blah blah blah"..i)
-            test:SetIcon(math.fmod(i, 2) == 0 and 132320)
-            sideContent:AddChild(test)
-
-            test = AceGUI:Create("Label")
-            test:SetFullWidth(true)
-            test:SetText("Test main panel "..i)
-            mainContent:AddChild(test)
+        for title, objective in addon.pairs(FarmingBar.db.global.objectives) do
+            local button = AceGUI:Create("FB30_ObjectiveButton")
+            button:SetFullWidth(true)
+            button:SetText(title)
+            button:SetIcon(objective.icon)
+            button:SetStatusTable(self.objectives)
+            sideContent:AddChild(button)
         end
     end,
 }
@@ -50,6 +41,7 @@ function addon:Initialize_ObjectiveBuilder()
     ObjectiveBuilder:SetLayout("FB30_2RowSplitBottom")
     ObjectiveBuilder:Hide()
     self.ObjectiveBuilder = ObjectiveBuilder
+    ObjectiveBuilder.objectives = {}
 
     for method, func in pairs(methods) do
         ObjectiveBuilder[method] = func
@@ -104,6 +96,16 @@ function addon:Initialize_ObjectiveBuilder()
     ------------------------------------------------------------
     if FarmingBar.db.global.debug.ObjectiveBuilder then
         C_Timer.After(1, function() ObjectiveBuilder:Load() end)
+
+        local test = AceGUI:Create("Label")
+        test:SetFullWidth(true)
+        test:SetText("Top panel")
+        topContent:AddChild(test)
+
+        test = AceGUI:Create("Label")
+        test:SetFullWidth(true)
+        test:SetText("Test main panel ")
+        mainContent:AddChild(test)
     end
     ------------------------------------------------------------
     ------------------------------------------------------------

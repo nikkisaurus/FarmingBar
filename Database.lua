@@ -5,6 +5,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 function addon:Initialize_DB()
     local defaults = {
         global = {
+            enabled = true,
             commands = {
                 farmingbar = true,
                 farmbar = true,
@@ -15,7 +16,8 @@ function addon:Initialize_DB()
             debug = {
                 ObjectiveBuilder = true,
             },
-            enabled = true,
+
+            objectives = {},
         },
     }
     FarmingBar.db = LibStub("AceDB-3.0"):New("FarmingBarDB", defaults, true)
