@@ -106,8 +106,6 @@ function addon:Initialize_ObjectiveBuilder()
         self:ClearFocus()
     end)
 
-    -- TODO: Implement an x button next to searchbox to clear the filter
-
     ------------------------------------------------------------
 
     local sideContainer = AceGUI:Create("SimpleGroup")
