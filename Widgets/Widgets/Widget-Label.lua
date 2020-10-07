@@ -147,6 +147,10 @@ local methods = {
 	["SetJustifyV"] = function(self, justifyV)
 		self.label:SetJustifyV(justifyV)
 	end,
+
+	GetText = function(self)
+		return self.label:GetText()
+	end,
 }
 
 --[[-----------------------------------------------------------------------------
