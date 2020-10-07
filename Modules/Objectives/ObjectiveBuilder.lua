@@ -85,6 +85,33 @@ function addon:Initialize_ObjectiveBuilder()
 
     ------------------------------------------------------------
 
+    local newObjectiveButton = AceGUI:Create("FB30_InteractiveLabel")
+    newObjectiveButton:SetText(L["New Objective"])
+    newObjectiveButton:SetWidth(newObjectiveButton.label:GetStringWidth() + newObjectiveButton.image:GetWidth())
+    newObjectiveButton:SetImageSize(newObjectiveButton.label:GetHeight(), newObjectiveButton.label:GetHeight())
+    newObjectiveButton:SetImage(514607)
+    topContent:AddChild(newObjectiveButton)
+
+    newObjectiveButton:SetCallback("OnClick", function(self, event, ...)
+        -- TODO: implement add objective
+    end)
+
+    ------------------------------------------------------------
+
+    local importObjectiveButton = AceGUI:Create("FB30_InteractiveLabel")
+    importObjectiveButton:SetText(L["Import Objective"])
+    importObjectiveButton:SetWidth(importObjectiveButton.label:GetStringWidth() + importObjectiveButton.image:GetWidth())
+    importObjectiveButton:SetImageSize(importObjectiveButton.label:GetHeight(), importObjectiveButton.label:GetHeight())
+    importObjectiveButton:SetImage(131906, 1, 0, 0, 1)
+    importObjectiveButton:SetDisabled(true)
+    topContent:AddChild(importObjectiveButton)
+
+    importObjectiveButton:SetCallback("OnClick", function(self, event, ...)
+        -- TODO: implement import/export
+    end)
+
+    ------------------------------------------------------------
+
     local sidePanel = AceGUI:Create("SimpleGroup")
     sidePanel:SetRelativeWidth(1/4)
     sidePanel:SetFullHeight(true)
@@ -137,11 +164,6 @@ function addon:Initialize_ObjectiveBuilder()
     ------------------------------------------------------------
     if FarmingBar.db.global.debug.ObjectiveBuilder then
         C_Timer.After(1, function() ObjectiveBuilder:Load() end)
-
-        local test = AceGUI:Create("Label")
-        test:SetFullWidth(true)
-        test:SetText("Top panel")
-        topContent:AddChild(test)
     end
     ------------------------------------------------------------
     ------------------------------------------------------------
