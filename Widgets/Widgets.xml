@@ -18,6 +18,7 @@
 	<Script file="Widgets\Widget-DropDown.lua"/>
 	<Script file="Widgets\Widget-DropDown-Items.lua"/>
 	<Script file="Widgets\Widget-EditBox.lua"/>
+	<Script file="Widgets\Widget-SearchEditBox.lua"/>
 	<Script file="Widgets\Widget-Heading.lua"/>
 	<Script file="Widgets\Widget-Icon.lua"/>
 	<Script file="Widgets\Widget-InteractiveLabel.lua"/>

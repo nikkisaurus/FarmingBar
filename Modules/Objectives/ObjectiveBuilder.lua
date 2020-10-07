@@ -19,12 +19,12 @@ local ObjectiveBuilderMethods = {
         AceGUI:Release(self)
     end,
 
-    LoadObjectives = function(self, filter)
+    LoadObjectives = function(self)
         local topContent, sideContent, mainContent = self.topContent, self.sideContent, self.mainContent
         sideContent:ReleaseChildren()
 
         for title, objective in addon.pairs(FarmingBar.db.global.objectives) do
-            if not filter or strfind(strupper(title), strupper(filter)) then
+            if not self.objectiveSearchBox:GetText() or strfind(strupper(title), strupper(self.objectiveSearchBox:GetText())) then
                 local button = AceGUI:Create("FB30_ObjectiveButton")
                 button:SetFullWidth(true)
                 button:SetText(title)
@@ -93,9 +93,10 @@ function addon:Initialize_ObjectiveBuilder()
 
     ------------------------------------------------------------
 
-    local objectiveSearchBox = AceGUI:Create("EditBox")
+    local objectiveSearchBox = AceGUI:Create("FB30_SearchEditBox")
     objectiveSearchBox:SetFullWidth(true)
     sidePanel:AddChild(objectiveSearchBox)
+    ObjectiveBuilder.objectiveSearchBox = objectiveSearchBox
 
     objectiveSearchBox:SetCallback("OnTextChanged", function(self, event, ...)
         ObjectiveBuilder:LoadObjectives(self:GetText())
