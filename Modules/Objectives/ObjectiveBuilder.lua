@@ -6,6 +6,7 @@ local AceGUI = LibStub("AceGUI-3.0", true)
 
 local tinsert, pairs = table.insert, pairs
 local strfind, strupper = string.find, string.upper
+local CreateFrame, UIParent = CreateFrame, UIParent
 
 --*------------------------------------------------------------------------
 
@@ -34,7 +35,16 @@ local ObjectiveBuilderMethods = {
 
                 button:SetCallback("OnClick", function(self, event, ...)
                     mainContent:ReleaseChildren()
-                    mainContent:Load(title)
+                    mainContent
+                    :Load(title)
+                end)
+
+                button:SetCallback("OnDragStart", function(self, event, ...)
+                    addon.DragFrame:Load(title, objective.icon)
+                end)
+
+                button:SetCallback("OnDragStop", function(self, event, ...)
+                    addon.DragFrame:Clear()
                 end)
             end
         end
@@ -55,6 +65,46 @@ local function LoadMainContent(self, objectiveTitle)
     end
     ------------------------------------------------------------
     ------------------------------------------------------------
+end
+
+local function Initialize_DragFrame()
+    local DragFrame = CreateFrame("Frame", "FarmingBarDragFrame", UIParent)
+    DragFrame:SetSize(25, 25)
+    DragFrame:SetPoint("CENTER")
+    DragFrame:Hide()
+    addon.DragFrame = DragFrame
+
+    DragFrame.icon = DragFrame:CreateTexture(nil, "OVERLAY")
+    DragFrame.icon:SetAllPoints(DragFrame)
+    DragFrame.icon:SetTexture("")
+
+    DragFrame.text = DragFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    DragFrame.text:SetPoint("LEFT", DragFrame.icon, "RIGHT", 3, 0)
+
+    ------------------------------------------------------------
+
+    DragFrame:SetScript("OnUpdate", function(self, ...)
+        if DragFrame:IsVisible() then
+            local scale, x, y = self:GetEffectiveScale(), GetCursorPosition()
+            self:SetPoint("CENTER", nil, "BOTTOMLEFT", (x / scale) + 50, (y / scale) - 20)
+        end
+    end)
+
+    ------------------------------------------------------------
+
+    function DragFrame:Load(objectiveTitle, icon)
+        DragFrame.selected = objectiveTitle
+        DragFrame.icon:SetTexture(icon)
+        DragFrame.text:SetText(objectiveTitle)
+        DragFrame:Show()
+    end
+
+    function DragFrame:Clear()
+        DragFrame.selected = nil
+        DragFrame.icon:SetTexture("")
+        DragFrame.text:SetText("")
+        DragFrame:Hide()
+    end
 end
 
 
@@ -158,6 +208,10 @@ function addon:Initialize_ObjectiveBuilder()
     ObjectiveBuilder.mainContent = mainContent
 
     mainContent["Load"] = LoadMainContent
+
+    ------------------------------------------------------------
+
+    Initialize_DragFrame()
 
     ------------------------------------------------------------
     --Debug-----------------------------------------------------

@@ -39,6 +39,14 @@ local function Control_OnLeave(frame)
 	frame.obj:Fire("OnLeave")
 end
 
+local function Control_OnDragStart(frame)
+	frame.obj:Fire("OnDragStart")
+end
+
+local function Control_OnDragStop(frame)
+	frame.obj:Fire("OnDragStop")
+end
+
 --[[-----------------------------------------------------------------------------
 Methods
 -------------------------------------------------------------------------------]]
@@ -146,10 +154,13 @@ local function Constructor()
 	frame:SetWidth(200)
 	frame:Hide()
 
-	frame:EnableMouse(true)
+    frame:EnableMouse(true)
+    frame:RegisterForDrag("LeftButton")
 	frame:SetScript("OnClick", Button_OnClick)
 	frame:SetScript("OnEnter", Control_OnEnter)
     frame:SetScript("OnLeave", Control_OnLeave)
+    frame:SetScript("OnDragStart", Control_OnDragStart)
+    frame:SetScript("OnDragStop", Control_OnDragStop)
     frame:SetPushedTextOffset(0, 0)
 
     local background = frame:CreateTexture(nil, "BACKGROUND")
