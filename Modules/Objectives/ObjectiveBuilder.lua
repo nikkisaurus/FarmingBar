@@ -10,51 +10,6 @@ local CreateFrame, UIParent = CreateFrame, UIParent
 
 --*------------------------------------------------------------------------
 
-local ObjectiveBuilderMethods = {
-    Load = function(self)
-        self:Show()
-        self:LoadObjectives()
-    end,
-
-    Release = function(self)
-        AceGUI:Release(self)
-    end,
-
-    LoadObjectives = function(self)
-        local topContent, sideContent, mainContent = self.topContent, self.sideContent, self.mainContent
-        sideContent:ReleaseChildren()
-
-        for title, objective in addon.pairs(FarmingBar.db.global.objectives) do
-            if not self.objectiveSearchBox:GetText() or strfind(strupper(title), strupper(self.objectiveSearchBox:GetText())) then
-                local button = AceGUI:Create("FB30_ObjectiveButton")
-                button:SetFullWidth(true)
-                button:SetText(title)
-                button:SetIcon(objective.icon)
-                button:SetStatusTable(self.objectives)
-                sideContent:AddChild(button)
-
-                ------------------------------------------------------------
-
-                button:SetCallback("OnClick", function(self, event, ...)
-                    mainContent:ReleaseChildren()
-                    mainContent
-                    :Load(title)
-                end)
-
-                button:SetCallback("OnDragStart", function(self, event, ...)
-                    addon.DragFrame:Load(title, objective.icon)
-                end)
-
-                button:SetCallback("OnDragStop", function(self, event, ...)
-                    addon.DragFrame:Clear()
-                end)
-            end
-        end
-    end,
-}
-
---*------------------------------------------------------------------------
-
 local function Initialize_DragFrame()
     local DragFrame = CreateFrame("Frame", "FarmingBarDragFrame", UIParent)
     DragFrame:SetSize(25, 25)
@@ -95,19 +50,58 @@ local function Initialize_DragFrame()
     end
 end
 
-local function LoadMainContent(self, objectiveTitle)
-    ------------------------------------------------------------
-    --Debug-----------------------------------------------------
-    ------------------------------------------------------------
-    if FarmingBar.db.global.debug.ObjectiveBuilder then
-        local test = AceGUI:Create("Label")
-        test:SetFullWidth(true)
-        test:SetText("Test main panel "..objectiveTitle)
-        self:AddChild(test)
-    end
-    ------------------------------------------------------------
-    ------------------------------------------------------------
+local function LoadObjectiveTab(self, objectiveTitle)
+    if not objectiveTitle then return end
+    local objectiveInfo = FarmingBar.db.objectives[objectiveTitle]
 end
+
+local function LoadTrackerTab(self, objectiveTitle)
+    if not objectiveTitle then return end
+end
+
+--*------------------------------------------------------------------------
+
+local ObjectiveBuilderMethods = {
+    Load = function(self)
+        self:Show()
+        self:LoadObjectives()
+    end,
+
+    Release = function(self)
+        AceGUI:Release(self)
+    end,
+
+    LoadObjectives = function(self)
+        local topContent, sideContent, mainContent = self.topContent, self.sideContent, self.mainContent
+        sideContent:ReleaseChildren()
+
+        for title, objective in addon.pairs(FarmingBar.db.global.objectives) do
+            if not self.objectiveSearchBox:GetText() or strfind(strupper(title), strupper(self.objectiveSearchBox:GetText())) then
+                local button = AceGUI:Create("FB30_ObjectiveButton")
+                button:SetFullWidth(true)
+                button:SetText(title)
+                button:SetIcon(objective.icon)
+                button:SetStatusTable(self.objectives)
+                sideContent:AddChild(button)
+
+                ------------------------------------------------------------
+
+                button:SetCallback("OnClick", function(self, event, ...)
+                    mainContent:ReleaseChildren()
+                    mainContent:LoadObjectiveTab(title)
+                end)
+
+                button:SetCallback("OnDragStart", function(self, event, ...)
+                    addon.DragFrame:Load(title, objective.icon)
+                end)
+
+                button:SetCallback("OnDragStop", function(self, event, ...)
+                    addon.DragFrame:Clear()
+                end)
+            end
+        end
+    end,
+}
 
 
 --*------------------------------------------------------------------------
@@ -205,11 +199,29 @@ function addon:Initialize_ObjectiveBuilder()
     ObjectiveBuilder:AddChild(mainPanel)
 
     local mainContent = AceGUI:Create("ScrollFrame")
-    mainContent:SetLayout("Flow")
+    mainContent:SetLayout("Fill")
     mainPanel:AddChild(mainContent)
-    ObjectiveBuilder.mainContent = mainContent
 
-    mainContent["Load"] = LoadMainContent
+    local mainTabGroup = AceGUI:Create("TabGroup")
+    mainTabGroup:SetLayout("Flow")
+    mainTabGroup:SetTabs({{text = L["Objective"], value = "objectiveTab"}, {text = L["Tracker"], value = "trackerTab"}})
+    mainTabGroup:SelectTab("objectiveTab")
+    mainContent:AddChild(mainTabGroup)
+
+    mainTabGroup:SetCallback("OnGroupSelected", function(self, event, selected)
+        self:ReleaseChildren()
+
+        if group == "objectiveTab" then
+            self:LoadObjectiveTab()
+        elseif group == "trackerTab" then
+            self:LoadTrackerTab()
+        end
+    end)
+
+    ObjectiveBuilder.mainContent = mainTabGroup
+
+    mainTabGroup["LoadObjectiveTab"] = LoadObjectiveTab
+    mainTabGroup["LoadTrackerTab"] = LoadTrackerTab
 
     ------------------------------------------------------------
 
