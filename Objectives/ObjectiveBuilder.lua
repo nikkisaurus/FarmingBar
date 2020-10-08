@@ -55,19 +55,10 @@ local menuAll = {
         text = L["Duplicate All"],
         notCheckable = true,
         func = function(self)
-            local newObjectives = {}
             local selected = addon.ObjectiveBuilder.objectives.selected
             for key, objective in pairs(selected) do
                 local objectiveTitle = objective:GetObjectiveTitle()
-                local newObjectiveTitle = addon:CreateObjective(objectiveTitle, FarmingBar.db.global.objectives[objectiveTitle], true)
-                tinsert(newObjectives, newObjectiveTitle)
-            end
-
-            addon.ObjectiveBuilder:LoadObjectives()
-            for _, objective in pairs(addon.ObjectiveBuilder.objectives.children) do
-                if tContains(newObjectives, objective.objectiveTitle) then
-                    objective.button:RenameObjective()
-                end
+                local newObjectiveTitle = addon:CreateObjective(objectiveTitle, FarmingBar.db.global.objectives[objectiveTitle], true, key == #selected)
             end
         end,
     },
@@ -126,7 +117,7 @@ local methods = {
         end
 
         if objectiveTitle then
-            addon.ObjectiveBuilder:GetObjectiveButtonByTitle(objectiveTitle):Fire("OnClick")
+            addon.ObjectiveBuilder:GetObjectiveButtonByTitle(objectiveTitle).frame:Click()
         else
             mainContainer:ReleaseChildren()
         end

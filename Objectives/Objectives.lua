@@ -9,7 +9,7 @@ local GetCursorInfo, ClearCursor = GetCursorInfo, ClearCursor
 
 --*------------------------------------------------------------------------
 
-function addon:CreateObjective(objectiveTitle, objectiveInfo, suppressLoad, suppressRename)
+function addon:CreateObjective(objectiveTitle, objectiveInfo, suppressLoad, finished)
     local defaultTitle = L["New"]
     local defaultInfo = {
         ["enabled"] = true,
@@ -40,17 +40,10 @@ function addon:CreateObjective(objectiveTitle, objectiveInfo, suppressLoad, supp
 
     newObjectiveTitle = newObjectiveTitle or objectiveTitle or defaultTitle
     FarmingBar.db.global.objectives[newObjectiveTitle] = objectiveInfo or defaultInfo
-    if not suppressLoad then
+    if not suppressLoad or finished then
+        -- Call when adding multiple at a time and then manually load objectives when done
         self.ObjectiveBuilder:LoadObjectives(newObjectiveTitle)
     end
-    if not suppressRename then
-        for _, objective in pairs(self.ObjectiveBuilder.objectives.children) do
-            if objective.objectiveTitle == newObjectiveTitle then
-                objective.button:RenameObjective()
-            end
-        end
-    end
-
     return newObjectiveTitle
 end
 
@@ -78,7 +71,7 @@ function addon:CreateObjectiveFromCursor()
                         ["trackerType"] = "ITEM",
                     }
                 },
-            }, nil, true)
+            })
         end, cursorID)
     end
 end
