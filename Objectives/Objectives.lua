@@ -9,7 +9,38 @@ local GetCursorInfo, ClearCursor = GetCursorInfo, ClearCursor
 
 --*------------------------------------------------------------------------
 
-function addon:CreateObjective(objectiveTitle, objectiveInfo, suppressLoad, finished)
+function addon:CreateObjective(objectiveTitle, objectiveInfo, suppressLoad, finished, fromCursor)
+    if fromCursor then
+        local cursorType, cursorID = GetCursorInfo()
+        if cursorType == "item" then
+            ClearCursor()
+            self:CacheItem(cursorID, function(itemID)
+                local newObjective = self:CreateObjective((select(1, GetItemInfo(itemID))), {
+                    ["enabled"] = true,
+                    ["autoIcon"] = true,
+                    ["icon"] = C_Item.GetItemIconByID(itemID),
+                    ["displayRef"] = {
+                        ["trackerType"] = "ITEM",
+                        ["trackerID"] = itemID,
+                    },
+                    ["trackCondition"] = "ALL",
+                    ["trackFunc"] = "",
+                    ["trackers"] = {
+                        {
+                            ["objective"] = 0,
+                            ["exclude"] = {},
+                            ["includeAllChars"] = false,
+                            ["trackerID"] = itemID,
+                            ["includeBank"] = false,
+                            ["trackerType"] = "ITEM",
+                        }
+                    },
+                })
+            end, cursorID)
+            return
+        end
+    end
+
     local defaultTitle = L["New"]
     local defaultInfo = {
         ["enabled"] = true,

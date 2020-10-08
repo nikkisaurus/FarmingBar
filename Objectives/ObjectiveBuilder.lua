@@ -169,8 +169,8 @@ function addon:Initialize_ObjectiveBuilder()
     newObjectiveButton:SetImage(514607)
     topContent:AddChild(newObjectiveButton)
 
-    newObjectiveButton:SetCallback("OnClick", function() addon:CreateObjective() end)
-    newObjectiveButton:SetCallback("OnReceiveDrag", function() addon:CreateObjectiveFromCursor() end)
+    newObjectiveButton:SetCallback("OnClick", function() addon:CreateObjective(_, _, _, _, true) end)
+    newObjectiveButton:SetCallback("OnReceiveDrag", function() addon:CreateObjective(_, _, _, _, true) end)
 
     ------------------------------------------------------------
 
