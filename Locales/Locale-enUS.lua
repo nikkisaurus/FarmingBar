@@ -5,19 +5,24 @@ local L = LibStub("AceLocale-3.0"):NewLocale("FarmingBar", "enUS", true)
 
 -- Modules\Objectives\ObjectiveBuilder-Objective.lua
 L["All"] = true
+L["All of"] = true
 L["Any"] = true
+L["Any of"] = true
 L["Automatic Icon"] = true
 L["Choose"] = true
+L["Condition"] = true
 L["Custom"] = true
 L["Currency"] = true
 L["Currency ID"] = true
 L["Display Reference"] = true
 L["Enabled"] = true
 L["Export"] = true
+L["If"] = true
 L["Item"] = true
 L["Item ID/Name/Link"] = true
 L["None"] = true
 L["Tracker Condition"] = true
+L["Trackers"] = true
 L["Type"] = true
 
 L.DisplayReferenceDescription_Gsub = "/currency"

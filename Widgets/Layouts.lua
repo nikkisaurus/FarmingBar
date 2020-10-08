@@ -62,3 +62,32 @@ AceGUI:RegisterLayout("FB30_2RowSplitBottom", function(content, children)
         content.obj:LayoutFinished(nil, nil)
     end
 end)
+
+--*------------------------------------------------------------------------
+
+AceGUI:RegisterLayout("FB30_2Column", function(content, children)
+    for i = 1, 2 do
+        local child = children[i]
+        if child then
+            local frame = child.frame
+
+            if i == 1 then
+                frame:SetWidth(content:GetWidth() / 3)
+                frame:SetPoint("TOPLEFT", 5, 0)
+                frame:SetPoint("BOTTOM")
+            elseif i == 2 then
+                frame:SetWidth((content:GetWidth() / 3) * 2)
+                frame:SetPoint("TOPLEFT", children[1].frame, "TOPRIGHT", 10, 0)
+                frame:SetPoint("BOTTOMRIGHT", -5, 0)
+            end
+
+            if child.DoLayout then
+                child:DoLayout()
+            end
+        end
+    end
+
+    if content.obj.LayoutFinished then
+        content.obj:LayoutFinished()
+    end
+end)

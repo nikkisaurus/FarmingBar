@@ -94,7 +94,7 @@ local methods = {
     end,
 
     ["LoadObjectives"] = function(self, objectiveTitle)
-        local sideContent, mainContainer, mainContent = self.sideContent, self.mainContainer, self.mainContent
+        local sideContent, mainPanel, mainContent = self.sideContent, self.mainPanel, self.mainContent
         sideContent:ReleaseChildren()
         wipe(self.objectives.selected)
         wipe(self.objectives.children)
@@ -126,7 +126,7 @@ local methods = {
                 button.frame:Click()
             end
         else
-            mainContainer:ReleaseChildren()
+            mainPanel:ReleaseChildren()
         end
     end,
 
@@ -224,11 +224,7 @@ function addon:Initialize_ObjectiveBuilder()
     mainPanel:SetFullHeight(true)
     mainPanel:SetLayout("Fill")
     ObjectiveBuilder:AddChild(mainPanel)
-
-    local mainContent = AceGUI:Create("ScrollFrame")
-    mainContent:SetLayout("Fill")
-    mainPanel:AddChild(mainContent)
-    ObjectiveBuilder.mainContainer = mainContent
+    ObjectiveBuilder.mainPanel = mainPanel
 
     ------------------------------------------------------------
 
