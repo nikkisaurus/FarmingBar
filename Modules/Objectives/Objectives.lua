@@ -7,27 +7,70 @@ local type = type
 
 --*------------------------------------------------------------------------
 
+function addon:CreateObjective(objectiveTitle, objectiveInfo, suppressLoad)
+    local defaultTitle = L["New"]
+    local defaultInfo = {
+        ["enabled"] = true,
+        ["autoIcon"] = true,
+        ["icon"] = "134400",
+        ["displayRef"] = {
+            ["trackerType"] = false,
+            ["trackerID"] = false,
+        },
+        ["trackCondition"] = "ALL",
+        ["trackers"] = {},
+    }
+
+    local newObjective = FarmingBar.db.global.objectives[objectiveTitle or defaultTitle]
+
+    local newObjectiveTitle
+    if newObjective then
+        local i = 2
+        while not newObjectiveTitle do
+            local title = string.format("%s %d", objectiveTitle or defaultTitle, i)
+            if not FarmingBar.db.global.objectives[title] then
+                newObjectiveTitle = title
+            else
+                i = i + 1
+            end
+        end
+    end
+
+    newObjectiveTitle = newObjectiveTitle or objectiveTitle or defaultTitle
+    FarmingBar.db.global.objectives[newObjectiveTitle] = objectiveInfo or defaultInfo
+    if not suppressLoad then
+        self.ObjectiveBuilder:LoadObjectives(newObjectiveTitle)
+        for _, objective in pairs(self.ObjectiveBuilder.objectives.children) do
+            if objective.objectiveTitle == newObjectiveTitle then
+                objective.button:RenameObjective()
+            end
+        end
+    end
+
+    return newObjectiveTitle
+end
+
 function addon:DeleteObjective(objectiveTitle)
     if type(objectiveTitle) == "table" then
         for _, objective in pairs(objectiveTitle) do
-            FarmingBar.db.global.objectives[objective.frame:GetText()] = nil
+            FarmingBar.db.global.objectives[objective:GetObjectiveTitle()] = nil
         end
     else
         FarmingBar.db.global.objectives[objectiveTitle] = nil
     end
 
-    addon.ObjectiveBuilder:LoadObjectives()
+    self.ObjectiveBuilder:LoadObjectives()
 end
 
 function addon:DeleteSelectedObjectives()
-    local selected = addon.ObjectiveBuilder.objectives.selected
+    local selected = self.ObjectiveBuilder.objectives.selected
     if #selected > 1 then
         local dialog = StaticPopup_Show("FARMINGBAR_CONFIRM_DELETE_MULTIPLE_OBJECTIVES", #selected)
         if dialog then
             dialog.data = selected
         end
     else
-        local objectiveTitle = selected[1].frame:GetText()
+        local objectiveTitle = selected[1]:GetObjectiveTitle()
         local dialog = StaticPopup_Show("FARMINGBAR_CONFIRM_DELETE_OBJECTIVE", objectiveTitle)
         if dialog then
             dialog.data = objectiveTitle
@@ -64,6 +107,18 @@ function addon:GetIcon(objectiveTitle)
     end
 
     return icon
+end
+
+function addon:RenameObjective(objectiveTitle, newObjectiveTitle)
+    if FarmingBar.db.global.objectives[newObjectiveTitle] then
+        print("ERROR")
+        return
+    end
+
+    FarmingBar.db.global.objectives[newObjectiveTitle] = FarmingBar.db.global.objectives[objectiveTitle]
+    FarmingBar.db.global.objectives[objectiveTitle] = nil
+
+    self.ObjectiveBuilder:LoadObjectives(newObjectiveTitle)
 end
 
 function addon:ValidateTracker(trackerType, trackerID)

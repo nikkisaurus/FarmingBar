@@ -6,7 +6,7 @@ local AceGUI = LibStub("AceGUI-3.0", true)
 local tinsert, pairs, wipe = table.insert, pairs, table.wipe
 local strfind, strupper = string.find, string.upper
 
-local CreateFrame, UIParent = CreateFrame, UIParent
+local tContains, CreateFrame, UIParent = tContains, CreateFrame, UIParent
 
 --*------------------------------------------------------------------------
 
@@ -21,8 +21,6 @@ local function mainTabGroup_OnGroupSelected(self)
 end
 
 local function ObjectiveButton_OnClick(objectiveTitle)
-    local mainContent = addon.ObjectiveBuilder.mainContent
-    mainContent:ReleaseChildren()
     addon:LoadObjectiveTab(objectiveTitle)
 end
 
@@ -32,18 +30,23 @@ local menu = {
     {
         text = L["Rename"],
         notCheckable = true,
-        func = function()
-
-        end,
+        func = function(self) addon.ObjectiveBuilder.objectives.selected[1]:RenameObjective() end,
     },
-    {text = "", notCheckable = true, notClickable = true},
     {
         text = L["Duplicate"],
         notCheckable = true,
-        func = function()
-
+        func = function(self)
+            local objectiveTitle = addon.ObjectiveBuilder.objectives.selected[1]:GetObjectiveTitle()
+            addon:CreateObjective(objectiveTitle, FarmingBar.db.global.objectives[objectiveTitle])
         end,
     },
+    {
+        text = L["Export"],
+        disabled = true,
+        notCheckable = true,
+        func = function() end,
+    },
+    {text = "", notCheckable = true, notClickable = true},
     {
         text = L["Delete"],
         notCheckable = true,
@@ -54,14 +57,41 @@ local menu = {
         text = L["Close"],
         notCheckable = true,
     },
-    -- { text = "Select an Option", isTitle = true},
-    -- { text = "Option 1", func = function() print("You've chosen option 1"); end },
-    -- { text = "Option 2", func = function() print("You've chosen option 2"); end },
-    -- { text = "More Options", hasArrow = true,
-    --     menuList = {
-    --         { text = "Option 3", func = function() print("You've chosen option 3"); end }
-    --     }
-    -- }
+}
+
+local menuAll = {
+    {
+        text = L["Duplicate All"],
+        notCheckable = true,
+        func = function(self)
+            local newObjectives = {}
+            local selected = addon.ObjectiveBuilder.objectives.selected
+            for key, objective in pairs(selected) do
+                local objectiveTitle = objective:GetObjectiveTitle()
+                local newObjectiveTitle = addon:CreateObjective(objectiveTitle, FarmingBar.db.global.objectives[objectiveTitle], true)
+                tinsert(newObjectives, newObjectiveTitle)
+            end
+
+            addon.ObjectiveBuilder:LoadObjectives()
+            -- TODO: Reenable this, but have to go back and change behavior of the editbox so that when you hit enter, it looks for any other active editboxes to rename
+            for _, objective in pairs(addon.ObjectiveBuilder.objectives.children) do
+                if tContains(newObjectives, objective.objectiveTitle) then
+                    objective.button:RenameObjective()
+                end
+            end
+        end,
+    },
+    {text = "", notCheckable = true, notClickable = true},
+    {
+        text = L["Delete All"],
+        notCheckable = true,
+        func = function() addon:DeleteSelectedObjectives() end,
+    },
+    {text = "", notCheckable = true, notClickable = true},
+    {
+        text = L["Close"],
+        notCheckable = true,
+    },
 }
 
 local methods_ObjectiveBuilder = {
@@ -70,7 +100,7 @@ local methods_ObjectiveBuilder = {
         self:LoadObjectives()
     end,
 
-    ["LoadObjectives"] = function(self)
+    ["LoadObjectives"] = function(self, objectiveTitle)
         local sideContent, mainContent = self.sideContent, self.mainContent
         sideContent:ReleaseChildren()
         wipe(self.objectives.selected)
@@ -85,6 +115,7 @@ local methods_ObjectiveBuilder = {
                 button:SetIcon(addon:GetIcon(objectiveTitle))
                 button:SetContainer(self.objectives)
                 button:SetMenu(menu)
+                button:SetMenuAll(menuAll)
                 sideContent:AddChild(button)
                 tinsert(self.objectives.children, {objectiveTitle = objectiveTitle, button = button})
 
@@ -96,7 +127,7 @@ local methods_ObjectiveBuilder = {
             end
         end
 
-        addon:LoadObjectiveTab()
+        addon:LoadObjectiveTab(objectiveTitle)
     end,
 
     ["Release"] = function(self)
@@ -157,7 +188,7 @@ function addon:Initialize_ObjectiveBuilder()
     newObjectiveButton:SetImage(514607)
     topContent:AddChild(newObjectiveButton)
 
-    -- newObjectiveButton:SetCallback("OnClick", function() addon:CreateObjective() end) -- TODO: addon:CreateObjective()
+    newObjectiveButton:SetCallback("OnClick", function() addon:CreateObjective() end)
 
     ------------------------------------------------------------
 
