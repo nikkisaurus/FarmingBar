@@ -20,14 +20,14 @@ end
 
 function FarmingBar:OnEnable()
     addon:Initialize_ObjectiveBuilder()
-    -- addon:Initialize_Bars()
-    -- addon:Initialize_Options()
+    -- TODO: addon:Initialize_Bars()
+    -- TODO: addon:Initialize_Options()
 end
 
 function FarmingBar:OnDisable()
     addon.ObjectiveBuilder:Release()
-    -- addon:ReleaseBars()
-    -- addon.Options:Release()
+    -- TODO: addon:ReleaseBars()
+    -- TODO: addon.Options:Release()
 end
 
 --*------------------------------------------------------------------------

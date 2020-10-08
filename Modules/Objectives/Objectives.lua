@@ -35,8 +35,6 @@ function addon:GetIcon(objectiveTitle)
     return icon
 end
 
---*------------------------------------------------------------------------
-
 function addon:ValidateTracker(trackerType, trackerID)
     if trackerType == "ITEM" then
         return (GetItemInfoInstant(trackerID))

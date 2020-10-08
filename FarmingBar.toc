@@ -52,8 +52,10 @@ Modules\Skins.lua
 # Modules
 Modules\Bars.lua
 Modules\Buttons.lua
+Modules\DragFrame.lua
 Modules\Objectives\Objectives.lua
 Modules\Objectives\ObjectiveBuilder.lua
+Modules\Objectives\ObjectiveBuilder-Objective.lua
 
 # Options
 Options\Commands.lua

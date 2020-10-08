@@ -12,6 +12,7 @@ function addon:Initialize_DB()
                 farm = true,
                 fbar = true,
                 fb = false,
+                fb = true, -- DEBUG
             },
             debug = {
                 ObjectiveBuilder = true,
@@ -20,5 +21,6 @@ function addon:Initialize_DB()
             objectives = {},
         },
     }
+
     FarmingBar.db = LibStub("AceDB-3.0"):New("FarmingBarDB", defaults, true)
 end

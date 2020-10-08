@@ -5,30 +5,26 @@ local db = FarmingBar.db
 
 --*------------------------------------------------------------------------
 
---[[-----------------------------------------------------------------------------
-Button Widget
-Graphical Button.
--------------------------------------------------------------------------------]]
 local Type, Version = "FB30_ObjectiveButton", 1
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 if not AceGUI or (AceGUI:GetWidgetVersion(Type) or 0) >= Version then return end
 
--- Lua APIs
-local pairs, tinsert = pairs, table.insert
+local pairs, tinsert, tremove, wipe = pairs, table.insert, table.remove, table.wipe
 
--- WoW APIs
-local _G = _G
 local PlaySound, CreateFrame, UIParent = PlaySound, CreateFrame, UIParent
 
---[[-----------------------------------------------------------------------------
-Scripts
--------------------------------------------------------------------------------]]
-local function Button_OnClick(frame, ...)
-    frame.obj:ToggleSelected()
+--*------------------------------------------------------------------------
 
-	AceGUI:ClearFocus()
-	PlaySound(852) -- SOUNDKIT.IG_MAINMENU_OPTION
-	frame.obj:Fire("OnClick", ...)
+local function Button_OnClick(frame, ...)
+    local loadPrevious = frame.obj:ToggleSelected()
+
+    if not loadPrevious then
+        AceGUI:ClearFocus()
+        PlaySound(852) -- SOUNDKIT.IG_MAINMENU_OPTION
+        frame.obj:Fire("OnClick", ...)
+    else
+        frame.obj.container.selected[#frame.obj.container.selected].frame.obj:Fire("OnClick", ...)
+    end
 end
 
 local function Control_OnEnter(frame)
@@ -47,9 +43,8 @@ local function Control_OnDragStop(frame)
 	frame.obj:Fire("OnDragStop")
 end
 
---[[-----------------------------------------------------------------------------
-Methods
--------------------------------------------------------------------------------]]
+--*------------------------------------------------------------------------
+
 local methods = {
 	["OnAcquire"] = function(self)
 		-- restore default values
@@ -59,8 +54,6 @@ local methods = {
 		self:SetAutoWidth(false)
 		self:SetText()
 	end,
-
-	-- ["OnRelease"] = nil,
 
 	["SetText"] = function(self, text)
 		self.text:SetText(text)
@@ -85,68 +78,75 @@ local methods = {
 		end
     end,
 
-    SetIcon = function(self, icon)
-        self.icon:SetTexture(icon or 134400)
+    ------------------------------------------------------------
+
+    ["SetContainer"] = function(self, container, children)
+        self.container = container
+        self.container.selected = {}
+        self.container.children = children or {}
     end,
 
-    SetStatusTable = function(self, statustable)
-        self.status = statustable
-        tinsert(self.status, self)
-    end,
-
-    GetStatusTable = function(self)
-        return self.status
-    end,
-
-    ToggleSelected = function(self)
-        local statustable = self:GetStatusTable()
-
-        if statustable then
-            if IsShiftKeyDown() then
-                local first, target
-                for key, objective in pairs(statustable) do
-                    if objective.lastSelected then
-                        first = key
-                    elseif objective == self then
-                        target = key
-                    end
-                    if first and target then
-                        local offset = (first < target) and 1 or -1
-                        for i = first + offset, target - offset, offset do
-                            statustable[i]:SetSelected(true)
-                        end
-                        break
-                    end
-                end
-            elseif not IsControlKeyDown() then
-                for key, objective in pairs(statustable) do
-                    objective:SetSelected(false)
-                    objective.lastSelected = false
-                end
-            end
-        end
-
-        self:SetSelected(self.selected and false or true)
-        self.lastSelected = true
-    end,
-
-    SetSelected = function(self, selected)
-        self.selected = selected
-        self:SetHighlight(selected)
-    end,
-
-    SetHighlight = function(self, selected)
+    ["SetHighlight"] = function(self, selected)
         if selected then
             self.frame:LockHighlight()
         else
             self.frame:UnlockHighlight()
         end
     end,
+
+    ["SetIcon"] = function(self, icon)
+        self.icon:SetTexture(icon or 134400)
+    end,
+
+    ["SetSelected"] = function(self, selected)
+        self.selected = selected
+        self:SetHighlight(selected)
+    end,
+
+    ["ToggleSelected"] = function(self)
+        local container = self.container and self.container.children
+        local selected = self.container and self.container.selected
+
+        if container then
+            if IsShiftKeyDown() then
+                local first, target
+
+                for key, objective in pairs(container) do
+                    if objective.button == selected[#selected] then
+                        first = key
+                    elseif objective.button == self then
+                        target = key
+                    end
+                end
+
+                local offset = (first < target) and 1 or -1
+                for i = first + offset, target - offset, offset do
+                    container[i].button:SetSelected(true)
+                end
+            elseif IsControlKeyDown() then
+                local key = addon.GetTableKey(selected, self)
+                if key and #selected > 1 then
+                    self:SetSelected(false)
+                    tremove(selected, key)
+                    return true -- trigger to load the last selected button
+                end
+            else
+                for key, objective in pairs(container) do
+                    objective.button:SetSelected(false)
+                end
+                wipe(selected)
+            end
+        end
+
+        self:SetSelected(self.selected and false or true)
+        if selected and self.selected then
+            tinsert(selected, self)
+        end
+    end,
 }
 
---[[-----------------------------------------------------------------------------
-Constructor
--------------------------------------------------------------------------------]]
+--*------------------------------------------------------------------------
+
 local function Constructor()
 	local name = "AceGUI30Button" .. AceGUI:GetNextWidgetNum(Type)
     local frame = CreateFrame("Button", name, UIParent, "OptionsListButtonTemplate")
