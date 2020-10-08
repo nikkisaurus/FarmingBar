@@ -76,6 +76,10 @@ local menuAll = {
 }
 
 local methods = {
+    ["GetSelectedObjective"] = function(self)
+        return self.mainContent.objectiveTitle
+    end,
+
     ["GetObjectiveButtonByTitle"] = function(self, objectiveTitle)
         for key, objective in pairs(self.objectives.children) do
             if objective.objectiveTitle == objectiveTitle then

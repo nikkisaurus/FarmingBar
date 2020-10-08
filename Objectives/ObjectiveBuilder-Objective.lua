@@ -8,20 +8,20 @@ local gsub = string.gsub
 
 --*------------------------------------------------------------------------
 
-local function autoIcon_OnValueChanged(self, objectiveTitle)
-    FarmingBar.db.global.objectives[objectiveTitle].autoIcon = self:GetValue()
+local function autoIcon_OnValueChanged(self)
+    FarmingBar.db.global.objectives[addon.ObjectiveBuilder:GetSelectedObjective()].autoIcon = self:GetValue()
 
     addon.ObjectiveBuilder.mainContent:Refresh("Objective")
 end
 
-local function displayIcon_OnEnterPressed(self, objectiveTitle)
-    FarmingBar.db.global.objectives[objectiveTitle].icon = self:GetText()
+local function displayIcon_OnEnterPressed(self)
+    FarmingBar.db.global.objectives[addon.ObjectiveBuilder:GetSelectedObjective()].icon = self:GetText()
     self:ClearFocus()
 
     addon.ObjectiveBuilder.mainContent:Refresh("Objective")
 end
 
-local function displayRefHelp_OnClick(self, label)
+local function displayRefHelp_OnClick(mainContent, label)
     if label:GetText() and label:GetText() ~= " " then
         label:SetText("")
         label:SetWidth(30)
@@ -36,10 +36,11 @@ local function displayRefHelp_OnClick(self, label)
         label:SetWidth(label.frame:GetParent():GetWidth() - 10)
     end
 
-    self:DoLayout()
+    mainContent:DoLayout()
 end
 
-local function displayRefTrackerID_OnEnterPressed(self, objectiveTitle)
+local function displayRefTrackerID_OnEnterPressed(self)
+    local objectiveTitle = addon.ObjectiveBuilder:GetSelectedObjective()
     local objectiveInfo = FarmingBar.db.global.objectives[objectiveTitle]
     local valid = addon:ValidateTracker(objectiveInfo.displayRef.trackerType, self:GetText())
 
@@ -56,10 +57,12 @@ local function displayRefTrackerID_OnEnterPressed(self, objectiveTitle)
     end
 end
 
-local function displayRefTrackerType_OnValueChanged(objectiveTitle, selected)
+local function displayRefTrackerType_OnValueChanged(selected)
+    local objectiveTitle = addon.ObjectiveBuilder:GetSelectedObjective()
     if selected == "NONE" then
         FarmingBar.db.global.objectives[objectiveTitle].displayRef.trackerType = false
         FarmingBar.db.global.objectives[objectiveTitle].displayRef.trackerID = false
+
     else
         FarmingBar.db.global.objectives[objectiveTitle].displayRef.trackerType = selected
     end
@@ -71,19 +74,29 @@ local function mainTabGroup_OnGroupSelected(self, selected)
     self:ReleaseChildren()
 
     if selected == "objectiveTab" then
-        addon:LoadObjectiveTab(self.objectiveTitle)
+        addon:LoadObjectiveTab(addon.ObjectiveBuilder:GetSelectedObjective())
     elseif selected == "trackerTab" then
-        addon:LoadTrackerTab(self.objectiveTitle)
+        addon:LoadTrackerTab(addon.ObjectiveBuilder:GetSelectedObjective())
     end
+end
+
+local function trackCondition_OnValueChanged(selected)
+    FarmingBar.db.global.objectives[addon.ObjectiveBuilder:GetSelectedObjective()].trackCondition = selected
+
+    addon.ObjectiveBuilder.mainContent:Refresh("Tracker")
+end
+
+local function trackFunc_OnEnterPressed(self)
+    FarmingBar.db.global.objectives[addon.ObjectiveBuilder:GetSelectedObjective()].trackFunc = self:GetText()
 end
 
 --*------------------------------------------------------------------------
 
 local methods = {
     ["Refresh"] = function(self, reloadTab)
-        addon.ObjectiveBuilder:UpdateObjectiveIcon(self.objectiveTitle)
+        addon.ObjectiveBuilder:UpdateObjectiveIcon(addon.ObjectiveBuilder:GetSelectedObjective())
         if reloadTab then
-            addon["Load"..reloadTab.."Tab"](addon, self.objectiveTitle)
+            addon["Load"..reloadTab.."Tab"](addon, addon.ObjectiveBuilder:GetSelectedObjective())
         end
     end,
 
@@ -145,7 +158,7 @@ function addon:LoadObjectiveTab(objectiveTitle)
     title:SetText(objectiveTitle)
     title:SetFontObject(GameFontNormalLarge)
     title:SetImageSize(20, 20)
-    title:SetImage(addon:GetIcon(objectiveTitle))
+    title:SetImage(self:GetIcon(objectiveTitle))
     mainContent:AddChild(title)
 
     ------------------------------------------------------------
@@ -173,7 +186,7 @@ function addon:LoadObjectiveTab(objectiveTitle)
     autoIcon:SetLabel(L["Automatic Icon"])
     mainContent:AddChild(autoIcon)
 
-    autoIcon:SetCallback("OnValueChanged", function(self) autoIcon_OnValueChanged(self, objectiveTitle) end)
+    autoIcon:SetCallback("OnValueChanged", function(self) autoIcon_OnValueChanged(self) end)
 
     ------------------------------------------------------------
 
@@ -183,7 +196,7 @@ function addon:LoadObjectiveTab(objectiveTitle)
         displayIcon:SetText(FarmingBar.db.global.objectives[objectiveTitle].icon)
         mainContent:AddChild(displayIcon, mainContent.displayRef)
 
-        displayIcon:SetCallback("OnEnterPressed", function(self) displayIcon_OnEnterPressed(self, objectiveTitle) end)
+        displayIcon:SetCallback("OnEnterPressed", function(self) displayIcon_OnEnterPressed(self) end)
 
         ------------------------------------------------------------
 
@@ -192,7 +205,7 @@ function addon:LoadObjectiveTab(objectiveTitle)
         chooseButton:SetText(L["Choose"])
         mainContent:AddChild(chooseButton, mainContent.displayRef)
 
-        -- chooseButton:SetCallback("OnClick", function() addon.IconSelector:Show() end) -- TODO: Icon selector frame
+        -- chooseButton:SetCallback("OnClick", function() self.IconSelector:Show() end) -- TODO: Icon selector frame
     end
 
     ------------------------------------------------------------
@@ -201,6 +214,23 @@ function addon:LoadObjectiveTab(objectiveTitle)
     displayRef:SetFullWidth(true)
     displayRef:SetText(L["Display Reference"])
     mainContent:AddChild(displayRef)
+    ------------------------------------------------------------
+
+    local displayRefTrackerType = AceGUI:Create("Dropdown")
+    displayRefTrackerType:SetRelativeWidth(0.92)
+    displayRefTrackerType:SetLabel(L["Type"])
+    displayRefTrackerType:SetList(
+        {
+            ITEM = L["Item"],
+            CURRENCY = L["Currency"],
+            NONE = L["None"],
+        },
+        {"ITEM", "CURRENCY", "NONE"}
+    )
+    displayRefTrackerType:SetValue(objectiveInfo.displayRef.trackerType or "NONE")
+    mainContent:AddChild(displayRefTrackerType)
+
+    displayRefTrackerType:SetCallback("OnValueChanged", function(_, _, selected) displayRefTrackerType_OnValueChanged(selected) end)
 
     ------------------------------------------------------------
 
@@ -215,24 +245,6 @@ function addon:LoadObjectiveTab(objectiveTitle)
 
     ------------------------------------------------------------
 
-    local displayRefTrackerType = AceGUI:Create("Dropdown")
-    displayRefTrackerType:SetFullWidth(true)
-    displayRefTrackerType:SetLabel(L["Type"])
-    displayRefTrackerType:SetList(
-        {
-            ITEM = L["Item"],
-            CURRENCY = L["Currency"],
-            NONE = L["None"],
-        },
-        {"CURRENCY", "ITEM", "NONE"}
-    )
-    displayRefTrackerType:SetValue(objectiveInfo.displayRef.trackerType or "NONE")
-    mainContent:AddChild(displayRefTrackerType)
-
-    displayRefTrackerType:SetCallback("OnValueChanged", function(_, _, selected) displayRefTrackerType_OnValueChanged(objectiveTitle, selected) end)
-
-    ------------------------------------------------------------
-
     if objectiveInfo.displayRef.trackerType then
         local displayRefTrackerID = AceGUI:Create("EditBox")
         displayRefTrackerID:SetFullWidth(true)
@@ -240,7 +252,7 @@ function addon:LoadObjectiveTab(objectiveTitle)
         displayRefTrackerID:SetText(objectiveInfo.displayRef.trackerID or "")
         mainContent:AddChild(displayRefTrackerID)
 
-        displayRefTrackerID:SetCallback("OnEnterPressed", function(self) displayRefTrackerID_OnEnterPressed(self, objectiveTitle) end)
+        displayRefTrackerID:SetCallback("OnEnterPressed", function(self) displayRefTrackerID_OnEnterPressed(self) end)
     end
 end
 
@@ -253,6 +265,30 @@ function addon:LoadTrackerTab(objectiveTitle)
     local objectiveInfo = FarmingBar.db.global.objectives[objectiveTitle]
 
     -- TODO: LoadTrackerTab()
+    local trackCondition = AceGUI:Create("Dropdown")
+    trackCondition:SetFullWidth(true)
+    trackCondition:SetLabel(L["Tracker Condition"])
+    trackCondition:SetList(
+        {
+            ALL = L["All"],
+            ANY = L["Any"],
+            CUSTOM = L["Custom"],
+        },
+        {"ALL", "ANY", "CUSTOM"}
+    )
+    trackCondition:SetValue(objectiveInfo.trackCondition)
+    mainContent:AddChild(trackCondition)
+
+    trackCondition:SetCallback("OnValueChanged", function(_, _, selected) trackCondition_OnValueChanged(selected) end)
+
+    if objectiveInfo.trackCondition == "CUSTOM" then
+        local trackFunc = AceGUI:Create("MultiLineEditBox")
+        trackFunc:SetFullWidth(true)
+        trackFunc:SetText(objectiveInfo.trackFunc)
+        mainContent:AddChild(trackFunc)
+
+        trackFunc:SetCallback("OnEnterPressed", function(self, event, ...) trackFunc_OnEnterPressed(self) end)
+    end
 end
 
 
