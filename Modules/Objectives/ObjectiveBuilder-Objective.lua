@@ -84,6 +84,7 @@ function addon:LoadObjectiveTab(objectiveTitle)
     local mainContent = self.ObjectiveBuilder.mainContent
     mainContent:ReleaseChildren()
     if not objectiveTitle then return end
+    mainContent.objectiveTitle = objectiveTitle
     local objectiveInfo = FarmingBar.db.global.objectives[objectiveTitle]
 
     ------------------------------------------------------------

@@ -14,9 +14,9 @@ local function mainTabGroup_OnGroupSelected(self)
     self:ReleaseChildren()
 
     if group == "objectiveTab" then
-        addon:LoadObjectiveTab()
+        addon:LoadObjectiveTab(addon.ObjectiveBuilder.mainContent.objectiveTitle)
     elseif group == "trackerTab" then
-        self:LoadTrackerTab()
+        self:LoadTrackerTab(addon.ObjectiveBuilder.mainContent.objectiveTitle)
     end
 end
 
@@ -73,7 +73,6 @@ local menuAll = {
             end
 
             addon.ObjectiveBuilder:LoadObjectives()
-            -- TODO: Reenable this, but have to go back and change behavior of the editbox so that when you hit enter, it looks for any other active editboxes to rename
             for _, objective in pairs(addon.ObjectiveBuilder.objectives.children) do
                 if tContains(newObjectives, objective.objectiveTitle) then
                     objective.button:RenameObjective()
@@ -189,6 +188,7 @@ function addon:Initialize_ObjectiveBuilder()
     topContent:AddChild(newObjectiveButton)
 
     newObjectiveButton:SetCallback("OnClick", function() addon:CreateObjective() end)
+    newObjectiveButton:SetCallback("OnReceiveDrag", function() addon:CreateObjectiveFromCursor() end)
 
     ------------------------------------------------------------
 

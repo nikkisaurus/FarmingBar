@@ -5,9 +5,11 @@ local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 local pairs = pairs
 local type = type
 
+local GetCursorInfo, ClearCursor = GetCursorInfo, ClearCursor
+
 --*------------------------------------------------------------------------
 
-function addon:CreateObjective(objectiveTitle, objectiveInfo, suppressLoad)
+function addon:CreateObjective(objectiveTitle, objectiveInfo, suppressLoad, suppressRename)
     local defaultTitle = L["New"]
     local defaultInfo = {
         ["enabled"] = true,
@@ -40,6 +42,8 @@ function addon:CreateObjective(objectiveTitle, objectiveInfo, suppressLoad)
     FarmingBar.db.global.objectives[newObjectiveTitle] = objectiveInfo or defaultInfo
     if not suppressLoad then
         self.ObjectiveBuilder:LoadObjectives(newObjectiveTitle)
+    end
+    if not suppressRename then
         for _, objective in pairs(self.ObjectiveBuilder.objectives.children) do
             if objective.objectiveTitle == newObjectiveTitle then
                 objective.button:RenameObjective()
@@ -49,6 +53,37 @@ function addon:CreateObjective(objectiveTitle, objectiveInfo, suppressLoad)
 
     return newObjectiveTitle
 end
+
+function addon:CreateObjectiveFromCursor()
+    local cursorType, cursorID = GetCursorInfo()
+    if cursorType == "item" then
+        ClearCursor()
+        self:CacheItem(cursorID, function(itemID)
+            local newObjective = self:CreateObjective((select(1, GetItemInfo(itemID))), {
+                ["enabled"] = true,
+                ["autoIcon"] = true,
+                ["icon"] = C_Item.GetItemIconByID(itemID),
+                ["displayRef"] = {
+                    ["trackerType"] = "ITEM",
+                    ["trackerID"] = itemID,
+                },
+                ["trackCondition"] = "ALL",
+                ["trackers"] = {
+                    {
+                        ["objective"] = 0,
+                        ["exclude"] = {},
+                        ["includeAllChars"] = false,
+                        ["trackerID"] = itemID,
+                        ["includeBank"] = false,
+                        ["trackerType"] = "ITEM",
+                    }
+                },
+            }, nil, true)
+        end, cursorID)
+    end
+end
+
+------------------------------------------------------------
 
 function addon:DeleteObjective(objectiveTitle)
     if type(objectiveTitle) == "table" then
@@ -78,6 +113,8 @@ function addon:DeleteSelectedObjectives()
     end
 end
 
+------------------------------------------------------------
+
 function addon:GetIcon(objectiveTitle)
     local objectiveInfo = FarmingBar.db.global.objectives[objectiveTitle]
 
@@ -87,13 +124,13 @@ function addon:GetIcon(objectiveTitle)
         local trackerType, trackerID = lookupTable and lookupTable.trackerType, lookupTable and lookupTable.trackerID
 
         if trackerType == "ITEM" then
-            icon = C_Item.GetItemIconByID(tonumber(trackerID) or 1412)
+            icon = C_Item.GetItemIconByID(tonumber(trackerID) or 1412) -- TODO: Remove/revise placeholder icon once trackers are implemented
         elseif trackerType == "CURRENCY" then
             -- !Revise once Shadowlands/prepatch is live.
             if C_CurrencyInfo.GetCurrencyInfo then
                 icon = C_CurrencyInfo.GetCurrencyInfo(tonumber(trackerID)).iconFileID
             else
-                icon = (select(3, GetCurrencyInfo(tonumber(trackerID) or 1719)))
+                icon = (select(3, GetCurrencyInfo(tonumber(trackerID) or 1719))) -- TODO: Remove/revise placeholder icon once trackers are implemented
             end
             -- !
         end
@@ -109,9 +146,11 @@ function addon:GetIcon(objectiveTitle)
     return icon
 end
 
+------------------------------------------------------------
+
 function addon:RenameObjective(objectiveTitle, newObjectiveTitle)
     if FarmingBar.db.global.objectives[newObjectiveTitle] then
-        print("ERROR")
+        print("ERROR") -- TODO: Show StaticPopup to confirm overwrite OR reselect and reset
         return
     end
 
@@ -120,6 +159,8 @@ function addon:RenameObjective(objectiveTitle, newObjectiveTitle)
 
     self.ObjectiveBuilder:LoadObjectives(newObjectiveTitle)
 end
+
+------------------------------------------------------------
 
 function addon:ValidateTracker(trackerType, trackerID)
     if trackerType == "ITEM" then
