@@ -20,6 +20,7 @@ function addon:CreateObjective(objectiveTitle, objectiveInfo, suppressLoad, fini
             ["trackerID"] = false,
         },
         ["trackCondition"] = "ALL",
+        ["trackFunc"] = "",
         ["trackers"] = {},
     }
 
@@ -61,6 +62,7 @@ function addon:CreateObjectiveFromCursor()
                     ["trackerID"] = itemID,
                 },
                 ["trackCondition"] = "ALL",
+                ["trackFunc"] = "",
                 ["trackers"] = {
                     {
                         ["objective"] = 0,

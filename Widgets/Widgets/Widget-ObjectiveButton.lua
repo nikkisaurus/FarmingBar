@@ -17,11 +17,6 @@ local PlaySound, CreateFrame, UIParent, EasyMenu = PlaySound, CreateFrame, UIPar
 
 local function Button_OnClick(frame, ...)
     local buttonClicked = (select(1, ...))
-    if buttonClicked == "RightButton" then
-        local menu = frame.obj.container and #frame.obj.container.selected > 1 and frame.obj.menuAll or frame.obj.menu
-        addon.MenuFrame = addon.MenuFrame or CreateFrame("Frame", "FarmingBarMenuFrame", UIParent, "UIDropDownMenuTemplate")
-        EasyMenu(menu, addon.MenuFrame, frame, 0, 0, "MENU")
-    end
 
     local loadPrevious = frame.obj:ToggleSelected(buttonClicked == "RightButton")
 
@@ -31,6 +26,12 @@ local function Button_OnClick(frame, ...)
         frame.obj:Fire("OnClick", ...)
     else
         frame.obj.container.selected[#frame.obj.container.selected].frame.obj:Fire("OnClick", ...)
+    end
+
+    if buttonClicked == "RightButton" then
+        local menu = frame.obj.container and #frame.obj.container.selected > 1 and frame.obj.menuAll or frame.obj.menu
+        addon.MenuFrame = addon.MenuFrame or CreateFrame("Frame", "FarmingBarMenuFrame", UIParent, "UIDropDownMenuTemplate")
+        EasyMenu(menu, addon.MenuFrame, frame, 0, 0, "MENU")
     end
 end
 
@@ -206,7 +207,7 @@ local methods = {
                     tremove(selected, key)
                     return true -- trigger to load the last selected button
                 end
-            elseif not openedContext then
+            elseif not openedContext or not self.selected then
                 for key, objective in pairs(container) do
                     objective.button:SetSelected(false)
                 end
