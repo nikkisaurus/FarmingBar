@@ -41,6 +41,7 @@ function addon:Initialize_DragFrame()
     DragFrame:SetSize(25, 25)
     DragFrame:SetPoint("CENTER")
     DragFrame:Hide()
+    DragFrame:SetFrameStrata("FULLSCREEN_DIALOG")
     addon.DragFrame = DragFrame
 
     DragFrame:SetScript("OnUpdate", DragFrame_OnUpdate)
