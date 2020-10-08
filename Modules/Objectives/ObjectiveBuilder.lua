@@ -10,18 +10,9 @@ local tContains, CreateFrame, UIParent = tContains, CreateFrame, UIParent
 
 --*------------------------------------------------------------------------
 
-local function mainTabGroup_OnGroupSelected(self)
-    self:ReleaseChildren()
-
-    if group == "objectiveTab" then
-        addon:LoadObjectiveTab(addon.ObjectiveBuilder.mainContent.objectiveTitle)
-    elseif group == "trackerTab" then
-        self:LoadTrackerTab(addon.ObjectiveBuilder.mainContent.objectiveTitle)
-    end
-end
-
 local function ObjectiveButton_OnClick(objectiveTitle)
-    addon:LoadObjectiveTab(objectiveTitle)
+    addon:DrawTabs()
+    addon.ObjectiveBuilder.mainContent:SelectObjective(objectiveTitle)
 end
 
 --*------------------------------------------------------------------------
@@ -93,14 +84,22 @@ local menuAll = {
     },
 }
 
-local methods_ObjectiveBuilder = {
+local methods = {
+    ["GetObjectiveButtonByTitle"] = function(self, objectiveTitle)
+        for key, objective in pairs(self.objectives.children) do
+            if objective.objectiveTitle == objectiveTitle then
+                return objective.button
+            end
+        end
+    end,
+
     ["Load"] = function(self)
         self:Show()
         self:LoadObjectives()
     end,
 
     ["LoadObjectives"] = function(self, objectiveTitle)
-        local sideContent, mainContent = self.sideContent, self.mainContent
+        local sideContent, mainContainer, mainContent = self.sideContent, self.mainContainer, self.mainContent
         sideContent:ReleaseChildren()
         wipe(self.objectives.selected)
         wipe(self.objectives.children)
@@ -126,7 +125,11 @@ local methods_ObjectiveBuilder = {
             end
         end
 
-        addon:LoadObjectiveTab(objectiveTitle)
+        if objectiveTitle then
+            addon.ObjectiveBuilder:GetObjectiveButtonByTitle(objectiveTitle):Fire("OnClick")
+        else
+            mainContainer:ReleaseChildren()
+        end
     end,
 
     ["Release"] = function(self)
@@ -142,17 +145,6 @@ local methods_ObjectiveBuilder = {
     end,
 }
 
-------------------------------------------------------------
-
-local methods_mainContent = {
-    ["Refresh"] = function(self, reloadTab)
-        addon.ObjectiveBuilder:UpdateObjectiveIcon(self.objectiveTitle)
-        if reloadTab then
-            addon["Load"..reloadTab.."Tab"](addon, self.objectiveTitle)
-        end
-    end,
-}
-
 --*------------------------------------------------------------------------
 
 function addon:Initialize_ObjectiveBuilder()
@@ -164,7 +156,7 @@ function addon:Initialize_ObjectiveBuilder()
     self.ObjectiveBuilder = ObjectiveBuilder
 
     ObjectiveBuilder.objectives = {children = {}, selected = {}}
-    for method, func in pairs(methods_ObjectiveBuilder) do
+    for method, func in pairs(methods) do
         ObjectiveBuilder[method] = func
     end
 
@@ -242,19 +234,7 @@ function addon:Initialize_ObjectiveBuilder()
     local mainContent = AceGUI:Create("ScrollFrame")
     mainContent:SetLayout("Fill")
     mainPanel:AddChild(mainContent)
-
-    local mainTabGroup = AceGUI:Create("TabGroup")
-    mainTabGroup:SetLayout("Flow")
-    mainTabGroup:SetTabs({{text = L["Objective"], value = "objectiveTab"}, {text = L["Tracker"], value = "trackerTab"}})
-    mainTabGroup:SelectTab("objectiveTab")
-    mainContent:AddChild(mainTabGroup)
-    ObjectiveBuilder.mainContent = mainTabGroup
-
-    mainTabGroup:SetCallback("OnGroupSelected", function(self) mainTabGroup_OnGroupSelected(self) end)
-
-    for method, func in pairs(methods_mainContent) do
-        mainTabGroup[method] = func
-    end
+    ObjectiveBuilder.mainContainer = mainContent
 
     ------------------------------------------------------------
 

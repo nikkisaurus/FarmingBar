@@ -67,6 +67,38 @@ local function displayRefTrackerType_OnValueChanged(objectiveTitle, selected)
     addon.ObjectiveBuilder.mainContent:Refresh("Objective")
 end
 
+local function mainTabGroup_OnGroupSelected(self, selected)
+    self:ReleaseChildren()
+
+    if selected == "objectiveTab" then
+        addon:LoadObjectiveTab(self.objectiveTitle)
+    elseif selected == "trackerTab" then
+        addon:LoadTrackerTab(self.objectiveTitle)
+    end
+end
+
+--*------------------------------------------------------------------------
+
+local methods = {
+    ["Refresh"] = function(self, reloadTab)
+        addon.ObjectiveBuilder:UpdateObjectiveIcon(self.objectiveTitle)
+        if reloadTab then
+            addon["Load"..reloadTab.."Tab"](addon, self.objectiveTitle)
+        end
+    end,
+
+    ["SelectObjective"] = function(self, objectiveTitle)
+        self.objectiveTitle = objectiveTitle
+        local mainContainer = addon.ObjectiveBuilder.mainContainer.frame
+        if objectiveTitle then
+            mainContainer:Show()
+        else
+            mainContainer:Hide()
+        end
+        addon:LoadObjectiveTab(objectiveTitle)
+    end,
+}
+
 --*------------------------------------------------------------------------
 
 local function GetTrackerTypeLabel(trackerType)
@@ -80,11 +112,30 @@ end
 
 --*------------------------------------------------------------------------
 
+function addon:DrawTabs()
+    local mainContainer = self.ObjectiveBuilder.mainContainer
+    mainContainer:ReleaseChildren()
+
+    local mainTabGroup = AceGUI:Create("TabGroup")
+    mainTabGroup:SetLayout("Flow")
+    mainTabGroup:SetTabs({{text = L["Objective"], value = "objectiveTab"}, {text = L["Tracker"], value = "trackerTab"}})
+    mainTabGroup:SelectTab("objectiveTab")
+    mainContainer:AddChild(mainTabGroup)
+    self.ObjectiveBuilder.mainContent = mainTabGroup
+
+    mainTabGroup:SetCallback("OnGroupSelected", function(self, _, selected) mainTabGroup_OnGroupSelected(self, selected) end)
+
+    for method, func in pairs(methods) do
+        mainTabGroup[method] = func
+    end
+end
+
+--*------------------------------------------------------------------------
+
 function addon:LoadObjectiveTab(objectiveTitle)
     local mainContent = self.ObjectiveBuilder.mainContent
     mainContent:ReleaseChildren()
     if not objectiveTitle then return end
-    mainContent.objectiveTitle = objectiveTitle
     local objectiveInfo = FarmingBar.db.global.objectives[objectiveTitle]
 
     ------------------------------------------------------------
