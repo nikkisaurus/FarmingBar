@@ -28,6 +28,42 @@ end
 
 --*------------------------------------------------------------------------
 
+local menu = {
+    {
+        text = L["Rename"],
+        notCheckable = true,
+        func = function()
+
+        end,
+    },
+    {text = "", notCheckable = true, notClickable = true},
+    {
+        text = L["Duplicate"],
+        notCheckable = true,
+        func = function()
+
+        end,
+    },
+    {
+        text = L["Delete"],
+        notCheckable = true,
+        func = function() addon:DeleteSelectedObjectives() end,
+    },
+    {text = "", notCheckable = true, notClickable = true},
+    {
+        text = L["Close"],
+        notCheckable = true,
+    },
+    -- { text = "Select an Option", isTitle = true},
+    -- { text = "Option 1", func = function() print("You've chosen option 1"); end },
+    -- { text = "Option 2", func = function() print("You've chosen option 2"); end },
+    -- { text = "More Options", hasArrow = true,
+    --     menuList = {
+    --         { text = "Option 3", func = function() print("You've chosen option 3"); end }
+    --     }
+    -- }
+}
+
 local methods_ObjectiveBuilder = {
     ["Load"] = function(self)
         self:Show()
@@ -37,7 +73,8 @@ local methods_ObjectiveBuilder = {
     ["LoadObjectives"] = function(self)
         local sideContent, mainContent = self.sideContent, self.mainContent
         sideContent:ReleaseChildren()
-        wipe(self.objectives)
+        wipe(self.objectives.selected)
+        wipe(self.objectives.children)
 
         local filter = self.objectiveSearchBox:GetText()
         for objectiveTitle, objective in addon.pairs(FarmingBar.db.global.objectives) do
@@ -46,9 +83,10 @@ local methods_ObjectiveBuilder = {
                 button:SetFullWidth(true)
                 button:SetText(objectiveTitle)
                 button:SetIcon(addon:GetIcon(objectiveTitle))
-                button:SetContainer(self, self.objectives)
+                button:SetContainer(self.objectives)
+                button:SetMenu(menu)
                 sideContent:AddChild(button)
-                tinsert(self.objectives, {objectiveTitle = objectiveTitle, button = button})
+                tinsert(self.objectives.children, {objectiveTitle = objectiveTitle, button = button})
 
                 ------------------------------------------------------------
 
@@ -57,6 +95,8 @@ local methods_ObjectiveBuilder = {
                 button:SetCallback("OnDragStop", function(self, event, ...) addon.DragFrame:Clear() end)
             end
         end
+
+        addon:LoadObjectiveTab()
     end,
 
     ["Release"] = function(self)
@@ -64,7 +104,7 @@ local methods_ObjectiveBuilder = {
     end,
 
     ["UpdateObjectiveIcon"] = function(self, objectiveTitle)
-        for _, objective in pairs(self.objectives) do
+        for _, objective in pairs(self.objectives.children) do
             if objective.objectiveTitle == objectiveTitle then
                 objective.button:SetIcon(addon:GetIcon(objectiveTitle))
             end
@@ -93,7 +133,7 @@ function addon:Initialize_ObjectiveBuilder()
     ObjectiveBuilder:Hide()
     self.ObjectiveBuilder = ObjectiveBuilder
 
-    ObjectiveBuilder.objectives = {}
+    ObjectiveBuilder.objectives = {children = {}, selected = {}}
     for method, func in pairs(methods_ObjectiveBuilder) do
         ObjectiveBuilder[method] = func
     end

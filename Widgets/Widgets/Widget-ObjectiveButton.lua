@@ -11,12 +11,18 @@ if not AceGUI or (AceGUI:GetWidgetVersion(Type) or 0) >= Version then return end
 
 local pairs, tinsert, tremove, wipe = pairs, table.insert, table.remove, table.wipe
 
-local PlaySound, CreateFrame, UIParent = PlaySound, CreateFrame, UIParent
+local PlaySound, CreateFrame, UIParent, EasyMenu = PlaySound, CreateFrame, UIParent, EasyMenu
 
 --*------------------------------------------------------------------------
 
 local function Button_OnClick(frame, ...)
-    local loadPrevious = frame.obj:ToggleSelected()
+    local buttonClicked = (select(1, ...))
+    if buttonClicked == "RightButton" then
+        addon.MenuFrame = addon.MenuFrame or CreateFrame("Frame", "FarmingBarMenuFrame", UIParent, "UIDropDownMenuTemplate")
+        EasyMenu(frame.obj.menu, addon.MenuFrame, frame, 0, 0, "MENU")
+    end
+
+    local loadPrevious = frame.obj:ToggleSelected(buttonClicked == "RightButton")
 
     if not loadPrevious then
         AceGUI:ClearFocus()
@@ -51,6 +57,9 @@ local methods = {
 		self:SetHeight(35)
 		self:SetWidth(200)
 		self:SetDisabled(false)
+		self:SetIcon()
+		self:SetMenu()
+		self:SetSelected(false)
 		self:SetAutoWidth(false)
 		self:SetText()
 	end,
@@ -80,10 +89,23 @@ local methods = {
 
     ------------------------------------------------------------
 
-    ["SetContainer"] = function(self, container, children)
+    ["CacheSelected"] = function(self, selectedButton)
+        local selected = self.container and self.container.selected
+        if not selected then return end
+
+        for _, objective in pairs(selected) do
+            if objective == selectedButton then
+                return
+            end
+        end
+
+        tinsert(selected, selectedButton)
+    end,
+
+    ["SetContainer"] = function(self, container)
         self.container = container
-        self.container.selected = {}
-        self.container.children = children or {}
+        self.container.selected = container.selected or {}
+        self.container.children = container.children or {}
     end,
 
     ["SetHighlight"] = function(self, selected)
@@ -98,12 +120,16 @@ local methods = {
         self.icon:SetTexture(icon or 134400)
     end,
 
+    ["SetMenu"] = function(self, menu)
+        self.menu = menu
+    end,
+
     ["SetSelected"] = function(self, selected)
         self.selected = selected
         self:SetHighlight(selected)
     end,
 
-    ["ToggleSelected"] = function(self)
+    ["ToggleSelected"] = function(self, openedContext)
         local container = self.container and self.container.children
         local selected = self.container and self.container.selected
 
@@ -119,18 +145,21 @@ local methods = {
                     end
                 end
 
-                local offset = (first < target) and 1 or -1
-                for i = first + offset, target - offset, offset do
-                    container[i].button:SetSelected(true)
+                if first and target then
+                    local offset = (first < target) and 1 or -1
+                    for i = first + offset, target - offset, offset do
+                        container[i].button:SetSelected(true)
+                        self:CacheSelected(container[i].button)
+                    end
                 end
             elseif IsControlKeyDown() then
                 local key = addon.GetTableKey(selected, self)
-                if key and #selected > 1 then
+                if key and #selected > 1 and not openedContext then
                     self:SetSelected(false)
                     tremove(selected, key)
                     return true -- trigger to load the last selected button
                 end
-            else
+            elseif not openedContext then
                 for key, objective in pairs(container) do
                     objective.button:SetSelected(false)
                 end
@@ -140,7 +169,7 @@ local methods = {
 
         self:SetSelected(self.selected and false or true)
         if selected and self.selected then
-            tinsert(selected, self)
+            self:CacheSelected(self)
         end
     end,
 }

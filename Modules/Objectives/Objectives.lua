@@ -2,7 +2,38 @@ local addonName, addon = ...
 local FarmingBar = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
 local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 
+local pairs = pairs
+local type = type
+
 --*------------------------------------------------------------------------
+
+function addon:DeleteObjective(objectiveTitle)
+    if type(objectiveTitle) == "table" then
+        for _, objective in pairs(objectiveTitle) do
+            FarmingBar.db.global.objectives[objective.frame:GetText()] = nil
+        end
+    else
+        FarmingBar.db.global.objectives[objectiveTitle] = nil
+    end
+
+    addon.ObjectiveBuilder:LoadObjectives()
+end
+
+function addon:DeleteSelectedObjectives()
+    local selected = addon.ObjectiveBuilder.objectives.selected
+    if #selected > 1 then
+        local dialog = StaticPopup_Show("FARMINGBAR_CONFIRM_DELETE_MULTIPLE_OBJECTIVES", #selected)
+        if dialog then
+            dialog.data = selected
+        end
+    else
+        local objectiveTitle = selected[1].frame:GetText()
+        local dialog = StaticPopup_Show("FARMINGBAR_CONFIRM_DELETE_OBJECTIVE", objectiveTitle)
+        if dialog then
+            dialog.data = objectiveTitle
+        end
+    end
+end
 
 function addon:GetIcon(objectiveTitle)
     local objectiveInfo = FarmingBar.db.global.objectives[objectiveTitle]
@@ -42,3 +73,31 @@ function addon:ValidateTracker(trackerType, trackerID)
         return GetCurrencyInfo(trackerID) ~= "" and GetCurrencyInfo(trackerID)
     end
 end
+
+--*------------------------------------------------------------------------
+
+StaticPopupDialogs["FARMINGBAR_CONFIRM_DELETE_MULTIPLE_OBJECTIVES"] = {
+    text = "You are about to delete %d objectives. Do you want to continue?",
+    button1 = YES,
+    button2 = NO,
+    OnAccept = function(_, selected)
+        addon:DeleteObjective(selected)
+    end,
+    timeout = 0,
+    whileDead = true,
+    hideOnEscape = true,
+    preferredIndex = 3
+}
+
+StaticPopupDialogs["FARMINGBAR_CONFIRM_DELETE_OBJECTIVE"] = {
+    text = "You are about to delete the objective \"%s\". Do you want to continue?",
+    button1 = YES,
+    button2 = NO,
+    OnAccept = function(_, objectiveTitle)
+        addon:DeleteObjective(objectiveTitle)
+    end,
+    timeout = 0,
+    whileDead = true,
+    hideOnEscape = true,
+    preferredIndex = 3
+}
