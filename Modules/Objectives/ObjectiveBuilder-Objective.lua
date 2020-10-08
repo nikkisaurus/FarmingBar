@@ -89,6 +89,23 @@ function addon:LoadObjectiveTab(objectiveTitle)
 
     ------------------------------------------------------------
 
+    local title = AceGUI:Create("Label")
+    title:SetFullWidth(true)
+    title:SetText(objectiveTitle)
+    title:SetFontObject(GameFontNormalLarge)
+    title:SetImageSize(20, 20)
+    title:SetImage(addon:GetIcon(objectiveTitle))
+    mainContent:AddChild(title)
+
+    ------------------------------------------------------------
+
+    local spacer_enabled = AceGUI:Create("Label")
+    spacer_enabled:SetFullWidth(true)
+    spacer_enabled:SetText(" ")
+    mainContent:AddChild(spacer_enabled)
+
+    ------------------------------------------------------------
+
     local enabled = AceGUI:Create("CheckBox")
     enabled:SetFullWidth(true)
     enabled:SetValue(objectiveInfo.enabled)
@@ -158,7 +175,7 @@ function addon:LoadObjectiveTab(objectiveTitle)
         },
         {"CURRENCY", "ITEM", "NONE"}
     )
-    displayRefTrackerType:SetValue(objectiveInfo.displayRef.trackerType)
+    displayRefTrackerType:SetValue(objectiveInfo.displayRef.trackerType or "NONE")
     mainContent:AddChild(displayRefTrackerType)
 
     displayRefTrackerType:SetCallback("OnValueChanged", function(_, _, selected) displayRefTrackerType_OnValueChanged(objectiveTitle, selected) end)
@@ -168,7 +185,7 @@ function addon:LoadObjectiveTab(objectiveTitle)
     if objectiveInfo.displayRef.trackerType then
         local displayRefTrackerID = AceGUI:Create("EditBox")
         displayRefTrackerID:SetFullWidth(true)
-        displayRefTrackerID:SetLabel(addon:GetTrackerTypeLabel(objectiveInfo.displayRef.trackerType))
+        displayRefTrackerID:SetLabel(GetTrackerTypeLabel(objectiveInfo.displayRef.trackerType))
         displayRefTrackerID:SetText(objectiveInfo.displayRef.trackerID or "")
         mainContent:AddChild(displayRefTrackerID)
 
