@@ -117,7 +117,10 @@ local methods = {
         end
 
         if objectiveTitle then
-            addon.ObjectiveBuilder:GetObjectiveButtonByTitle(objectiveTitle).frame:Click()
+            local button = addon.ObjectiveBuilder:GetObjectiveButtonByTitle(objectiveTitle)
+            if button then
+                button.frame:Click()
+            end
         else
             mainContainer:ReleaseChildren()
         end
