@@ -169,31 +169,3 @@ function addon:ValidateTracker(trackerType, trackerID)
         return GetCurrencyInfo(trackerID) ~= "" and GetCurrencyInfo(trackerID)
     end
 end
-
---*------------------------------------------------------------------------
-
-StaticPopupDialogs["FARMINGBAR_CONFIRM_DELETE_MULTIPLE_OBJECTIVES"] = {
-    text = "You are about to delete %d objectives. Do you want to continue?",
-    button1 = YES,
-    button2 = NO,
-    OnAccept = function(_, selected)
-        addon:DeleteObjective(selected)
-    end,
-    timeout = 0,
-    whileDead = true,
-    hideOnEscape = true,
-    preferredIndex = 3
-}
-
-StaticPopupDialogs["FARMINGBAR_CONFIRM_DELETE_OBJECTIVE"] = {
-    text = "You are about to delete the objective \"%s\". Do you want to continue?",
-    button1 = YES,
-    button2 = NO,
-    OnAccept = function(_, objectiveTitle)
-        addon:DeleteObjective(objectiveTitle)
-    end,
-    timeout = 0,
-    whileDead = true,
-    hideOnEscape = true,
-    preferredIndex = 3
-}

@@ -137,11 +137,7 @@ local methods = {
     end,
 
     ["UpdateObjectiveIcon"] = function(self, objectiveTitle)
-        for _, objective in pairs(self.objectives.children) do
-            if objective.objectiveTitle == objectiveTitle then
-                objective.button:SetIcon(addon:GetIcon(objectiveTitle))
-            end
-        end
+        self:GetObjectiveButtonByTitle(objectiveTitle):SetIcon(addon:GetIcon(objectiveTitle))
     end,
 }
 

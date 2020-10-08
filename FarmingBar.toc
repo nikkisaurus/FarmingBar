@@ -40,6 +40,7 @@ Locales\Locale-enUS.lua
 # Core
 Core.lua
 Database.lua
+StaticPopup.lua
 
 # Widgets
 Widgets\FarmingBar.xml
@@ -53,9 +54,12 @@ Modules\Skins.lua
 Modules\Bars.lua
 Modules\Buttons.lua
 Modules\DragFrame.lua
-Modules\Objectives\Objectives.lua
-Modules\Objectives\ObjectiveBuilder.lua
-Modules\Objectives\ObjectiveBuilder-Objective.lua
+
+#Objectives
+Objectives\Objectives.lua
+Objectives\Trackers.lua
+Objectives\ObjectiveBuilder.lua
+Objectives\ObjectiveBuilder-Objective.lua
 
 # Options
 Options\Commands.lua
