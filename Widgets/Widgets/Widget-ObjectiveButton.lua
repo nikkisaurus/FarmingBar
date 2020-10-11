@@ -25,13 +25,12 @@ local function Button_OnClick(frame, ...)
         PlaySound(852) -- SOUNDKIT.IG_MAINMENU_OPTION
         frame.obj:Fire("OnClick", ...)
     else
-        frame.obj.container.selected[#frame.obj.container.selected].frame.obj:Fire("OnClick", ...)
+        frame.obj.statustable.selected[#frame.obj.statustable.selected].frame.obj:Fire("OnClick", ...)
     end
 
     if buttonClicked == "RightButton" then
-        local menu = frame.obj.container and #frame.obj.container.selected > 1 and frame.obj.menuAll or frame.obj.menu
         addon.MenuFrame = addon.MenuFrame or CreateFrame("Frame", "FarmingBarMenuFrame", UIParent, "UIDropDownMenuTemplate")
-        EasyMenu(menu, addon.MenuFrame, frame, 0, 0, "MENU")
+        EasyMenu(frame.obj:GetMenu(), addon.MenuFrame, frame, 0, 0, "MENU")
     end
 end
 
@@ -60,9 +59,9 @@ local function EditBox_OnEnterPressed(frame)
     addon:RenameObjective(frame.obj:GetObjectiveTitle(), frame:GetText())
     frame:Hide()
 
-    local container = frame.obj.container.children
-    if not container then return end
-    for _, objective in pairs(container) do
+    local statustable = frame.obj.statustable.children
+    if not statustable then return end
+    for _, objective in pairs(statustable) do
         local editbox = objective.button.editbox
         if editbox:IsVisible() then
             editbox:SetFocus()
@@ -92,8 +91,7 @@ local methods = {
 		self:SetWidth(200)
 		self:SetDisabled(false)
 		self:SetIcon()
-		self:SetMenu()
-		self:SetMenuAll()
+		self:SetMenuFunc()
 		self:SetSelected(false)
 		self:SetAutoWidth(false)
 		self:SetText()
@@ -125,7 +123,7 @@ local methods = {
     ------------------------------------------------------------
 
     ["CacheSelected"] = function(self, selectedButton)
-        local selected = self.container and self.container.selected
+        local selected = self.statustable and self.statustable.selected
         if not selected then return end
 
         for _, objective in pairs(selected) do
@@ -137,6 +135,10 @@ local methods = {
         tinsert(selected, selectedButton)
     end,
 
+    ["GetMenu"] = function(self)
+        return self.menuFunc()
+    end,
+
     ["GetObjectiveTitle"] = function(self)
         return self.frame:GetText()
     end,
@@ -146,10 +148,10 @@ local methods = {
         self.editbox:Show()
     end,
 
-    ["SetContainer"] = function(self, container)
-        self.container = container
-        self.container.selected = container.selected or {}
-        self.container.children = container.children or {}
+    ["SetStatus"] = function(self, statustable)
+        self.statustable = statustable
+        self.statustable.selected = statustable.selected or {}
+        self.statustable.children = statustable.children or {}
     end,
 
     ["SetHighlight"] = function(self, selected)
@@ -164,13 +166,13 @@ local methods = {
         self.icon:SetTexture(icon or 134400)
     end,
 
-    ["SetMenu"] = function(self, menu)
-        self.menu = menu
+    ["SetMenuFunc"] = function(self, menuFunc)
+        self.menuFunc = menuFunc
     end,
 
-    ["SetMenuAll"] = function(self, menu)
-        self.menuAll = menu
-    end,
+    -- ["SetMenuFuncAll"] = function(self, menu)
+    --     self.menuAll = menu
+    -- end,
 
     ["SetSelected"] = function(self, selected)
         self.selected = selected
@@ -178,14 +180,14 @@ local methods = {
     end,
 
     ["ToggleSelected"] = function(self, openedContext)
-        local container = self.container and self.container.children
-        local selected = self.container and self.container.selected
+        local statustable = self.statustable and self.statustable.children
+        local selected = self.statustable and self.statustable.selected
 
-        if container then
+        if statustable then
             if IsShiftKeyDown() then
                 local first, target
 
-                for key, objective in pairs(container) do
+                for key, objective in pairs(statustable) do
                     if objective.button == selected[#selected] then
                         first = key
                     elseif objective.button == self then
@@ -196,8 +198,8 @@ local methods = {
                 if first and target then
                     local offset = (first < target) and 1 or -1
                     for i = first + offset, target - offset, offset do
-                        container[i].button:SetSelected(true)
-                        self:CacheSelected(container[i].button)
+                        statustable[i].button:SetSelected(true)
+                        self:CacheSelected(statustable[i].button)
                     end
                 end
             elseif IsControlKeyDown() then
@@ -208,7 +210,7 @@ local methods = {
                     return true -- trigger to load the last selected button
                 end
             elseif not openedContext or not self.selected then
-                for key, objective in pairs(container) do
+                for key, objective in pairs(statustable) do
                     objective.button:SetSelected(false)
                 end
                 wipe(selected)

@@ -16,6 +16,7 @@ function addon:Initialize_DB()
             },
             debug = {
                 ObjectiveBuilder = true,
+                ObjectiveBuilderTrackers = true,
             },
 
             objectives = {},

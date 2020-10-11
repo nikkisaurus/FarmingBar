@@ -10,6 +10,7 @@ local GetCursorInfo, ClearCursor = GetCursorInfo, ClearCursor
 --*------------------------------------------------------------------------
 
 function addon:CreateObjective(objectiveTitle, objectiveInfo, suppressLoad, finished, fromCursor)
+    -- Create objective from cursor
     if fromCursor then
         local cursorType, cursorID = GetCursorInfo()
         if cursorType == "item" then
@@ -41,6 +42,8 @@ function addon:CreateObjective(objectiveTitle, objectiveInfo, suppressLoad, fini
         end
     end
 
+    ------------------------------------------------------------
+
     local defaultTitle = L["New"]
     local defaultInfo = {
         ["enabled"] = true,
@@ -55,14 +58,14 @@ function addon:CreateObjective(objectiveTitle, objectiveInfo, suppressLoad, fini
         ["trackers"] = {},
     }
 
-    local newObjective = FarmingBar.db.global.objectives[objectiveTitle or defaultTitle]
+    local newObjective = addon:GetObjectiveInfo(objectiveTitle or defaultTitle)
 
     local newObjectiveTitle
     if newObjective then
         local i = 2
         while not newObjectiveTitle do
             local title = string.format("%s %d", objectiveTitle or defaultTitle, i)
-            if not FarmingBar.db.global.objectives[title] then
+            if not addon:GetObjectiveInfo(title) then
                 newObjectiveTitle = title
             else
                 i = i + 1
@@ -77,36 +80,6 @@ function addon:CreateObjective(objectiveTitle, objectiveInfo, suppressLoad, fini
         self.ObjectiveBuilder:LoadObjectives(newObjectiveTitle)
     end
     return newObjectiveTitle
-end
-
-function addon:CreateObjectiveFromCursor()
-    local cursorType, cursorID = GetCursorInfo()
-    if cursorType == "item" then
-        ClearCursor()
-        self:CacheItem(cursorID, function(itemID)
-            local newObjective = self:CreateObjective((select(1, GetItemInfo(itemID))), {
-                ["enabled"] = true,
-                ["autoIcon"] = true,
-                ["icon"] = C_Item.GetItemIconByID(itemID),
-                ["displayRef"] = {
-                    ["trackerType"] = "ITEM",
-                    ["trackerID"] = itemID,
-                },
-                ["trackCondition"] = "ALL",
-                ["trackFunc"] = "",
-                ["trackers"] = {
-                    {
-                        ["objective"] = 0,
-                        ["exclude"] = {},
-                        ["includeAllChars"] = false,
-                        ["trackerID"] = itemID,
-                        ["includeBank"] = false,
-                        ["trackerType"] = "ITEM",
-                    }
-                },
-            })
-        end, cursorID)
-    end
 end
 
 ------------------------------------------------------------
@@ -124,7 +97,7 @@ function addon:DeleteObjective(objectiveTitle)
 end
 
 function addon:DeleteSelectedObjectives()
-    local selected = self.ObjectiveBuilder.objectives.selected
+    local selected = self.ObjectiveBuilder.status.selected
     if #selected > 1 then
         local dialog = StaticPopup_Show("FARMINGBAR_CONFIRM_DELETE_MULTIPLE_OBJECTIVES", #selected)
         if dialog then
@@ -141,8 +114,8 @@ end
 
 ------------------------------------------------------------
 
-function addon:GetIcon(objectiveTitle)
-    local objectiveInfo = FarmingBar.db.global.objectives[objectiveTitle]
+function addon:GetObjectiveIcon(objectiveTitle)
+    local objectiveInfo = addon:GetObjectiveInfo(objectiveTitle)
 
     local icon
     if objectiveInfo.autoIcon then
@@ -172,10 +145,14 @@ function addon:GetIcon(objectiveTitle)
     return icon
 end
 
+function addon:GetObjectiveInfo(objectiveTitle)
+    return FarmingBar.db.global.objectives[objectiveTitle]
+end
+
 ------------------------------------------------------------
 
 function addon:RenameObjective(objectiveTitle, newObjectiveTitle)
-    if FarmingBar.db.global.objectives[newObjectiveTitle] then
+    if addon:GetObjectiveInfo(newObjectiveTitle) then
         print("ERROR") -- TODO: Show StaticPopup to confirm overwrite OR reselect and reset
         return
     end
@@ -188,10 +165,13 @@ end
 
 ------------------------------------------------------------
 
-function addon:ValidateTracker(trackerType, trackerID)
-    if trackerType == "ITEM" then
-        return (GetItemInfoInstant(trackerID))
-    elseif trackerType == "CURRENCY" then
-        return GetCurrencyInfo(trackerID) ~= "" and GetCurrencyInfo(trackerID)
+function addon:SetObjectiveDBInfo(objectiveTitle, key, value)
+    local keys = {strsplit(".", key)}
+    local path = FarmingBar.db.global.objectives[objectiveTitle]
+    for k, key in pairs(keys) do
+        if k < #keys then
+            path = path[key]
+        end
     end
+    path[keys[#keys]] = value
 end

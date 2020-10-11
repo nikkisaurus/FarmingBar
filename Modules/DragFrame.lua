@@ -28,7 +28,7 @@ local methods = {
 
     Load = function(self, objectiveTitle)
         self.selected = objectiveTitle
-        self.icon:SetTexture(addon:GetIcon(objectiveTitle))
+        self.icon:SetTexture(addon:GetObjectiveIcon(objectiveTitle))
         self.text:SetText(objectiveTitle)
         self:Show()
     end,

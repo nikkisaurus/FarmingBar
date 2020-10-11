@@ -6,82 +6,69 @@ local AceGUI = LibStub("AceGUI-3.0", true)
 local tinsert, pairs, wipe = table.insert, pairs, table.wipe
 local strfind, strupper = string.find, string.upper
 
-local tContains, CreateFrame, UIParent = tContains, CreateFrame, UIParent
-
 --*------------------------------------------------------------------------
 
 local function ObjectiveButton_OnClick(objectiveTitle)
-    addon:DrawTabs()
+    addon:ObjectiveBuilder_DrawTabs()
     addon.ObjectiveBuilder.mainContent:SelectObjective(objectiveTitle)
 end
 
 --*------------------------------------------------------------------------
 
-local menu = {
-    {
-        text = L["Rename"],
-        notCheckable = true,
-        func = function(self) addon.ObjectiveBuilder.objectives.selected[1]:RenameObjective() end,
-    },
-    {
-        text = L["Duplicate"],
-        notCheckable = true,
-        func = function(self)
-            local objectiveTitle = addon.ObjectiveBuilder.objectives.selected[1]:GetObjectiveTitle()
-            addon:CreateObjective(objectiveTitle, FarmingBar.db.global.objectives[objectiveTitle])
-        end,
-    },
-    {
-        text = L["Export"],
-        disabled = true,
-        notCheckable = true,
-        func = function() end,
-    },
-    {text = "", notCheckable = true, notClickable = true},
-    {
-        text = L["Delete"],
-        notCheckable = true,
-        func = function() addon:DeleteSelectedObjectives() end,
-    },
-    {text = "", notCheckable = true, notClickable = true},
-    {
-        text = L["Close"],
-        notCheckable = true,
-    },
-}
+local function GetObjectiveContextMenu()
+    local selected = addon.ObjectiveBuilder.status.selected
+    local multiSelected = #selected > 1
 
-local menuAll = {
-    {
-        text = L["Duplicate All"],
-        notCheckable = true,
-        func = function(self)
-            local selected = addon.ObjectiveBuilder.objectives.selected
-            for key, objective in pairs(selected) do
-                local objectiveTitle = objective:GetObjectiveTitle()
-                local newObjectiveTitle = addon:CreateObjective(objectiveTitle, FarmingBar.db.global.objectives[objectiveTitle], true, key == #selected)
-            end
-        end,
-    },
-    {text = "", notCheckable = true, notClickable = true},
-    {
-        text = L["Delete All"],
-        notCheckable = true,
-        func = function() addon:DeleteSelectedObjectives() end,
-    },
-    {text = "", notCheckable = true, notClickable = true},
-    {
-        text = L["Close"],
-        notCheckable = true,
-    },
-}
+    local menu = {
+        {
+            text = multiSelected and L["Duplicate All"] or L["Duplicate"],
+            notCheckable = true,
+            func = function(self)
+                for key, objective in pairs(selected) do
+                    local objectiveTitle = objective:GetObjectiveTitle()
+                    addon:CreateObjective(objectiveTitle, addon:GetObjectiveInfo(objectiveTitle), multiSelected and true, multiSelected and key == #selected)
+                end
+            end,
+        },
+        {text = "", notCheckable = true, notClickable = true},
+        {
+            text = multiSelected and L["Delete All"] or L["Delete"],
+            notCheckable = true,
+            func = function() addon:DeleteSelectedObjectives() end,
+        },
+        {text = "", notCheckable = true, notClickable = true},
+        {
+            text = L["Close"],
+            notCheckable = true,
+        }
+    }
+
+    if not multiSelected then
+        tinsert(menu, 1, {
+            text = L["Rename"],
+            notCheckable = true,
+            func = function(self) selected[1]:RenameObjective() end,
+        })
+        tinsert(menu, 3, {
+            text = L["Export"],
+            disabled = true,
+            notCheckable = true,
+            func = function() end,
+        })
+    end
+
+    return menu
+end
+
+--*------------------------------------------------------------------------
 
 local methods = {
     ["GetSelectedObjective"] = function(self)
-        return self.mainContent.objectiveTitle
+        return self.status.objectiveTitle
     end,
 
     ["GetObjectiveButtonByTitle"] = function(self, objectiveTitle)
-        for key, objective in pairs(self.objectives.children) do
+        for key, objective in pairs(self.status.children) do
             if objective.objectiveTitle == objectiveTitle then
                 return objective.button
             end
@@ -96,8 +83,8 @@ local methods = {
     ["LoadObjectives"] = function(self, objectiveTitle)
         local sideContent, mainPanel, mainContent = self.sideContent, self.mainPanel, self.mainContent
         sideContent:ReleaseChildren()
-        wipe(self.objectives.selected)
-        wipe(self.objectives.children)
+        wipe(self.status.selected)
+        wipe(self.status.children)
 
         local filter = self.objectiveSearchBox:GetText()
         for objectiveTitle, objective in addon.pairs(FarmingBar.db.global.objectives) do
@@ -105,12 +92,11 @@ local methods = {
                 local button = AceGUI:Create("FB30_ObjectiveButton")
                 button:SetFullWidth(true)
                 button:SetText(objectiveTitle)
-                button:SetIcon(addon:GetIcon(objectiveTitle))
-                button:SetContainer(self.objectives)
-                button:SetMenu(menu)
-                button:SetMenuAll(menuAll)
+                button:SetIcon(addon:GetObjectiveIcon(objectiveTitle))
+                button:SetStatus(self.status)
+                button:SetMenuFunc(GetObjectiveContextMenu)
                 sideContent:AddChild(button)
-                tinsert(self.objectives.children, {objectiveTitle = objectiveTitle, button = button})
+                tinsert(self.status.children, {objectiveTitle = objectiveTitle, button = button})
 
                 ------------------------------------------------------------
 
@@ -135,11 +121,11 @@ local methods = {
     end,
 
     ["UpdateObjectiveIcon"] = function(self, objectiveTitle)
-        self:GetObjectiveButtonByTitle(objectiveTitle):SetIcon(addon:GetIcon(objectiveTitle))
+        self:GetObjectiveButtonByTitle(objectiveTitle):SetIcon(addon:GetObjectiveIcon(objectiveTitle))
     end,
 }
 
---*------------------------------------------------------------------------
+------------------------------------------------------------
 
 function addon:Initialize_ObjectiveBuilder()
     local ObjectiveBuilder = AceGUI:Create("FB30_Window")
@@ -148,8 +134,8 @@ function addon:Initialize_ObjectiveBuilder()
     ObjectiveBuilder:SetLayout("FB30_2RowSplitBottom")
     ObjectiveBuilder:Hide()
     self.ObjectiveBuilder = ObjectiveBuilder
+    ObjectiveBuilder.status = {children = {}, selected = {}}
 
-    ObjectiveBuilder.objectives = {children = {}, selected = {}}
     for method, func in pairs(methods) do
         ObjectiveBuilder[method] = func
     end
@@ -234,7 +220,24 @@ function addon:Initialize_ObjectiveBuilder()
     --Debug-----------------------------------------------------
     ------------------------------------------------------------
     if FarmingBar.db.global.debug.ObjectiveBuilder then
-        C_Timer.After(1, function() ObjectiveBuilder:Load() end)
+        C_Timer.After(1, function()
+            ObjectiveBuilder:Load()
+
+            if FarmingBar.db.global.debug.ObjectiveBuilderTrackers then
+                addon.ObjectiveBuilder:Load()
+                for _, objective in pairs(addon.ObjectiveBuilder.status.children) do
+                    objective.button:Fire("OnClick")
+                    addon.ObjectiveBuilder.mainContent:SelectTab("trackersTab")
+                    -- TODO: Load trackers info for testing
+                    -- for _, tracker in pairs(addon.ObjectiveBuilder.trackerList.trackers.children) do
+                    --     tracker.button:Fire("OnClick")
+                    --     addon:LoadTrackersInfo(objective.objectiveTitle, tracker)
+                    --     break
+                    -- end
+                    break
+                end
+            end
+        end)
     end
     ------------------------------------------------------------
     ------------------------------------------------------------
