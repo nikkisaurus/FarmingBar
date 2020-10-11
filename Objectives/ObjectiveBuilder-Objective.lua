@@ -11,14 +11,14 @@ local gsub = string.gsub
 local function autoIcon_OnValueChanged(self)
     addon:SetObjectiveDBInfo(addon.ObjectiveBuilder:GetSelectedObjective(), "autoIcon", self:GetValue())
 
-    addon.ObjectiveBuilder.mainContent:Refresh("Objective")
+    addon.ObjectiveBuilder.mainContent:Refresh("objectiveTab")
 end
 
 local function displayIcon_OnEnterPressed(self)
     addon:SetObjectiveDBInfo(addon.ObjectiveBuilder:GetSelectedObjective(), "icon", self:GetText())
     self:ClearFocus()
 
-    addon.ObjectiveBuilder.mainContent:Refresh("Objective")
+    addon.ObjectiveBuilder.mainContent:Refresh("objectiveTab")
 end
 
 local function displayRefHelp_OnClick(mainContent, label)
@@ -52,7 +52,7 @@ local function displayRefTrackerID_OnEnterPressed(self)
         self:SetText(objectiveInfo.displayRef.trackerID)
         self:ClearFocus()
 
-        ObjectiveBuilder.mainContent:Refresh("Objective")
+        ObjectiveBuilder.mainContent:Refresh("objectiveTab")
     else
         self:SetText("")
         self:SetFocus()
@@ -71,7 +71,7 @@ local function displayRefTrackerType_OnValueChanged(selected)
         addon:SetObjectiveDBInfo(objectiveTitle, "displayRef.trackerType", selected)
     end
 
-    ObjectiveBuilder.mainContent:Refresh("Objective")
+    ObjectiveBuilder.mainContent:Refresh("objectiveTab")
 end
 
 local function mainTabGroup_OnGroupSelected(self, selected)
@@ -96,7 +96,7 @@ local function trackCondition_OnValueChanged(selected)
 
     addon:SetObjectiveDBInfo(ObjectiveBuilder:GetSelectedObjective(), "trackCondition", selected)
 
-    ObjectiveBuilder.mainContent:Refresh("Condition")
+    ObjectiveBuilder.mainContent:Refresh("conditionTab")
 end
 
 local function trackFunc_OnEnterPressed(self)
@@ -123,8 +123,9 @@ local methods = {
         local ObjectiveBuilder = addon.ObjectiveBuilder
 
         ObjectiveBuilder:UpdateObjectiveIcon(ObjectiveBuilder:GetSelectedObjective())
+
         if reloadTab then
-            addon["ObjectiveBuilder_Load"..reloadTab.."Tab"](addon, ObjectiveBuilder:GetSelectedObjective())
+            self:SelectTab(reloadTab)
         end
     end,
 
