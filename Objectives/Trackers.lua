@@ -6,20 +6,45 @@ local AceGUI = LibStub("AceGUI-3.0", true)
 --*------------------------------------------------------------------------
 
 local function trackerID_OnEnterPressed(self)
+
     local ObjectiveBuilder = addon.ObjectiveBuilder
     local objectiveTitle = ObjectiveBuilder:GetSelectedObjective()
     local tracker = ObjectiveBuilder:GetSelectedTracker()
     local trackerInfo = addon:GetTrackerInfo(objectiveTitle, tracker)
-    local validTrackerID = addon:ValidateObjectiveData(trackerInfo.trackerType, self:GetText())
-
-    if validTrackerID or self:GetText() == "" then
-        addon:SetTrackerDBInfo(objectiveTitle, tracker, "trackerID", trackerInfo.trackerType == "ITEM" and validTrackerID or tonumber(self:GetText()))
-
-        self:SetText(trackerInfo.trackerID)
+    if not self:GetText() or self:GetText() == "" then
+        addon:SetTrackerDBInfo(objectiveTitle, tracker, "trackerID", "")
         self:ClearFocus()
 
         ObjectiveBuilder:UpdateTrackerButton(tracker)
         ObjectiveBuilder.mainContent:Refresh("trackerTab")
+        return
+    end
+    local validTrackerID = addon:ValidateObjectiveData(trackerInfo.trackerType, self:GetText())
+
+    if validTrackerID or self:GetText() == "" then
+        local newTrackerID = trackerInfo.trackerType == "ITEM" and validTrackerID or tonumber(self:GetText())
+
+        local trackerIDExists
+        for _, tracker in pairs(FarmingBar.db.global.objectives[ObjectiveBuilder:GetSelectedObjective()].trackers) do
+            if tracker.trackerID == newTrackerID then
+                trackerIDExists = true
+                break
+            end
+        end
+
+        if trackerIDExists then
+            self:SetText(trackerInfo.trackerID)
+            self:HighlightText()
+            self:SetFocus()
+        else
+            addon:SetTrackerDBInfo(objectiveTitle, tracker, "trackerID", newTrackerID)
+
+            self:SetText(trackerInfo.trackerID)
+            self:ClearFocus()
+
+            ObjectiveBuilder:UpdateTrackerButton(tracker)
+            ObjectiveBuilder.mainContent:Refresh("trackerTab")
+        end
     else
         self:SetText(trackerInfo.trackerID)
         self:HighlightText()
@@ -53,6 +78,33 @@ local function trackerType_OnValueChanged(selected)
 end
 
 --*------------------------------------------------------------------------
+
+function addon:CreateTracker()
+    local ObjectiveBuilder = self.ObjectiveBuilder
+    local objectiveTitle = ObjectiveBuilder:GetSelectedObjective()
+    local trackersTable = FarmingBar.db.global.objectives[objectiveTitle].trackers
+    local trackerStatus = ObjectiveBuilder.trackerList.status
+
+    local defaultInfo = {
+        ["trackerType"] = "ITEM",
+        ["trackerID"] = "",
+        ["objective"] = 1,
+        ["includeBank"] = false,
+        ["includeAllChars"] = false,
+        ["exclude"] = {
+        },
+    }
+
+    tinsert(trackersTable, defaultInfo)
+
+    ObjectiveBuilder.mainContent:LoadTrackers()
+    trackerStatus.children[#trackersTable].button.frame:Click()
+    C_Timer.After(.01, function()
+        trackerStatus.trackerID:SetFocus()
+    end)
+end
+
+------------------------------------------------------------
 
 function addon:ObjectiveBuilder_LoadTrackerInfo(tracker)
     local ObjectiveBuilder = self.ObjectiveBuilder
@@ -90,8 +142,9 @@ function addon:ObjectiveBuilder_LoadTrackerInfo(tracker)
     trackerID:SetLabel(self:GetObjectiveDataLabel(trackerInfo.trackerType))
     trackerID:SetText(trackerInfo.trackerID or "")
     tabContent:AddChild(trackerID)
+    ObjectiveBuilder.trackerList.status.trackerID = trackerID
 
-    trackerID:SetCallback("OnEnterPressed", function(self) trackerID_OnEnterPressed(self) end)
+    trackerID:SetCallback("OnEnterPressed", trackerID_OnEnterPressed)
 
     ------------------------------------------------------------
 
@@ -101,7 +154,7 @@ function addon:ObjectiveBuilder_LoadTrackerInfo(tracker)
     trackerObjective:SetText(trackerInfo.objective or "")
     tabContent:AddChild(trackerObjective)
 
-    trackerObjective:SetCallback("OnEnterPressed", function(self) trackerObjective_OnEnterPressed(self) end)
+    trackerObjective:SetCallback("OnEnterPressed", trackerObjective_OnEnterPressed)
 
     ------------------------------------------------------------
     local includeBank = AceGUI:Create("CheckBox")
@@ -110,9 +163,16 @@ function addon:ObjectiveBuilder_LoadTrackerInfo(tracker)
     includeBank:SetValue(trackerInfo.includeBank)
     tabContent:AddChild(includeBank)
 
-    includeBank:SetCallback("OnValueChanged", function(self, event, ...)
-        print("Cow")
-    end)
+    includeBank:SetCallback("OnValueChanged", function(self) addon:SetTrackerDBInfo(addon.ObjectiveBuilder:GetSelectedObjective(), addon.ObjectiveBuilder:GetSelectedTracker(), "includeBank", self:GetValue()) end)
+
+    ------------------------------------------------------------
+    local includeAllChars = AceGUI:Create("CheckBox")
+    includeAllChars:SetFullWidth(true)
+    includeAllChars:SetLabel(L["Include All Characters"])
+    includeAllChars:SetValue(trackerInfo.includeAllChars)
+    tabContent:AddChild(includeAllChars)
+
+    includeAllChars:SetCallback("OnValueChanged", function(self) addon:SetTrackerDBInfo(addon.ObjectiveBuilder:GetSelectedObjective(), addon.ObjectiveBuilder:GetSelectedTracker(), "includeAllChars", self:GetValue()) end)
 end
 
 ------------------------------------------------------------
@@ -167,6 +227,28 @@ end
 
 function addon:GetTrackerInfo(objectiveTitle, tracker)
     return FarmingBar.db.global.objectives[objectiveTitle].trackers[tracker]
+end
+
+------------------------------------------------------------
+
+function addon:DeleteTracker(selected)
+    local ObjectiveBuilder = self.ObjectiveBuilder
+
+    local trackers = {}
+    for k, v in pairs(ObjectiveBuilder.trackerList.status.children) do
+        if v.button.selected then
+            FarmingBar.db.global.objectives[ObjectiveBuilder:GetSelectedObjective()].trackers[k] = nil
+        end
+    end
+
+    -- Reindex trackers table so trackerList buttons aren't messed up
+    for k, v in pairs(FarmingBar.db.global.objectives[ObjectiveBuilder:GetSelectedObjective()].trackers) do
+        tinsert(trackers, v)
+    end
+    FarmingBar.db.global.objectives[ObjectiveBuilder:GetSelectedObjective()].trackers = trackers
+
+    ObjectiveBuilder.mainContent:LoadTrackers()
+    self:ObjectiveBuilder_LoadTrackerInfo()
 end
 
 ------------------------------------------------------------

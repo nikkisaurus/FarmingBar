@@ -44,6 +44,7 @@ L["New"] = true
 -- Modules\Objectives\Trackers.lua
 L["Currency"] = true
 L["Currency ID"] = true
+L["Include All Characters"] = true
 L["Include Bank"] = true
 L["Item"] = true
 L["Item ID/Name/Link"] = true

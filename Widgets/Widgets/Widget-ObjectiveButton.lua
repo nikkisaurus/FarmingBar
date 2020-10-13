@@ -170,10 +170,6 @@ local methods = {
         self.menuFunc = menuFunc
     end,
 
-    -- ["SetMenuFuncAll"] = function(self, menu)
-    --     self.menuAll = menu
-    -- end,
-
     ["SetSelected"] = function(self, selected)
         self.selected = selected
         self:SetHighlight(selected)

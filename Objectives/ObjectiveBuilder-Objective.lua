@@ -127,7 +127,16 @@ end
 --*------------------------------------------------------------------------
 
 local function GetTrackerContextMenu()
+    local selected = addon.ObjectiveBuilder.trackerList.status.selected
+    local multiSelected = #selected > 1
+
     local menu = {
+        {
+            text = multiSelected and L["Delete All"] or L["Delete"],
+            notCheckable = true,
+            func = function() addon:DeleteTracker(selected) end,
+        },
+        {text = "", notCheckable = true, notClickable = true},
         {
             text = L["Close"],
             notCheckable = true,
@@ -276,7 +285,7 @@ function addon:ObjectiveBuilder_LoadObjectiveTab(objectiveTitle)
     autoIcon:SetLabel(L["Automatic Icon"])
     tabContent:AddChild(autoIcon)
 
-    autoIcon:SetCallback("OnValueChanged", function(self) autoIcon_OnValueChanged(self) end)
+    autoIcon:SetCallback("OnValueChanged", autoIcon_OnValueChanged)
 
     ------------------------------------------------------------
 
@@ -286,7 +295,7 @@ function addon:ObjectiveBuilder_LoadObjectiveTab(objectiveTitle)
         displayIcon:SetText(self:GetObjectiveInfo(objectiveTitle).icon)
         tabContent:AddChild(displayIcon, tabContent.displayRef)
 
-        displayIcon:SetCallback("OnEnterPressed", function(self) displayIcon_OnEnterPressed(self) end)
+        displayIcon:SetCallback("OnEnterPressed", displayIcon_OnEnterPressed)
 
         ------------------------------------------------------------
 
@@ -342,7 +351,7 @@ function addon:ObjectiveBuilder_LoadObjectiveTab(objectiveTitle)
         displayRefTrackerID:SetText(objectiveInfo.displayRef.trackerID or "")
         tabContent:AddChild(displayRefTrackerID)
 
-        displayRefTrackerID:SetCallback("OnEnterPressed", function(self) displayRefTrackerID_OnEnterPressed(self) end)
+        displayRefTrackerID:SetCallback("OnEnterPressed", displayRefTrackerID_OnEnterPressed)
     end
 end
 
@@ -445,7 +454,7 @@ function addon:LoadTrackersTab(objectiveTitle)
     newTrackerButton:SetImage(514607)
     topContent:AddChild(newTrackerButton)
 
-    -- newTrackerButton:SetCallback("OnClick", function() addon:CreateObjective(_, _, _, _, true) end)
+    newTrackerButton:SetCallback("OnClick", function() addon:CreateTracker() end)
     -- newTrackerButton:SetCallback("OnReceiveDrag", function() addon:CreateObjective(_, _, _, _, true) end)
 
     ------------------------------------------------------------
