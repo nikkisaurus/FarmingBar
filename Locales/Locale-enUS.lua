@@ -12,20 +12,14 @@ L["Automatic Icon"] = true
 L["Choose"] = true
 L["Condition"] = true
 L["Custom"] = true
-L["Currency"] = true
-L["Currency ID"] = true
 L["Display Reference"] = true
 L["Enabled"] = true
 L["Export"] = true
 L["If"] = true
-L["Item"] = true
-L["Item ID/Name/Link"] = true
 L["New Tracker"] = true
 L["None"] = true
-L["Objective"] = true
 L["Tracker Condition"] = true
 L["Trackers"] = true
-L["Type"] = true
 
 L.DisplayReferenceDescription_Gsub = "/currency"
 L.DisplayReferenceDescription = [[Display References allow you to set which item/currency you want to use for automatic objective information. This includes the icon chosen when using "Automatic Icon" and the item associated with a button's "use" attribute.]]
@@ -46,3 +40,12 @@ L["Tracker"] = true
 
 -- Modules\Objectives\Objectives.lua
 L["New"] = true
+
+-- Modules\Objectives\Trackers.lua
+L["Currency"] = true
+L["Currency ID"] = true
+L["Include Bank"] = true
+L["Item"] = true
+L["Item ID/Name/Link"] = true
+L["Objective"] = true
+L["Type"] = true

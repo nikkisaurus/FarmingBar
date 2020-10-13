@@ -14,12 +14,16 @@ local function autoIcon_OnValueChanged(self)
     addon.ObjectiveBuilder.mainContent:Refresh("objectiveTab")
 end
 
+------------------------------------------------------------
+
 local function displayIcon_OnEnterPressed(self)
     addon:SetObjectiveDBInfo(addon.ObjectiveBuilder:GetSelectedObjective(), "icon", self:GetText())
     self:ClearFocus()
 
     addon.ObjectiveBuilder.mainContent:Refresh("objectiveTab")
 end
+
+------------------------------------------------------------
 
 local function displayRefHelp_OnClick(mainContent, label)
     if label:GetText() and label:GetText() ~= " " then
@@ -38,6 +42,8 @@ local function displayRefHelp_OnClick(mainContent, label)
 
     mainContent:DoLayout()
 end
+
+------------------------------------------------------------
 
 local function displayRefTrackerID_OnEnterPressed(self)
     local ObjectiveBuilder = addon.ObjectiveBuilder
@@ -59,6 +65,8 @@ local function displayRefTrackerID_OnEnterPressed(self)
     end
 end
 
+------------------------------------------------------------
+
 local function displayRefTrackerType_OnValueChanged(selected)
     local ObjectiveBuilder = addon.ObjectiveBuilder
     local objectiveTitle = ObjectiveBuilder:GetSelectedObjective()
@@ -73,6 +81,8 @@ local function displayRefTrackerType_OnValueChanged(selected)
 
     ObjectiveBuilder.mainContent:Refresh("objectiveTab")
 end
+
+------------------------------------------------------------
 
 local function mainTabGroup_OnGroupSelected(self, selected)
     local ObjectiveBuilder = addon.ObjectiveBuilder
@@ -91,6 +101,8 @@ local function mainTabGroup_OnGroupSelected(self, selected)
     end
 end
 
+------------------------------------------------------------
+
 local function trackCondition_OnValueChanged(selected)
     local ObjectiveBuilder = addon.ObjectiveBuilder
 
@@ -99,53 +111,14 @@ local function trackCondition_OnValueChanged(selected)
     ObjectiveBuilder.mainContent:Refresh("conditionTab")
 end
 
+------------------------------------------------------------
+
 local function TrackerButton_OnClick(tracker)
     addon.ObjectiveBuilder.status.tracker = tracker
     addon:ObjectiveBuilder_LoadTrackerInfo(tracker)
 end
 
-local function trackerID_OnEnterPressed(self)
-    local ObjectiveBuilder = addon.ObjectiveBuilder
-    local objectiveTitle = ObjectiveBuilder:GetSelectedObjective()
-    local tracker = ObjectiveBuilder:GetSelectedTracker()
-    local trackerInfo = addon:GetTrackerInfo(objectiveTitle, tracker)
-    local validTrackerID = addon:ValidateObjectiveData(trackerInfo.trackerType, self:GetText())
-
-    if validTrackerID or self:GetText() == "" then
-        addon:SetTrackerDBInfo(objectiveTitle, tracker, "trackerID", trackerInfo.trackerType == "ITEM" and validTrackerID or tonumber(self:GetText()))
-
-        self:SetText(trackerInfo.trackerID)
-        self:ClearFocus()
-
-        ObjectiveBuilder:UpdateTrackerButton(tracker)
-        ObjectiveBuilder.mainContent:Refresh("trackerTab")
-    else
-        self:SetText(trackerInfo.trackerID)
-        self:HighlightText()
-        self:SetFocus()
-    end
-end
-
-local function trackerObjective_OnEnterPressed(self)
-    local ObjectiveBuilder = addon.ObjectiveBuilder
-    local objective = tonumber(self:GetText()) > 0 and tonumber(self:GetText()) or 1
-
-    addon:SetTrackerDBInfo(ObjectiveBuilder:GetSelectedObjective(), ObjectiveBuilder:GetSelectedTracker(), "objective", objective)
-
-    self:SetText(objective)
-    self:ClearFocus()
-end
-
-local function trackerType_OnValueChanged(selected)
-    local ObjectiveBuilder = addon.ObjectiveBuilder
-    local objectiveTitle = ObjectiveBuilder:GetSelectedObjective()
-    local tracker = ObjectiveBuilder:GetSelectedTracker()
-
-    addon:SetTrackerDBInfo(objectiveTitle, tracker, "trackerType", selected)
-
-    ObjectiveBuilder:UpdateTrackerButton(tracker)
-    ObjectiveBuilder.mainContent:Refresh("trackerTab", tracker)
-end
+------------------------------------------------------------
 
 local function trackFunc_OnEnterPressed(self)
     addon:SetObjectiveDBInfo(addon.ObjectiveBuilder:GetSelectedObjective(), "trackFunc", self:GetText())
@@ -447,8 +420,6 @@ end
 
 ------------------------------------------------------------
 
-------------------------------------------------------------
-
 function addon:LoadTrackersTab(objectiveTitle)
     local ObjectiveBuilder = addon.ObjectiveBuilder
     local tabContent = ObjectiveBuilder.mainContent
@@ -501,63 +472,4 @@ function addon:LoadTrackersTab(objectiveTitle)
     ------------------------------------------------------------
 
     tabContent:LoadTrackers()
-end
-
-------------------------------------------------------------
-
-function addon:ObjectiveBuilder_LoadTrackerInfo(tracker)
-    local ObjectiveBuilder = self.ObjectiveBuilder
-    local tabContent = ObjectiveBuilder.trackerList.status.content
-    local objectiveTitle = ObjectiveBuilder:GetSelectedObjective()
-
-    tabContent:ReleaseChildren()
-
-    if not objectiveTitle or not tracker then return end
-    local trackerInfo = self:GetTrackerInfo(objectiveTitle, tracker)
-
-    ------------------------------------------------------------
-
-    --@retail@
-    local trackerType = AceGUI:Create("Dropdown")
-    trackerType:SetFullWidth(1)
-    trackerType:SetLabel(L["Type"])
-    trackerType:SetList(
-        {
-            ITEM = L["Item"],
-            CURRENCY = L["Currency"],
-        },
-        {"ITEM", "CURRENCY"}
-    )
-    trackerType:SetValue(trackerInfo.trackerType)
-    tabContent:AddChild(trackerType)
-
-    trackerType:SetCallback("OnValueChanged", function(_, _, selected) trackerType_OnValueChanged(selected) end)
-    --@end-retail@
-
-    ------------------------------------------------------------
-
-    local trackerID = AceGUI:Create("EditBox")
-    trackerID:SetFullWidth(true)
-    trackerID:SetLabel(self:GetObjectiveDataLabel(trackerInfo.trackerType))
-    trackerID:SetText(trackerInfo.trackerID or "")
-    tabContent:AddChild(trackerID)
-
-    trackerID:SetCallback("OnEnterPressed", function(self) trackerID_OnEnterPressed(self) end)
-
-    ------------------------------------------------------------
-
-    local trackerObjective = AceGUI:Create("EditBox")
-    trackerObjective:SetFullWidth(true)
-    trackerObjective:SetLabel(L["Objective"])
-    trackerObjective:SetText(trackerInfo.objective or "")
-    tabContent:AddChild(trackerObjective)
-
-    trackerObjective:SetCallback("OnEnterPressed", function(self) trackerObjective_OnEnterPressed(self) end)
-
-    -- for i = 1, 50 do
-    --     local label = AceGUI:Create("Label")
-    --     label:SetFullWidth(true)
-    --     label:SetText("Testing " .. i)
-    --     tabContent:AddChild(label)
-    -- end
 end
