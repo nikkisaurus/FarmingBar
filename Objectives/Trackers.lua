@@ -32,15 +32,41 @@ function addon:GetObjectiveDataTable(...)
             end
         end, ...)
     elseif dataType == "CURRENCY" then
-        local name, _, icon = GetCurrencyInfo(dataID)
-        local data = {name = name, icon = icon, label = addon:GetObjectiveDataLabel(dataType), trackerType = dataType, trackerID = dataID}
-
+        -- !Revise once Shadowlands/prepatch is live.
+        local data
+        if C_CurrencyInfo.GetCurrencyInfo then
+            local currency = C_CurrencyInfo.GetCurrencyInfo(tonumber(dataID))
+            data = {name = currency.name, icon = currency.iconFileID, label = addon:GetObjectiveDataLabel(dataType), trackerType = dataType, trackerID = dataID}
+        else
+            local name, _, icon = GetCurrencyInfo(dataID)
+            data = {name = name, icon = icon, label = addon:GetObjectiveDataLabel(dataType), trackerType = dataType, trackerID = dataID}
+        end
         if callback then
             callback(data)
         else
             return data
         end
+        -- !
     end
+end
+
+------------------------------------------------------------
+
+function addon:GetTrackerInfo(objectiveTitle, tracker)
+    return FarmingBar.db.global.objectives[objectiveTitle].trackers[tracker]
+end
+
+------------------------------------------------------------
+
+function addon:SetTrackerDBInfo(objectiveTitle, tracker, key, value)
+    local keys = {strsplit(".", key)}
+    local path = FarmingBar.db.global.objectives[objectiveTitle].trackers[tracker]
+    for k, key in pairs(keys) do
+        if k < #keys then
+            path = path[key]
+        end
+    end
+    path[keys[#keys]] = value
 end
 
 ------------------------------------------------------------

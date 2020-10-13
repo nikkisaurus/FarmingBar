@@ -3,7 +3,7 @@ local FarmingBar = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
 local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 local AceGUI = LibStub("AceGUI-3.0", true)
 
-local pairs = pairs
+local tremove, pairs = table.remove, pairs
 local gsub = string.gsub
 
 --*------------------------------------------------------------------------
@@ -86,7 +86,7 @@ local function mainTabGroup_OnGroupSelected(self, selected)
         self:SetLayout("Fill")
         addon:ObjectiveBuilder_LoadConditionTab(objectiveTitle)
     elseif selected == "trackersTab" then
-        self:SetLayout("FB30_2Column")
+        self:SetLayout("FB30_2RowSplitBottom")
         addon:LoadTrackersTab(objectiveTitle)
     end
 end
@@ -97,6 +97,54 @@ local function trackCondition_OnValueChanged(selected)
     addon:SetObjectiveDBInfo(ObjectiveBuilder:GetSelectedObjective(), "trackCondition", selected)
 
     ObjectiveBuilder.mainContent:Refresh("conditionTab")
+end
+
+local function TrackerButton_OnClick(tracker)
+    addon.ObjectiveBuilder.status.tracker = tracker
+    addon:ObjectiveBuilder_LoadTrackerInfo(tracker)
+end
+
+local function trackerID_OnEnterPressed(self)
+    local ObjectiveBuilder = addon.ObjectiveBuilder
+    local objectiveTitle = ObjectiveBuilder:GetSelectedObjective()
+    local tracker = ObjectiveBuilder:GetSelectedTracker()
+    local trackerInfo = addon:GetTrackerInfo(objectiveTitle, tracker)
+    local validTrackerID = addon:ValidateObjectiveData(trackerInfo.trackerType, self:GetText())
+
+    if validTrackerID or self:GetText() == "" then
+        addon:SetTrackerDBInfo(objectiveTitle, tracker, "trackerID", trackerInfo.trackerType == "ITEM" and validTrackerID or tonumber(self:GetText()))
+
+        self:SetText(trackerInfo.trackerID)
+        self:ClearFocus()
+
+        ObjectiveBuilder:UpdateTrackerButton(tracker)
+        ObjectiveBuilder.mainContent:Refresh("trackerTab")
+    else
+        self:SetText(trackerInfo.trackerID)
+        self:HighlightText()
+        self:SetFocus()
+    end
+end
+
+local function trackerObjective_OnEnterPressed(self)
+    local ObjectiveBuilder = addon.ObjectiveBuilder
+    local objective = tonumber(self:GetText()) > 0 and tonumber(self:GetText()) or 1
+
+    addon:SetTrackerDBInfo(ObjectiveBuilder:GetSelectedObjective(), ObjectiveBuilder:GetSelectedTracker(), "objective", objective)
+
+    self:SetText(objective)
+    self:ClearFocus()
+end
+
+local function trackerType_OnValueChanged(selected)
+    local ObjectiveBuilder = addon.ObjectiveBuilder
+    local objectiveTitle = ObjectiveBuilder:GetSelectedObjective()
+    local tracker = ObjectiveBuilder:GetSelectedTracker()
+
+    addon:SetTrackerDBInfo(objectiveTitle, tracker, "trackerType", selected)
+
+    ObjectiveBuilder:UpdateTrackerButton(tracker)
+    ObjectiveBuilder.mainContent:Refresh("trackerTab", tracker)
 end
 
 local function trackFunc_OnEnterPressed(self)
@@ -119,13 +167,17 @@ end
 --*------------------------------------------------------------------------
 
 local methods = {
-    ["Refresh"] = function(self, reloadTab)
+    ["Refresh"] = function(self, reloadTab, reloadTracker)
         local ObjectiveBuilder = addon.ObjectiveBuilder
 
         ObjectiveBuilder:UpdateObjectiveIcon(ObjectiveBuilder:GetSelectedObjective())
 
         if reloadTab then
             self:SelectTab(reloadTab)
+        end
+
+        if reloadTracker then
+            addon:ObjectiveBuilder_LoadTrackerInfo(reloadTracker)
         end
     end,
 
@@ -141,6 +193,37 @@ local methods = {
         end
 
         ObjectiveBuilder.mainContent:SelectTab("objectiveTab")
+    end,
+
+    ["LoadTrackers"] = function(self)
+        local ObjectiveBuilder = addon.ObjectiveBuilder
+        local objectiveTitle = ObjectiveBuilder:GetSelectedObjective()
+        local trackerList = ObjectiveBuilder.trackerList
+        trackerList:ReleaseChildren()
+        wipe(trackerList.status.selected)
+        wipe(trackerList.status.children)
+
+        for tracker, trackerInfo in pairs(addon:GetObjectiveInfo(objectiveTitle).trackers) do
+            local button = AceGUI:Create("FB30_ObjectiveButton")
+            button:SetFullWidth(true)
+            -- !Try to remove this if I can set up a coroutine to handle item caching.
+            addon:GetObjectiveDataTable(trackerInfo.trackerType, trackerInfo.trackerID, function(data)
+                button:SetText(data.name)
+                button:SetIcon(data.icon)
+                tinsert(trackerList.status.children, {trackerTitle = data.name, button = button})
+            end)
+            -- !
+            button:SetStatus(trackerList.status)
+            button:SetMenuFunc(GetTrackerContextMenu)
+            trackerList:AddChild(button)
+
+            ------------------------------------------------------------
+
+            -- TODO: trackerList button scripts
+            button:SetCallback("OnClick", function(self, event, ...) TrackerButton_OnClick(tracker) end)
+            -- button:SetCallback("OnDragStart", function(self, event, ...) self.DragFrame:Load(objectiveTitle) end)
+            -- button:SetCallback("OnDragStop", function(self, event, ...) self.DragFrame:Clear() end)
+        end
     end,
 }
 
@@ -368,18 +451,37 @@ end
 
 function addon:LoadTrackersTab(objectiveTitle)
     local ObjectiveBuilder = addon.ObjectiveBuilder
-    local mainContent = ObjectiveBuilder.mainContent
+    local tabContent = ObjectiveBuilder.mainContent
 
     if not objectiveTitle then return end
     local objectiveInfo = self:GetObjectiveInfo(objectiveTitle)
 
     ------------------------------------------------------------
 
+    local topContent = AceGUI:Create("SimpleGroup")
+    topContent:SetFullWidth(true)
+    topContent:SetHeight(20)
+    topContent:SetLayout("Flow")
+    topContent:SetAutoAdjustHeight(false)
+    tabContent:AddChild(topContent)
+
+    ------------------------------------------------------------
+
+    local newTrackerButton = AceGUI:Create("FB30_InteractiveLabel")
+    newTrackerButton:SetText(L["New Tracker"])
+    newTrackerButton:SetWidth(newTrackerButton.label:GetStringWidth() + newTrackerButton.image:GetWidth())
+    newTrackerButton:SetImageSize(newTrackerButton.label:GetHeight(), newTrackerButton.label:GetHeight())
+    newTrackerButton:SetImage(514607)
+    topContent:AddChild(newTrackerButton)
+
+    -- newTrackerButton:SetCallback("OnClick", function() addon:CreateObjective(_, _, _, _, true) end)
+    -- newTrackerButton:SetCallback("OnReceiveDrag", function() addon:CreateObjective(_, _, _, _, true) end)
+
+    ------------------------------------------------------------
+
     local trackerListContainer = AceGUI:Create("SimpleGroup")
-    trackerListContainer:SetRelativeWidth(1/3)
-    trackerListContainer:SetFullHeight(true)
     trackerListContainer:SetLayout("Fill")
-    mainContent:AddChild(trackerListContainer)
+    tabContent:AddChild(trackerListContainer)
 
     ------------------------------------------------------------
 
@@ -389,52 +491,73 @@ function addon:LoadTrackersTab(objectiveTitle)
     ObjectiveBuilder.trackerList = trackerList
     trackerList.status = {children = {}, selected = {}}
 
-    for tracker, trackerInfo in pairs(objectiveInfo.trackers) do
-        local button = AceGUI:Create("FB30_ObjectiveButton")
-        button:SetFullWidth(true)
-        -- !Try to remove this if I can set up a coroutine to handle item caching.
-        self:GetObjectiveDataTable(trackerInfo.trackerType, trackerInfo.trackerID, function(data)
-            button:SetText(data.name)
-            button:SetIcon(data.icon)
-        end)
-        -- !
-        button:SetStatus(trackerList.status)
-        button:SetMenuFunc(GetTrackerContextMenu)
-        trackerList:AddChild(button)
-        tinsert(trackerList.status.children, {objectiveTitle = objectiveTitle, button = button})
-
-        ------------------------------------------------------------
-
-        -- TODO: trackerList button scripts
-        -- button:SetCallback("OnClick", function(self, event, ...) ObjectiveButton_OnClick(objectiveTitle) end)
-        -- button:SetCallback("OnDragStart", function(self, event, ...) self.DragFrame:Load(objectiveTitle) end)
-        -- button:SetCallback("OnDragStop", function(self, event, ...) self.DragFrame:Clear() end)
-    end
-
-    ------------------------------------------------------------
-
-    local trackerInfoContainer = AceGUI:Create("SimpleGroup")
-    trackerInfoContainer:SetRelativeWidth(2/3)
-    trackerInfoContainer:SetFullHeight(true)
-    trackerInfoContainer:SetLayout("Fill")
-    mainContent:AddChild(trackerInfoContainer)
-
     ------------------------------------------------------------
 
     local trackerInfo = AceGUI:Create("ScrollFrame")
-    trackerInfo:SetLayout("Flow")
-    trackerInfoContainer:AddChild(trackerInfo)
-    trackerList.trackerInfo = trackerInfo
+    trackerInfo:SetLayout("List")
+    tabContent:AddChild(trackerInfo)
+    trackerList.status.content = trackerInfo
 
     ------------------------------------------------------------
-    --Debug-----------------------------------------------------
+
+    tabContent:LoadTrackers()
+end
+
+------------------------------------------------------------
+
+function addon:ObjectiveBuilder_LoadTrackerInfo(tracker)
+    local ObjectiveBuilder = self.ObjectiveBuilder
+    local tabContent = ObjectiveBuilder.trackerList.status.content
+    local objectiveTitle = ObjectiveBuilder:GetSelectedObjective()
+
+    tabContent:ReleaseChildren()
+
+    if not objectiveTitle or not tracker then return end
+    local trackerInfo = self:GetTrackerInfo(objectiveTitle, tracker)
+
     ------------------------------------------------------------
-    for i = 1, 60 do
-        local label = AceGUI:Create("Label")
-        label:SetFullWidth(true)
-        label:SetText("Test blah blah blah lorem blah blah lkjasdf oij asdfljoi jslfj salf  "..i)
-        trackerInfo:AddChild(label)
-    end
+
+    --@retail@
+    local trackerType = AceGUI:Create("Dropdown")
+    trackerType:SetFullWidth(1)
+    trackerType:SetLabel(L["Type"])
+    trackerType:SetList(
+        {
+            ITEM = L["Item"],
+            CURRENCY = L["Currency"],
+        },
+        {"ITEM", "CURRENCY"}
+    )
+    trackerType:SetValue(trackerInfo.trackerType)
+    tabContent:AddChild(trackerType)
+
+    trackerType:SetCallback("OnValueChanged", function(_, _, selected) trackerType_OnValueChanged(selected) end)
+    --@end-retail@
+
     ------------------------------------------------------------
+
+    local trackerID = AceGUI:Create("EditBox")
+    trackerID:SetFullWidth(true)
+    trackerID:SetLabel(self:GetObjectiveDataLabel(trackerInfo.trackerType))
+    trackerID:SetText(trackerInfo.trackerID or "")
+    tabContent:AddChild(trackerID)
+
+    trackerID:SetCallback("OnEnterPressed", function(self) trackerID_OnEnterPressed(self) end)
+
     ------------------------------------------------------------
+
+    local trackerObjective = AceGUI:Create("EditBox")
+    trackerObjective:SetFullWidth(true)
+    trackerObjective:SetLabel(L["Objective"])
+    trackerObjective:SetText(trackerInfo.objective or "")
+    tabContent:AddChild(trackerObjective)
+
+    trackerObjective:SetCallback("OnEnterPressed", function(self) trackerObjective_OnEnterPressed(self) end)
+
+    -- for i = 1, 50 do
+    --     local label = AceGUI:Create("Label")
+    --     label:SetFullWidth(true)
+    --     label:SetText("Testing " .. i)
+    --     tabContent:AddChild(label)
+    -- end
 end

@@ -67,6 +67,10 @@ local methods = {
         return self.status.objectiveTitle
     end,
 
+    ["GetSelectedTracker"] = function(self)
+        return self.status.tracker
+    end,
+
     ["GetObjectiveButtonByTitle"] = function(self, objectiveTitle)
         for key, objective in pairs(self.status.children) do
             if objective.objectiveTitle == objectiveTitle then
@@ -122,6 +126,18 @@ local methods = {
 
     ["UpdateObjectiveIcon"] = function(self, objectiveTitle)
         self:GetObjectiveButtonByTitle(objectiveTitle):SetIcon(addon:GetObjectiveIcon(objectiveTitle))
+    end,
+
+    ["UpdateTrackerButton"] = function(self)
+        local tracker = self:GetSelectedTracker()
+        local trackerInfo = addon:GetTrackerInfo(self:GetSelectedObjective(), tracker)
+        -- !Try to remove this if I can set up a coroutine to handle item caching.
+        addon:GetObjectiveDataTable(trackerInfo.trackerType, trackerInfo.trackerID, function(data)
+            local button = addon.ObjectiveBuilder.trackerList.status.children[tracker].button
+            button:SetText(data.name == "" and L["Invalid Tracker"] or data.name)
+            button:SetIcon(data.icon)
+        end)
+        -- !
     end,
 }
 
@@ -194,13 +210,9 @@ function addon:Initialize_ObjectiveBuilder()
 
     ------------------------------------------------------------
 
-    local sideContainer = AceGUI:Create("SimpleGroup")
-    sideContainer:SetLayout("Fill")
-    sidePanel:AddChild(sideContainer)
-
     local sideContent = AceGUI:Create("ScrollFrame")
     sideContent:SetLayout("List")
-    sideContainer:AddChild(sideContent)
+    sidePanel:AddChild(sideContent)
     ObjectiveBuilder.sideContent = sideContent
 
     ------------------------------------------------------------
@@ -223,17 +235,15 @@ function addon:Initialize_ObjectiveBuilder()
         C_Timer.After(1, function()
             ObjectiveBuilder:Load()
 
+            for _, objective in pairs(addon.ObjectiveBuilder.status.children) do
+                objective.button.frame:Click()
+                addon.ObjectiveBuilder.mainContent:SelectTab("trackersTab")
+                break
+            end
+
             if FarmingBar.db.global.debug.ObjectiveBuilderTrackers then
-                addon.ObjectiveBuilder:Load()
-                for _, objective in pairs(addon.ObjectiveBuilder.status.children) do
-                    objective.button:Fire("OnClick")
-                    addon.ObjectiveBuilder.mainContent:SelectTab("trackersTab")
-                    -- TODO: Load trackers info for testing
-                    -- for _, tracker in pairs(addon.ObjectiveBuilder.trackerList.trackers.children) do
-                    --     tracker.button:Fire("OnClick")
-                    --     addon:LoadTrackersInfo(objective.objectiveTitle, tracker)
-                    --     break
-                    -- end
+                for _, tracker in pairs(ObjectiveBuilder.trackerList.status.children) do
+                    tracker.button.frame:Click()
                     break
                 end
             end
