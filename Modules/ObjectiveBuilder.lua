@@ -323,14 +323,9 @@ function addon:DrawCurrencyGroup(parent)
 
     currencyDropdown:SetCallback("OnValueChanged", function(self, _, key)
         local currencyName, icon
-        if C_CurrencyInfo.GetCurrencyInfo then
-            local currency = C_CurrencyInfo.GetCurrencyInfo(key)
-            currencyName = currency.name
-            icon = currency.iconFileID
-
-        else
-            currencyName, _, icon = GetCurrencyInfo(key)
-        end
+        local currency = C_CurrencyInfo.GetCurrencyInfo(key)
+        currencyName = currency and currency.name
+        icon = currency and currency.iconFileID
 
         currencyEditBox:SetText(key)
         previewLabel:SetImage(icon)
@@ -443,14 +438,9 @@ function addon:DrawCurrencyGroup(parent)
     if self.ObjectiveBuilder.button.objective and self.ObjectiveBuilder.button.objective.type == "currency" then
         local currencyID = tonumber(self.ObjectiveBuilder.button.objective.currencyID)
         local currencyName, icon
-        if C_CurrencyInfo.GetCurrencyInfo then
-            local currency = C_CurrencyInfo.GetCurrencyInfo(currencyID)
-            currencyName = currency.name
-            icon = currency.iconFileID
-
-        else
-            currencyName, _, icon = GetCurrencyInfo(currencyID)
-        end
+        local currency = C_CurrencyInfo.GetCurrencyInfo(currencyID)
+        currencyName = currency and currency.name
+        icon = currency and currency.iconFileID
 
         currencyDropdown:SetValue(currencyID)
         currencyEditBox:SetText(currencyID)

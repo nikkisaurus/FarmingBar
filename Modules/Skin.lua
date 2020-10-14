@@ -253,7 +253,7 @@ function addon:UpdateSkin()
                 if button.objective.type == "item" then
                     U.CacheItem(button.objective.itemID, function(self) self.Icon:SetTexture(select(10, GetItemInfo(button.objective.itemID))) end, button)
                 elseif button.objective.type == "currency" then
-                    button.Icon:SetTexture(C_CurrencyInfo.GetCurrencyInfo and C_CurrencyInfo.GetCurrencyInfo(button.objective.currencyID) or select(3, GetCurrencyInfo(button.objective.currencyID)))
+                    button.Icon:SetTexture(C_CurrencyInfo.GetCurrencyInfo(button.objective.currencyID) and C_CurrencyInfo.GetCurrencyInfo(button.objective.currencyID).iconFileID)
                 else
                     button.Icon:SetTexture(button:GetBar().db.objectives[button.id].icon)
                 end

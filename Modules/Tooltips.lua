@@ -72,13 +72,9 @@ function addon:ShowTooltip(barID, buttonID)
             elseif objectiveType == "currency" then
                 local objectiveID = objectiveTable.currencyID
                 local count, totalMax
-                if C_CurrencyInfo.GetCurrencyInfo then
-                    local currency = C_CurrencyInfo.GetCurrencyInfo(objectiveID)
-                    count = currency.quantity
-                    totalMax = currency.maxQuantity
-                else
-                    _, count, _, _, _, totalMax = GetCurrencyInfo(objectiveID)
-                end
+                local currency = C_CurrencyInfo.GetCurrencyInfo(objectiveID)
+                count = currency and currency.quantity
+                totalMax = currency and currency.maxQuantity
 
                 -- Hyperlink
                 GameTooltip:SetHyperlink("currency:" .. objectiveID)

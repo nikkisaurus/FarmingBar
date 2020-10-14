@@ -282,7 +282,7 @@ function FarmingBarButtonTemplate_OnLoad(self, ...)
 
         if not self:GetBar().db.muteAlerts then
             local objectiveTable = self:GetBar().db.objectives[self.id]
-            local objectiveName = (objectiveTable.type == "currency" and (C_CurrencyInfo.GetCurrencyInfo and C_CurrencyInfo.GetCurrencyInfo(objectiveTable.currencyID).name or GetCurrencyInfo(objectiveTable.currencyID))) or (objectiveTable.type == "item" and select(2, GetItemInfo(objectiveTable.itemID))) or objectiveTable.title
+            local objectiveName = (objectiveTable.type == "currency" and (C_CurrencyInfo.GetCurrencyInfo(objectiveTable.currencyID) and C_CurrencyInfo.GetCurrencyInfo(objectiveTable.currencyID).name)) or (objectiveTable.type == "item" and select(2, GetItemInfo(objectiveTable.itemID))) or objectiveTable.title
             local oldCount, newCount = self.count, self:GetCount()
             local difference = newCount - oldCount
             local alert, soundID, barAlert
@@ -413,7 +413,7 @@ function FarmingBarButtonTemplate_OnLoad(self, ...)
         if objectiveTable.type == "item" then
             count = GetItemCount(objectiveTable.itemID, includeBank)
         elseif objectiveTable.type == "currency" then
-            count = C_CurrencyInfo.GetCurrencyInfo and C_CurrencyInfo.GetCurrencyInfo(objectiveTable.currencyID).quantity or select(2, GetCurrencyInfo(objectiveTable.currencyID))
+            count = C_CurrencyInfo.GetCurrencyInfo(objectiveTable.currencyID) and C_CurrencyInfo.GetCurrencyInfo(objectiveTable.currencyID).quantity
         elseif objectiveTable.type == "mixedItems" then
             count = 0
             for k, v in pairs(objectiveTable.items) do
@@ -508,7 +508,7 @@ function FarmingBarButtonTemplate_OnLoad(self, ...)
                 return
             end, self.objective.itemID)
         elseif self.objective.type == "currency" then
-            addon:Print(L.FarmingObjectiveSet(objective, C_CurrencyInfo.GetCurrencyInfo and C_CurrencyInfo.GetCurrencyInfo(self.objective.currencyID).name or select(1, GetCurrencyInfo(self.objective.currencyID))))
+            addon:Print(L.FarmingObjectiveSet(objective, C_CurrencyInfo.GetCurrencyInfo(self.objective.currencyID) and C_CurrencyInfo.GetCurrencyInfo(self.objective.currencyID).name))
         else
             addon:Print(L.FarmingObjectiveSet(objective, self.objective.title))
         end
@@ -586,7 +586,7 @@ function FarmingBarButtonTemplate_OnLoad(self, ...)
                 -- Caching the item to make sure we have all the info.
                 U.CacheItem(self.objective.itemID, function(self) self.Icon:SetTexture(select(10, GetItemInfo(self.objective.itemID))) end, self)
             elseif objectiveType == "currency" then
-                self.Icon:SetTexture(C_CurrencyInfo.GetCurrencyInfo and C_CurrencyInfo.GetCurrencyInfo(self.objective.currencyID).iconFileID or select(3, GetCurrencyInfo(self.objective.currencyID)))
+                self.Icon:SetTexture(C_CurrencyInfo.GetCurrencyInfo(self.objective.currencyID) and C_CurrencyInfo.GetCurrencyInfo(self.objective.currencyID).iconFileID)
             else
                 self.Icon:SetTexture(self:GetBar().db.objectives[self.id].icon)
             end

@@ -4,6 +4,7 @@
   -  -- Fixed incorrect error message localization for invalid currency
   -  -- Fixed lua error when typing letters into the Objective Builder currencyID editbox
   -  -- Fixed lua error when typing letters into the currencyID/itemID quick add editboxes
+  -  -- Fixed currency button icon update in addon.UpdateSkin (missing .iconFileID)
 
 ## Version 2.1
 - Compatible with Shadowlands 9.0 beta

@@ -311,7 +311,7 @@ function addon:OnInitialize()
 
     self.currencies = {}
     for k, v in pairs(currencies) do
-        self.currencies[v] = C_CurrencyInfo.GetCurrencyInfo and C_CurrencyInfo.GetCurrencyInfo(v).name or GetCurrencyInfo(v)
+        self.currencies[v] = C_CurrencyInfo.GetCurrencyInfo(v) and C_CurrencyInfo.GetCurrencyInfo(v).name
     end
 
     self.sortedCurrencies = {}
