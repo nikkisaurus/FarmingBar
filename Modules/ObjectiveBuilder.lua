@@ -406,7 +406,7 @@ function addon:DrawCurrencyGroup(parent)
         objective = objective > 0 and objective or nil
         local button = addon.ObjectiveBuilder.button
 
-        if not currencyID or currencyID == "" or not C_CurrencyInfo.GetCurrencyInfo(currencyID) or C_CurrencyInfo.GetCurrencyInfo(currencyID).name == "" then
+        if not currencyID or currencyID == "" or not C_CurrencyInfo.GetCurrencyInfo(currencyID) then
             addon:Print(L.GetErrorMessage("invalidCurrency", currencyEditBox:GetText()))
         else
             local oldObjective = button.objective and button.objective.objective
