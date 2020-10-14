@@ -1,8 +1,9 @@
 # Farming Bar
 ## Version 2.1.1
 - Bug fixes
-  -  -- Fixed incorrect error message localization
+  -  -- Fixed incorrect error message localization for invalid currency
   -  -- Fixed lua error when typing letters into the Objective Builder currencyID editbox
+  -  -- Fixed lua error when typing letters into the currencyID/itemID quick add editboxes
 
 ## Version 2.1
 - Compatible with Shadowlands 9.0 beta

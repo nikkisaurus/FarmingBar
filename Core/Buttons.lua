@@ -139,8 +139,13 @@ end
 function FarmingBarButtonTemplateItemIDEditBox_OnEnterPressed(self, ...)
     local objectiveID = tonumber(self:GetText())
 
-    if self and self.type == "currency" and (C_CurrencyInfo.GetCurrencyInfo and C_CurrencyInfo.GetCurrencyInfo(objectiveID).name or GetCurrencyInfo(objectiveID)) == "" then
-        print(L.GetErrorMessage("invalidCurrency", objectiveID))
+    if not objectiveID or objectiveID == "" then
+        self:SetText("")
+        self:ClearFocus()
+        self:Hide()
+        return
+    elseif self and self.type == "currency" and not C_CurrencyInfo.GetCurrencyInfo(objectiveID) then
+        print(L.GetErrorMessage("invalidCurrency", self:GetText()))
 
         self:SetText("")
         self:ClearFocus()
