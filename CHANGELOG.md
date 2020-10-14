@@ -1,4 +1,9 @@
 # Farming Bar
+## Version 2.1.1
+- Bug fixes
+  -  -- Fixed incorrect error message localization
+  -  -- Fixed lua error when typing letters into the Objective Builder currencyID editbox
+
 ## Version 2.1
 - Compatible with Shadowlands 9.0 beta
 - You can now mute alerts for individual bars

@@ -350,14 +350,10 @@ function addon:DrawCurrencyGroup(parent)
 
     currencyEditBox:SetCallback("OnTextChanged", function(self, _, text)
         local currencyName, icon
-        if C_CurrencyInfo.GetCurrencyInfo then
-            local currency = C_CurrencyInfo.GetCurrencyInfo(text)
-            currencyName = currency.name
-            icon = currency.iconFileID
+        local currency = C_CurrencyInfo.GetCurrencyInfo(tonumber(text) or 0)
 
-        else
-            currencyName, _, icon = GetCurrencyInfo(text)
-        end
+        currencyName = currency and currency.name
+        icon = currency and currency.iconFileID
 
         if currencyName ~= "" then
             previewLabel:SetImage(icon)
@@ -410,8 +406,8 @@ function addon:DrawCurrencyGroup(parent)
         objective = objective > 0 and objective or nil
         local button = addon.ObjectiveBuilder.button
 
-        if (C_CurrencyInfo.GetCurrencyInfo and C_CurrencyInfo.GetCurrencyInfo(currencyID).name or GetCurrencyInfo(currencyID)) == "" then
-            addon:Print(L.InvalidCurrency(currencyID))
+        if not currencyID or currencyID == "" or not C_CurrencyInfo.GetCurrencyInfo(currencyID) or C_CurrencyInfo.GetCurrencyInfo(currencyID).name == "" then
+            addon:Print(L.GetErrorMessage("invalidCurrency", currencyEditBox:GetText()))
         else
             local oldObjective = button.objective and button.objective.objective
             local progressCount, progressTotal = button:GetBar():GetProgress()
