@@ -269,3 +269,10 @@ function addon:FocusNextWidget(widget, widgetType, reverse)
         end
     end
 end
+
+------------------------------------------------------------
+
+function addon:ObjectiveBuilder_NumericEditBox_OnTextChanged(self)
+    self:SetText(string.gsub(self:GetText(), "[%s%c%p%a]", ""))
+    self.editbox:SetCursorPosition(strlen(self:GetText()))
+end

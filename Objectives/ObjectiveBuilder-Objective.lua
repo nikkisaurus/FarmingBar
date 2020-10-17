@@ -107,6 +107,12 @@ end
 
 ------------------------------------------------------------
 
+local function objective_OnEnterPressed(self)
+
+end
+
+------------------------------------------------------------
+
 local function trackCondition_OnValueChanged(selected)
     local ObjectiveBuilder = addon.ObjectiveBuilder
 
@@ -313,8 +319,8 @@ function addon:ObjectiveBuilder_LoadObjectiveTab(objectiveTitle)
     if not objectiveInfo.autoIcon then
         local displayIcon = AceGUI:Create("EditBox")
         displayIcon:SetRelativeWidth(1/2)
-        displayIcon:SetText(self:GetObjectiveInfo(objectiveTitle).icon)
-        tabContent:AddChild(displayIcon, tabContent.displayRef)
+        displayIcon:SetText(objectiveInfo.icon)
+        tabContent:AddChild(displayIcon, tabContent.objective)
 
         displayIcon:SetCallback("OnEnterPressed", displayIcon_OnEnterPressed)
 
@@ -323,10 +329,20 @@ function addon:ObjectiveBuilder_LoadObjectiveTab(objectiveTitle)
         local chooseButton = AceGUI:Create("Button")
         chooseButton:SetRelativeWidth(1/2)
         chooseButton:SetText(L["Choose"])
-        tabContent:AddChild(chooseButton, tabContent.displayRef)
+        tabContent:AddChild(chooseButton, tabContent.objective)
 
         -- chooseButton:SetCallback("OnClick", function() self.IconSelector:Show() end) -- TODO: Icon selector frame
     end
+
+    ------------------------------------------------------------
+
+    local objective = AceGUI:Create("EditBox")
+    objective:SetFullWidth(true)
+    objective:SetText(objectiveInfo.objective)
+    tabContent:AddChild(objective)
+
+    objective:SetCallback("OnEnterPressed", objective_OnEnterPressed)
+    objective:SetCallback("OnTextChanged", function(editbox) self:ObjectiveBuilder_NumericEditBox_OnTextChanged(editbox) end)
 
     ------------------------------------------------------------
 
@@ -334,6 +350,7 @@ function addon:ObjectiveBuilder_LoadObjectiveTab(objectiveTitle)
     displayRef:SetFullWidth(true)
     displayRef:SetText(L["Display Reference"])
     tabContent:AddChild(displayRef)
+
     ------------------------------------------------------------
 
     local displayRefTrackerType = AceGUI:Create("Dropdown")

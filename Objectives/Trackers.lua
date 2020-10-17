@@ -103,7 +103,8 @@ end
 
 local function trackerObjective_OnEnterPressed(self)
     local ObjectiveBuilder = addon.ObjectiveBuilder
-    local objective = tonumber(self:GetText()) > 0 and tonumber(self:GetText()) or 1
+    local text = self:GetText() ~= "" and self:GetText() or 1
+    local objective = tonumber(text) > 0 and tonumber(text) or 1
 
     addon:SetTrackerDBInfo(ObjectiveBuilder:GetSelectedObjective(), ObjectiveBuilder:GetSelectedTracker(), "objective", objective)
 
@@ -226,6 +227,7 @@ function addon:ObjectiveBuilder_LoadTrackerInfo(tracker)
     tabContent:AddChild(trackerObjective)
 
     trackerObjective:SetCallback("OnEnterPressed", trackerObjective_OnEnterPressed)
+    trackerObjective:SetCallback("OnTextChanged", function(editbox) self:ObjectiveBuilder_NumericEditBox_OnTextChanged(editbox) end)
 
     ------------------------------------------------------------
 
