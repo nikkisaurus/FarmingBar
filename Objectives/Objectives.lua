@@ -18,6 +18,7 @@ function addon:CreateObjective(objectiveTitle, objectiveInfo, suppressLoad, fini
             self:CacheItem(cursorID, function(itemID)
                 local newObjective = self:CreateObjective((select(1, GetItemInfo(itemID))), {
                     ["enabled"] = true,
+                    ["objective"] = false,
                     ["autoIcon"] = true,
                     ["icon"] = C_Item.GetItemIconByID(itemID),
                     ["displayRef"] = {
@@ -28,12 +29,13 @@ function addon:CreateObjective(objectiveTitle, objectiveInfo, suppressLoad, fini
                     ["trackFunc"] = "",
                     ["trackers"] = {
                         {
-                            ["objective"] = 0,
-                            ["exclude"] = {},
-                            ["includeAllChars"] = false,
-                            ["trackerID"] = itemID,
-                            ["includeBank"] = false,
                             ["trackerType"] = "ITEM",
+                            ["trackerID"] = itemID,
+                            ["objective"] = 1,
+                            ["includeBank"] = false,
+                            ["includeAllChars"] = false,
+                            ["exclude"] = {
+                            },
                         }
                     },
                 })
@@ -47,6 +49,7 @@ function addon:CreateObjective(objectiveTitle, objectiveInfo, suppressLoad, fini
     local defaultTitle = L["New"]
     local defaultInfo = {
         ["enabled"] = true,
+        ["objective"] = false,
         ["autoIcon"] = true,
         ["icon"] = "134400",
         ["displayRef"] = {
