@@ -177,6 +177,23 @@ local methods = {
         ObjectiveBuilder.mainContent:SelectTab("objectiveTab")
     end,
 
+    ["LoadExcludeList"] = function(self)
+        local ObjectiveBuilder = addon.ObjectiveBuilder
+        local objectiveTitle = ObjectiveBuilder:GetSelectedObjective()
+        local tracker = ObjectiveBuilder:GetSelectedTracker()
+        local trackerInfo = addon:GetTrackerInfo(objectiveTitle, tracker)
+        local excludeList = ObjectiveBuilder.excludeList
+
+        excludeList:ReleaseChildren()
+
+        for _, objectiveTitle in pairs(trackerInfo.exclude) do
+            local label = AceGUI:Create("Label")
+            label:SetFullWidth(true)
+            label:SetText(objectiveTitle)
+            excludeList:AddChild(label)
+        end
+    end,
+
     ["LoadTrackers"] = function(self)
         local ObjectiveBuilder = addon.ObjectiveBuilder
         local objectiveTitle = ObjectiveBuilder:GetSelectedObjective()

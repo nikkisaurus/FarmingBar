@@ -125,16 +125,12 @@ function addon:GetObjectiveIcon(objectiveTitle)
         if trackerType == "ITEM" then
             icon = C_Item.GetItemIconByID(tonumber(trackerID) or 1412) -- TODO: Remove/revise placeholder icon once trackers are implemented
         elseif trackerType == "CURRENCY" then
-            -- !Revise once Shadowlands/prepatch is live.
-            if C_CurrencyInfo.GetCurrencyInfo then
-                icon = C_CurrencyInfo.GetCurrencyInfo(tonumber(trackerID)).iconFileID
-            else
-                icon = (select(3, GetCurrencyInfo(tonumber(trackerID) or 1719))) -- TODO: Remove/revise placeholder icon once trackers are implemented
-            end
-            -- !
+            local currency = C_CurrencyInfo.GetCurrencyInfo(tonumber(trackerID) or 0)
+            icon = currency and currency.iconFileID or 1719 -- TODO: Remove/revise placeholder icon once trackers are implemented
         end
     else
         if objectiveInfo.icon then
+            -- Convert db icon value to number if it's a file ID, otherwise use the string value
             icon = (tonumber(objectiveInfo.icon) and tonumber(objectiveInfo.icon) ~= objectiveInfo.icon) and tonumber(objectiveInfo.icon) or objectiveInfo.icon
             icon = (icon == "" or not icon) and 134400 or icon
         else
@@ -145,8 +141,30 @@ function addon:GetObjectiveIcon(objectiveTitle)
     return icon
 end
 
+------------------------------------------------------------
+
 function addon:GetObjectiveInfo(objectiveTitle)
     return FarmingBar.db.global.objectives[objectiveTitle]
+end
+
+------------------------------------------------------------
+
+function addon:ObjectiveExists(objective)
+    for objectiveTitle, _ in pairs(FarmingBar.db.global.objectives) do
+        if strupper(objectiveTitle) == strupper(objective) then
+            return objectiveTitle
+        end
+    end
+end
+
+------------------------------------------------------------
+
+function addon:ObjectiveIsExcluded(excluded, objective)
+    for _, objectiveTitle in pairs(excluded) do
+        if strupper(objectiveTitle) == strupper(objective) then
+            return objectiveTitle
+        end
+    end
 end
 
 ------------------------------------------------------------

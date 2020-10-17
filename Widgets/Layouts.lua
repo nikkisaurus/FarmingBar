@@ -91,3 +91,29 @@ AceGUI:RegisterLayout("FB30_2Column", function(content, children)
         content.obj:LayoutFinished()
     end
 end)
+
+--*------------------------------------------------------------------------
+
+AceGUI:RegisterLayout("FB30_PaddedList", function(content, children)
+    for i = 1, #children do
+        local child = children[i]
+        if child then
+            local frame = child.frame
+            frame:SetWidth(content:GetWidth() - 10)
+
+            if i == 1 then
+                frame:SetPoint("TOPLEFT", 5, -5)
+            else
+                frame:SetPoint("TOPLEFT", children[i - 1].frame, "BOTTOMLEFT", 0, -5)
+            end
+
+            if child.DoLayout then
+                child:DoLayout()
+            end
+        end
+    end
+
+    if content.obj.LayoutFinished then
+        content.obj:LayoutFinished()
+    end
+end)

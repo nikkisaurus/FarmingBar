@@ -5,6 +5,40 @@ local AceGUI = LibStub("AceGUI-3.0", true)
 
 --*------------------------------------------------------------------------
 
+local strupper, tonumber = string.upper, tonumber
+
+--*------------------------------------------------------------------------
+
+local function excludeObjectives_OnEnterPressed(self)
+    local objective = self:GetText()
+    local validObjective = addon:ObjectiveExists(objective)
+    if validObjective then
+        local ObjectiveBuilder = addon.ObjectiveBuilder
+        local objectiveTitle = ObjectiveBuilder:GetSelectedObjective()
+        local excluded = FarmingBar.db.global.objectives[objectiveTitle].trackers[ObjectiveBuilder:GetSelectedTracker()].exclude
+
+        self:SetText()
+        self:ClearFocus()
+
+        if strupper(objectiveTitle) == strupper(objective) then
+            addon:ReportError(L.InvalidTrackerExclusion)
+            return
+        elseif addon:ObjectiveIsExcluded(excluded, objective) then
+            addon:ReportError(L.ObjectiveIsExcluded)
+            return
+        end
+
+        tinsert(excluded, validObjective)
+
+        ObjectiveBuilder.mainContent:LoadExcludeList()
+    else
+        addon:ReportError(L.InvalidObjectiveTitle)
+        self:HighlightText()
+    end
+end
+
+------------------------------------------------------------
+
 local function trackerID_OnEnterPressed(self)
 
     local ObjectiveBuilder = addon.ObjectiveBuilder
@@ -12,6 +46,7 @@ local function trackerID_OnEnterPressed(self)
     local tracker = ObjectiveBuilder:GetSelectedTracker()
     local trackerInfo = addon:GetTrackerInfo(objectiveTitle, tracker)
     if not self:GetText() or self:GetText() == "" then
+        -- Clear trackerID
         addon:SetTrackerDBInfo(objectiveTitle, tracker, "trackerID", "")
         self:ClearFocus()
 
@@ -33,6 +68,8 @@ local function trackerID_OnEnterPressed(self)
         end
 
         if trackerIDExists then
+            addon:ReportError(L.TrackerIDExists(self:GetText()))
+
             self:SetText(trackerInfo.trackerID)
             self:HighlightText()
             self:SetFocus()
@@ -46,6 +83,8 @@ local function trackerID_OnEnterPressed(self)
             ObjectiveBuilder.mainContent:Refresh("trackerTab")
         end
     else
+        addon:ReportError(L.InvalidTrackerID(trackerInfo.trackerType, self:GetText()))
+
         self:SetText(trackerInfo.trackerID)
         self:HighlightText()
         self:SetFocus()
@@ -75,6 +114,12 @@ local function trackerType_OnValueChanged(selected)
 
     ObjectiveBuilder:UpdateTrackerButton(tracker)
     ObjectiveBuilder.mainContent:Refresh("trackerTab", tracker)
+
+    C_Timer.After(.01, function()
+        local trackerID = ObjectiveBuilder.trackerList.status.trackerID
+        trackerID:SetFocus()
+        trackerID:HighlightText()
+    end)
 end
 
 --*------------------------------------------------------------------------
@@ -157,6 +202,7 @@ function addon:ObjectiveBuilder_LoadTrackerInfo(tracker)
     trackerObjective:SetCallback("OnEnterPressed", trackerObjective_OnEnterPressed)
 
     ------------------------------------------------------------
+
     local includeBank = AceGUI:Create("CheckBox")
     includeBank:SetFullWidth(true)
     includeBank:SetLabel(L["Include Bank"])
@@ -166,6 +212,7 @@ function addon:ObjectiveBuilder_LoadTrackerInfo(tracker)
     includeBank:SetCallback("OnValueChanged", function(self) addon:SetTrackerDBInfo(addon.ObjectiveBuilder:GetSelectedObjective(), addon.ObjectiveBuilder:GetSelectedTracker(), "includeBank", self:GetValue()) end)
 
     ------------------------------------------------------------
+
     local includeAllChars = AceGUI:Create("CheckBox")
     includeAllChars:SetFullWidth(true)
     includeAllChars:SetLabel(L["Include All Characters"])
@@ -173,6 +220,32 @@ function addon:ObjectiveBuilder_LoadTrackerInfo(tracker)
     tabContent:AddChild(includeAllChars)
 
     includeAllChars:SetCallback("OnValueChanged", function(self) addon:SetTrackerDBInfo(addon.ObjectiveBuilder:GetSelectedObjective(), addon.ObjectiveBuilder:GetSelectedTracker(), "includeAllChars", self:GetValue()) end)
+
+    ------------------------------------------------------------
+
+    local excludeObjectives = AceGUI:Create("EditBox")
+    excludeObjectives:SetFullWidth(true)
+    excludeObjectives:SetLabel(L["Exclude Objective"])
+    tabContent:AddChild(excludeObjectives)
+
+    excludeObjectives:SetCallback("OnEnterPressed", excludeObjectives_OnEnterPressed)
+
+    ------------------------------------------------------------
+
+    local excludeListContainer = AceGUI:Create("SimpleGroup")
+    excludeListContainer:SetFullWidth(true)
+    excludeListContainer:SetHeight(150)
+    excludeListContainer:SetLayout("Fill")
+    tabContent:AddChild(excludeListContainer)
+
+    ------------------------------------------------------------
+
+    local excludeList = AceGUI:Create("ScrollFrame")
+    excludeList:SetLayout("FB30_PaddedList")
+    excludeListContainer:AddChild(excludeList)
+    ObjectiveBuilder.excludeList = excludeList
+
+    ObjectiveBuilder.mainContent:LoadExcludeList()
 end
 
 ------------------------------------------------------------
@@ -209,6 +282,7 @@ function addon:GetObjectiveDataTable(...)
         local data
         if C_CurrencyInfo.GetCurrencyInfo then
             local currency = C_CurrencyInfo.GetCurrencyInfo(tonumber(dataID))
+            if not currency then return end
             data = {name = currency.name, icon = currency.iconFileID, label = addon:GetObjectiveDataLabel(dataType), trackerType = dataType, trackerID = dataID}
         else
             local name, _, icon = GetCurrencyInfo(dataID)
@@ -270,6 +344,7 @@ function addon:ValidateObjectiveData(trackerType, trackerID)
     if trackerType == "ITEM" then
         return (GetItemInfoInstant(trackerID))
     elseif trackerType == "CURRENCY" then
-        return GetCurrencyInfo(trackerID) ~= "" and GetCurrencyInfo(trackerID)
+        local currency = C_CurrencyInfo.GetCurrencyInfo(tonumber(trackerID) or 0)
+        return currency and currency.name
     end
 end

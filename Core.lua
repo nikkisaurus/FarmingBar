@@ -3,7 +3,7 @@ local FarmingBar = LibStub("AceAddon-3.0"):NewAddon("FarmingBar", "AceConsole-3.
 local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 
 local pairs = pairs
-local strupper = strupper
+local strupper = string.upper
 
 --*------------------------------------------------------------------------
 
@@ -41,4 +41,11 @@ function FarmingBar:SlashCommandFunc(input)
     end
     ------------------------------------------------------------
     ------------------------------------------------------------
+end
+
+--*------------------------------------------------------------------------
+
+function addon:ReportError(error)
+    PlaySound(846) -- "sound/interface/igquestfailed.ogg" classic?
+    FarmingBar:Print(string.format("%s %s", self.ColorFontString(L["Error"], "red"), error))
 end

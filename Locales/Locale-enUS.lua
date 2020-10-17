@@ -1,6 +1,13 @@
 local addonName = ...
 local L = LibStub("AceLocale-3.0"):NewLocale("FarmingBar", "enUS", true)
 
+--*------------------------------------------------------------------------
+
+local strupper = string.upper
+
+--*------------------------------------------------------------------------
+--*Strings-----------------------------------------------------------------
+
 -- Shared
 
 -- Modules\Objectives\ObjectiveBuilder-Objective.lua
@@ -24,6 +31,8 @@ L["Trackers"] = true
 L.DisplayReferenceDescription_Gsub = "/currency"
 L.DisplayReferenceDescription = [[Display References allow you to set which item/currency you want to use for automatic objective information. This includes the icon chosen when using "Automatic Icon" and the item associated with a button's "use" attribute.]]
 
+------------------------------------------------------------
+
 -- Modules\Objectives\ObjectiveBuilder.lua
 L["Close"] = true
 L["Delete"] = true
@@ -38,15 +47,37 @@ L["Objective Builder"] = true
 L["Rename"] = true
 L["Tracker"] = true
 
+------------------------------------------------------------
+
 -- Modules\Objectives\Objectives.lua
 L["New"] = true
+
+------------------------------------------------------------
 
 -- Modules\Objectives\Trackers.lua
 L["Currency"] = true
 L["Currency ID"] = true
+L["Exclude Objective"] = true
 L["Include All Characters"] = true
 L["Include Bank"] = true
 L["Item"] = true
 L["Item ID/Name/Link"] = true
 L["Objective"] = true
 L["Type"] = true
+
+--*------------------------------------------------------------------------
+--*Errors------------------------------------------------------------------
+
+-- Shared
+L["Error"] = true
+
+
+------------------------------------------------------------
+
+-- Modules\Objectives\Trackers.lua
+L.InvalidObjectiveTitle = "Invalid objective title."
+L.InvalidTrackerExclusion = "Cannot exclude parent objective."
+L.ObjectiveIsExcluded = "Objective is already being excluded."
+
+L.InvalidTrackerID = function(trackerType, trackerID) return string.format("Invalid tracker ID: %s:%s", strupper(trackerType), trackerID) end
+L.TrackerIDExists = function(trackerID) return string.format("Already tracking %s", trackerID) end
