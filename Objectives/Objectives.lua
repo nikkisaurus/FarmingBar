@@ -4,6 +4,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 
 local pairs = pairs
 local type = type
+local tonumber = tonumber
 
 local GetCursorInfo, ClearCursor = GetCursorInfo, ClearCursor
 

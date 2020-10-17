@@ -5,6 +5,7 @@ local AceGUI = LibStub("AceGUI-3.0", true)
 
 local tremove, pairs = table.remove, pairs
 local gsub = string.gsub
+local tonumber = tonumber
 
 --*------------------------------------------------------------------------
 

@@ -10,15 +10,20 @@ local strupper, tonumber = string.upper, tonumber
 --*------------------------------------------------------------------------
 
 local function excludeObjectives_OnEnterPressed(self)
+    if IsShiftKeyDown() then
+        addon:FocusNextWidget(self, "editbox", IsShiftKeyDown())
+        return
+    end
+
     local objective = self:GetText()
     local validObjective = addon:ObjectiveExists(objective)
+
     if validObjective then
         local ObjectiveBuilder = addon.ObjectiveBuilder
         local objectiveTitle = ObjectiveBuilder:GetSelectedObjective()
         local excluded = FarmingBar.db.global.objectives[objectiveTitle].trackers[ObjectiveBuilder:GetSelectedTracker()].exclude
 
         self:SetText()
-        self:ClearFocus()
 
         if strupper(objectiveTitle) == strupper(objective) then
             addon:ReportError(L.InvalidTrackerExclusion)
@@ -40,11 +45,11 @@ end
 ------------------------------------------------------------
 
 local function trackerID_OnEnterPressed(self)
-
     local ObjectiveBuilder = addon.ObjectiveBuilder
     local objectiveTitle = ObjectiveBuilder:GetSelectedObjective()
     local tracker = ObjectiveBuilder:GetSelectedTracker()
     local trackerInfo = addon:GetTrackerInfo(objectiveTitle, tracker)
+
     if not self:GetText() or self:GetText() == "" then
         -- Clear trackerID
         addon:SetTrackerDBInfo(objectiveTitle, tracker, "trackerID", "")
@@ -52,10 +57,12 @@ local function trackerID_OnEnterPressed(self)
 
         ObjectiveBuilder:UpdateTrackerButton(tracker)
         ObjectiveBuilder.mainContent:Refresh("trackerTab")
+
+        addon:FocusNextWidget(self, "editbox", IsShiftKeyDown())
         return
     end
-    local validTrackerID = addon:ValidateObjectiveData(trackerInfo.trackerType, self:GetText())
 
+    local validTrackerID = addon:ValidateObjectiveData(trackerInfo.trackerType, self:GetText())
     if validTrackerID or self:GetText() == "" then
         local newTrackerID = trackerInfo.trackerType == "ITEM" and validTrackerID or tonumber(self:GetText())
 
@@ -68,11 +75,16 @@ local function trackerID_OnEnterPressed(self)
         end
 
         if trackerIDExists then
-            addon:ReportError(L.TrackerIDExists(self:GetText()))
-
             self:SetText(trackerInfo.trackerID)
-            self:HighlightText()
-            self:SetFocus()
+
+            if newTrackerID ~= trackerInfo.trackerID then
+                addon:ReportError(L.TrackerIDExists(self:GetText()))
+
+                self:HighlightText()
+                self:SetFocus()
+            else
+                addon:FocusNextWidget(self, "editbox", IsShiftKeyDown())
+            end
         else
             addon:SetTrackerDBInfo(objectiveTitle, tracker, "trackerID", newTrackerID)
 
@@ -81,6 +93,8 @@ local function trackerID_OnEnterPressed(self)
 
             ObjectiveBuilder:UpdateTrackerButton(tracker)
             ObjectiveBuilder.mainContent:Refresh("trackerTab")
+
+            addon:FocusNextWidget(self, "editbox", IsShiftKeyDown())
         end
     else
         addon:ReportError(L.InvalidTrackerID(trackerInfo.trackerType, self:GetText()))
@@ -101,11 +115,13 @@ local function trackerObjective_OnEnterPressed(self)
 
     self:SetText(objective)
     self:ClearFocus()
+
+    addon:FocusNextWidget(self, "editbox", IsShiftKeyDown())
 end
 
 ------------------------------------------------------------
 
-local function trackerType_OnValueChanged(selected)
+local function trackerType_OnValueChanged(self, selected)
     local ObjectiveBuilder = addon.ObjectiveBuilder
     local objectiveTitle = ObjectiveBuilder:GetSelectedObjective()
     local tracker = ObjectiveBuilder:GetSelectedTracker()
@@ -115,11 +131,7 @@ local function trackerType_OnValueChanged(selected)
     ObjectiveBuilder:UpdateTrackerButton(tracker)
     ObjectiveBuilder.mainContent:Refresh("trackerTab", tracker)
 
-    C_Timer.After(.01, function()
-        local trackerID = ObjectiveBuilder.trackerList.status.trackerID
-        trackerID:SetFocus()
-        trackerID:HighlightText()
-    end)
+    addon:FocusNextWidget(self, "editbox")
 end
 
 --*------------------------------------------------------------------------
@@ -194,7 +206,7 @@ function addon:ObjectiveBuilder_LoadTrackerInfo(tracker)
     trackerType:SetValue(trackerInfo.trackerType)
     tabContent:AddChild(trackerType)
 
-    trackerType:SetCallback("OnValueChanged", function(_, _, selected) trackerType_OnValueChanged(selected) end)
+    trackerType:SetCallback("OnValueChanged", function(self, _, selected) trackerType_OnValueChanged(self, selected) end)
     --@end-retail@
 
     ------------------------------------------------------------

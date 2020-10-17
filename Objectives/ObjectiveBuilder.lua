@@ -4,7 +4,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 local AceGUI = LibStub("AceGUI-3.0", true)
 
 local tinsert, pairs, wipe = table.insert, pairs, table.wipe
-local strfind, strupper = string.find, string.upper
+local strfind, strupper, tonumber = string.find, string.upper, tonumber
 
 --*------------------------------------------------------------------------
 
@@ -251,4 +251,21 @@ function addon:Initialize_ObjectiveBuilder()
     end
     ------------------------------------------------------------
     ------------------------------------------------------------
+end
+
+--*------------------------------------------------------------------------
+
+function addon:FocusNextWidget(widget, widgetType, reverse)
+    local widgetKey
+    for key, w in self.pairs(widget.parent.children, reverse and function(a, b) return a > b end or function(a, b) return a < b end) do
+        if w == widget then
+            widgetKey = key
+        elseif widgetKey and (not widgetType or w[widgetType]) then
+            w:SetFocus()
+            if widgetType == "editbox" then
+                w:HighlightText()
+            end
+            return
+        end
+    end
 end
