@@ -26,10 +26,8 @@ local CreateFrame, UIParent = CreateFrame, UIParent
 
 ]]
 do
-	--*Custom-----------------
 	local Type = "FB30_Window"
 	local Version = 1
-	--*-----------------------
 
 	local function frameOnShow(this)
 		this.obj:Fire("OnShow")
@@ -101,7 +99,7 @@ do
 
 	local function OnAcquire(self)
 		self.frame:SetParent(UIParent)
-		self.frame:SetFrameStrata("HIGH")
+		self.frame:SetFrameStrata("FULLSCREEN_DIALOG")
 		self:ApplyStatus()
 		self:EnableResize(true)
 		self:Show()
@@ -162,7 +160,6 @@ do
 		self.sizer_e[func](self.sizer_e)
 	end
 
-
 	--*Custom----------------------------------
 	local function SetSize(self, width, height)
 		self:SetWidth(width)
@@ -171,7 +168,7 @@ do
 	--*----------------------------------------
 
 	local function Constructor()
-		local frame = CreateFrame("Frame", Type.. AceGUI:GetNextWidgetNum(Type), UIParent)
+		local frame = CreateFrame("Frame",nil,UIParent,"BackdropTemplate") --*Added BackdropTemplate
 		local self = {}
 		self.type = "Window"
 
@@ -197,7 +194,7 @@ do
 		frame:EnableMouse()
 		frame:SetMovable(true)
 		frame:SetResizable(true)
-		frame:SetFrameStrata("HIGH")
+		frame:SetFrameStrata("FULLSCREEN_DIALOG")
 		frame:SetScript("OnMouseDown", frameOnMouseDown)
 
 		frame:SetScript("OnShow",frameOnShow)
@@ -347,7 +344,7 @@ do
 		self.content = content
 		content.obj = self
 		content:SetPoint("TOPLEFT",frame,"TOPLEFT",12,-32)
-		content:SetPoint("BOTTOMRIGHT",frame,"BOTTOMRIGHT",-12,32)
+		content:SetPoint("BOTTOMRIGHT",frame,"BOTTOMRIGHT",-12,13)
 
 		AceGUI:RegisterAsContainer(self)
 		return self
