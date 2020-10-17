@@ -36,7 +36,7 @@ end
 
 local function Control_OnEnter(frame)
     if frame.obj.tooltip then
-        GameTooltip:SetOwner(frame, "ANCHOR_BOTTOMRIGHT", 0, 0)
+        GameTooltip:SetOwner(frame, frame.obj.tooltipAnchor or "ANCHOR_BOTTOMRIGHT", 0, 0)
         frame.obj:tooltip(GameTooltip)
         GameTooltip:Show()
     end
@@ -102,6 +102,8 @@ local methods = {
 		self:SetSelected(false)
 		self:SetAutoWidth(false)
 		self:SetText()
+        self:SetTooltip()
+        self.statustable = nil
 	end,
 
 	["SetText"] = function(self, text)
@@ -193,8 +195,9 @@ local methods = {
         self:SetHighlight(selected)
     end,
 
-    ["SetTooltip"] = function(self, tooltip)
-        self.tooltip = tooltip
+    ["SetTooltip"] = function(self, tooltip, anchor)
+		self.tooltip = tooltip
+		self.tooltipAnchor = anchor
     end,
 
     ["ToggleSelected"] = function(self, openedContext)

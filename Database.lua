@@ -14,6 +14,11 @@ function addon:Initialize_DB()
                 fb = false,
                 fb = true, -- DEBUG
             },
+            hints = {
+                bars = true,
+                buttons = true,
+                ObjectiveBuilder = true,
+            },
             debug = {
                 ObjectiveBuilder = true,
                 ObjectiveBuilderTrackers = true,

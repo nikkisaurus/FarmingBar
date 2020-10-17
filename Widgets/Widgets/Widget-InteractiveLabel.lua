@@ -18,11 +18,18 @@ local select, pairs = select, pairs
 Scripts
 -------------------------------------------------------------------------------]]
 local function Control_OnEnter(frame)
-	frame.obj:Fire("OnEnter")
+    if frame.obj.tooltip then
+        GameTooltip:SetOwner(frame, frame.obj.tooltipAnchor or "ANCHOR_BOTTOMRIGHT", 0, 0)
+        frame.obj:tooltip(GameTooltip)
+        GameTooltip:Show()
+    end
 end
 
 local function Control_OnLeave(frame)
-	frame.obj:Fire("OnLeave")
+    if frame.obj.tooltip then
+        GameTooltip:ClearLines()
+        GameTooltip:Hide()
+    end
 end
 
 local function Label_OnClick(frame, button)
@@ -44,6 +51,7 @@ local methods = {
 		self:SetHighlight()
 		self:SetHighlightTexCoord()
 		self:SetDisabled(false)
+		self:SetTooltip()
 	end,
 
 	-- ["OnRelease"] = nil,
@@ -70,7 +78,14 @@ local methods = {
 			self.frame:EnableMouse(true)
 			self.label:SetTextColor(1, 1, 1)
 		end
-	end
+	end,
+
+	------------------------------------------------------------
+
+    ["SetTooltip"] = function(self, tooltip, anchor)
+		self.tooltip = tooltip
+		self.tooltipAnchor = anchor
+    end,
 }
 
 --[[-----------------------------------------------------------------------------

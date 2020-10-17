@@ -4,7 +4,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 local AceGUI = LibStub("AceGUI-3.0", true)
 
 local tinsert, pairs, unpack, wipe = table.insert, pairs, unpack, table.wipe
-local strfind, strupper, tonumber = string.find, string.upper, tonumber
+local strformat, strfind, strupper, tonumber = string.format, string.find, string.upper, tonumber
 
 addon.tooltip_description = {1, 1, 1, 1, 1, 1, 1}
 addon.tooltip_keyvalue = {1, .82, 0, 1, 1, 1, 1}
@@ -45,7 +45,7 @@ local function ObjectiveButton_Tooltip(self, tooltip)
     tooltip:AddDoubleLine(L["Trackers"], numTrackers, unpack(addon.tooltip_keyvalue))
     for key, trackerInfo in pairs(objectiveInfo.trackers) do
         if key > 10 then
-            tooltip:AddLine(string.format("%d %s...", numTrackers - 10, L["more"]), unpack(addon.tooltip_description))
+            tooltip:AddLine(strformat("%d %s...", numTrackers - 10, L["more"]), unpack(addon.tooltip_description))
             tooltip:AddTexture(134400)
             break
         else
@@ -56,6 +56,12 @@ local function ObjectiveButton_Tooltip(self, tooltip)
             end)
             -- !
         end
+    end
+
+    GameTooltip_AddBlankLinesToTooltip(GameTooltip, 1)
+    if FarmingBar.db.global.hints.ObjectiveBuilder then
+        tooltip:AddLine(string.format("%s:", L["Hint"]))
+        tooltip:AddLine(L.ObjectiveContextMenuHint, unpack(addon.tooltip_description))
     end
 end
 
@@ -227,6 +233,15 @@ function addon:Initialize_ObjectiveBuilder()
 
     newObjectiveButton:SetCallback("OnClick", function() addon:CreateObjective(_, _, _, _, true) end)
     newObjectiveButton:SetCallback("OnReceiveDrag", function() addon:CreateObjective(_, _, _, _, true) end)
+
+    if FarmingBar.db.global.hints.ObjectiveBuilder then
+        newObjectiveButton:SetTooltip(function(self, tooltip)
+            -- !Move this to a local
+            tooltip:AddLine(strformat("%s:", L["Hint"]))
+            tooltip:AddLine(L.NewObjectiveHint, unpack(addon.tooltip_description))
+            -- !
+        end)
+    end
 
     ------------------------------------------------------------
 

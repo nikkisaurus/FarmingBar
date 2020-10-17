@@ -170,6 +170,12 @@ local function TrackerButton_Tooltip(self, tooltip)
             tooltip:AddTexture(addon:GetObjectiveIcon(excludedTitle))
         end
     end
+
+    GameTooltip_AddBlankLinesToTooltip(GameTooltip, 1)
+    if FarmingBar.db.global.hints.ObjectiveBuilder then
+        tooltip:AddLine(string.format("%s:", L["Hint"]))
+        tooltip:AddLine(L.TrackerContextMenuHint, unpack(addon.tooltip_description))
+    end
 end
 
 ------------------------------------------------------------
@@ -241,16 +247,29 @@ local methods = {
         excludeList:ReleaseChildren()
 
         for key, objectiveTitle in pairs(trackerInfo.exclude) do
-            local label = AceGUI:Create("InteractiveLabel")
+            local label = AceGUI:Create("FB30_InteractiveLabel")
             label:SetFullWidth(true)
             label:SetText(objectiveTitle)
+            label:SetImageSize(15, 15)
+            label:SetImage(addon:GetObjectiveIcon(objectiveTitle))
             excludeList:AddChild(label)
 
             label:SetCallback("OnClick", function(_, _, buttonClicked)
+                -- !Move this to a local
                 if IsShiftKeyDown() and buttonClicked == "RightButton" then
                     tremove(trackerInfo.exclude, key)
                     self:LoadExcludeList()
                 end
+                -- !
+            end)
+
+            label:SetTooltip(function(self, tooltip)
+                -- !Move this to a local
+                if FarmingBar.db.global.hints.ObjectiveBuilder then
+                    tooltip:AddLine(string.format("%s:", L["Hint"]))
+                    tooltip:AddLine(L.RemoveExcludeHint, unpack(addon.tooltip_description))
+                end
+                -- !
             end)
         end
     end,
@@ -550,6 +569,14 @@ function addon:LoadTrackersTab(objectiveTitle)
 
     newTrackerButton:SetCallback("OnClick", function() addon:CreateTracker() end)
     newTrackerButton:SetCallback("OnReceiveDrag", function() addon:CreateTracker(true) end)
+    if FarmingBar.db.global.hints.ObjectiveBuilder then
+        newTrackerButton:SetTooltip(function(self, tooltip)
+            -- !Move this to a local
+            tooltip:AddLine(string.format("%s:", L["Hint"]))
+            tooltip:AddLine(L.NewTrackerHint, unpack(addon.tooltip_description))
+            -- !
+        end)
+    end
 
     ------------------------------------------------------------
 

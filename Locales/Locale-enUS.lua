@@ -9,6 +9,7 @@ local strupper = string.upper
 --*Strings-----------------------------------------------------------------
 
 -- Shared
+L["Hint"] = true
 L["more"] = true
 L["Trackers"] = true
 
@@ -89,3 +90,13 @@ L.ObjectiveIsExcluded = "Objective is already being excluded."
 
 L.InvalidTrackerID = function(trackerType, trackerID) return string.format("Invalid tracker ID: %s:%s", strupper(trackerType), trackerID) end
 L.TrackerIDExists = function(trackerID) return string.format("Already tracking %s", trackerID) end
+
+
+--*------------------------------------------------------------------------
+--*Hints-------------------------------------------------------------------
+
+L.NewTrackerHint = "You can drop an item on this button to quickly add it as a tracker."
+L.NewObjectiveHint = "You can drop an item on this button to quickly add it as an objective."
+L.RemoveExcludeHint = "Shift+right-click this objective to remove it from the list."
+L.ObjectiveContextMenuHint = "Right-click this button to open a context menu to rename, duplicate, or delete this objective.\nDrag this button onto a bar to track it."
+L.TrackerContextMenuHint = "Right-click this button to delete or move this tracker."
