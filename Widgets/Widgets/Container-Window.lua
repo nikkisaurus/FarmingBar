@@ -194,7 +194,7 @@ do
 		frame:EnableMouse()
 		frame:SetMovable(true)
 		frame:SetResizable(true)
-		frame:SetFrameStrata("FULLSCREEN_DIALOG")
+		frame:SetFrameStrata("HIGH")
 		frame:SetScript("OnMouseDown", frameOnMouseDown)
 
 		frame:SetScript("OnShow",frameOnShow)
