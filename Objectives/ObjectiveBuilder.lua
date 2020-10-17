@@ -241,7 +241,7 @@ function addon:Initialize_ObjectiveBuilder()
                 break
             end
 
-            if FarmingBar.db.global.debug.ObjectiveBuilderTrackers then
+            if FarmingBar.db.global.debug.ObjectiveBuilderTrackers and #addon.ObjectiveBuilder.status.children > 0 then
                 for _, tracker in pairs(ObjectiveBuilder.trackerList.status.children) do
                     tracker.button.frame:Click()
                     break
