@@ -472,7 +472,7 @@ function addon:LoadTrackersTab(objectiveTitle)
     topContent:AddChild(newTrackerButton)
 
     newTrackerButton:SetCallback("OnClick", function() addon:CreateTracker() end)
-    -- newTrackerButton:SetCallback("OnReceiveDrag", function() addon:CreateObjective(_, _, _, _, true) end)
+    newTrackerButton:SetCallback("OnReceiveDrag", function() addon:CreateTracker(true) end)
 
     ------------------------------------------------------------
 

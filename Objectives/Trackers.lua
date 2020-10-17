@@ -124,29 +124,46 @@ end
 
 --*------------------------------------------------------------------------
 
-function addon:CreateTracker()
+function addon:CreateTracker(fromCursor)
     local ObjectiveBuilder = self.ObjectiveBuilder
     local objectiveTitle = ObjectiveBuilder:GetSelectedObjective()
     local trackersTable = FarmingBar.db.global.objectives[objectiveTitle].trackers
     local trackerStatus = ObjectiveBuilder.trackerList.status
 
-    local defaultInfo = {
-        ["trackerType"] = "ITEM",
-        ["trackerID"] = "",
-        ["objective"] = 1,
-        ["includeBank"] = false,
-        ["includeAllChars"] = false,
-        ["exclude"] = {
-        },
-    }
-
-    tinsert(trackersTable, defaultInfo)
+    if fromCursor then
+        -- Create tracker from cursor
+        local cursorType, cursorID = GetCursorInfo()
+        if cursorType == "item" then
+            ClearCursor()
+            tinsert(trackersTable, {
+                ["trackerType"] = "ITEM",
+                ["trackerID"] = cursorID,
+                ["objective"] = 1,
+                ["includeBank"] = false,
+                ["includeAllChars"] = false,
+                ["exclude"] = {
+                },
+            })
+        end
+    else
+        tinsert(trackersTable, {
+            ["trackerType"] = "ITEM",
+            ["trackerID"] = "",
+            ["objective"] = 1,
+            ["includeBank"] = false,
+            ["includeAllChars"] = false,
+            ["exclude"] = {
+            },
+        })
+    end
 
     ObjectiveBuilder.mainContent:LoadTrackers()
     trackerStatus.children[#trackersTable].button.frame:Click()
-    C_Timer.After(.01, function()
-        trackerStatus.trackerID:SetFocus()
-    end)
+    if not fromCursor then
+        C_Timer.After(.01, function()
+            trackerStatus.trackerID:SetFocus()
+        end)
+    end
 end
 
 ------------------------------------------------------------
