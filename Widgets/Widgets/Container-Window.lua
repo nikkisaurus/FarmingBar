@@ -168,7 +168,7 @@ do
 	--*----------------------------------------
 
 	local function Constructor()
-		local frame = CreateFrame("Frame",nil,UIParent,"BackdropTemplate") --*Added BackdropTemplate
+		local frame = CreateFrame("Frame", Type.. AceGUI:GetNextWidgetNum(Type), UIParent, "BackdropTemplate") --*Added name and BackdropTemplate
 		local self = {}
 		self.type = "Window"
 
