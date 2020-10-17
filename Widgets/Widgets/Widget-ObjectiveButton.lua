@@ -35,11 +35,18 @@ local function Button_OnClick(frame, ...)
 end
 
 local function Control_OnEnter(frame)
-	frame.obj:Fire("OnEnter")
+    if frame.obj.tooltip then
+        GameTooltip:SetOwner(frame, "ANCHOR_BOTTOMRIGHT", 0, 0)
+        frame.obj:tooltip(GameTooltip)
+        GameTooltip:Show()
+    end
 end
 
 local function Control_OnLeave(frame)
-	frame.obj:Fire("OnLeave")
+    if frame.obj.tooltip then
+        GameTooltip:ClearLines()
+        GameTooltip:Hide()
+    end
 end
 
 local function Control_OnDragStart(frame)
@@ -173,6 +180,10 @@ local methods = {
     ["SetSelected"] = function(self, selected)
         self.selected = selected
         self:SetHighlight(selected)
+    end,
+
+    ["SetTooltip"] = function(self, tooltip)
+        self.tooltip = tooltip
     end,
 
     ["ToggleSelected"] = function(self, openedContext)

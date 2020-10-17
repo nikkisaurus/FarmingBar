@@ -22,6 +22,7 @@ local function displayIcon_OnEnterPressed(self)
     self:ClearFocus()
 
     addon.ObjectiveBuilder.mainContent:Refresh("objectiveTab")
+    addon:FocusNextWidget(self, "editbox", IsShiftKeyDown())
 end
 
 ------------------------------------------------------------
@@ -53,14 +54,16 @@ local function displayRefTrackerID_OnEnterPressed(self)
     local validTrackerID = addon:ValidateObjectiveData(objectiveInfo.displayRef.trackerType, self:GetText())
 
     if validTrackerID or self:GetText() == "" then
-
         addon:SetObjectiveDBInfo(objectiveTitle, "displayRef.trackerID", objectiveInfo.displayRef.trackerType == "ITEM" and validTrackerID or tonumber(self:GetText()))
 
         self:SetText(objectiveInfo.displayRef.trackerID)
         self:ClearFocus()
 
         ObjectiveBuilder.mainContent:Refresh("objectiveTab")
+        addon:FocusNextWidget(self, "editbox", IsShiftKeyDown())
     else
+        addon:ReportError(L.InvalidTrackerID(objectiveInfo.displayRef.trackerType, self:GetText()))
+
         self:SetText("")
         self:SetFocus()
     end
@@ -108,7 +111,16 @@ end
 ------------------------------------------------------------
 
 local function objective_OnEnterPressed(self)
+    local ObjectiveBuilder = addon.ObjectiveBuilder
+    local text = self:GetText() ~= "" and self:GetText() or 0
+    local objective = tonumber(text) > 0 and tonumber(text)
 
+    addon:SetObjectiveDBInfo(ObjectiveBuilder:GetSelectedObjective(), "objective", objective)
+
+    self:SetText(objective)
+    self:ClearFocus()
+
+    addon:FocusNextWidget(self, "editbox", IsShiftKeyDown())
 end
 
 ------------------------------------------------------------
@@ -196,11 +208,18 @@ local methods = {
 
         excludeList:ReleaseChildren()
 
-        for _, objectiveTitle in pairs(trackerInfo.exclude) do
-            local label = AceGUI:Create("Label")
+        for key, objectiveTitle in pairs(trackerInfo.exclude) do
+            local label = AceGUI:Create("InteractiveLabel")
             label:SetFullWidth(true)
             label:SetText(objectiveTitle)
             excludeList:AddChild(label)
+
+            label:SetCallback("OnClick", function(_, _, buttonClicked)
+                if IsShiftKeyDown() and buttonClicked == "RightButton" then
+                    tremove(trackerInfo.exclude, key)
+                    self:LoadExcludeList()
+                end
+            end)
         end
     end,
 
@@ -339,6 +358,7 @@ function addon:ObjectiveBuilder_LoadObjectiveTab(objectiveTitle)
     local objective = AceGUI:Create("EditBox")
     objective:SetFullWidth(true)
     objective:SetText(objectiveInfo.objective)
+    objective:SetLabel(L["Objective"])
     tabContent:AddChild(objective)
 
     objective:SetCallback("OnEnterPressed", objective_OnEnterPressed)

@@ -3,14 +3,58 @@ local FarmingBar = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
 local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 local AceGUI = LibStub("AceGUI-3.0", true)
 
-local tinsert, pairs, wipe = table.insert, pairs, table.wipe
+local tinsert, pairs, unpack, wipe = table.insert, pairs, unpack, table.wipe
 local strfind, strupper, tonumber = string.find, string.upper, tonumber
+
+addon.tooltip_description = {1, 1, 1, 1, 1, 1, 1}
+addon.tooltip_keyvalue = {1, .82, 0, 1, 1, 1, 1}
 
 --*------------------------------------------------------------------------
 
 local function ObjectiveButton_OnClick(objectiveTitle)
     addon:ObjectiveBuilder_DrawTabs()
     addon.ObjectiveBuilder.mainContent:SelectObjective(objectiveTitle)
+end
+
+local function ObjectiveButton_Tooltip(self, tooltip)
+    local ObjectiveBuilder = addon.ObjectiveBuilder
+    local objectiveTitle = self:GetObjectiveTitle()
+    local objectiveInfo = addon:GetObjectiveInfo(objectiveTitle)
+    local numTrackers = #objectiveInfo.trackers
+
+    tooltip:AddLine(objectiveTitle)
+
+    GameTooltip_AddBlankLinesToTooltip(GameTooltip, 1)
+    tooltip:AddDoubleLine(L["Enabled"], objectiveInfo.enabled and L["TRUE"] or L["FALSE"], unpack(addon.tooltip_keyvalue))
+    tooltip:AddDoubleLine(L["Objective"], objectiveInfo.objective or L["FALSE"], unpack(addon.tooltip_keyvalue))
+
+    GameTooltip_AddBlankLinesToTooltip(GameTooltip, 1)
+    if objectiveInfo.displayRef.trackerType then
+        -- !Try to remove this if I can set up a coroutine to handle item caching.
+        addon:GetObjectiveDataTable(objectiveInfo.displayRef.trackerType, objectiveInfo.displayRef.trackerID, function(data)
+            tooltip:AddDoubleLine(L["Display Ref"], data.name, unpack(addon.tooltip_keyvalue))
+        end)
+        -- !
+    else
+        tooltip:AddDoubleLine(L["Display Ref"], L["NONE"], unpack(addon.tooltip_keyvalue))
+    end
+
+    GameTooltip_AddBlankLinesToTooltip(GameTooltip, 1)
+    tooltip:AddDoubleLine(L["Trackers"], numTrackers, unpack(addon.tooltip_keyvalue))
+    for key, trackerInfo in pairs(objectiveInfo.trackers) do
+        if key > 10 then
+            tooltip:AddLine(string.format("%d %s...", numTrackers - 10, L["more"]), unpack(addon.tooltip_description))
+            tooltip:AddTexture(134400)
+            break
+        else
+            -- !Try to remove this if I can set up a coroutine to handle item caching.
+            addon:GetObjectiveDataTable(trackerInfo.trackerType, trackerInfo.trackerID, function(data)
+                tooltip:AddLine(data.name, unpack(addon.tooltip_description))
+                tooltip:AddTexture(data.icon)
+            end)
+            -- !
+        end
+    end
 end
 
 --*------------------------------------------------------------------------
@@ -107,6 +151,10 @@ local methods = {
                 button:SetCallback("OnClick", function(self, event, ...) ObjectiveButton_OnClick(objectiveTitle) end)
                 button:SetCallback("OnDragStart", function(self, event, ...) addon.DragFrame:Load(objectiveTitle) end)
                 button:SetCallback("OnDragStop", function(self, event, ...) addon.DragFrame:Clear() end)
+
+                ------------------------------------------------------------
+
+                button:SetTooltip(ObjectiveButton_Tooltip)
             end
         end
 
