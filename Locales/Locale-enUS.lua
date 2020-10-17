@@ -63,6 +63,7 @@ L["Include Bank"] = true
 L["Item"] = true
 L["Item ID/Name/Link"] = true
 L["Objective"] = true
+L["Required"] = true
 L["Type"] = true
 
 --*------------------------------------------------------------------------

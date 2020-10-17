@@ -243,6 +243,10 @@ function addon:ObjectiveBuilder_LoadTrackerInfo(tracker)
     includeAllChars:SetFullWidth(true)
     includeAllChars:SetLabel(L["Include All Characters"])
     includeAllChars:SetValue(trackerInfo.includeAllChars)
+    if not self:IsDataStoreLoaded() then
+        includeAllChars:SetDescription(L["Required"] ..": DataStore, DataStore_Auctions, DataStore_Containers, DataStore_Inventory, DataStore_Mails")
+        includeAllChars:SetDisabled(true)
+    end
     tabContent:AddChild(includeAllChars)
 
     includeAllChars:SetCallback("OnValueChanged", function(self) addon:SetTrackerDBInfo(addon.ObjectiveBuilder:GetSelectedObjective(), addon.ObjectiveBuilder:GetSelectedTracker(), "includeAllChars", self:GetValue()) end)

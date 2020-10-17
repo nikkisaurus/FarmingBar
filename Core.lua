@@ -49,3 +49,7 @@ function addon:ReportError(error)
     PlaySound(846) -- "sound/interface/igquestfailed.ogg" classic?
     FarmingBar:Print(string.format("%s %s", self.ColorFontString(L["Error"], "red"), error))
 end
+
+function addon:IsDataStoreLoaded()
+    return IsAddOnLoaded("DataStore") and IsAddOnLoaded("DataStore_Auctions") and IsAddOnLoaded("DataStore_Containers") and IsAddOnLoaded("DataStore_Inventory") and IsAddOnLoaded("DataStore_Mails")
+end
