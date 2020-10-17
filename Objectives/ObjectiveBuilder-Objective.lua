@@ -68,7 +68,7 @@ end
 
 ------------------------------------------------------------
 
-local function displayRefTrackerType_OnValueChanged(selected)
+local function displayRefTrackerType_OnValueChanged(self, selected)
     local ObjectiveBuilder = addon.ObjectiveBuilder
     local objectiveTitle = ObjectiveBuilder:GetSelectedObjective()
 
@@ -81,6 +81,9 @@ local function displayRefTrackerType_OnValueChanged(selected)
     end
 
     ObjectiveBuilder.mainContent:Refresh("objectiveTab")
+    if selected ~= "NONE" then
+        addon:FocusNextWidget(self, "editbox", IsShiftKeyDown())
+    end
 end
 
 ------------------------------------------------------------
@@ -347,7 +350,7 @@ function addon:ObjectiveBuilder_LoadObjectiveTab(objectiveTitle)
     displayRefTrackerType:SetValue(objectiveInfo.displayRef.trackerType or "NONE")
     tabContent:AddChild(displayRefTrackerType)
 
-    displayRefTrackerType:SetCallback("OnValueChanged", function(_, _, selected) displayRefTrackerType_OnValueChanged(selected) end)
+    displayRefTrackerType:SetCallback("OnValueChanged", function(self, _, selected) displayRefTrackerType_OnValueChanged(self, selected) end)
 
     ------------------------------------------------------------
 
