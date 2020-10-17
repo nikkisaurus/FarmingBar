@@ -142,6 +142,17 @@ local methods = {
         tinsert(selected, selectedButton)
     end,
 
+    ["GetButtonIndex"] = function(self)
+        local statustable = self.statustable and self.statustable.children
+        if not statustable then return end
+
+        for k, v in pairs(statustable) do
+            if v.button == self then
+                return k
+            end
+        end
+    end,
+
     ["GetMenu"] = function(self)
         return self.menuFunc()
     end,

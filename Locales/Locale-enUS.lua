@@ -9,6 +9,7 @@ local strupper = string.upper
 --*Strings-----------------------------------------------------------------
 
 -- Shared
+L["more"] = true
 L["Trackers"] = true
 
 -- Modules\Objectives\ObjectiveBuilder-Objective.lua
@@ -22,6 +23,7 @@ L["Condition"] = true
 L["Custom"] = true
 L["Display Reference"] = true
 L["Enabled"] = true
+L["Excluded"] = true
 L["Export"] = true
 L["If"] = true
 L["New Tracker"] = true
@@ -43,7 +45,6 @@ L["Duplicate All"] = true
 L["FALSE"] = true
 L["Import Objective"] = true
 L["Invalid Tracker"] = true
-L["more"] = true
 L["New Objective"] = true
 L["NONE"] = true
 L["Objective"] = true

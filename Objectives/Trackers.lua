@@ -310,22 +310,16 @@ function addon:GetObjectiveDataTable(...)
             end
         end, ...)
     elseif dataType == "CURRENCY" then
-        -- !Revise once Shadowlands/prepatch is live.
-        local data
-        if C_CurrencyInfo.GetCurrencyInfo then
-            local currency = C_CurrencyInfo.GetCurrencyInfo(tonumber(dataID))
-            if not currency then return end
-            data = {name = currency.name, icon = currency.iconFileID, label = addon:GetObjectiveDataLabel(dataType), trackerType = dataType, trackerID = dataID}
-        else
-            local name, _, icon = GetCurrencyInfo(dataID)
-            data = {name = name, icon = icon, label = addon:GetObjectiveDataLabel(dataType), trackerType = dataType, trackerID = dataID}
-        end
+        local currency = C_CurrencyInfo.GetCurrencyInfo(tonumber(dataID) or 0)
+        if not currency then return end
+
+        local data = {name = currency.name, icon = currency.iconFileID, label = addon:GetObjectiveDataLabel(dataType), trackerType = dataType, trackerID = dataID}
+
         if callback then
             callback(data)
         else
             return data
         end
-        -- !
     end
 end
 

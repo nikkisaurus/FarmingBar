@@ -16,6 +16,8 @@ local function ObjectiveButton_OnClick(objectiveTitle)
     addon.ObjectiveBuilder.mainContent:SelectObjective(objectiveTitle)
 end
 
+------------------------------------------------------------
+
 local function ObjectiveButton_Tooltip(self, tooltip)
     local ObjectiveBuilder = addon.ObjectiveBuilder
     local objectiveTitle = self:GetObjectiveTitle()
@@ -50,7 +52,7 @@ local function ObjectiveButton_Tooltip(self, tooltip)
             -- !Try to remove this if I can set up a coroutine to handle item caching.
             addon:GetObjectiveDataTable(trackerInfo.trackerType, trackerInfo.trackerID, function(data)
                 tooltip:AddLine(data.name, unpack(addon.tooltip_description))
-                tooltip:AddTexture(data.icon)
+                tooltip:AddTexture(data.icon or 134400)
             end)
             -- !
         end

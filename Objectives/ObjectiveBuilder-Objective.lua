@@ -142,6 +142,38 @@ end
 
 ------------------------------------------------------------
 
+local function TrackerButton_Tooltip(self, tooltip)
+    local ObjectiveBuilder = addon.ObjectiveBuilder
+    local objectiveTitle = ObjectiveBuilder:GetSelectedObjective()
+    local tracker = self:GetButtonIndex()
+    local trackerInfo = addon:GetTrackerInfo(objectiveTitle, tracker)
+    local numExcluded = #trackerInfo.exclude
+
+    if not trackerInfo then return end
+
+    tooltip:SetHyperlink(string.format("%s:%s", string.lower(trackerInfo.trackerType), trackerInfo.trackerID))
+
+    GameTooltip_AddBlankLinesToTooltip(GameTooltip, 1)
+    tooltip:AddDoubleLine(L["Objective"], trackerInfo.objective or L["FALSE"], unpack(addon.tooltip_keyvalue))
+    tooltip:AddDoubleLine(L["Include Bank"], trackerInfo.includeBank and L["TRUE"] or L["FALSE"], unpack(addon.tooltip_keyvalue))
+    tooltip:AddDoubleLine(L["Include All Characters"], trackerInfo.includeAllCharacters and L["TRUE"] or L["FALSE"], unpack(addon.tooltip_keyvalue))
+
+    GameTooltip_AddBlankLinesToTooltip(GameTooltip, 1)
+    tooltip:AddDoubleLine(L["Excluded"], numExcluded, unpack(addon.tooltip_keyvalue))
+    for key, excludedTitle in pairs(trackerInfo.exclude) do
+        if key > 10 then
+            tooltip:AddLine(string.format("%d %s...", numExcluded - 10, L["more"]), unpack(addon.tooltip_description))
+            tooltip:AddTexture(134400)
+            break
+        else
+            tooltip:AddLine(excludedTitle)
+            tooltip:AddTexture(addon:GetObjectiveIcon(excludedTitle))
+        end
+    end
+end
+
+------------------------------------------------------------
+
 local function trackFunc_OnEnterPressed(self)
     addon:SetObjectiveDBInfo(addon.ObjectiveBuilder:GetSelectedObjective(), "trackFunc", self:GetText())
 end
@@ -251,6 +283,10 @@ local methods = {
             button:SetCallback("OnClick", function(self, event, ...) TrackerButton_OnClick(tracker) end)
             -- button:SetCallback("OnDragStart", function(self, event, ...) self.DragFrame:Load(objectiveTitle) end)
             -- button:SetCallback("OnDragStop", function(self, event, ...) self.DragFrame:Clear() end)
+
+            ------------------------------------------------------------
+
+            button:SetTooltip(TrackerButton_Tooltip)
         end
     end,
 }
