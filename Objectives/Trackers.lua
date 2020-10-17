@@ -66,13 +66,7 @@ local function trackerID_OnEnterPressed(self)
     if validTrackerID or self:GetText() == "" then
         local newTrackerID = trackerInfo.trackerType == "ITEM" and validTrackerID or tonumber(self:GetText())
 
-        local trackerIDExists
-        for _, tracker in pairs(FarmingBar.db.global.objectives[ObjectiveBuilder:GetSelectedObjective()].trackers) do
-            if tracker.trackerID == newTrackerID then
-                trackerIDExists = true
-                break
-            end
-        end
+        local trackerIDExists = addon:TrackerExists(newTrackerID)
 
         if trackerIDExists then
             self:SetText(trackerInfo.trackerID)
@@ -145,8 +139,8 @@ function addon:CreateTracker(fromCursor)
     if fromCursor then
         -- Create tracker from cursor
         local cursorType, cursorID = GetCursorInfo()
-        if cursorType == "item" then
-            ClearCursor()
+        ClearCursor()
+        if cursorType == "item" and not self:TrackerExists(cursorID) then
             tinsert(trackersTable, {
                 ["trackerType"] = "ITEM",
                 ["trackerID"] = cursorID,
@@ -156,6 +150,9 @@ function addon:CreateTracker(fromCursor)
                 ["exclude"] = {
                 },
             })
+        else
+            addon:ReportError(L.TrackerIDExists(cursorID))
+            return
         end
     else
         tinsert(trackersTable, {
@@ -365,6 +362,16 @@ function addon:SetTrackerDBInfo(objectiveTitle, tracker, key, value)
         end
     end
     path[keys[#keys]] = value
+end
+
+------------------------------------------------------------
+
+function addon:TrackerExists(trackerID)
+    for _, tracker in pairs(FarmingBar.db.global.objectives[self.ObjectiveBuilder:GetSelectedObjective()].trackers) do
+        if tracker.trackerID == trackerID then
+            return true
+        end
+    end
 end
 
 ------------------------------------------------------------
