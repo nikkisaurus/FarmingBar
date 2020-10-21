@@ -301,7 +301,8 @@ end
 --*------------------------------------------------------------------------
 
 local function ObjectiveButton_Tooltip(self, tooltip)
-    local objectiveTitle, objectiveInfo = addon:GetSelectedObjectiveInfo()
+    local objectiveTitle = self:GetObjectiveTitle()
+    local objectiveInfo = addon:GetObjectiveInfo(objectiveTitle)
     if not objectiveInfo then return end
     local numTrackers = #objectiveInfo.trackers
 

@@ -178,6 +178,22 @@ end
 
 ------------------------------------------------------------
 
+function addon:UpdateExclusions(objectiveTitle, newObjectiveTitle)
+    for _, objectiveInfo in pairs(FarmingBar.db.global.objectives) do
+        for _, trackerInfo in pairs(objectiveInfo.trackers) do
+            local removeKey = self.GetTableKey(trackerInfo.exclude, objectiveTitle)
+            if removeKey then
+                tremove(trackerInfo.exclude, removeKey)
+                if newObjectiveTitle then
+                    tinsert(trackerInfo.exclude, newObjectiveTitle)
+                end
+            end
+        end
+    end
+end
+
+------------------------------------------------------------
+
 function addon:ValidateObjectiveData(trackerType, trackerID)
     if trackerType == "ITEM" then
         return (GetItemInfoInstant(trackerID))

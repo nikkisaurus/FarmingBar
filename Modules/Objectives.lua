@@ -100,10 +100,13 @@ end
 function addon:DeleteObjective(objectiveTitle)
     if type(objectiveTitle) == "table" then
         for _, objective in pairs(objectiveTitle) do
-            FarmingBar.db.global.objectives[objective:GetObjectiveTitle()] = nil
+            local objectiveTitle = objective:GetObjectiveTitle()
+            FarmingBar.db.global.objectives[objectiveTitle] = nil
+            self:UpdateExclusions(objectiveTitle)
         end
     else
-        FarmingBar.db.global.objectives[objectiveTitle] = nil
+        FarmingBar.db.global.objectives[objectiveTitle] = ni
+        self:UpdateExclusions(objectiveTitle)
     end
 
     self.ObjectiveBuilder:LoadObjectives()
@@ -171,7 +174,7 @@ end
 
 function addon:GetObjectiveInfo(objectiveTitle, tracker)
     local objectiveInfo = FarmingBar.db.global.objectives[objectiveTitle]
-    local trackerInfo = tracker and self:GetTrackerInfo(objectiveTitle, tracker)
+    local trackerInfo = objectiveInfo and tracker and self:GetTrackerInfo(objectiveTitle, tracker)
 
     return objectiveInfo, trackerInfo
 end
@@ -248,6 +251,8 @@ function addon:RenameObjective(objectiveTitle, newObjectiveTitle)
 
     FarmingBar.db.global.objectives[newObjectiveTitle] = FarmingBar.db.global.objectives[objectiveTitle]
     FarmingBar.db.global.objectives[objectiveTitle] = nil
+
+    self:UpdateExclusions(objectiveTitle, newObjectiveTitle)
 
     self.ObjectiveBuilder:LoadObjectives(newObjectiveTitle)
 end
