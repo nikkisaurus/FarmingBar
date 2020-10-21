@@ -22,7 +22,7 @@ function addon:Initialize_DB()
             debug = {
                 ObjectiveBuilder = true,
                 ObjectiveBuilderTrackers = false,
-                ObjectiveBuilderCondition = true,
+                ObjectiveBuilderCondition = false,
             },
 
             objectives = {},

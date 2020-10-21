@@ -6,6 +6,8 @@ local AceGUI = LibStub("AceGUI-3.0", true)
 local tinsert, tremove, wipe, pairs, unpack = table.insert, table.remove, table.wipe, pairs, unpack
 local strfind, strformat, gsub, strupper, tonumber = string.find, string.format, string.gsub, string.upper, tonumber
 
+local tabCache = {}
+
 --*------------------------------------------------------------------------
 
 local function FocusNextWidget(widget, widgetType, reverse)
@@ -149,6 +151,7 @@ end
 
 local function mainTabGroup_OnGroupSelected(self, selected)
     local objectiveTitle = addon:GetSelectedObjectiveInfo()
+    tabCache[objectiveTitle] = selected
 
     self:ReleaseChildren()
     if selected == "objectiveTab" then
@@ -287,6 +290,7 @@ end
 --*------------------------------------------------------------------------
 
 local function ObjectiveButton_OnClick(objectiveTitle)
+    if objectiveTitle == addon.ObjectiveBuilder:GetSelectedObjective() then return end
     addon:ObjectiveBuilder_DrawTabs()
     addon.ObjectiveBuilder:SelectObjective(objectiveTitle)
 end
@@ -617,7 +621,7 @@ local methods = {
             mainPanel:Hide()
         end
 
-        self.mainContent:SelectTab("objectiveTab")
+        self.mainContent:SelectTab(tabCache[objectiveTitle] or "objectiveTab")
     end,
 
     ["UpdateObjectiveIcon"] = function(self, objectiveTitle)
@@ -782,7 +786,7 @@ function addon:ObjectiveBuilder_DrawTabs()
         {text = L["Condition"], value = "conditionTab"},
         {text = L["Trackers"], value = "trackersTab"}
     })
-    mainTabGroup:SelectTab("objectiveTab")
+    -- mainTabGroup:SelectTab("objectiveTab")
 
     ------------------------------------------------------------
 
