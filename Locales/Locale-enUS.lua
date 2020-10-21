@@ -6,84 +6,14 @@ local L = LibStub("AceLocale-3.0"):NewLocale("FarmingBar", "enUS", true)
 local strupper = string.upper
 
 --*------------------------------------------------------------------------
---*Strings-----------------------------------------------------------------
-
--- Shared
-L["Hint"] = true
-L["more"] = true
-L["Trackers"] = true
-
--- Modules\Objectives\ObjectiveBuilder-Objective.lua
-L["All"] = true
-L["All of"] = true
-L["Any"] = true
-L["Any of"] = true
-L["Automatic Icon"] = true
-L["Choose"] = true
-L["Condition"] = true
-L["Custom"] = true
-L["Display Reference"] = true
-L["Enabled"] = true
-L["Excluded"] = true
-L["Export"] = true
-L["If"] = true
-L["New Tracker"] = true
-L["None"] = true
-L["Tracker Condition"] = true
-
-L.DisplayReferenceDescription_Gsub = "/currency"
-L.DisplayReferenceDescription = [[Display References allow you to set which item/currency you want to use for automatic objective information. This includes the icon chosen when using "Automatic Icon" and the item associated with a button's "use" attribute.]]
-
-------------------------------------------------------------
-
--- Modules\Objectives\ObjectiveBuilder.lua
-L["Close"] = true
-L["Delete"] = true
-L["Delete All"] = true
-L["Display Ref"] = true
-L["Duplicate"] = true
-L["Duplicate All"] = true
-L["FALSE"] = true
-L["Import Objective"] = true
-L["Invalid Tracker"] = true
-L["New Objective"] = true
-L["NONE"] = true
-L["Objective"] = true
-L["Objective Builder"] = true
-L["Rename"] = true
-L["Total"] = true
-L["Tracker"] = true
-L["TRUE"] = true
-
-------------------------------------------------------------
-
--- Modules\Objectives\Objectives.lua
-L["New"] = true
-
-------------------------------------------------------------
-
--- Modules\Objectives\Trackers.lua
-L["Currency"] = true
-L["Currency ID"] = true
-L["Exclude Objective"] = true
-L["Include All Characters"] = true
-L["Include Bank"] = true
-L["Item"] = true
-L["Item ID/Name/Link"] = true
-L["Objective"] = true
-L["Required"] = true
-L["Type"] = true
-
---*------------------------------------------------------------------------
 --*Errors------------------------------------------------------------------
 
 -- Shared
 L["Error"] = true
 
-
 ------------------------------------------------------------
 
--- Modules\Objectives\Trackers.lua
+-- Modules\ObjectiveBuilder.lua
 L.InvalidObjectiveTitle = "Invalid objective title."
 L.InvalidTrackerExclusion = "Cannot exclude parent objective."
 L.ObjectiveIsExcluded = "Objective is already being excluded."
@@ -95,8 +25,71 @@ L.TrackerIDExists = function(trackerID) return string.format("Already tracking %
 --*------------------------------------------------------------------------
 --*Hints-------------------------------------------------------------------
 
-L.NewTrackerHint = "You can drop an item on this button to quickly add it as a tracker."
+-- Modules\ObjectiveBuilder.lua
 L.NewObjectiveHint = "You can drop an item on this button to quickly add it as an objective."
-L.RemoveExcludeHint = "Shift+right-click this objective to remove it from the list."
+L.NewTrackerHint = "You can drop an item on this button to quickly add it as a tracker."
 L.ObjectiveContextMenuHint = "Right-click this button to open a context menu to rename, duplicate, or delete this objective.\nDrag this button onto a bar to track it."
+L.RemoveExcludeHint = "Shift+right-click this objective to remove it from the list."
 L.TrackerContextMenuHint = "Right-click this button to delete or move this tracker."
+
+--*------------------------------------------------------------------------
+--*Strings-----------------------------------------------------------------
+
+-- Shared
+
+------------------------------------------------------------
+
+-- Modules\ObjectiveBuilder.lua
+L["All"] = true
+L["Any"] = true
+L["Automatic Icon"] = true
+L["Choose"] = true
+L["Close"] = true
+L["Condition"] = true
+L["Currency"] = true
+L["Custom"] = true
+L["Custom Function"] = true
+L["Delete"] = true
+L["Delete All"] = true
+L["Display Ref"] = true
+L["Display Reference"] = true
+L["Duplicate"] = true
+L["Duplicate All"] = true
+L["Enabled"] = true
+L["Exclude Objective"] = true
+L["Excluded"] = true
+L["Export"] = true
+L["FALSE"] = true
+L["Hint"] = true
+L["Import Objective"] = true
+L["Include All Characters"] = true
+L["Include Bank"] = true
+L["Invalid Tracker"] = true
+L["Item"] = true
+L["more"] = true
+L["New Objective"] = true
+L["New Tracker"] = true
+L["None"] = true
+L["NONE"] = true
+L["Objective"] = true
+L["Objective Builder"] = true
+L["Rename"] = true
+L["Required"] = true
+L["Tracker Condition"] = true
+L["Trackers"] = true
+L["TRUE"] = true
+L["Type"] = true
+
+L.DisplayReferenceDescription = [[Display References allow you to set which item/currency you want to use for automatic objective information. This includes the icon chosen when using "Automatic Icon" and the item associated with a button's "use" attribute.]]
+L.DisplayReferenceDescription_Gsub = "/currency"
+
+------------------------------------------------------------
+
+-- Modules\Objectives.lua
+L["New"] = true
+
+------------------------------------------------------------
+
+-- Modules\Trackers.lua
+L["Currency ID"] = true
+L["Item ID/Name/Link"] = true

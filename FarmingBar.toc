@@ -43,9 +43,8 @@ Database.lua
 StaticPopup.lua
 
 # Widgets
-Widgets\FarmingBar.xml
-Widgets\Layouts.lua
-Widgets\Widgets.xml
+Frame\FarmingBar.xml
+Frame\Widgets.xml
 
 # Skins
 Modules\Skins.lua
@@ -54,12 +53,9 @@ Modules\Skins.lua
 Modules\Bars.lua
 Modules\Buttons.lua
 Modules\DragFrame.lua
-
-#Objectives
-Objectives\Objectives.lua
-Objectives\Trackers.lua
-Objectives\ObjectiveBuilder.lua
-Objectives\ObjectiveBuilder-Objective.lua
+Modules\Objectives.lua
+Modules\Trackers.lua
+Modules\ObjectiveBuilder.lua
 
 # Options
 Options\Commands.lua

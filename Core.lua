@@ -10,12 +10,19 @@ local strupper = string.upper
 function FarmingBar:OnInitialize()
     LibStub("LibAddonUtils-1.0"):Embed(addon)
 
+    ------------------------------------------------------------
+
     addon:Initialize_DB()
     for command, enabled in pairs(FarmingBar.db.global.commands) do
         if enabled then
             self:RegisterChatCommand(command, "SlashCommandFunc")
         end
     end
+
+    ------------------------------------------------------------
+
+    addon.tooltip_description = {1, 1, 1, 1, 1, 1, 1}
+    addon.tooltip_keyvalue = {1, .82, 0, 1, 1, 1, 1}
 end
 
 function FarmingBar:OnEnable()

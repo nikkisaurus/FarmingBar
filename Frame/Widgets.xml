@@ -1,0 +1,12 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<!-- Layouts -->
+	<Script file="Widgets\Layouts.lua"/>
+	<!-- Container -->
+	<Script file="Widgets\Container-Window.lua"/>
+	<!-- Widgets -->
+	<Script file="Widgets\Widget-InteractiveLabel.lua"/>
+	<Script file="Widgets\Widget-Label.lua"/>
+	<Script file="Widgets\Widget-ObjectiveButton.lua"/>
+	<Script file="Widgets\Widget-SearchEditBox.lua"/>
+</Ui>

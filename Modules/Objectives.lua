@@ -14,10 +14,11 @@ function addon:CreateObjective(objectiveTitle, objectiveInfo, suppressLoad, fini
     -- Create objective from cursor
     if fromCursor then
         local cursorType, cursorID = GetCursorInfo()
+        ClearCursor()
+
         if cursorType == "item" then
-            ClearCursor()
             self:CacheItem(cursorID, function(itemID)
-                local newObjective = self:CreateObjective((select(1, GetItemInfo(itemID))), {
+                self:CreateObjective((select(1, GetItemInfo(itemID))), {
                     ["enabled"] = true,
                     ["objective"] = false,
                     ["autoIcon"] = true,
@@ -62,9 +63,11 @@ function addon:CreateObjective(objectiveTitle, objectiveInfo, suppressLoad, fini
         ["trackers"] = {},
     }
 
-    local newObjective = addon:GetObjectiveInfo(objectiveTitle or defaultTitle)
+    ------------------------------------------------------------
 
+    local newObjective = addon:GetObjectiveInfo(objectiveTitle or defaultTitle)
     local newObjectiveTitle
+
     if newObjective then
         local i = 2
         while not newObjectiveTitle do
@@ -78,11 +81,17 @@ function addon:CreateObjective(objectiveTitle, objectiveInfo, suppressLoad, fini
     end
 
     newObjectiveTitle = newObjectiveTitle or objectiveTitle or defaultTitle
+
+    ------------------------------------------------------------
+
     FarmingBar.db.global.objectives[newObjectiveTitle] = objectiveInfo or defaultInfo
     if not suppressLoad or finished then
         -- Call when adding multiple at a time and then manually load objectives when done
         self.ObjectiveBuilder:LoadObjectives(newObjectiveTitle)
     end
+
+    ------------------------------------------------------------
+
     return newObjectiveTitle
 end
 
@@ -100,8 +109,11 @@ function addon:DeleteObjective(objectiveTitle)
     self.ObjectiveBuilder:LoadObjectives()
 end
 
+------------------------------------------------------------
+
 function addon:DeleteSelectedObjectives()
     local selected = self.ObjectiveBuilder.status.selected
+
     if #selected > 1 then
         local dialog = StaticPopup_Show("FARMINGBAR_CONFIRM_DELETE_MULTIPLE_OBJECTIVES", #selected)
         if dialog then
@@ -113,6 +125,18 @@ function addon:DeleteSelectedObjectives()
         if dialog then
             dialog.data = objectiveTitle
         end
+    end
+end
+
+------------------------------------------------------------
+
+function addon:DuplicateSelectedObjectives()
+    local selected = self.ObjectiveBuilder.status.selected
+    local multiSelected = #selected > 1
+
+    for key, widget in pairs(selected) do
+        local objectiveTitle = widget:GetObjectiveTitle()
+        addon:CreateObjective(objectiveTitle, addon:GetObjectiveInfo(objectiveTitle), multiSelected and true, multiSelected and key == #selected)
     end
 end
 
@@ -145,8 +169,23 @@ end
 
 ------------------------------------------------------------
 
-function addon:GetObjectiveInfo(objectiveTitle)
-    return FarmingBar.db.global.objectives[objectiveTitle]
+function addon:GetObjectiveInfo(objectiveTitle, tracker)
+    local objectiveInfo = FarmingBar.db.global.objectives[objectiveTitle]
+    local trackerInfo = tracker and self:GetTrackerInfo(objectiveTitle, tracker)
+
+    return objectiveInfo, trackerInfo
+end
+
+------------------------------------------------------------
+
+function addon:GetSelectedObjectiveInfo()
+    local ObjectiveBuilder = self.ObjectiveBuilder
+    local objectiveTitle = ObjectiveBuilder:GetSelectedObjective()
+    local objectiveInfo = self:GetObjectiveInfo(objectiveTitle)
+    local tracker = ObjectiveBuilder:GetSelectedTracker()
+    local trackerInfo = tracker and self:GetTrackerInfo(objectiveTitle, tracker)
+
+    return objectiveTitle, objectiveInfo, tracker, trackerInfo
 end
 
 ------------------------------------------------------------
@@ -167,6 +206,36 @@ function addon:ObjectiveIsExcluded(excluded, objective)
             return objectiveTitle
         end
     end
+end
+
+------------------------------------------------------------
+
+function addon:ParseObjectiveCondition(objectiveTitle)
+    local objectiveInfo = self:GetObjectiveInfo(objectiveTitle)
+    local trackFunc = objectiveInfo.trackFunc
+
+    ------------------------------------------------------------
+
+    while(strfind(trackFunc, "%%complete")) do
+        local pattern = "%%complete%((%d+)%)"
+        local tracker = tonumber(strmatch(trackFunc, pattern))
+
+        trackFunc = gsub(trackFunc, "%%complete%("..tracker.."%)", tracker and tostring(addon:IsTrackerComplete(objectiveTitle, tracker)))
+    end
+
+    ------------------------------------------------------------
+
+    while(strfind(trackFunc, "%%count")) do
+        local pattern = "%%count%((%d+)%)"
+        local tracker = tonumber(strmatch(trackFunc, pattern))
+        local trackerInfo = self:GetTrackerInfo(objectiveTitle, tracker)
+
+        trackFunc = gsub(trackFunc, "%%count%("..tracker.."%)", tracker and addon:GetTrackerCount(trackerInfo.trackerType, trackerInfo.trackerID))
+    end
+
+    ------------------------------------------------------------
+
+    return loadstring(trackFunc)()
 end
 
 ------------------------------------------------------------
