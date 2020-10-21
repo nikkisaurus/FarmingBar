@@ -630,7 +630,7 @@ local methods = {
         -- !Try to remove this if I can set up a coroutine to handle item caching.
         addon:GetTrackerDataTable(trackerInfo.trackerType, trackerInfo.trackerID, function(data)
             local button = addon.ObjectiveBuilder.trackerList.status.children[tracker].button
-            button:SetText(data.name == "" and L["Invalid Tracker"] or data.name)
+            button:SetText(data.name)
             button:SetIcon(data.icon)
         end)
         -- !

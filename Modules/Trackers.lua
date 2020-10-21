@@ -106,7 +106,7 @@ function addon:GetTrackerDataTable(...)
     if dataType == "ITEM" then
         self:CacheItem(dataID, function(dataType, dataID, callback)
             local name, _, _, _, _, _, _, _, _, icon = GetItemInfo(dataID)
-            local data = {name = name, icon = icon, label = addon:GetTrackerTypeLabel(dataType), trackerType = dataType, trackerID = dataID}
+            local data = {name = name == "" and L["Invalid Tracker"] or name, icon = icon, label = addon:GetTrackerTypeLabel(dataType), trackerType = dataType, trackerID = dataID}
 
             if callback then
                 callback(data)
@@ -116,9 +116,7 @@ function addon:GetTrackerDataTable(...)
         end, ...)
     elseif dataType == "CURRENCY" then
         local currency = C_CurrencyInfo.GetCurrencyInfo(tonumber(dataID) or 0)
-        if not currency then return end
-
-        local data = {name = currency.name, icon = currency.iconFileID, label = addon:GetTrackerTypeLabel(dataType), trackerType = dataType, trackerID = dataID}
+        local data = {name = currency and currency.name or L["Invalid Tracker"], icon = currency and currency.iconFileID or 134400, label = addon:GetTrackerTypeLabel(dataType), trackerType = dataType, trackerID = dataID}
 
         if callback then
             callback(data)
