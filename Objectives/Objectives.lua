@@ -137,12 +137,10 @@ function addon:GetObjectiveIcon(objectiveTitle)
             -- Convert db icon value to number if it's a file ID, otherwise use the string value
             icon = (tonumber(objectiveInfo.icon) and tonumber(objectiveInfo.icon) ~= objectiveInfo.icon) and tonumber(objectiveInfo.icon) or objectiveInfo.icon
             icon = (icon == "" or not icon) and 134400 or icon
-        else
-            icon = 134400
         end
     end
 
-    return icon
+    return icon or 134400
 end
 
 ------------------------------------------------------------
