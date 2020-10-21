@@ -2,7 +2,7 @@ local addonName, addon = ...
 local FarmingBar = LibStub("AceAddon-3.0"):NewAddon("FarmingBar", "AceConsole-3.0", "AceEvent-3.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 
-local pairs = pairs
+local pairs, wipe = pairs, table.wipe
 local strupper = string.upper
 
 --*------------------------------------------------------------------------
@@ -57,6 +57,31 @@ function addon:ReportError(error)
     FarmingBar:Print(string.format("%s %s", self.ColorFontString(L["Error"], "red"), error))
 end
 
+------------------------------------------------------------
+
+local missing = {}
 function addon:IsDataStoreLoaded()
-    return IsAddOnLoaded("DataStore") and IsAddOnLoaded("DataStore_Auctions") and IsAddOnLoaded("DataStore_Containers") and IsAddOnLoaded("DataStore_Inventory") and IsAddOnLoaded("DataStore_Mails")
+    wipe(missing)
+
+    if not IsAddOnLoaded("DataStore") then
+        tinsert(missing, "DataStore")
+    end
+
+    if not IsAddOnLoaded("DataStore_Auctions") then
+        tinsert(missing, "DataStore_Auctions")
+    end
+
+    if not IsAddOnLoaded("DataStore_Containers") then
+        tinsert(missing, "DataStore_Containers")
+    end
+
+    if not IsAddOnLoaded("DataStore_Inventory") then
+        tinsert(missing, "DataStore_Inventory")
+    end
+
+    if not IsAddOnLoaded("DataStore_Mails") then
+        tinsert(missing, "DataStore_Mails")
+    end
+
+    return missing
 end
