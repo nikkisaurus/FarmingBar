@@ -50,6 +50,7 @@ Frame\Widgets.xml
 Modules\Skins.lua
 
 # Modules
+Modules\Tooltips.lua
 Modules\Bars.lua
 Modules\Buttons.lua
 Modules\DragFrame.lua

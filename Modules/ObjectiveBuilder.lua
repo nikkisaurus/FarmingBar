@@ -3,8 +3,8 @@ local FarmingBar = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
 local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 local AceGUI = LibStub("AceGUI-3.0", true)
 
-local tinsert, tremove, wipe, pairs, unpack = table.insert, table.remove, table.wipe, pairs, unpack
-local strfind, strformat, gsub, strupper, tonumber = string.find, string.format, string.gsub, string.upper, tonumber
+local tinsert, tremove, wipe, pairs = table.insert, table.remove, table.wipe, pairs
+local strfind, gsub, strupper, tonumber = string.find, string.gsub, string.upper, tonumber
 
 local tabCache = {}
 
@@ -108,6 +108,15 @@ local function displayRefTrackerType_OnValueChanged(self, selected)
     addon.ObjectiveBuilder:Refresh("objectiveTab")
     if selected ~= "NONE" then
         FocusNextWidget(self, "editbox", IsShiftKeyDown())
+    end
+end
+
+------------------------------------------------------------
+
+local function excludeListLabel_OnClick(self, buttonClicked, key)
+    if IsShiftKeyDown() and buttonClicked == "RightButton" then
+        tremove(select(4, addon:GetSelectedObjectiveInfo()).exclude, key)
+        self:LoadExcludeList()
     end
 end
 
@@ -304,97 +313,6 @@ end
 
 --*------------------------------------------------------------------------
 
-local function ObjectiveButton_Tooltip(self, tooltip)
-    local objectiveTitle = self:GetObjectiveTitle()
-    local objectiveInfo = addon:GetObjectiveInfo(objectiveTitle)
-    if not objectiveInfo then return end
-    local numTrackers = #objectiveInfo.trackers
-
-    ------------------------------------------------------------
-
-    tooltip:AddLine(objectiveTitle)
-
-    GameTooltip_AddBlankLinesToTooltip(GameTooltip, 1)
-    tooltip:AddDoubleLine(L["Enabled"], objectiveInfo.enabled and L["TRUE"] or L["FALSE"], unpack(addon.tooltip_keyvalue))
-    tooltip:AddDoubleLine(L["Objective"], objectiveInfo.objective or L["FALSE"], unpack(addon.tooltip_keyvalue))
-
-    GameTooltip_AddBlankLinesToTooltip(GameTooltip, 1)
-    if objectiveInfo.displayRef.trackerType then
-        -- !Try to remove this if I can set up a coroutine to handle item caching.
-        addon:GetTrackerDataTable(objectiveInfo.displayRef.trackerType, objectiveInfo.displayRef.trackerID, function(data)
-            tooltip:AddDoubleLine(L["Display Ref"], data.name, unpack(addon.tooltip_keyvalue))
-        end)
-        -- !
-    else
-        tooltip:AddDoubleLine(L["Display Ref"], L["NONE"], unpack(addon.tooltip_keyvalue))
-    end
-
-    GameTooltip_AddBlankLinesToTooltip(GameTooltip, 1)
-    tooltip:AddDoubleLine(L["Trackers"], numTrackers, unpack(addon.tooltip_keyvalue))
-    for key, trackerInfo in pairs(objectiveInfo.trackers) do
-        if key > 10 then
-            tooltip:AddLine(strformat("%d %s...", numTrackers - 10, L["more"]), unpack(addon.tooltip_description))
-            tooltip:AddTexture(134400)
-            break
-        else
-            -- !Try to remove this if I can set up a coroutine to handle item caching.
-            addon:GetTrackerDataTable(trackerInfo.trackerType, trackerInfo.trackerID, function(data)
-                tooltip:AddLine(data.name, unpack(addon.tooltip_description))
-                tooltip:AddTexture(data.icon or 134400)
-            end)
-            -- !
-        end
-    end
-
-    ------------------------------------------------------------
-
-    GameTooltip_AddBlankLinesToTooltip(GameTooltip, 1)
-    if FarmingBar.db.global.hints.ObjectiveBuilder then
-        tooltip:AddLine(string.format("%s:", L["Hint"]))
-        tooltip:AddLine(L.ObjectiveContextMenuHint, unpack(addon.tooltip_description))
-    end
-end
-
-------------------------------------------------------------
-
-local function TrackerButton_Tooltip(self, tooltip)
-    local _, _, tracker, trackerInfo = addon:GetSelectedObjectiveInfo()
-    if not trackerInfo then return end
-    local numExcluded = #trackerInfo.exclude
-
-    ------------------------------------------------------------
-
-    tooltip:SetHyperlink(string.format("%s:%s", string.lower(trackerInfo.trackerType), trackerInfo.trackerID))
-
-    GameTooltip_AddBlankLinesToTooltip(GameTooltip, 1)
-    tooltip:AddDoubleLine(L["Objective"], trackerInfo.objective or L["FALSE"], unpack(addon.tooltip_keyvalue))
-    tooltip:AddDoubleLine(L["Include Bank"], trackerInfo.includeBank and L["TRUE"] or L["FALSE"], unpack(addon.tooltip_keyvalue))
-    tooltip:AddDoubleLine(L["Include All Characters"], trackerInfo.includeAllCharacters and L["TRUE"] or L["FALSE"], unpack(addon.tooltip_keyvalue))
-
-    GameTooltip_AddBlankLinesToTooltip(GameTooltip, 1)
-    tooltip:AddDoubleLine(L["Excluded"], numExcluded, unpack(addon.tooltip_keyvalue))
-    for key, excludedTitle in pairs(trackerInfo.exclude) do
-        if key > 10 then
-            tooltip:AddLine(string.format("%d %s...", numExcluded - 10, L["more"]), unpack(addon.tooltip_description))
-            tooltip:AddTexture(134400)
-            break
-        else
-            tooltip:AddLine(excludedTitle)
-            tooltip:AddTexture(addon:GetObjectiveIcon(excludedTitle))
-        end
-    end
-
-    ------------------------------------------------------------
-
-    GameTooltip_AddBlankLinesToTooltip(GameTooltip, 1)
-    if FarmingBar.db.global.hints.ObjectiveBuilder then
-        tooltip:AddLine(string.format("%s:", L["Hint"]))
-        tooltip:AddLine(L.TrackerContextMenuHint, unpack(addon.tooltip_description))
-    end
-end
-
---*------------------------------------------------------------------------
-
 local function GetObjectiveContextMenu()
     local selected = addon.ObjectiveBuilder.status.selected
     local multiSelected = #selected > 1
@@ -503,23 +421,9 @@ local methods = {
             label:SetImage(addon:GetObjectiveIcon(objectiveTitle))
             excludeList:AddChild(label)
 
-            label:SetCallback("OnClick", function(_, _, buttonClicked)
-                -- !Move this to a local
-                if IsShiftKeyDown() and buttonClicked == "RightButton" then
-                    tremove(trackerInfo.exclude, key)
-                    self:LoadExcludeList()
-                end
-                -- !
-            end)
+            label:SetCallback("OnClick", function(_, _, buttonClicked) excludeListLabel_OnClick(self, buttonClicked, key) end)
 
-            label:SetTooltip(function(self, tooltip)
-                -- !Move this to a local
-                if FarmingBar.db.global.hints.ObjectiveBuilder then
-                    tooltip:AddLine(string.format("%s:", L["Hint"]))
-                    tooltip:AddLine(L.RemoveExcludeHint, unpack(addon.tooltip_description))
-                end
-                -- !
-            end)
+            label:SetTooltip(addon.GetExcludeListLabelTooltip)
         end
     end,
 
@@ -541,7 +445,7 @@ local methods = {
                 button:SetIcon(addon:GetObjectiveIcon(objectiveTitle))
                 button:SetStatus(self.status)
                 button:SetMenuFunc(GetObjectiveContextMenu)
-                button:SetTooltip(ObjectiveButton_Tooltip)
+                button:SetTooltip(addon.GetObjectiveButtonTooltip)
                 sideContent:AddChild(button)
                 tinsert(self.status.children, {objectiveTitle = objectiveTitle, button = button})
 
@@ -586,7 +490,7 @@ local methods = {
             -- !
             button:SetStatus(trackerList.status)
             button:SetMenuFunc(GetTrackerContextMenu)
-            button:SetTooltip(TrackerButton_Tooltip)
+            button:SetTooltip(addon.GetTrackerButtonTooltip)
             trackerList:AddChild(button)
 
             ------------------------------------------------------------
@@ -679,12 +583,7 @@ function addon:Initialize_ObjectiveBuilder()
     newObjectiveButton:SetCallback("OnReceiveDrag", function() addon:CreateObjective(_, _, _, _, true) end)
 
     if FarmingBar.db.global.hints.ObjectiveBuilder then
-        newObjectiveButton:SetTooltip(function(self, tooltip)
-            -- !Move this to a local
-            tooltip:AddLine(strformat("%s:", L["Hint"]))
-            tooltip:AddLine(L.NewObjectiveHint, unpack(addon.tooltip_description))
-            -- !
-        end)
+        newObjectiveButton:SetTooltip(addon.GetNewObjectiveButtonTooltip)
     end
 
     ------------------------------------------------------------
@@ -1002,12 +901,7 @@ function addon:LoadTrackersTab(objectiveTitle)
     newTrackerButton:SetCallback("OnClick", function() addon:CreateTracker() end)
     newTrackerButton:SetCallback("OnReceiveDrag", function() addon:CreateTracker(true) end)
     if FarmingBar.db.global.hints.ObjectiveBuilder then
-        newTrackerButton:SetTooltip(function(self, tooltip)
-            -- !Move this to a local
-            tooltip:AddLine(string.format("%s:", L["Hint"]))
-            tooltip:AddLine(L.NewTrackerHint, unpack(addon.tooltip_description))
-            -- !
-        end)
+        newTrackerButton:SetTooltip(addon.GetNewTrackerButtonTooltip)
     end
 
     ------------------------------------------------------------

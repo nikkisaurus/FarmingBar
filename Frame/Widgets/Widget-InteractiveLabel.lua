@@ -20,7 +20,7 @@ Scripts
 local function Control_OnEnter(frame)
     if frame.obj.tooltip then
         GameTooltip:SetOwner(frame, frame.obj.tooltipAnchor or "ANCHOR_BOTTOMRIGHT", 0, 0)
-        frame.obj:tooltip(GameTooltip)
+        frame.obj:tooltip(frame.obj, GameTooltip)
         GameTooltip:Show()
     end
 end
