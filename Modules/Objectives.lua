@@ -154,7 +154,7 @@ function addon:GetObjectiveIcon(objectiveTitle)
         local trackerType, trackerID = lookupTable and lookupTable.trackerType, lookupTable and lookupTable.trackerID
 
         if trackerType == "ITEM" then
-            icon = C_Item.GetItemIconByID(tonumber(trackerID))
+            icon = C_Item.GetItemIconByID(tonumber(trackerID) or 0)
         elseif trackerType == "CURRENCY" then
             local currency = C_CurrencyInfo.GetCurrencyInfo(tonumber(trackerID) or 0)
             icon = currency and currency.iconFileID

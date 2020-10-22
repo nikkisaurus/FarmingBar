@@ -66,6 +66,7 @@ L["Include All Characters"] = true
 L["Include Bank"] = true
 L["Invalid Tracker"] = true
 L["Item"] = true
+L["Macrotext"] = true
 L["Missing"] = true
 L["more"] = true
 L["New Objective"] = true
@@ -80,7 +81,7 @@ L["Trackers"] = true
 L["TRUE"] = true
 L["Type"] = true
 
-L.DisplayReferenceDescription = [[Display References allow you to set which item/currency you want to use for automatic objective information. This includes the icon chosen when using "Automatic Icon" and the item associated with a button's "use" attribute.]]
+L.DisplayReferenceDescription = [[Display References allow you to set which item/currency you want to use for automatic objective information. This includes the icon chosen when using "Automatic Icon" and the item associated with a button's "use" attribute. However, when set to a macrotext, the icon will be unaffected.]]
 L.DisplayReferenceDescription_Gsub = "/currency"
 
 ------------------------------------------------------------

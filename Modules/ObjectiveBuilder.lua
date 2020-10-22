@@ -15,7 +15,7 @@ local function FocusNextWidget(widget, widgetType, reverse)
     for key, w in addon.pairs(widget.parent.children, reverse and function(a, b) return a > b end or function(a, b) return a < b end) do
         if w == widget then
             widgetKey = key
-        elseif widgetKey and (not widgetType or w[widgetType]) then
+        elseif widgetKey and (not widgetType or w.type == widgetType) then
             w:SetFocus()
             if widgetType == "editbox" then
                 w:HighlightText()
@@ -36,7 +36,6 @@ end
 
 local function customCondition_OnEnterPressed(self)
     addon:SetObjectiveDBInfo((addon:GetSelectedObjectiveInfo()), "trackFunc", self:GetText())
-    -- !print(addon:ParseObjectiveCondition((addon:GetSelectedObjectiveInfo())))
 end
 
 ------------------------------------------------------------
@@ -47,7 +46,7 @@ local function displayIcon_OnEnterPressed(self)
     self:ClearFocus()
 
     addon.ObjectiveBuilder:Refresh("objectiveTab")
-    FocusNextWidget(self, "editbox", IsShiftKeyDown())
+    FocusNextWidget(self, "EditBox", IsShiftKeyDown())
 end
 
 ------------------------------------------------------------
@@ -72,6 +71,12 @@ end
 
 ------------------------------------------------------------
 
+local function displayRefMacrotext_OnEnterPressed(self)
+    addon:SetObjectiveDBInfo((addon:GetSelectedObjectiveInfo()), "displayRef.trackerID", self:GetText())
+end
+
+------------------------------------------------------------
+
 local function displayRefTrackerID_OnEnterPressed(self)
     local objectiveTitle, objectiveInfo = addon:GetSelectedObjectiveInfo()
     local validTrackerID = addon:ValidateObjectiveData(objectiveInfo.displayRef.trackerType, self:GetText())
@@ -83,7 +88,7 @@ local function displayRefTrackerID_OnEnterPressed(self)
         self:ClearFocus()
 
         addon.ObjectiveBuilder:Refresh("objectiveTab")
-        FocusNextWidget(self, "editbox", IsShiftKeyDown())
+        FocusNextWidget(self, "EditBox", IsShiftKeyDown())
     else
         addon:ReportError(L.InvalidTrackerID(objectiveInfo.displayRef.trackerType, self:GetText()))
 
@@ -97,17 +102,12 @@ end
 local function displayRefTrackerType_OnValueChanged(self, selected)
     local objectiveTitle = addon:GetSelectedObjectiveInfo()
 
-    if selected == "NONE" then
-        addon:SetObjectiveDBInfo(objectiveTitle, "displayRef.trackerType", false)
-        addon:SetObjectiveDBInfo(objectiveTitle, "displayRef.trackerID", false)
-
-    else
-        addon:SetObjectiveDBInfo(objectiveTitle, "displayRef.trackerType", selected)
-    end
+    addon:SetObjectiveDBInfo(objectiveTitle, "displayRef.trackerType", selected ~= "NONE" and selected or false)
+    addon:SetObjectiveDBInfo(objectiveTitle, "displayRef.trackerID", false)
 
     addon.ObjectiveBuilder:Refresh("objectiveTab")
     if selected ~= "NONE" then
-        FocusNextWidget(self, "editbox", IsShiftKeyDown())
+        FocusNextWidget(self, selected == "MACROTEXT" and "MultiLineEditBox" or "EditBox")
     end
 end
 
@@ -124,7 +124,7 @@ end
 
 local function excludeObjectives_OnEnterPressed(self)
     if IsShiftKeyDown() then
-        FocusNextWidget(self, "editbox", IsShiftKeyDown())
+        FocusNextWidget(self, "EditBox", IsShiftKeyDown())
         return
     end
 
@@ -193,7 +193,7 @@ local function objective_OnEnterPressed(self)
     self:SetText(objective)
     self:ClearFocus()
 
-    FocusNextWidget(self, "editbox", IsShiftKeyDown())
+    FocusNextWidget(self, "EditBox", IsShiftKeyDown())
 end
 
 ------------------------------------------------------------
@@ -219,7 +219,7 @@ local function trackerID_OnEnterPressed(self)
 
         ObjectiveBuilder:UpdateTrackerButton(tracker)
         ObjectiveBuilder:Refresh("trackerTab")
-        FocusNextWidget(self, "editbox", IsShiftKeyDown())
+        FocusNextWidget(self, "EditBox", IsShiftKeyDown())
 
         return
     end
@@ -241,7 +241,7 @@ local function trackerID_OnEnterPressed(self)
                 self:HighlightText()
                 self:SetFocus()
             else
-                FocusNextWidget(self, "editbox", IsShiftKeyDown())
+                FocusNextWidget(self, "EditBox", IsShiftKeyDown())
             end
         else
             addon:SetTrackerDBInfo(objectiveTitle, tracker, "trackerID", newTrackerID)
@@ -251,7 +251,7 @@ local function trackerID_OnEnterPressed(self)
 
             ObjectiveBuilder:UpdateTrackerButton(tracker)
             ObjectiveBuilder:Refresh("trackerTab")
-            FocusNextWidget(self, "editbox", IsShiftKeyDown())
+            FocusNextWidget(self, "EditBox", IsShiftKeyDown())
         end
     else
         addon:ReportError(L.InvalidTrackerID(trackerInfo.trackerType, self:GetText()))
@@ -274,7 +274,7 @@ local function trackerObjective_OnEnterPressed(self)
     self:SetText(objective)
     self:ClearFocus()
 
-    FocusNextWidget(self, "editbox", IsShiftKeyDown())
+    FocusNextWidget(self, "EditBox", IsShiftKeyDown())
 end
 
 ------------------------------------------------------------
@@ -838,9 +838,10 @@ function addon:ObjectiveBuilder_LoadObjectiveTab(objectiveTitle)
         {
             ITEM = L["Item"],
             CURRENCY = L["Currency"],
+            MACROTEXT = L["Macrotext"],
             NONE = L["None"],
         },
-        {"ITEM", "CURRENCY", "NONE"}
+        {"ITEM", "CURRENCY", "MACROTEXT", "NONE"}
     )
     displayRefTrackerType:SetValue(objectiveInfo.displayRef.trackerType or "NONE")
     tabContent:AddChild(displayRefTrackerType)
@@ -860,7 +861,15 @@ function addon:ObjectiveBuilder_LoadObjectiveTab(objectiveTitle)
 
     ------------------------------------------------------------
 
-    if objectiveInfo.displayRef.trackerType then
+    if objectiveInfo.displayRef.trackerType == "MACROTEXT" then
+        local displayRefMacrotext = AceGUI:Create("MultiLineEditBox")
+        displayRefMacrotext:SetFullWidth(true)
+        displayRefMacrotext:SetLabel(L["Macrotext"])
+        displayRefMacrotext:SetText(objectiveInfo.displayRef.trackerID or "")
+        tabContent:AddChild(displayRefMacrotext)
+
+        displayRefMacrotext:SetCallback("OnEnterPressed", displayRefMacrotext_OnEnterPressed)
+    elseif objectiveInfo.displayRef.trackerType and objectiveInfo.displayRef.trackerType ~= "NONE" then
         local displayRefTrackerID = AceGUI:Create("EditBox")
         displayRefTrackerID:SetFullWidth(true)
         displayRefTrackerID:SetLabel(self:GetTrackerTypeLabel(objectiveInfo.displayRef.trackerType))
