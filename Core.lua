@@ -12,17 +12,36 @@ function FarmingBar:OnInitialize()
 
     ------------------------------------------------------------
 
+    addon.bars = {}
+
+    addon.maxButtons = 100
+    addon.maxButtonPadding = 20
+    addon.maxButtonSize = 60
+    addon.maxFontSize = 32
+    addon.maxScale = 5
+    addon.minButtonPadding = -3
+    addon.minButtonSize = 15
+    addon.minFontSize = 4
+    addon.minScale = .25
+    addon.moveDelay = .4
+    addon.OffsetX = 10
+    addon.OffsetY = 10
+
+    addon.tooltip_description = {1, 1, 1, 1, 1, 1, 1}
+    addon.tooltip_keyvalue = {1, .82, 0, 1, 1, 1, 1}
+
+    addon.barProgress = "%B progress: %progressColor%%c/%t%color%%if(%p>0, (%p%%),)if%"
+    addon.withObjective = "%if(%p>=100 and %C<%o,Objective complete!,Farming update:)if% %n %progressColor%%c/%o%color% (%if(%O>1,x%O ,)if%%diffColor%%d%color%)"
+    addon.withoutObjective = "Farming update: %n x%c (%diffColor%%d%color%)"
+
+    ------------------------------------------------------------
+
     addon:Initialize_DB()
     for command, enabled in pairs(FarmingBar.db.global.commands) do
         if enabled then
             self:RegisterChatCommand(command, "SlashCommandFunc")
         end
     end
-
-    ------------------------------------------------------------
-
-    addon.tooltip_description = {1, 1, 1, 1, 1, 1, 1}
-    addon.tooltip_keyvalue = {1, .82, 0, 1, 1, 1, 1}
 end
 
 function FarmingBar:OnEnable()
