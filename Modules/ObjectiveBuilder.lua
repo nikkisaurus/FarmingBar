@@ -717,7 +717,6 @@ function addon:ObjectiveBuilder_LoadConditionTab(objectiveTitle)
 
     ------------------------------------------------------------
 
-    -- TODO: ObjectiveBuilder_LoadConditionTab()
     local trackCondition = AceGUI:Create("Dropdown")
     trackCondition:SetFullWidth(true)
     trackCondition:SetLabel(L["Tracker Condition"])

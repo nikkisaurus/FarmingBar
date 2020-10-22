@@ -54,7 +54,7 @@ function addon:GetObjectiveButtonTooltip(widget, tooltip)
         else
             -- !Try to remove this if I can set up a coroutine to handle item caching.
             addon:GetTrackerDataTable(trackerInfo.trackerType, trackerInfo.trackerID, function(data)
-                tooltip:AddLine(data.name, unpack(addon.tooltip_description))
+                tooltip:AddDoubleLine(data.name, trackerInfo.objective, unpack(addon.tooltip_description))
                 tooltip:AddTexture(data.icon or 134400)
             end)
             -- !
