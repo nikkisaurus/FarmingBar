@@ -43,7 +43,6 @@ Database.lua
 StaticPopup.lua
 
 # Frame
-Frame\FarmingBar.xml
 Frame\Widgets.xml
 
 # Modules

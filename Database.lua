@@ -5,6 +5,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 function addon:Initialize_DB()
     local defaults = {
         char = {
+            enabled = true, --enables bar creation for new users/characters; disable when user deletes all bars
             bars = {},
         },
 
@@ -113,7 +114,7 @@ function addon:Initialize_DB()
 
             debug = {
                 commands = true,
-                ObjectiveBuilder = true,
+                ObjectiveBuilder = false,
                 ObjectiveBuilderTrackers = false,
                 ObjectiveBuilderCondition = false,
             },
@@ -174,6 +175,16 @@ function addon:Initialize_DB()
 end
 
 --*------------------------------------------------------------------------
+
+function addon:GetDefaultBar()
+    local bar = {
+
+    }
+
+    return bar
+end
+
+------------------------------------------------------------
 
 function addon:GetDefaultObjective()
     local objective = {
