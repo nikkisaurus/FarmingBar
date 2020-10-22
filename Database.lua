@@ -7,6 +7,7 @@ function addon:Initialize_DB()
         char = {
             bars = {},
         },
+
         global = {
             enabled = true,
 
@@ -120,8 +121,38 @@ function addon:Initialize_DB()
             ------------------------------------------------------------
 
             objectives = {},
-            skins = {},
             templates = {},
+
+            ------------------------------------------------------------
+
+            skins = {
+                -- ["**"] = {},
+            },
+        },
+
+        profile = {
+            style = {
+                skin = "FarmingBar_Default",
+                font = {
+                    face = "Friz Quadrata TT",
+                    outline = "OUTLINE",
+                    size = 11,
+                    fontStrings = {
+                        ["**"] = {
+                            colorType = "CUSTOM", -- "CUSTOM", "INCLUDEBANK", "ITEMQUALITY" --profile.style.count.type
+                            color = {1, 1, 1, 1}, --profile.style.count.color
+                        },
+                        count = {},
+                        objective = {},
+                    },
+                },
+                buttonLayers = {
+                    AutoCastable = true, --bank overlay
+                    Border = false, --item quality
+                    Cooldown = false,
+                    CooldownEdge = false,
+                },
+            },
         },
     }
 
