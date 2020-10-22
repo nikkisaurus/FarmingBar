@@ -221,6 +221,16 @@ function addon:GetObjectiveCount(objectiveTitle)
         for _, trackerInfo in pairs(objectiveInfo.trackers) do
             count = count + addon:GetTrackerCount(trackerInfo)
         end
+    elseif objectiveInfo.trackCondition == "ALL" then
+        local pendingCount
+        for _, trackerInfo in pairs(objectiveInfo.trackers) do
+            if not pendingCount then
+                pendingCount = addon:GetTrackerCount(trackerInfo)
+            else
+                pendingCount = min(pendingCount, addon:GetTrackerCount(trackerInfo))
+            end
+        end
+        count = count + pendingCount
     elseif objectiveInfo.trackCondition == "CUSTOM" then
         local trackFunc = objectiveInfo.trackFunc
 
@@ -242,8 +252,6 @@ function addon:GetObjectiveCount(objectiveTitle)
 
             count = loadstring(trackFunc)() or 0
         end
-    elseif objectiveInfo.trackCondition == "ALL" then
-
     end
 
     return count > 0 and count or 0
@@ -276,4 +284,12 @@ function addon:SetObjectiveDBInfo(objectiveTitle, key, value)
         end
     end
     path[keys[#keys]] = value
+end
+
+------------------------------------------------------------
+
+function addon:ValidateCustomCondition(condition)
+    local func, err = loadstring(gsub(condition, "%%", ""))
+    err = err or not strfind(condition, "return")
+    return not err
 end

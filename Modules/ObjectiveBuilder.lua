@@ -34,12 +34,6 @@ end
 
 ------------------------------------------------------------
 
-function addon:ValidateCustomCondition(condition)
-    local func, err = loadstring(condition)
-    err = err or not strfind(condition, "return")
-    return not err
-end
-
 local function customCondition_OnEnterPressed(self)
     local condition = self:GetText()
 
@@ -729,11 +723,11 @@ function addon:ObjectiveBuilder_LoadConditionTab(objectiveTitle)
     trackCondition:SetLabel(L["Tracker Condition"])
     trackCondition:SetList(
         {
-            ALL = L["All"],
             ANY = L["Any"],
+            ALL = L["All"],
             CUSTOM = L["Custom"],
         },
-        {"ALL", "ANY", "CUSTOM"}
+        {"ANY", "ALL", "CUSTOM"}
     )
     trackCondition:SetValue(objectiveInfo.trackCondition)
     tabContent:AddChild(trackCondition)
