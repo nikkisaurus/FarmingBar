@@ -126,7 +126,7 @@ function addon:GetObjectiveIcon(objectiveTitle)
 
     local icon
     if objectiveInfo.autoIcon then
-        local lookupTable = objectiveInfo.displayRef.trackerType and objectiveInfo.displayRef or objectiveInfo.trackers[1]
+        local lookupTable = (objectiveInfo.displayRef.trackerType and objectiveInfo.displayRef.trackerType ~= "MACROTEXT") and objectiveInfo.displayRef or objectiveInfo.trackers[1]
         local trackerType, trackerID = lookupTable and lookupTable.trackerType, lookupTable and lookupTable.trackerID
 
         if trackerType == "ITEM" then
