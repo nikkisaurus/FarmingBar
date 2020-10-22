@@ -10,7 +10,11 @@ local GetCursorInfo, ClearCursor = GetCursorInfo, ClearCursor
 
 --*------------------------------------------------------------------------
 
-function addon:CreateObjective(objectiveTitle, objectiveInfo, suppressLoad, finished, fromCursor)
+function addon:CreateObjective(objectiveTitle, objectiveInfo, suppressLoading, finishedAdding, fromCursor)
+    local defaultInfo = self:GetDefaultObjective()
+
+    ------------------------------------------------------------
+
     -- Create objective from cursor
     if fromCursor then
         local cursorType, cursorID = GetCursorInfo()
@@ -18,29 +22,17 @@ function addon:CreateObjective(objectiveTitle, objectiveInfo, suppressLoad, fini
 
         if cursorType == "item" then
             self:CacheItem(cursorID, function(itemID)
-                self:CreateObjective((select(1, GetItemInfo(itemID))), {
-                    ["enabled"] = true,
-                    ["objective"] = false,
-                    ["autoIcon"] = true,
-                    ["icon"] = C_Item.GetItemIconByID(itemID),
-                    ["displayRef"] = {
-                        ["trackerType"] = "ITEM",
-                        ["trackerID"] = itemID,
-                    },
-                    ["trackCondition"] = "ALL",
-                    ["trackFunc"] = "",
-                    ["trackers"] = {
-                        {
-                            ["trackerType"] = "ITEM",
-                            ["trackerID"] = itemID,
-                            ["objective"] = 1,
-                            ["includeBank"] = false,
-                            ["includeAllChars"] = false,
-                            ["exclude"] = {
-                            },
-                        }
-                    },
-                })
+                defaultInfo.icon = C_Item.GetItemIconByID(itemID)
+                defaultInfo.displayRef.trackerType = "ITEM"
+                defaultInfo.displayRef.trackerID = itemID
+
+                local tracker = addon:GetDefaultTracker()
+                tracker.trackerType = "ITEM"
+                tracker.trackerID = itemID
+
+                tinsert(defaultInfo.trackers, tracker)
+
+                local newObjectiveTitle = self:CreateObjective((select(1, GetItemInfo(itemID))), defaultInfo)
             end, cursorID)
             return
         end
@@ -48,25 +40,8 @@ function addon:CreateObjective(objectiveTitle, objectiveInfo, suppressLoad, fini
 
     ------------------------------------------------------------
 
-    local defaultTitle = L["New"]
-    local defaultInfo = {
-        ["enabled"] = true,
-        ["objective"] = false,
-        ["autoIcon"] = true,
-        ["icon"] = "134400",
-        ["displayRef"] = {
-            ["trackerType"] = false,
-            ["trackerID"] = false,
-        },
-        ["trackCondition"] = "ALL",
-        ["trackFunc"] = "",
-        ["trackers"] = {},
-    }
-
-    ------------------------------------------------------------
-
+    local defaultTitle, newObjectiveTitle = L["New"]
     local newObjective = addon:GetObjectiveInfo(objectiveTitle or defaultTitle)
-    local newObjectiveTitle
 
     if newObjective then
         local i = 2
@@ -85,7 +60,8 @@ function addon:CreateObjective(objectiveTitle, objectiveInfo, suppressLoad, fini
     ------------------------------------------------------------
 
     FarmingBar.db.global.objectives[newObjectiveTitle] = objectiveInfo or defaultInfo
-    if not suppressLoad or finished then
+
+    if not suppressLoading or finishedAdding then
         -- Call when adding multiple at a time and then manually load objectives when done
         self.ObjectiveBuilder:LoadObjectives(newObjectiveTitle)
     end

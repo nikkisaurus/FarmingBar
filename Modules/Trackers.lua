@@ -16,40 +16,28 @@ function addon:CreateTracker(fromCursor)
 
     ------------------------------------------------------------
 
+    local defaultTracker = addon:GetDefaultTracker()
+
     if fromCursor then
         -- Create tracker from cursor
         local cursorType, cursorID = GetCursorInfo()
         ClearCursor()
 
         if cursorType == "item" and not self:TrackerExists(cursorID) then
-            tinsert(trackersTable, {
-                ["trackerType"] = "ITEM",
-                ["trackerID"] = cursorID,
-                ["objective"] = 1,
-                ["includeBank"] = false,
-                ["includeAllChars"] = false,
-                ["exclude"] = {
-                },
-            })
+            defaultTracker.trackerType = "ITEM"
+            defaultTracker.trackerID = cursorID
         else
             addon:ReportError(L.TrackerIDExists(cursorID))
             return
         end
-    else
-        tinsert(trackersTable, {
-            ["trackerType"] = "ITEM",
-            ["trackerID"] = "",
-            ["objective"] = 1,
-            ["includeBank"] = false,
-            ["includeAllChars"] = false,
-            ["exclude"] = {
-            },
-        })
     end
+
+    tinsert(trackersTable, defaultTracker)
 
     ------------------------------------------------------------
 
     ObjectiveBuilder:LoadTrackers()
+
     trackerStatus.children[#trackersTable].button.frame:Click()
     if not fromCursor then
         C_Timer.After(.01, function()
@@ -102,7 +90,7 @@ function addon:GetTrackerCount(trackerInfo)
         for _, objectiveTitle in pairs(trackerInfo.exclude) do
             local objectiveInfo = addon:GetObjectiveInfo(objectiveTitle)
             -- Only exclude if enabled and an objective is set (otherwise, how do we know how many to exclude?)
-            if objectiveInfo.enabled and addon:IsTrackingObjective(objectiveTitle) and objectiveInfo.objective and objectiveInfo.objective > 0 then
+            if addon:IsTrackingObjective(objectiveTitle) and objectiveInfo.objective and objectiveInfo.objective > 0 then
                 for _, eTrackerInfo in pairs(objectiveInfo.trackers) do
                     if eTrackerInfo.trackerID == trackerInfo.trackerID then
                         -- Get the max amount used for the objective: either the objective itself or the count

@@ -789,23 +789,6 @@ function addon:ObjectiveBuilder_LoadObjectiveTab(objectiveTitle)
 
     ------------------------------------------------------------
 
-    local spacer_enabled = AceGUI:Create("Label")
-    spacer_enabled:SetFullWidth(true)
-    spacer_enabled:SetText(" ")
-    tabContent:AddChild(spacer_enabled)
-
-    ------------------------------------------------------------
-
-    local enabled = AceGUI:Create("CheckBox")
-    enabled:SetFullWidth(true)
-    enabled:SetValue(objectiveInfo.enabled)
-    enabled:SetLabel(L["Enabled"])
-    tabContent:AddChild(enabled)
-
-    enabled:SetCallback("OnValueChanged", function(self) addon:SetObjectiveDBInfo(objectiveTitle, "enabled", self:GetValue()) end)
-
-    ------------------------------------------------------------
-
     local autoIcon = AceGUI:Create("CheckBox")
     autoIcon:SetFullWidth(true)
     autoIcon:SetValue(objectiveInfo.autoIcon)

@@ -113,7 +113,7 @@ function addon:Initialize_DB()
 
             debug = {
                 commands = true,
-                ObjectiveBuilder = false,
+                ObjectiveBuilder = true,
                 ObjectiveBuilderTrackers = false,
                 ObjectiveBuilderCondition = false,
             },
@@ -171,4 +171,38 @@ function addon:Initialize_DB()
     -- Check for previous versions first and convert before changing the version.
     -- This should only be done once database is finalized.
     FarmingBar.db.global.version = 3
+end
+
+--*------------------------------------------------------------------------
+
+function addon:GetDefaultObjective()
+    local objective = {
+        ["objective"] = false,
+        ["autoIcon"] = true,
+        ["icon"] = "134400",
+        ["displayRef"] = {
+            ["trackerType"] = false,
+            ["trackerID"] = false,
+        },
+        ["trackCondition"] = "ALL",
+        ["trackFunc"] = "",
+        ["trackers"] = {},
+    }
+
+    return objective
+end
+
+------------------------------------------------------------
+
+function addon:GetDefaultTracker()
+    local tracker = {
+        ["includeAllChars"] = false,
+        ["includeBank"] = false,
+        ["exclude"] = {},
+        ["objective"] = 1,
+        ["trackerType"] = "ITEM",
+        ["trackerID"] = "",
+    }
+
+    return tracker
 end
