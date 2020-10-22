@@ -38,7 +38,7 @@ local function customCondition_OnEnterPressed(self)
     local condition = self:GetText()
 
     if addon:ValidateCustomCondition(condition) or condition == "" then
-        addon:SetObjectiveDBInfo((addon:GetSelectedObjectiveInfo()), "trackFunc", condition)
+        addon:SetObjectiveDBInfo((addon:GetSelectedObjectiveInfo()), "customCondition", condition)
     else
         addon:ReportError(L.InvalidCustomCondition)
         self:SetFocus()
@@ -206,8 +206,8 @@ end
 
 ------------------------------------------------------------
 
-local function trackCondition_OnValueChanged(selected)
-    addon:SetObjectiveDBInfo((addon:GetSelectedObjectiveInfo()), "trackCondition", selected)
+local function trackerCondition_OnValueChanged(selected)
+    addon:SetObjectiveDBInfo((addon:GetSelectedObjectiveInfo()), "trackerCondition", selected)
     addon.ObjectiveBuilder:Refresh("conditionTab")
 end
 
@@ -300,8 +300,8 @@ end
 
 ------------------------------------------------------------
 
-local function trackFunc_OnEnterPressed(self)
-    addon:SetObjectiveDBInfo((addon:GetSelectedObjectiveInfo()), "trackFunc", self:GetText())
+local function customCondition_OnEnterPressed(self)
+    addon:SetObjectiveDBInfo((addon:GetSelectedObjectiveInfo()), "customCondition", self:GetText())
 end
 
 --*------------------------------------------------------------------------
@@ -717,10 +717,10 @@ function addon:ObjectiveBuilder_LoadConditionTab(objectiveTitle)
 
     ------------------------------------------------------------
 
-    local trackCondition = AceGUI:Create("Dropdown")
-    trackCondition:SetFullWidth(true)
-    trackCondition:SetLabel(L["Tracker Condition"])
-    trackCondition:SetList(
+    local trackerCondition = AceGUI:Create("Dropdown")
+    trackerCondition:SetFullWidth(true)
+    trackerCondition:SetLabel(L["Tracker Condition"])
+    trackerCondition:SetList(
         {
             ANY = L["Any"],
             ALL = L["All"],
@@ -728,18 +728,18 @@ function addon:ObjectiveBuilder_LoadConditionTab(objectiveTitle)
         },
         {"ANY", "ALL", "CUSTOM"}
     )
-    trackCondition:SetValue(objectiveInfo.trackCondition)
-    tabContent:AddChild(trackCondition)
+    trackerCondition:SetValue(objectiveInfo.trackerCondition)
+    tabContent:AddChild(trackerCondition)
 
-    trackCondition:SetCallback("OnValueChanged", function(_, _, selected) trackCondition_OnValueChanged(selected) end)
+    trackerCondition:SetCallback("OnValueChanged", function(_, _, selected) trackerCondition_OnValueChanged(selected) end)
 
     ------------------------------------------------------------
 
-    if objectiveInfo.trackCondition == "CUSTOM" then
+    if objectiveInfo.trackerCondition == "CUSTOM" then
         local customCondition = AceGUI:Create("MultiLineEditBox")
         customCondition:SetFullWidth(true)
         customCondition:SetLabel(L["Custom Function"])
-        customCondition:SetText(objectiveInfo.trackFunc)
+        customCondition:SetText(objectiveInfo.customCondition)
         tabContent:AddChild(customCondition)
 
         customCondition:SetCallback("OnEnterPressed", customCondition_OnEnterPressed)

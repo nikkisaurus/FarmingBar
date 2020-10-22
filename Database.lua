@@ -177,16 +177,16 @@ end
 
 function addon:GetDefaultObjective()
     local objective = {
-        ["objective"] = false,
-        ["autoIcon"] = true,
-        ["icon"] = "134400",
-        ["displayRef"] = {
-            ["trackerType"] = false,
-            ["trackerID"] = false,
+        autoIcon = true,
+        customCondition = "",
+        displayRef = {
+            trackerID = false,
+            trackerType = false,
         },
-        ["trackCondition"] = "ALL",
-        ["trackFunc"] = "",
-        ["trackers"] = {},
+        icon = 134400,
+        objective = false,
+        trackerCondition = "ALL",
+        trackers = {},
     }
 
     return objective
@@ -196,12 +196,12 @@ end
 
 function addon:GetDefaultTracker()
     local tracker = {
-        ["includeAllChars"] = false,
-        ["includeBank"] = false,
-        ["exclude"] = {},
-        ["objective"] = 1,
-        ["trackerType"] = "ITEM",
-        ["trackerID"] = "",
+        includeAllChars = false,
+        includeBank = false,
+        exclude = {},
+        objective = 1,
+        trackerType = "ITEM",
+        trackerID = "",
     }
 
     return tracker
