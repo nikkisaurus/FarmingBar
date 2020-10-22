@@ -34,8 +34,22 @@ end
 
 ------------------------------------------------------------
 
+function addon:ValidateCustomCondition(condition)
+    local func, err = loadstring(condition)
+    err = err or not strfind(condition, "return")
+    return not err
+end
+
 local function customCondition_OnEnterPressed(self)
-    addon:SetObjectiveDBInfo((addon:GetSelectedObjectiveInfo()), "trackFunc", self:GetText())
+    local condition = self:GetText()
+
+    if addon:ValidateCustomCondition(condition) or condition == "" then
+        addon:SetObjectiveDBInfo((addon:GetSelectedObjectiveInfo()), "trackFunc", condition)
+    else
+        addon:ReportError(L.InvalidCustomCondition)
+        self:SetFocus()
+        self:HighlightText()
+    end
 end
 
 ------------------------------------------------------------
@@ -737,6 +751,22 @@ function addon:ObjectiveBuilder_LoadConditionTab(objectiveTitle)
 
         customCondition:SetCallback("OnEnterPressed", customCondition_OnEnterPressed)
     end
+
+    ------------------------------------------------------------
+    --Debug-----------------------------------------------------
+    ------------------------------------------------------------
+    if FarmingBar.db.global.debug.ObjectiveBuilder then
+        local debug_checkCount = AceGUI:Create("Button")
+        debug_checkCount:SetFullWidth(true)
+        debug_checkCount:SetText("Check Count")
+        tabContent:AddChild(debug_checkCount)
+
+        debug_checkCount:SetCallback("OnClick", function(self, event, ...)
+            print(addon:GetObjectiveCount((addon:GetSelectedObjectiveInfo())))
+        end)
+    end
+    ------------------------------------------------------------
+    ------------------------------------------------------------
 end
 
 ------------------------------------------------------------

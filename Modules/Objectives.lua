@@ -213,32 +213,40 @@ end
 
 ------------------------------------------------------------
 
-function addon:ParseObjectiveCondition(objectiveTitle)
+function addon:GetObjectiveCount(objectiveTitle)
     local objectiveInfo = self:GetObjectiveInfo(objectiveTitle)
-    local trackFunc = objectiveInfo.trackFunc
 
-    ------------------------------------------------------------
+    local count = 0
+    if objectiveInfo.trackCondition == "ANY" then
+        for _, trackerInfo in pairs(objectiveInfo.trackers) do
+            count = count + addon:GetTrackerCount(trackerInfo)
+        end
+    elseif objectiveInfo.trackCondition == "CUSTOM" then
+        local trackFunc = objectiveInfo.trackFunc
 
-    while(strfind(trackFunc, "%%complete")) do
-        local pattern = "%%complete%((%d+)%)"
-        local tracker = tonumber(strmatch(trackFunc, pattern))
+        if trackFunc and trackFunc ~= "" then
+            while(strfind(trackFunc, "%%complete")) do
+                local pattern = "%%complete%((%d+)%)"
+                local tracker = tonumber(strmatch(trackFunc, pattern))
 
-        trackFunc = gsub(trackFunc, "%%complete%("..tracker.."%)", tracker and tostring(addon:IsTrackerComplete(objectiveTitle, tracker)))
+                trackFunc = gsub(trackFunc, "%%complete%("..tracker.."%)", tracker and tostring(addon:IsTrackerComplete(objectiveTitle, tracker)))
+            end
+
+            while(strfind(trackFunc, "%%count")) do
+                local pattern = "%%count%((%d+)%)"
+                local tracker = tonumber(strmatch(trackFunc, pattern))
+                local trackerInfo = self:GetTrackerInfo(objectiveTitle, tracker)
+
+                trackFunc = gsub(trackFunc, "%%count%("..tracker.."%)", tracker and addon:GetTrackerCount(trackerInfo))
+            end
+
+            count = loadstring(trackFunc)() or 0
+        end
+    elseif objectiveInfo.trackCondition == "ALL" then
+
     end
 
-    ------------------------------------------------------------
-
-    while(strfind(trackFunc, "%%count")) do
-        local pattern = "%%count%((%d+)%)"
-        local tracker = tonumber(strmatch(trackFunc, pattern))
-        local trackerInfo = self:GetTrackerInfo(objectiveTitle, tracker)
-
-        trackFunc = gsub(trackFunc, "%%count%("..tracker.."%)", tracker and addon:GetTrackerCount(trackerInfo.trackerType, trackerInfo.trackerID))
-    end
-
-    ------------------------------------------------------------
-
-    return loadstring(trackFunc)()
+    return count > 0 and count or 0
 end
 
 ------------------------------------------------------------

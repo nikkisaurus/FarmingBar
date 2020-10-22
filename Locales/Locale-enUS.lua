@@ -14,6 +14,7 @@ L["Error"] = true
 ------------------------------------------------------------
 
 -- Modules\ObjectiveBuilder.lua
+L.InvalidCustomCondition = "Invalid custom condition. Check your syntax or read the Help documentation for instructions on how to write a custom condition."
 L.InvalidObjectiveTitle = "Invalid objective title."
 L.InvalidTrackerExclusion = "Cannot exclude parent objective."
 L.ObjectiveIsExcluded = "Objective is already being excluded."

@@ -4,6 +4,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 local AceGUI = LibStub("AceGUI-3.0", true)
 
 local strupper, tonumber = string.upper, tonumber
+local floor, min = math.floor, math.min
 
 --*------------------------------------------------------------------------
 
@@ -88,12 +89,33 @@ end
 
 ------------------------------------------------------------
 
-function addon:GetTrackerCount(trackerType, trackerID)
-    if trackerType == "ITEM" then
-        return GetItemCount(trackerID)
-    elseif trackerType == "CURRENCY" then
-        return C_CurrencyInfo.GetCurrencyInfo(trackerID) and C_CurrencyInfo.GetCurrencyInfo(trackerID).quantity
+function addon:GetTrackerCount(trackerInfo)
+    local count
+
+    if trackerInfo.trackerType == "ITEM" then
+        count = GetItemCount(trackerInfo.trackerID, trackerInfo.includeBank)
+    elseif trackerInfo.trackerType == "CURRENCY" then
+        count = C_CurrencyInfo.GetCurrencyInfo(trackerInfo.trackerID) and C_CurrencyInfo.GetCurrencyInfo(trackerInfo.trackerID).quantity
     end
+
+    if #trackerInfo.exclude > 0 then
+        for _, objectiveTitle in pairs(trackerInfo.exclude) do
+            local objectiveInfo = addon:GetObjectiveInfo(objectiveTitle)
+            -- Only exclude if an objective is set... otherwise, how do we know how many to exclude?
+            if objectiveInfo.objective and objectiveInfo.objective > 0 then
+                for _, eTrackerInfo in pairs(objectiveInfo.trackers) do
+                    if eTrackerInfo.trackerID == trackerInfo.trackerID then
+                        -- Get the max amount used for the objective: either the objective itself or the count
+                        local max = min(addon:GetObjectiveCount(objectiveTitle), objectiveInfo.objective)
+                        -- The number of of this tracker required for the objective is the tracker objective x max
+                        count = count - (eTrackerInfo.objective * max)
+                    end
+                end
+            end
+        end
+    end
+
+    return count
 end
 
 ------------------------------------------------------------
@@ -148,7 +170,7 @@ end
 function addon:IsTrackerComplete(objectiveTitle, tracker)
     local trackerInfo = self:GetTrackerInfo(objectiveTitle, tracker)
 
-    return addon:GetTrackerCount(trackerInfo.trackerType, trackerInfo.trackerID) >= trackerInfo.objective
+    return floor(addon:GetTrackerCount(trackerInfo) / trackerInfo.objective) or 0
 end
 
 ------------------------------------------------------------
