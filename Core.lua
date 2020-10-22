@@ -27,7 +27,7 @@ end
 
 function FarmingBar:OnEnable()
     addon:Initialize_ObjectiveBuilder()
-    -- TODO: addon:Initialize_Bars()
+    addon:Initialize_Bars()
     -- TODO: addon:Initialize_Options()
 end
 
@@ -40,14 +40,9 @@ end
 --*------------------------------------------------------------------------
 
 function FarmingBar:SlashCommandFunc(input)
-    ------------------------------------------------------------
-    --Debug-----------------------------------------------------
-    ------------------------------------------------------------
-    if FarmingBar.db.global.debug.ObjectiveBuilder and strupper(input) == "BUILD" then
+    if strupper(input) == "BUILD" then
         addon.ObjectiveBuilder:Load()
     end
-    ------------------------------------------------------------
-    ------------------------------------------------------------
 end
 
 --*------------------------------------------------------------------------
