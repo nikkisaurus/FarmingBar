@@ -42,14 +42,13 @@ Core.lua
 Database.lua
 StaticPopup.lua
 
-# Widgets
+# Frame
 Frame\FarmingBar.xml
 Frame\Widgets.xml
 
-# Skins
-Modules\Skins.lua
-
 # Modules
+Modules\Skins.lua
+Modules\SkinBuilder.lua
 Modules\Tooltips.lua
 Modules\Bars.lua
 Modules\Buttons.lua
