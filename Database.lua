@@ -114,7 +114,7 @@ function addon:Initialize_DB()
 
             debug = {
                 commands = true,
-                barDB = true,
+                barDB = false,
                 ObjectiveBuilder = false,
                 ObjectiveBuilderTrackers = false,
                 ObjectiveBuilderCondition = false,

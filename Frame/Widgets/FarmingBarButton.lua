@@ -12,8 +12,9 @@ local Version = 1
 --*------------------------------------------------------------------------
 
 local methods = {
-    Acquire = function()
-
+    OnAcquire = function(self)
+        self.frame:ClearAllPoints()
+        self.frame:Show()
     end,
 
     SetPoint = function(self, ...) --point, anchor, relpoint, x, y
@@ -57,6 +58,7 @@ local function Constructor()
         Flash = Flash,
         Border = Border,
         AutoCastable = AutoCastable,
+		type  = Type,
     }
 
     frame.widget = widget

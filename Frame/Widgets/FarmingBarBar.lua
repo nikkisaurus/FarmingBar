@@ -16,7 +16,11 @@ local Version = 1
 local function addButton_OnClick(self)
     local widget = self.widget
     local barDB = widget:GetUserData("barDB")
-    barDB.numVisibleButtons = barDB.numVisibleButtons + 1
+
+    if barDB.numVisibleButtons < addon.maxButtons then
+        barDB.numVisibleButtons = barDB.numVisibleButtons + 1
+        widget:AddButton()
+    end
 end
 
 ------------------------------------------------------------
@@ -28,13 +32,34 @@ end
 ------------------------------------------------------------
 
 local function Control_OnDragStop(self)
-    self.widget.frame:StopMovingOrSizing()
+    local widget = self.widget
+    local barDB = widget:GetUserData("barDB")
+
+    widget.frame:StopMovingOrSizing()
+    barDB.point = {widget.frame:GetPoint()}
+end
+
+------------------------------------------------------------
+
+local function Control_OnEvent(self, event)
+    if event == "PLAYER_REGEN_DISABLED" then
+        self.widget.addButton:Disable()
+        self.widget.removeButton:Disable()
+    elseif event == "PLAYER_REGEN_ENABLED" then
+        self.widget:SetQuickButtonStates()
+    end
 end
 
 ------------------------------------------------------------
 
 local function removeButton_OnClick(self)
     local widget = self.widget
+    local barDB = widget:GetUserData("barDB")
+
+    if barDB.numVisibleButtons > 0 then
+        barDB.numVisibleButtons = barDB.numVisibleButtons - 1
+        widget:RemoveButton()
+    end
 end
 
 --*------------------------------------------------------------------------
@@ -87,9 +112,14 @@ end
 --*------------------------------------------------------------------------
 
 local methods = {
-    Acquire = function(self)
+    OnAcquire = function(self)
         self:SetUserData("buttons", {})
-        self:SetBarDB()
+    end,
+
+    OnRelease = function(self)
+        for _, button in pairs(self:GetUserData("buttons")) do
+            button:ClearAllPoints()
+        end
     end,
 
     ------------------------------------------------------------
@@ -111,8 +141,6 @@ local methods = {
         for key, button in pairs(buttons) do
             button:SetSize(self.frame:GetWidth(), self.frame:GetHeight())
 
-            button:ClearAllPoints()
-
             if key == 1 then
                 button:SetPoint(anchor, self.frame, relativeAnchor, xOffset * barDB.button.padding, yOffset * barDB.button.padding)
             else
@@ -124,6 +152,27 @@ local methods = {
                 end
             end
         end
+
+        self:SetAlpha(barDB.alpha)
+        self:SetHidden(barDB.hidden)
+        self:SetMovable(barDB.movable)
+        self:SetPoint(unpack(barDB.point))
+        self:SetScale(barDB.scale)
+        self:SetSize(barDB.button.size)
+        self:SetQuickButtonStates()
+        self:ApplySkin()
+    end,
+
+    ------------------------------------------------------------
+
+    RemoveButton = function(self)
+        local barDB = self:GetUserData("barDB")
+        local buttons = self:GetUserData("buttons")
+
+        buttons[#buttons]:Release()
+        tremove(buttons)
+
+        self:DoLayout()
     end,
 
     ------------------------------------------------------------
@@ -141,24 +190,11 @@ local methods = {
         local barDB = FarmingBar.db.char.bars[barID]
         self:SetUserData("barDB", barDB)
 
-        self:SetAlpha(barDB and barDB.alpha or 1)
-        self:SetHidden(barDB and barDB.hidden or false)
-        self:SetMovable(barDB and barDB.movable or true)
-        self:SetPoint(barDB and unpack(barDB.point) or "TOP")
-        self:SetScale(barDB and barDB.scale or 1)
-        self:SetSize(barDB and barDB.button.size or 35)
-
-        if not barDB then
-            for _, button in pairs(self:GetUserData("buttons")) do
-                button:ClearAllPoints()
-            end
-        else
-            for i = 1, barDB.numVisibleButtons do
-                self:AddButton()
-            end
+        for i = 1, barDB.numVisibleButtons do
+            self:AddButton()
         end
 
-        self:ApplySkin()
+        self:DoLayout()
     end,
 
     ------------------------------------------------------------
@@ -180,7 +216,28 @@ local methods = {
     ------------------------------------------------------------
 
     SetPoint = function(self, ...) --point, anchor, relpoint, x, y
+        self.frame:ClearAllPoints()
         self.frame:SetPoint(...)
+    end,
+
+    ------------------------------------------------------------
+
+    SetQuickButtonStates = function(self)
+        local addButton = self.addButton
+        local removeButton = self.removeButton
+        local numVisibleButtons = self:GetUserData("barDB").numVisibleButtons
+
+        if numVisibleButtons == 0 then
+            removeButton:Disable()
+            addButton:Enable()
+        elseif numVisibleButtons == 1 then
+            removeButton:Enable()
+        elseif numVisibleButtons == addon.maxButtons then
+            addButton:Disable()
+            removeButton:Enable()
+        elseif numVisibleButtons == addon.maxButtons - 1 then
+            addButton:Enable()
+        end
     end,
 
     ------------------------------------------------------------
@@ -224,6 +281,11 @@ local function Constructor()
     local frame = CreateFrame("Frame", Type..AceGUI:GetNextWidgetNum(Type), UIParent)
     frame:SetClampedToScreen(true)
 
+    frame:RegisterEvent("PLAYER_REGEN_ENABLED")
+    frame:RegisterEvent("PLAYER_REGEN_DISABLED")
+
+    frame:SetScript("OnEvent", Control_OnEvent)
+
     local backdrop = CreateFrame("Frame", nil, frame, "BackdropTemplate")
     backdrop:EnableMouse(true)
 
@@ -247,6 +309,7 @@ local function Constructor()
 
     addButton:SetScript("OnClick", addButton_OnClick)
 
+
     local removeButton = CreateFrame("Button", nil, anchor)
     removeButton:SetNormalTexture([[INTERFACE\ADDONS\FARMINGBAR\MEDIA\MINUS]])
     removeButton:SetDisabledTexture([[INTERFACE\ADDONS\FARMINGBAR\MEDIA\MINUS-DISABLED]])
@@ -266,9 +329,10 @@ local function Constructor()
         addButton = addButton,
         removeButton = removeButton,
         barID = barID,
+		type  = Type,
     }
 
-    anchor.widget, addButton.widget, removeButton.widget = widget, widget, widget
+    frame.widget, anchor.widget, addButton.widget, removeButton.widget = widget, widget, widget, widget
 
     for method, func in pairs(methods) do
         widget[method] = func
