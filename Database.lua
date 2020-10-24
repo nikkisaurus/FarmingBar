@@ -114,6 +114,7 @@ function addon:Initialize_DB()
 
             debug = {
                 commands = true,
+                barDB = true,
                 ObjectiveBuilder = false,
                 ObjectiveBuilderTrackers = false,
                 ObjectiveBuilderCondition = false,
@@ -178,7 +179,35 @@ end
 
 function addon:GetDefaultBar()
     local bar = {
+        title = "",
 
+        movable = true,
+
+        hidden = false,
+        anchorMouseover = false,
+        mouseover = false,
+        showEmpty = true,
+
+        alpha = 1,
+        scale = 1,
+
+        numVisibleButtons = 6,
+        buttonWrap = 12,
+        grow = {"RIGHT", "NORMAL"}, -- [1] = "RIGHT", "LEFT", "UP", "DOWN"; [2] = "NORMAL", "REVERSE"
+        point = {"TOP"},
+
+        alerts = {
+            barProgress = false, --bar.trackProgress
+            completedObjectives = true, --bar.trackCompletedObjectives
+            muteAll = false, --bar.muteAlerts
+        },
+
+        button = {
+            size = 35, --bar.buttonSize
+            padding = 2, --bar.buttonPadding
+        },
+
+        objectives = {},
     }
 
     return bar

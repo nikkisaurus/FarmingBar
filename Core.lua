@@ -46,6 +46,7 @@ end
 
 function FarmingBar:OnEnable()
     addon:Initialize_ObjectiveBuilder()
+    addon:Initialize_Masque()
     addon:Initialize_Bars()
     -- TODO: addon:Initialize_Options()
 end
