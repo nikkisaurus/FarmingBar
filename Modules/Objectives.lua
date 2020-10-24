@@ -199,6 +199,8 @@ end
 function addon:GetObjectiveCount(objectiveTitle)
     local objectiveInfo = self:GetObjectiveInfo(objectiveTitle)
 
+    if #objectiveInfo.trackers == 0 then return 0 end
+
     local count = 0
     if objectiveInfo.trackerCondition == "ANY" then
         for _, trackerInfo in pairs(objectiveInfo.trackers) do
