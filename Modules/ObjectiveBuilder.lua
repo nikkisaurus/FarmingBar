@@ -388,16 +388,20 @@ end
 --*------------------------------------------------------------------------
 
 local methods = {
-    ["GetSelectedObjective"] = function(self)
+    GetSelectedObjective = function(self)
         return self:GetUserData("selectedObjective")
 
     end,
 
-    ["GetSelectedTracker"] = function(self)
+    ------------------------------------------------------------
+
+    GetSelectedTracker = function(self)
         return self.status.tracker
     end,
 
-    ["GetObjectiveButton"] = function(self, objectiveTitle)
+    ------------------------------------------------------------
+
+    GetObjectiveButton = function(self, objectiveTitle)
         for _, button in pairs(self.objectiveList.children) do
             if button:GetUserData("objectiveTitle") == objectiveTitle then
                 return button
@@ -405,22 +409,16 @@ local methods = {
         end
     end,
 
-    -- !remove this
-    ["GetObjectiveButtonByTitle"] = function(self, objectiveTitle)
-        for key, objective in pairs(self.status.children) do
-            if objective.objectiveTitle == objectiveTitle then
-                return objective.button
-            end
-        end
-    end,
-    -- !
+    ------------------------------------------------------------
 
-    ["Load"] = function(self)
+    Load = function(self)
         self:Show()
         self:LoadObjectives()
     end,
 
-    ["LoadExcludeList"] = function(self)
+    ------------------------------------------------------------
+
+    LoadExcludeList = function(self)
         local _, _, _, trackerInfo = addon:GetSelectedObjectiveInfo()
         local excludeList = addon.ObjectiveBuilder.excludeList
 
@@ -442,7 +440,9 @@ local methods = {
         end
     end,
 
-    ["LoadObjectives"] = function(self, objectiveTitle)
+    ------------------------------------------------------------
+
+    LoadObjectives = function(self, objectiveTitle)
         local objectiveList, mainPanel = self.objectiveList, self.mainPanel
         local filter = self.objectiveSearchBox:GetText()
 
@@ -456,12 +456,6 @@ local methods = {
                 button:SetFullWidth(true)
                 button:SetObjective(objectiveTitle)
                 objectiveList:AddChild(button)
-
-                ------------------------------------------------------------
-
-                -- button:SetCallback("OnDragStart", function(self, event, ...) addon.DragFrame:Load(objectiveTitle) end)
-                -- button:SetCallback("OnDragStop", function(self, event, ...) addon.DragFrame:Clear() end)
-
             end
         end
 
@@ -472,7 +466,9 @@ local methods = {
         end
     end,
 
-    ["LoadTrackers"] = function(self)
+    ------------------------------------------------------------
+
+    LoadTrackers = function(self)
         local _, objectiveInfo = addon:GetSelectedObjectiveInfo()
         local trackerList = addon.ObjectiveBuilder.trackerList
 
@@ -503,11 +499,15 @@ local methods = {
         end
     end,
 
-    ["Release"] = function(self)
+    ------------------------------------------------------------
+
+    Release = function(self)
         AceGUI:Release(self)
     end,
 
-    ["RefreshTab"] = function(self, reloadTab, reloadTracker)
+    ------------------------------------------------------------
+
+    RefreshTab = function(self, reloadTab, reloadTracker)
         if reloadTab then
             self.mainContent:SelectTab(reloadTab)
         end
@@ -517,7 +517,9 @@ local methods = {
         end
     end,
 
-    ["SetSelected"] = function(self, objectiveTitle)
+    ------------------------------------------------------------
+
+    SetSelected = function(self, objectiveTitle)
         for _, button in pairs(self.objectiveList.children) do
             if button:GetUserData("objectiveTitle") == objectiveTitle then
                 button.frame:Click()
@@ -526,7 +528,9 @@ local methods = {
         end
     end,
 
-    ["SelectObjective"] = function(self, objectiveTitle)
+    ------------------------------------------------------------
+
+    SelectObjective = function(self, objectiveTitle)
         self.status.objectiveTitle = objectiveTitle -- !remove when done renaming
         self:SetUserData("selectedObjective", objectiveTitle)
 
@@ -540,11 +544,9 @@ local methods = {
         self.mainContent:SelectTab(tabCache[objectiveTitle] or "objectiveTab")
     end,
 
-    ["UpdateObjectiveIcon"] = function(self, objectiveTitle)
-        self:GetObjectiveButtonByTitle(objectiveTitle):SetIcon(addon:GetObjectiveIcon(objectiveTitle))
-    end,
+    ------------------------------------------------------------
 
-    ["UpdateTrackerButton"] = function(self)
+    UpdateTrackerButton = function(self)
         local _, _, tracker, trackerInfo = addon:GetSelectedObjectiveInfo()
 
         -- !Try to remove this if I can set up a coroutine to handle item caching.
