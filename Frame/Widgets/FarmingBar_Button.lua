@@ -6,50 +6,32 @@ local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 
 --*------------------------------------------------------------------------
 
-local Type = "FarmingBarButton"
+local Type = "FarmingBar_Button"
 local Version = 1
 
 --*------------------------------------------------------------------------
 
 local function Control_OnEnter(self)
     if addon.DragFrame:IsVisible() then
-        self.widget:SetUserData("objectiveTitle", addon.DragFrame.text:GetText())
+        self.widget:SetUserData("dragTitle", addon.DragFrame.text:GetText())
     end
 end
 
 local function Control_OnLeave(self)
-    self.widget:SetUserData("objectiveTitle")
+    self.widget:SetUserData("dragTitle")
 end
 
 local function Control_OnReceiveDrag(self)
     local widget = self.widget
-    local objectiveTitle = widget:GetUserData("objectiveTitle")
+    local objectiveTitle = widget:GetUserData("dragTitle")
 
 
     if objectiveTitle then
         widget:SetObjective(objectiveTitle)
+        widget:SetUserData("dragTitle", nil)
     elseif not objectiveTitle then
-        local cursorType, cursorID = GetCursorInfo()
-        ClearCursor()
-
-        if cursorType == "item" then
-            addon:CacheItem(cursorID, function(itemID)
-                local defaultInfo = addon:GetDefaultObjective()
-                defaultInfo.icon = C_Item.GetItemIconByID(itemID)
-                defaultInfo.displayRef.trackerType = "ITEM"
-                defaultInfo.displayRef.trackerID = itemID
-
-                local tracker = addon:GetDefaultTracker()
-                tracker.trackerType = "ITEM"
-                tracker.trackerID = itemID
-
-                tinsert(defaultInfo.trackers, tracker)
-
-                local objectiveTitle = addon:CreateObjective((select(1, GetItemInfo(itemID))), defaultInfo, not addon.ObjectiveBuilder:IsVisible())
-                widget:SetObjective(objectiveTitle)
-            end, cursorID)
-            return
-        end
+        objectiveTitle = addon:CreateObjectiveFromCursor()
+        widget:SetObjective(objectiveTitle)
     end
 end
 
@@ -70,6 +52,9 @@ local methods = {
     end,
 
     SetObjective = function(self, objectiveTitle)
+        self:SetUserData("objectiveTitle", objectiveTitle)
+        self:SetUserData("objectiveInfo", addon:GetObjectiveInfo(objectiveTitle))
+
         self:SetIcon(addon:GetObjectiveIcon(objectiveTitle))
         self:SetCount(addon:GetObjectiveCount(objectiveTitle))
     end,
@@ -82,6 +67,10 @@ local methods = {
         self.frame:SetSize(...)
         self.Count:SetWidth(self.frame:GetWidth())
     end,
+
+    UpdateObjectiveInfo = function(self, ...)
+
+    end,
 }
 
 --*------------------------------------------------------------------------
@@ -91,6 +80,7 @@ local function Constructor()
 	frame:SetScript("OnEnter", Control_OnEnter)
 	frame:SetScript("OnLeave", Control_OnLeave)
 	frame:SetScript("OnReceiveDrag", Control_OnReceiveDrag)
+    frame:SetScript("OnUpdate", Control_OnUpdate)
 
     local FloatingBG = frame:CreateTexture("$parentFloatingBG", "BACKGROUND", nil, -7)
     FloatingBG:SetAllPoints(frame)

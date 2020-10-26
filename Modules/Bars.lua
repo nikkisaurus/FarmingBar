@@ -38,7 +38,7 @@ end
 ------------------------------------------------------------
 
 function addon:LoadBar(barID)
-    local bar = AceGUI:Create("FarmingBarBar")
+    local bar = AceGUI:Create("FarmingBar_Bar")
     bar:SetBarDB(barID)
     local barDB = bar:GetUserData("barDB")
     self.bars[barID] = bar

@@ -8,7 +8,7 @@ local CreateFrame, UIParent = CreateFrame, UIParent
 
 --*------------------------------------------------------------------------
 
-local Type = "FarmingBarBar"
+local Type = "FarmingBar_Bar"
 local Version = 1
 
 --*------------------------------------------------------------------------
@@ -49,6 +49,22 @@ local function Control_OnEvent(self, event)
         self.widget:SetQuickButtonStates()
     end
 end
+
+------------------------------------------------------------
+
+-- local function Control_OnUpdate(self, ...)
+--     local widget = self.widget
+--     local buttons = widget:GetUserData("buttons")
+
+--     for key, button in pairs(buttons) do
+--         local objectiveTitle = button:GetUserData("objectiveTitle")
+--         local buttonInfo = button:GetUserData("objectiveInfo")
+
+--         if buttonInfo ~= addon:GetObjectiveInfo(objectiveTitle) then
+--             button:Update()
+--         end
+--     end
+-- end
 
 ------------------------------------------------------------
 
@@ -126,7 +142,7 @@ local methods = {
 
     AddButton = function(self)
         local buttons = self:GetUserData("buttons")
-        tinsert(buttons, AceGUI:Create("FarmingBarButton"))
+        tinsert(buttons, AceGUI:Create("FarmingBar_Button"))
         self:DoLayout()
     end,
 

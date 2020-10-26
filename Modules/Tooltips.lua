@@ -20,7 +20,7 @@ end
 ------------------------------------------------------------
 
 function addon:GetObjectiveButtonTooltip(widget, tooltip)
-    local objectiveTitle = widget:GetObjectiveTitle()
+    local objectiveTitle = widget:GetUserData("objectiveTitle")
     local objectiveInfo = addon:GetObjectiveInfo(objectiveTitle)
     if not objectiveInfo then return end
     local numTrackers = #objectiveInfo.trackers

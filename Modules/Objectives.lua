@@ -10,40 +10,15 @@ local GetCursorInfo, ClearCursor = GetCursorInfo, ClearCursor
 
 --*------------------------------------------------------------------------
 
-function addon:CreateObjective(objectiveTitle, objectiveInfo, suppressLoading, finishedAdding, fromCursor)
+function addon:CreateObjective(objectiveTitle, objectiveInfo, overwrite, supressUpdate)
     local defaultInfo = self:GetDefaultObjective()
-
-    ------------------------------------------------------------
-
-    -- Create objective from cursor
-    if fromCursor then
-        local cursorType, cursorID = GetCursorInfo()
-        ClearCursor()
-
-        if cursorType == "item" then
-            self:CacheItem(cursorID, function(itemID)
-                defaultInfo.icon = C_Item.GetItemIconByID(itemID)
-                defaultInfo.displayRef.trackerType = "ITEM"
-                defaultInfo.displayRef.trackerID = itemID
-
-                local tracker = addon:GetDefaultTracker()
-                tracker.trackerType = "ITEM"
-                tracker.trackerID = itemID
-
-                tinsert(defaultInfo.trackers, tracker)
-
-                local newObjectiveTitle = self:CreateObjective((select(1, GetItemInfo(itemID))), defaultInfo)
-            end, cursorID)
-            return
-        end
-    end
 
     ------------------------------------------------------------
 
     local defaultTitle, newObjectiveTitle = L["New"]
     local newObjective = addon:GetObjectiveInfo(objectiveTitle or defaultTitle)
 
-    if newObjective then
+    if newObjective and not overwrite then
         local i = 2
         while not newObjectiveTitle do
             local title = string.format("%s %d", objectiveTitle or defaultTitle, i)
@@ -56,50 +31,94 @@ function addon:CreateObjective(objectiveTitle, objectiveInfo, suppressLoading, f
     end
 
     newObjectiveTitle = newObjectiveTitle or objectiveTitle or defaultTitle
-
-    ------------------------------------------------------------
-
     FarmingBar.db.global.objectives[newObjectiveTitle] = objectiveInfo or defaultInfo
 
-    if not suppressLoading or finishedAdding then
-        -- Call when adding multiple at a time and then manually load objectives when done
-        self.ObjectiveBuilder:LoadObjectives(newObjectiveTitle)
-    end
-
     ------------------------------------------------------------
+
+    if not supressUpdate then
+        self.ObjectiveBuilder:LoadObjectives(newObjectiveTitle)
+        if not overwrite then
+            self.ObjectiveBuilder:GetObjectiveButton(newObjectiveTitle):RenameObjective()
+        end
+    end
 
     return newObjectiveTitle
 end
 
 ------------------------------------------------------------
 
+function addon:CreateObjectiveFromCursor()
+    local cursorType, cursorID = GetCursorInfo()
+    ClearCursor()
+
+    if cursorType == "item" then
+        local defaultInfo = self:GetDefaultObjective()
+        defaultInfo.icon = C_Item.GetItemIconByID(cursorID)
+        defaultInfo.displayRef.trackerType = "ITEM"
+        defaultInfo.displayRef.trackerID = cursorID
+
+        local tracker = addon:GetDefaultTracker()
+        tracker.trackerType = "ITEM"
+        tracker.trackerID = cursorID
+
+        tinsert(defaultInfo.trackers, tracker)
+
+        local objectiveTitle = "ITEM:"..(select(1, GetItemInfo(cursorID)))
+
+        if addon:GetObjectiveInfo(objectiveTitle) and FarmingBar.db.global.settings.objectives.overwriteQuickObjectives.prompt then
+            local dialog = StaticPopup_Show("FARMINGBAR_CONFIRM_OVERWRITE_OBJECTIVE", objectiveTitle)
+            if dialog then
+                dialog.data = objectiveTitle
+                dialog.data2 = defaultInfo
+            end
+        else
+            self:CreateObjective(objectiveTitle, defaultInfo, FarmingBar.db.global.settings.objectives.overwriteQuickObjectives.enabled)
+        end
+
+        return objectiveTitle
+    end
+end
+
+------------------------------------------------------------
+
 function addon:DeleteObjective(objectiveTitle)
-    if type(objectiveTitle) == "table" then
-        for _, objective in pairs(objectiveTitle) do
-            local objectiveTitle = objective:GetObjectiveTitle()
-            FarmingBar.db.global.objectives[objectiveTitle] = nil
-            self:UpdateExclusions(objectiveTitle)
+    local ObjectiveBuilder = self.ObjectiveBuilder
+
+    if not objectiveTitle then
+        for _, button in pairs(ObjectiveBuilder.objectiveList.children) do
+            if button:GetUserData("selected") then
+                local objectiveTitle = button:GetUserData("objectiveTitle")
+                FarmingBar.db.global.objectives[objectiveTitle] = nil
+                self:UpdateExclusions(objectiveTitle)
+            end
         end
     else
         FarmingBar.db.global.objectives[objectiveTitle] = ni
         self:UpdateExclusions(objectiveTitle)
     end
 
-    self.ObjectiveBuilder:LoadObjectives()
+    ObjectiveBuilder:LoadObjectives()
 end
 
 ------------------------------------------------------------
 
 function addon:DeleteSelectedObjectives()
-    local selected = self.ObjectiveBuilder.status.selected
+    local selectedButton
+    local numSelectedButtons = 0
+    for _, button in pairs(self.ObjectiveBuilder.objectiveList.children) do
+        if button:GetUserData("selected") then
+            numSelectedButtons = numSelectedButtons + 1
+            selectedButton = button
+        end
+    end
 
-    if #selected > 1 then
-        local dialog = StaticPopup_Show("FARMINGBAR_CONFIRM_DELETE_MULTIPLE_OBJECTIVES", #selected)
+    if numSelectedButtons > 1 then
+        local dialog = StaticPopup_Show("FARMINGBAR_CONFIRM_DELETE_MULTIPLE_OBJECTIVES", numSelectedButtons)
         if dialog then
             dialog.data = selected
         end
     else
-        local objectiveTitle = selected[1]:GetObjectiveTitle()
+        local objectiveTitle = selectedButton:GetUserData("objectiveTitle")
         local dialog = StaticPopup_Show("FARMINGBAR_CONFIRM_DELETE_OBJECTIVE", objectiveTitle)
         if dialog then
             dialog.data = objectiveTitle
@@ -110,12 +129,23 @@ end
 ------------------------------------------------------------
 
 function addon:DuplicateSelectedObjectives()
-    local selected = self.ObjectiveBuilder.status.selected
-    local multiSelected = #selected > 1
+    local ObjectiveBuilder = self.ObjectiveBuilder
+    local buttons = ObjectiveBuilder.objectiveList.children
 
-    for key, widget in pairs(selected) do
-        local objectiveTitle = widget:GetObjectiveTitle()
-        addon:CreateObjective(objectiveTitle, addon:GetObjectiveInfo(objectiveTitle), multiSelected and true, multiSelected and key == #selected)
+    local objectiveTitles = {}
+    for key, button in pairs(buttons) do
+        if button:GetUserData("selected") then
+            local objectiveTitle = button:GetUserData("objectiveTitle")
+            tinsert(objectiveTitles, self:CreateObjective(objectiveTitle, self:GetObjectiveInfo(objectiveTitle), _, true))
+        end
+    end
+
+    ------------------------------------------------------------
+
+    ObjectiveBuilder:LoadObjectives(objectiveTitles[#objectiveTitles])
+
+    for _, objectiveTitle in pairs(objectiveTitles) do
+        ObjectiveBuilder:GetObjectiveButton(objectiveTitle):RenameObjective()
     end
 end
 
@@ -255,7 +285,7 @@ function addon:RenameObjective(objectiveTitle, newObjectiveTitle)
 
     self:UpdateExclusions(objectiveTitle, newObjectiveTitle)
 
-    self.ObjectiveBuilder:LoadObjectives(newObjectiveTitle)
+    -- self.ObjectiveBuilder:LoadObjectives(newObjectiveTitle)
 end
 
 ------------------------------------------------------------

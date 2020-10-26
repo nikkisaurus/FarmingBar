@@ -14,72 +14,83 @@ function addon:Initialize_DB()
 
             ------------------------------------------------------------
 
-            alertSettings = {
-                bar = {
-                    chat = true, --global.alerts.barChat
-                    screen = true, --global.alerts.barScreen
-                    sound = {
-                        enabled = true, --global.alerts.barSound
+            settings = {
+                alerts = {
+                    bar = {
+                        chat = true, --global.alerts.barChat
+                        screen = true, --global.alerts.barScreen
+                        sound = {
+                            enabled = true, --global.alerts.barSound
 
-                        complete = "Auction Close", --global.sounds.barComplete
-                        progress = "Auction Open", --global.sounds.barProgress
+                            complete = "Auction Close", --global.sounds.barComplete
+                            progress = "Auction Open", --global.sounds.barProgress
+                        },
+
+                        format = {
+                            progress = self.barProgress, --global.alertFormats.barProgress
+                        },
+
+                        preview = {
+                            count = 1, --global.alertFormats.barCountPreview
+                            total = 5, --global.alertFormats.barTotalPreview
+                            withTitle = true, --global.alertFormats.barTitlePreview
+                        },
                     },
 
-                    format = {
-                        progress = self.barProgress, --global.alertFormats.barProgress
-                    },
+                    ------------------------------------------------------------
 
-                    preview = {
-                        count = 1, --global.alertFormats.barCountPreview
-                        total = 5, --global.alertFormats.barTotalPreview
-                        withTitle = true, --global.alertFormats.barTitlePreview
+                    button = {
+                        chat = true, --global.alerts.chat
+                        screen = true, --global.alerts.screen
+                        sound = {
+                            enabled = true, --global.alerts.sound
+
+                            objectiveCleared = "Quest Failed", --global.sounds.objectiveCleared
+                            objectiveComplete = "Quest Complete", --global.sounds.objectiveComplete
+                            objectiveSet = "Quest Activate", --global.sounds.objectiveSet
+                            progress = "Loot Coin", --global.sounds.farmingProgress
+                        },
+
+                        format = {
+                            withObjective = self.withObjective, --global.alertFormats.hasObjective
+                            withoutObjective = self.withoutObjective, --global.alertFormats.noObjective
+                        },
+
+                        preview = {
+                            oldCount = 20, --global.alertFormats.oldCountPreview
+                            newCount = 25, --global.alertFormats.newCountPreview
+                            objective = 200, --global.alertFormats.objectivePreview
+                        },
                     },
                 },
 
                 ------------------------------------------------------------
 
-                button = {
-                    chat = true, --global.alerts.chat
-                    screen = true, --global.alerts.screen
-                    sound = {
-                        enabled = true, --global.alerts.sound
-
-                        objectiveCleared = "Quest Failed", --global.sounds.objectiveCleared
-                        objectiveComplete = "Quest Complete", --global.sounds.objectiveComplete
-                        objectiveSet = "Quest Activate", --global.sounds.objectiveSet
-                        progress = "Loot Coin", --global.sounds.farmingProgress
-                    },
-
-                    format = {
-                        withObjective = self.withObjective, --global.alertFormats.hasObjective
-                        withoutObjective = self.withoutObjective, --global.alertFormats.noObjective
-                    },
-
-                    preview = {
-                        oldCount = 20, --global.alertFormats.oldCountPreview
-                        newCount = 25, --global.alertFormats.newCountPreview
-                        objective = 200, --global.alertFormats.objectivePreview
+                objectives = {
+                    overwriteQuickObjectives = {
+                        enabled = true,
+                        prompt = true,
                     },
                 },
-            },
 
-            ------------------------------------------------------------
+                ------------------------------------------------------------
 
-            templateSettings = {
-                preserveData = {
-                    enabled = false, -- global.template.includeData
-                    prompt = false, -- global.template.includeDataPrompt
+                templates = {
+                    preserveData = {
+                        enabled = false, -- global.template.includeData
+                        prompt = false, -- global.template.includeDataPrompt
+                    },
+                    preserveOrder = {
+                        enabled = false, -- global.template.saveOrder
+                        prompt = false, -- global.template.saveOrderPrompt
+                    },
                 },
-                preserveOrder = {
-                    enabled = false, -- global.template.saveOrder
-                    prompt = false, -- global.template.saveOrderPrompt
+
+                ------------------------------------------------------------
+
+                misc = {
+                    autoLootOnUse = false, -- global.autoLootItems
                 },
-            },
-
-            ------------------------------------------------------------
-
-            miscSettings = {
-                autoLootOnUse = false, -- global.autoLootItems
             },
 
             ------------------------------------------------------------
@@ -117,7 +128,7 @@ function addon:Initialize_DB()
                 barDB = false,
                 ObjectiveBuilder = true,
                 ObjectiveBuilderTrackers = false,
-                ObjectiveBuilderCondition = true,
+                ObjectiveBuilderCondition = false,
             },
 
             ------------------------------------------------------------

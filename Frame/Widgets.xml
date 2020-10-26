@@ -1,7 +1,8 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
-	<Script file="Widgets\FarmingBarBar.lua"/>
-	<Script file="Widgets\FarmingBarButton.lua"/>
+	<Script file="Widgets\FarmingBar_Bar.lua"/>
+	<Script file="Widgets\FarmingBar_Button.lua"/>
+	<Script file="Widgets\FarmingBar_ObjectiveButton.lua"/>
 	<Script file="Widgets\FB30_InteractiveLabel.lua"/>
 	<Script file="Widgets\FB30_Label.lua"/>
 	<Script file="Widgets\FB30_ObjectiveButton.lua"/>
