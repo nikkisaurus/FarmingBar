@@ -78,13 +78,13 @@ end
 ------------------------------------------------------------
 
 local function Control_OnDragStart(self)
-
+    addon.DragFrame:Load(self.widget:GetUserData("objectiveTitle"))
 end
 
 ------------------------------------------------------------
 
 local function Control_OnDragStop(self)
-
+    addon.DragFrame:Clear()
 end
 
 ------------------------------------------------------------

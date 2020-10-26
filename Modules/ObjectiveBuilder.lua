@@ -459,8 +459,8 @@ local methods = {
 
                 ------------------------------------------------------------
 
-                button:SetCallback("OnDragStart", function(self, event, ...) addon.DragFrame:Load(objectiveTitle) end)
-                button:SetCallback("OnDragStop", function(self, event, ...) addon.DragFrame:Clear() end)
+                -- button:SetCallback("OnDragStart", function(self, event, ...) addon.DragFrame:Load(objectiveTitle) end)
+                -- button:SetCallback("OnDragStop", function(self, event, ...) addon.DragFrame:Clear() end)
 
             end
         end
