@@ -106,6 +106,11 @@ function addon:Initialize_DB()
                         modifier = "shift",
                     },
 
+                    includeBank = {
+                        button = "LeftButton",
+                        modifier = "alt",
+                    },
+
                     moveObjective = {
                         button = "LeftButton",
                         modifier = "",

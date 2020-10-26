@@ -171,7 +171,16 @@ function addon:SetTrackerDBInfo(objectiveTitle, tracker, key, value)
             path = path[key]
         end
     end
-    path[keys[#keys]] = value
+    if value == "_toggle" then
+        local val = path[keys[#keys]]
+        if val then
+            path[keys[#keys]] = false
+        else
+            path[keys[#keys]] = true
+        end
+    else
+        path[keys[#keys]] = value
+    end
 end
 
 ------------------------------------------------------------

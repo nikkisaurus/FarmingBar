@@ -34,6 +34,19 @@ local postClickMethods = {
         self.widget:ClearObjective()
     end,
 
+    includeBank = function(self, ...)
+        local widget = self.widget
+        local objectiveTitle = widget:GetUserData("objectiveTitle")
+        local trackers = addon:GetObjectiveInfo(objectiveTitle).trackers
+
+        if #trackers == 1 then
+            addon:SetTrackerDBInfo(objectiveTitle, 1, "includeBank", "_toggle")
+            widget:SetObjective(objectiveTitle)
+            -- TODO: Update tracker frame if visible
+            -- TODO: Alert bar progress if changed
+        end
+    end,
+
     moveObjective = function(self, ...)
         local widget = self.widget
         local bar = addon.bars[widget:GetUserData("barID")]
@@ -187,6 +200,7 @@ local methods = {
     OnAcquire = function(self)
         self.frame:ClearAllPoints()
         self.frame:Show()
+        self.AutoCastable:Hide()
     end,
 
     ------------------------------------------------------------
@@ -197,6 +211,7 @@ local methods = {
 
         self:SetIcon("")
         self:SetCount("")
+        self.AutoCastable:Hide()
 
         self.frame:UnregisterEvent("BAG_UPDATE")
         self.frame:UnregisterEvent("BAG_UPDATE_COOLDOWN")
@@ -273,6 +288,7 @@ local methods = {
 
         self:SetIcon(addon:GetObjectiveIcon(objectiveTitle))
         self:SetCount(addon:GetObjectiveCount(objectiveTitle))
+        self:UpdateAutoCastable()
         self:SetAttribute()
     end,
 
@@ -301,6 +317,23 @@ local methods = {
 
         UIFrameFlashStop(moveButtonWidget.Flash)
         moveButtonWidget.Flash:Hide()
+    end,
+
+    ------------------------------------------------------------
+
+    UpdateAutoCastable = function(self)
+        local objectiveTitle = self:GetUserData("objectiveTitle")
+        local trackers = addon:GetObjectiveInfo(objectiveTitle).trackers
+
+        if FarmingBar.db.profile.style.buttonLayers.AutoCastable then
+            if #trackers ~= 1 or not trackers[1].includeBank then
+                self.AutoCastable:Hide()
+            else
+                self.AutoCastable:Show()
+            end
+        else
+            self.AutoCastable:Hide()
+        end
     end,
 }
 
@@ -334,7 +367,6 @@ local function Constructor()
 
     local AutoCastable = frame:CreateTexture("$parentAutoCastable", "OVERLAY")
     AutoCastable:SetAllPoints(frame)
-    AutoCastable:Hide()
 
     local Count = frame:CreateFontString(nil, "OVERLAY")
     Count:SetFont([[Fonts\FRIZQT__.TTF]], 12, "OUTLINE")
