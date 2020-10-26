@@ -104,6 +104,10 @@ local function Control_OnEvent(self, event, ...)
                 widget:SetCount(count)
             end
         end
+    elseif event == "PLAYER_REGEN_ENABLED" then
+        widget:SetAttribute()
+        self:UnregisterEvent(event)
+        -- TODO: print combat left
     end
 end
 
@@ -212,6 +216,25 @@ local methods = {
         local objectiveTitle = self:GetUserData("objectiveTitle")
         local objectiveInfo = addon:GetObjectiveInfo(objectiveTitle)
 
+        if self.frame:GetAttribute(buttonType) == "macro" and objectiveInfo.displayRef.trackerType == "MACROTEXT" then
+            if self.frame:GetAttribute("macrotext") == objectiveInfo.displayRef.trackerID then
+                return
+            end
+        elseif self.frame:GetAttribute(buttonType) == "item" and objectiveInfo.displayRef.trackerType == "ITEM" then
+            if self.frame:GetAttribute("item") == ("item"..objectiveInfo.displayRef.trackerID) then
+                return
+            end
+        end
+
+        self.frame:RegisterEvent("BAG_UPDATE")
+        self.frame:RegisterEvent("BAG_UPDATE_COOLDOWN")
+
+        if UnitAffectingCombat("player") then
+            self.frame:RegisterEvent("PLAYER_REGEN_ENABLED")
+            -- TODO: print combat error
+            return
+        end
+
         self.frame:SetAttribute(buttonType, nil)
         self.frame:SetAttribute("item", nil)
         self.frame:SetAttribute("macrotext", nil)
@@ -223,9 +246,6 @@ local methods = {
             self.frame:SetAttribute(buttonType, "macro")
             self.frame:SetAttribute("macrotext", objectiveInfo.displayRef.trackerID)
         end
-
-        self.frame:RegisterEvent("BAG_UPDATE")
-        self.frame:RegisterEvent("BAG_UPDATE_COOLDOWN")
     end,
 
     ------------------------------------------------------------

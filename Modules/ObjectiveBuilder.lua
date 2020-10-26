@@ -1033,7 +1033,12 @@ function addon:ObjectiveBuilder_LoadTrackerInfo(tracker)
     includeBank:SetValue(trackerInfo.includeBank)
     tabContent:AddChild(includeBank)
 
-    includeBank:SetCallback("OnValueChanged", function(self) addon:SetTrackerDBInfo(addon.ObjectiveBuilder:GetSelectedObjective(), addon.ObjectiveBuilder:GetSelectedTracker(), "includeBank", self:GetValue()) end)
+    includeBank:SetCallback("OnValueChanged", function(self)
+        local ObjectiveBuilder = addon.ObjectiveBuilder
+        local objectiveTitle = ObjectiveBuilder:GetSelectedObjective()
+        addon:SetTrackerDBInfo(objectiveTitle, ObjectiveBuilder:GetSelectedTracker(), "includeBank", self:GetValue())
+        addon:UpdateButtons(objectiveTitle)
+    end) --! move to local
 
     ------------------------------------------------------------
 
