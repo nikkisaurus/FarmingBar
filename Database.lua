@@ -69,7 +69,7 @@ function addon:Initialize_DB()
                 objectives = {
                     overwriteQuickObjectives = {
                         enabled = true,
-                        prompt = true,
+                        prompt = false,
                     },
                 },
 

@@ -43,6 +43,13 @@ local methods = {
         self.frame:Show()
     end,
 
+    ClearObjective = function(self)
+        self:SetUserData("objectiveTitle", nil)
+
+        self:SetIcon("")
+        self:SetCount("")
+    end,
+
     SetCount = function(self, count)
         self.Count:SetText(count)
     end,
@@ -53,7 +60,7 @@ local methods = {
 
     SetObjective = function(self, objectiveTitle)
         self:SetUserData("objectiveTitle", objectiveTitle)
-        self:SetUserData("objectiveInfo", addon:GetObjectiveInfo(objectiveTitle))
+        FarmingBar.db.char.bars[self:GetUserData("barID")].objectives[self:GetUserData("buttonID")] = objectiveTitle
 
         self:SetIcon(addon:GetObjectiveIcon(objectiveTitle))
         self:SetCount(addon:GetObjectiveCount(objectiveTitle))

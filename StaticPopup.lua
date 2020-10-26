@@ -7,7 +7,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 -- TODO: Localize text
 
 StaticPopupDialogs["FARMINGBAR_CONFIRM_DELETE_MULTIPLE_OBJECTIVES"] = {
-    text = "You are about to delete %d objectives. Do you want to continue?",
+    text = "You are about to delete %d objectives. This will remove these objectives from all bars. Do you want to continue?",
     button1 = YES,
     button2 = NO,
     OnAccept = function(_, selected)
@@ -20,7 +20,7 @@ StaticPopupDialogs["FARMINGBAR_CONFIRM_DELETE_MULTIPLE_OBJECTIVES"] = {
 }
 
 StaticPopupDialogs["FARMINGBAR_CONFIRM_DELETE_OBJECTIVE"] = {
-    text = [[You are about to delete the objective "%s". Do you want to continue?]],
+    text = [[You are about to delete the objective "%s". This will remove the objective from all bars. Do you want to continue?]],
     button1 = YES,
     button2 = NO,
     OnAccept = function()

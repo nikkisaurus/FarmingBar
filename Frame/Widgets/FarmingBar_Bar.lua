@@ -19,7 +19,7 @@ local function addButton_OnClick(self)
 
     if barDB.numVisibleButtons < addon.maxButtons then
         barDB.numVisibleButtons = barDB.numVisibleButtons + 1
-        widget:AddButton()
+        widget:AddButton(barDB.numVisibleButtons)
     end
 end
 
@@ -140,10 +140,25 @@ local methods = {
 
     ------------------------------------------------------------
 
-    AddButton = function(self)
+    AddButton = function(self, buttonID)
         local buttons = self:GetUserData("buttons")
-        tinsert(buttons, AceGUI:Create("FarmingBar_Button"))
+        local button = AceGUI:Create("FarmingBar_Button")
+        tinsert(buttons, button)
+
+        button:SetUserData("barID", self:GetUserData("barID"))
+        button:SetUserData("buttonID", buttonID)
+
         self:DoLayout()
+    end,
+
+    ------------------------------------------------------------
+
+    ApplySkin = function(self)
+        local skin = FarmingBar.db.profile.style.skin
+        addon:SkinBar(self, skin)
+        for _, button in pairs(self:GetUserData("buttons")) do
+            addon:SkinButton(button, skin)
+        end
     end,
 
     ------------------------------------------------------------
@@ -177,6 +192,18 @@ local methods = {
         self:SetSize(barDB.button.size)
         self:SetQuickButtonStates()
         self:ApplySkin()
+        self:LoadObjectives()
+    end,
+
+    ------------------------------------------------------------
+
+    LoadObjectives = function(self)
+        for _, button in pairs(self:GetUserData("buttons")) do
+            local objectiveTitle = FarmingBar.db.char.bars[self:GetUserData("barID")].objectives[button:GetUserData("buttonID")]
+            if objectiveTitle then
+                button:SetObjective(objectiveTitle)
+            end
+        end
     end,
 
     ------------------------------------------------------------
@@ -207,7 +234,7 @@ local methods = {
         self:SetUserData("barDB", barDB)
 
         for i = 1, barDB.numVisibleButtons do
-            self:AddButton()
+            self:AddButton(i)
         end
 
         self:DoLayout()
@@ -278,16 +305,6 @@ local methods = {
 
         self.barID:SetFont([[Fonts\FRIZQT__.TTF]], fontSize, "NORMAL")
         self.barID:SetPoint("BOTTOM", 0, paddingSize * 1.5)
-    end,
-
-    ------------------------------------------------------------
-
-    ApplySkin = function(self)
-        local skin = FarmingBar.db.profile.style.skin
-        addon:SkinBar(self, skin)
-        for _, button in pairs(self:GetUserData("buttons")) do
-            addon:SkinButton(button, skin)
-        end
     end,
 }
 

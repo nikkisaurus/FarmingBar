@@ -90,11 +90,13 @@ function addon:DeleteObjective(objectiveTitle)
                 local objectiveTitle = button:GetUserData("objectiveTitle")
                 FarmingBar.db.global.objectives[objectiveTitle] = nil
                 self:UpdateExclusions(objectiveTitle)
+                self:ClearDeletedObjectives(objectiveTitle)
             end
         end
     else
         FarmingBar.db.global.objectives[objectiveTitle] = ni
         self:UpdateExclusions(objectiveTitle)
+        self:ClearDeletedObjectives(objectiveTitle)
     end
 
     ObjectiveBuilder:LoadObjectives()
