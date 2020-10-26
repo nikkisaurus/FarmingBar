@@ -60,6 +60,7 @@ local function Frame_OnShowFocus(frame)
 end
 
 local function EditBox_OnEscapePressed(frame)
+	frame:SetText("")
 	AceGUI:ClearFocus()
 end
 
@@ -70,6 +71,7 @@ local function EditBox_OnEnterPressed(frame)
 	if not cancel then
 		PlaySound(856) -- SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON
 	end
+	AceGUI:ClearFocus()
 end
 
 local function EditBox_OnReceiveDrag(frame)

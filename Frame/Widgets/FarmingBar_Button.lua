@@ -54,6 +54,87 @@ local postClickMethods = {
     end,
 }
 
+--*------------------------------------------------------------------------
+
+local function Control_OnDragStart(self, buttonClicked, ...)
+    local widget = self.widget
+    local keybinds = FarmingBar.db.global.keybinds.dragButton
+
+    widget:SetUserData("isDragging", true)
+
+    if buttonClicked == keybinds.button then
+        local mod = GetModifiers()
+
+        if mod == keybinds.modifier then
+            local objectiveTitle = widget:GetUserData("objectiveTitle")
+            addon.moveButton = {widget, objectiveTitle}
+            addon.DragFrame:Load(objectiveTitle)
+            widget:ClearObjective()
+        end
+    end
+end
+
+------------------------------------------------------------
+
+local function Control_OnDragStop(self)
+    self.widget:SetUserData("isDragging", nil)
+end
+
+------------------------------------------------------------
+
+local function Control_OnEnter(self)
+    if addon.DragFrame:IsVisible() then
+        self.widget:SetUserData("dragTitle", addon.DragFrame:GetObjective())
+    end
+end
+
+------------------------------------------------------------
+
+local function Control_OnEvent(self, event, ...)
+    local widget = self.widget
+    local barID = widget:GetUserData("barID")
+    local barDB = addon.bars[barID]:GetUserData("barDB")
+    local buttonID = widget:GetUserData("buttonID")
+    local objectiveTitle = widget:GetUserData("objectiveTitle")
+
+    if event == "BAG_UPDATE" or event == "BAG_UPDATE_COOLDOWN" then
+        if not barDB.alerts.muteAll then
+            local count = addon:GetObjectiveCount(objectiveTitle)
+            if count ~= widget:GetCount() then
+                widget:SetCount(count)
+            end
+        end
+    end
+end
+
+------------------------------------------------------------
+
+local function Control_OnLeave(self)
+    self.widget:SetUserData("dragTitle")
+end
+
+------------------------------------------------------------
+
+local function Control_OnReceiveDrag(self)
+    local widget = self.widget
+    local objectiveTitle = widget:GetUserData("dragTitle")
+
+    if objectiveTitle then
+        if addon.moveButton then
+            widget:SwapButtons(addon.moveButton)
+        else
+            widget:SetObjective(objectiveTitle)
+        end
+
+        widget:SetUserData("dragTitle", nil)
+    elseif not objectiveTitle then
+        objectiveTitle = addon:CreateObjectiveFromCursor()
+        widget:SetObjective(objectiveTitle)
+    end
+
+    addon.DragFrame:Clear()
+end
+
 ------------------------------------------------------------
 
 local function Control_PostClick(self, buttonClicked, ...)
@@ -98,68 +179,6 @@ end
 
 --*------------------------------------------------------------------------
 
-local function Control_OnDragStart(self, buttonClicked, ...)
-    local widget = self.widget
-    local keybinds = FarmingBar.db.global.keybinds.dragButton
-
-    widget:SetUserData("isDragging", true)
-
-    if buttonClicked == keybinds.button then
-        local mod = GetModifiers()
-
-        if mod == keybinds.modifier then
-            local objectiveTitle = widget:GetUserData("objectiveTitle")
-            addon.moveButton = {widget, objectiveTitle}
-            addon.DragFrame:Load(objectiveTitle)
-            widget:ClearObjective()
-        end
-    end
-end
-
-------------------------------------------------------------
-
-local function Control_OnDragStop(self)
-    self.widget:SetUserData("isDragging", nil)
-end
-
-------------------------------------------------------------
-
-local function Control_OnEnter(self)
-    if addon.DragFrame:IsVisible() then
-        self.widget:SetUserData("dragTitle", addon.DragFrame:GetObjective())
-    end
-end
-
-------------------------------------------------------------
-
-local function Control_OnLeave(self)
-    self.widget:SetUserData("dragTitle")
-end
-
-------------------------------------------------------------
-
-local function Control_OnReceiveDrag(self)
-    local widget = self.widget
-    local objectiveTitle = widget:GetUserData("dragTitle")
-
-    if objectiveTitle then
-        if addon.moveButton then
-            widget:SwapButtons(addon.moveButton)
-        else
-            widget:SetObjective(objectiveTitle)
-        end
-
-        widget:SetUserData("dragTitle", nil)
-    elseif not objectiveTitle then
-        objectiveTitle = addon:CreateObjectiveFromCursor()
-        widget:SetObjective(objectiveTitle)
-    end
-
-    addon.DragFrame:Clear()
-end
-
---*------------------------------------------------------------------------
-
 local methods = {
     OnAcquire = function(self)
         self.frame:ClearAllPoints()
@@ -174,6 +193,15 @@ local methods = {
 
         self:SetIcon("")
         self:SetCount("")
+
+        self.frame:UnregisterEvent("BAG_UPDATE")
+        self.frame:UnregisterEvent("BAG_UPDATE_COOLDOWN")
+    end,
+
+    ------------------------------------------------------------
+
+    GetCount = function(self)
+        return self.Count:GetText()
     end,
 
     ------------------------------------------------------------
@@ -195,6 +223,9 @@ local methods = {
             self.frame:SetAttribute(buttonType, "macro")
             self.frame:SetAttribute("macrotext", objectiveInfo.displayRef.trackerID)
         end
+
+        self.frame:RegisterEvent("BAG_UPDATE")
+        self.frame:RegisterEvent("BAG_UPDATE_COOLDOWN")
     end,
 
     ------------------------------------------------------------
@@ -262,9 +293,10 @@ local function Constructor()
 	frame:SetScript("OnDragStart", Control_OnDragStart)
 	frame:SetScript("OnDragStop", Control_OnDragStop)
 	frame:SetScript("OnEnter", Control_OnEnter)
+	frame:SetScript("OnEvent", Control_OnEvent)
 	frame:SetScript("OnLeave", Control_OnLeave)
 	frame:SetScript("OnReceiveDrag", Control_OnReceiveDrag)
-	frame:SetScript("PostClick", Control_PostClick)
+    frame:SetScript("PostClick", Control_PostClick)
 
     local FloatingBG = frame:CreateTexture("$parentFloatingBG", "BACKGROUND", nil, -7)
     FloatingBG:SetAllPoints(frame)
@@ -285,7 +317,7 @@ local function Constructor()
     AutoCastable:Hide()
 
     local Count = frame:CreateFontString(nil, "OVERLAY")
-    Count:SetFont([[Fonts\FRIZQT__.TTF]], 12, "NORMAL")
+    Count:SetFont([[Fonts\FRIZQT__.TTF]], 12, "OUTLINE")
     Count:SetPoint("BOTTOMRIGHT", -2, 2)
 
     ------------------------------------------------------------

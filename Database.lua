@@ -245,7 +245,7 @@ function addon:GetDefaultBar()
         alerts = {
             barProgress = false, --bar.trackProgress
             completedObjectives = true, --bar.trackCompletedObjectives
-            muteAll = false, --bar.muteAlerts
+            muteAll = true, --bar.muteAlerts
         },
 
         button = {

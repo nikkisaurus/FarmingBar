@@ -471,6 +471,8 @@ local methods = {
 
         if objectiveTitle then
             self:SetSelected(objectiveTitle)
+        elseif self:GetSelectedObjective() then
+            self:SetSelected(self:GetSelectedObjective())
         else
             mainPanel:ReleaseChildren()
         end
@@ -647,8 +649,7 @@ function addon:Initialize_ObjectiveBuilder()
     sidePanel:AddChild(objectiveSearchBox)
     ObjectiveBuilder.objectiveSearchBox = objectiveSearchBox
 
-    objectiveSearchBox:SetCallback("OnTextChanged", function(self) ObjectiveBuilder:LoadObjectives(self:GetText()) end)
-    objectiveSearchBox:SetCallback("OnEnterPressed", function(self) self:ClearFocus() end)
+    objectiveSearchBox:SetCallback("OnTextChanged", function(self) ObjectiveBuilder:LoadObjectives() end)
 
     ------------------------------------------------------------
 
