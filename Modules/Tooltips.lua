@@ -38,11 +38,9 @@ function addon:GetObjectiveButtonTooltip(widget, tooltip)
         if  objectiveInfo.displayRef.trackerType == "MACROTEXT" then
             tooltip:AddDoubleLine(L["Display Ref"], strsub(objectiveInfo.displayRef.trackerID, 1, 10)..(strlen(objectiveInfo.displayRef.trackerID) > 10 and "..." or ""), unpack(addon.tooltip_keyvalue))
         else
-            -- !Try to remove this if I can set up a coroutine to handle item caching.
             addon:GetTrackerDataTable(objectiveInfo.displayRef.trackerType, objectiveInfo.displayRef.trackerID, function(data)
                 tooltip:AddDoubleLine(L["Display Ref"], data.name, unpack(addon.tooltip_keyvalue))
             end)
-            -- !
         end
     else
         tooltip:AddDoubleLine(L["Display Ref"], L["NONE"], unpack(addon.tooltip_keyvalue))
@@ -56,12 +54,10 @@ function addon:GetObjectiveButtonTooltip(widget, tooltip)
             tooltip:AddTexture(134400)
             break
         else
-            -- !Try to remove this if I can set up a coroutine to handle item caching.
             addon:GetTrackerDataTable(trackerInfo.trackerType, trackerInfo.trackerID, function(data)
                 tooltip:AddDoubleLine(data.name, trackerInfo.objective, unpack(addon.tooltip_description))
                 tooltip:AddTexture(data.icon or 134400)
             end)
-            -- !
         end
     end
 

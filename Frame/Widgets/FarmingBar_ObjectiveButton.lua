@@ -84,7 +84,7 @@ end
 ------------------------------------------------------------
 
 local function Control_OnDragStop(self)
-    addon.DragFrame:Clear()
+    -- addon.DragFrame:Clear()
 end
 
 ------------------------------------------------------------

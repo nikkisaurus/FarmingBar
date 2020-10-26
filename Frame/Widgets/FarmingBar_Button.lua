@@ -13,9 +13,44 @@ local Version = 1
 
 --*------------------------------------------------------------------------
 
+local function GetModifiers()
+    local mod = ""
+    if IsShiftKeyDown() then
+        mod = "shift"
+    end
+    if IsControlKeyDown() then
+        mod = "ctrl"..(mod ~= "" and "-" or "")..mod
+    end
+    if IsAltKeyDown() then
+        mod = "alt"..(mod ~= "" and "-" or "")..mod
+    end
+    return mod
+end
+
+--*------------------------------------------------------------------------
+
 local postClickMethods = {
     clearObjective = function(self, ...)
         self.widget:ClearObjective()
+    end,
+
+    moveObjective = function(self, ...)
+        local widget = self.widget
+        local bar = addon.bars[widget:GetUserData("barID")]
+        local objectiveTitle = widget:GetUserData("objectiveTitle")
+        local buttonID = widget:GetUserData("buttonID")
+
+        if objectiveTitle and not addon.moveButton then
+            widget.Flash:Show()
+            UIFrameFlash(widget.Flash, 0.5, 0.5, -1)
+            addon.moveButton = {widget, objectiveTitle}
+        elseif addon.moveButton then
+            widget:SwapButtons(addon.moveButton)
+        end
+    end,
+
+    showObjectiveBuilder = function(self, ...)
+        addon.ObjectiveBuilder:Load(self.widget:GetUserData("objectiveTitle"))
     end,
 }
 
@@ -23,20 +58,33 @@ local postClickMethods = {
 
 local function Control_PostClick(self, buttonClicked, ...)
     local widget = self.widget
+    if widget:GetUserData("isDragging") then return end
+    local cursorType, cursorID = GetCursorInfo()
+
+    if cursorType == "item" and not IsModifierKeyDown() and buttonClicked == "LeftButton" then
+        local objectiveTitle = addon:CreateObjectiveFromCursor()
+        widget:SetObjective(objectiveTitle)
+        ClearCursor()
+        return
+    elseif addon.DragFrame:IsVisible() then
+        if addon.moveButton then
+            widget:SwapButtons(addon.moveButton)
+        else
+            widget:SetObjective(addon.DragFrame:GetObjective())
+        end
+        addon.DragFrame:Clear()
+        return
+    end
+
+    ClearCursor()
+
+    ------------------------------------------------------------
+
     local keybinds = FarmingBar.db.global.keybinds.button
 
     for keybind, keybindInfo in pairs(keybinds) do
         if buttonClicked == keybindInfo.button then
-            local mod = ""
-            if IsShiftKeyDown() then
-                mod = "shift"
-            end
-            if IsControlKeyDown() then
-                mod = "ctrl"..(mod ~= "" and "-" or "")..mod
-            end
-            if IsAltKeyDown() then
-                mod = "alt"..(mod ~= "" and "-" or "")..mod
-            end
+            local mod = GetModifiers()
 
             if mod == keybindInfo.modifier then
                 local func = postClickMethods[keybind]
@@ -50,9 +98,35 @@ end
 
 --*------------------------------------------------------------------------
 
+local function Control_OnDragStart(self, buttonClicked, ...)
+    local widget = self.widget
+    local keybinds = FarmingBar.db.global.keybinds.dragButton
+
+    widget:SetUserData("isDragging", true)
+
+    if buttonClicked == keybinds.button then
+        local mod = GetModifiers()
+
+        if mod == keybinds.modifier then
+            local objectiveTitle = widget:GetUserData("objectiveTitle")
+            addon.moveButton = {widget, objectiveTitle}
+            addon.DragFrame:Load(objectiveTitle)
+            widget:ClearObjective()
+        end
+    end
+end
+
+------------------------------------------------------------
+
+local function Control_OnDragStop(self)
+    self.widget:SetUserData("isDragging", nil)
+end
+
+------------------------------------------------------------
+
 local function Control_OnEnter(self)
     if addon.DragFrame:IsVisible() then
-        self.widget:SetUserData("dragTitle", addon.DragFrame.text:GetText())
+        self.widget:SetUserData("dragTitle", addon.DragFrame:GetObjective())
     end
 end
 
@@ -68,14 +142,20 @@ local function Control_OnReceiveDrag(self)
     local widget = self.widget
     local objectiveTitle = widget:GetUserData("dragTitle")
 
-
     if objectiveTitle then
-        widget:SetObjective(objectiveTitle)
+        if addon.moveButton then
+            widget:SwapButtons(addon.moveButton)
+        else
+            widget:SetObjective(objectiveTitle)
+        end
+
         widget:SetUserData("dragTitle", nil)
     elseif not objectiveTitle then
         objectiveTitle = addon:CreateObjectiveFromCursor()
         widget:SetObjective(objectiveTitle)
     end
+
+    addon.DragFrame:Clear()
 end
 
 --*------------------------------------------------------------------------
@@ -132,6 +212,11 @@ local methods = {
     ------------------------------------------------------------
 
     SetObjective = function(self, objectiveTitle)
+        if not objectiveTitle then
+            self:ClearObjective()
+            return
+        end
+
         self:SetUserData("objectiveTitle", objectiveTitle)
         FarmingBar.db.char.bars[self:GetUserData("barID")].objectives[self:GetUserData("buttonID")] = objectiveTitle
 
@@ -152,17 +237,34 @@ local methods = {
         self.frame:SetSize(...)
         self.Count:SetWidth(self.frame:GetWidth())
     end,
+
+    ------------------------------------------------------------
+
+    SwapButtons = function(self, moveButton)
+        local objectiveTitle = self:GetUserData("objectiveTitle")
+        local moveButtonWidget, moveButtonObjectiveTitle = moveButton[1], moveButton[2]
+        addon.moveButton = nil
+
+        self:SetObjective(moveButtonObjectiveTitle)
+        moveButtonWidget:SetObjective(objectiveTitle)
+
+        UIFrameFlashStop(moveButtonWidget.Flash)
+        moveButtonWidget.Flash:Hide()
+    end,
 }
 
 --*------------------------------------------------------------------------
 
 local function Constructor()
-    local frame = CreateFrame("Button", nil, UIParent, "SecureActionButtonTemplate, SecureHandlerDragTemplate")
+    local frame = CreateFrame("Button", Type.. AceGUI:GetNextWidgetNum(Type), UIParent, "SecureActionButtonTemplate, SecureHandlerDragTemplate")
     frame:RegisterForClicks("AnyUp")
-	frame:SetScript("PostClick", Control_PostClick)
+    frame:RegisterForDrag("LeftButton", "RightButton")
+	frame:SetScript("OnDragStart", Control_OnDragStart)
+	frame:SetScript("OnDragStop", Control_OnDragStop)
 	frame:SetScript("OnEnter", Control_OnEnter)
 	frame:SetScript("OnLeave", Control_OnLeave)
 	frame:SetScript("OnReceiveDrag", Control_OnReceiveDrag)
+	frame:SetScript("PostClick", Control_PostClick)
 
     local FloatingBG = frame:CreateTexture("$parentFloatingBG", "BACKGROUND", nil, -7)
     FloatingBG:SetAllPoints(frame)

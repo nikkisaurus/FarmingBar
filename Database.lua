@@ -106,10 +106,25 @@ function addon:Initialize_DB()
                         modifier = "shift",
                     },
 
+                    moveObjective = {
+                        button = "LeftButton",
+                        modifier = "",
+                    },
+
+                    showObjectiveBuilder = {
+                        button = "RightButton",
+                        modifier = "ctrl",
+                    },
+
                     useItem = {
                         button = "RightButton",
                         modifier = "",
                     },
+                },
+
+                dragButton = {
+                    button = "LeftButton",
+                    modifier = "shift",
                 },
             },
 
@@ -146,7 +161,7 @@ function addon:Initialize_DB()
             debug = {
                 commands = true,
                 barDB = false,
-                ObjectiveBuilder = true,
+                ObjectiveBuilder = false,
                 ObjectiveBuilderTrackers = false,
                 ObjectiveBuilderCondition = false,
             },

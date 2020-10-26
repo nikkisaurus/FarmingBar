@@ -3,11 +3,31 @@ local FarmingBar = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
 local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 
 local pairs = pairs
+local strfind = string.find
 
 local GetCursorPosition = GetCursorPosition
 local CreateFrame, UIParent = CreateFrame, UIParent
 
 --*------------------------------------------------------------------------
+
+local function DragFrame_OnEvent(self, event, buttonClicked, ...)
+    if event == "GLOBAL_MOUSE_DOWN" then
+        local objectiveTitle = self.text:GetText()
+        if buttonClicked == "RightButton" then
+            self:Clear()
+            addon.moveButton = nil
+        elseif buttonClicked == "LeftButton" and objectiveTitle and not strfind(GetMouseFocus():GetName(), "^FarmingBar_Button%d") then
+            local dialog = StaticPopup_Show("FARMINGBAR_CONFIRM_DELETE_OBJECTIVE", objectiveTitle)
+            if dialog then
+                dialog.data = objectiveTitle
+            end
+            self:Clear()
+            addon.moveButton = nil
+        end
+    end
+end
+
+------------------------------------------------------------
 
 local function DragFrame_OnUpdate(self)
     if self:IsVisible() then
@@ -26,6 +46,10 @@ local methods = {
         self:Hide()
     end,
 
+    GetObjective = function(self)
+        return self.text:GetText()
+    end,
+
     Load = function(self, objectiveTitle)
         self.selected = objectiveTitle
         self.icon:SetTexture(addon:GetObjectiveIcon(objectiveTitle))
@@ -38,13 +62,16 @@ local methods = {
 
 function addon:Initialize_DragFrame()
     local DragFrame = CreateFrame("Frame", "FarmingBarDragFrame", UIParent)
-    DragFrame:SetSize(25, 25)
+    DragFrame:SetSize(35, 35)
     DragFrame:SetPoint("CENTER")
     DragFrame:Hide()
     DragFrame:SetFrameStrata("FULLSCREEN_DIALOG")
     addon.DragFrame = DragFrame
 
+    DragFrame:RegisterEvent("GLOBAL_MOUSE_DOWN")
+
     DragFrame:SetScript("OnUpdate", DragFrame_OnUpdate)
+    DragFrame:SetScript("OnEvent", DragFrame_OnEvent)
 
     ------------------------------------------------------------
 
@@ -54,6 +81,7 @@ function addon:Initialize_DragFrame()
 
     DragFrame.text = DragFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     DragFrame.text:SetPoint("LEFT", DragFrame.icon, "RIGHT", 3, 0)
+    DragFrame.text:Hide()
 
     ------------------------------------------------------------
 

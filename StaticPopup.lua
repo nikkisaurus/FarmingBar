@@ -23,8 +23,8 @@ StaticPopupDialogs["FARMINGBAR_CONFIRM_DELETE_OBJECTIVE"] = {
     text = [[You are about to delete the objective "%s". This will remove the objective from all bars. Do you want to continue?]],
     button1 = YES,
     button2 = NO,
-    OnAccept = function()
-        addon:DeleteObjective()
+    OnAccept = function(_, objectiveTitle)
+        addon:DeleteObjective(objectiveTitle)
     end,
     timeout = 0,
     whileDead = true,

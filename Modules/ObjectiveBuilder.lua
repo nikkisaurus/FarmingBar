@@ -31,7 +31,9 @@ local function autoIcon_OnValueChanged(self)
     addon:SetObjectiveDBInfo((addon:GetSelectedObjectiveInfo()), "autoIcon", self:GetValue())
 
     local ObjectiveBuilder = addon.ObjectiveBuilder
-    ObjectiveBuilder:LoadObjectives(ObjectiveBuilder:GetSelectedObjective())
+    local objectiveTitle = ObjectiveBuilder:GetSelectedObjective()
+    ObjectiveBuilder:LoadObjectives(objectiveTitle)
+    addon:UpdateButtons(objectiveTitle)
 end
 
 ------------------------------------------------------------
@@ -54,7 +56,9 @@ local function displayIcon_OnEnterPressed(self)
     addon:SetObjectiveDBInfo((addon:GetSelectedObjectiveInfo()), "icon", self:GetText())
 
     local ObjectiveBuilder = addon.ObjectiveBuilder
-    ObjectiveBuilder:LoadObjectives(ObjectiveBuilder:GetSelectedObjective())
+    local objectiveTitle = ObjectiveBuilder:GetSelectedObjective()
+    ObjectiveBuilder:LoadObjectives(objectiveTitle)
+    addon:UpdateButtons(objectiveTitle)
     FocusNextWidget(self, "EditBox", IsShiftKeyDown())
 end
 
@@ -417,9 +421,9 @@ local methods = {
 
     ------------------------------------------------------------
 
-    Load = function(self)
+    Load = function(self, objectiveTitle)
         self:Show()
-        self:LoadObjectives()
+        self:LoadObjectives(objectiveTitle)
     end,
 
     ------------------------------------------------------------
@@ -485,15 +489,13 @@ local methods = {
         ------------------------------------------------------------
 
         for tracker, trackerInfo in pairs(objectiveInfo.trackers) do
-            local button = AceGUI:Create("FB30_ObjectiveButton")
+            local button = AceGUI:Create("FarmingBar_TrackerButton")
             button:SetFullWidth(true)
-            -- !Try to remove this if I can set up a coroutine to handle item caching.
             addon:GetTrackerDataTable(trackerInfo.trackerType, trackerInfo.trackerID, function(data)
                 button:SetText(data.name)
                 button:SetIcon(data.icon)
                 tinsert(trackerList.status.children, {trackerTitle = data.name, button = button})
             end)
-            -- !
             button:SetStatus(trackerList.status)
             button:SetMenuFunc(GetTrackerContextMenu)
             button:SetTooltip(addon.GetTrackerButtonTooltip)
@@ -537,7 +539,6 @@ local methods = {
     ------------------------------------------------------------
 
     SelectObjective = function(self, objectiveTitle)
-        self.status.objectiveTitle = objectiveTitle -- !remove when done renaming
         self:SetUserData("selectedObjective", objectiveTitle)
 
         local mainPanel = self.mainPanel.frame
@@ -555,13 +556,11 @@ local methods = {
     UpdateTrackerButton = function(self)
         local _, _, tracker, trackerInfo = addon:GetSelectedObjectiveInfo()
 
-        -- !Try to remove this if I can set up a coroutine to handle item caching.
         addon:GetTrackerDataTable(trackerInfo.trackerType, trackerInfo.trackerID, function(data)
             local button = addon.ObjectiveBuilder.trackerList.status.children[tracker].button
             button:SetText(data.name)
             button:SetIcon(data.icon)
         end)
-        -- !
     end,
 }
 
