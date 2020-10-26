@@ -95,6 +95,26 @@ function addon:Initialize_DB()
 
             ------------------------------------------------------------
 
+            keybinds = {
+                bar = {
+
+                },
+
+                button = {
+                    clearObjective = {
+                        button = "RightButton",
+                        modifier = "shift",
+                    },
+
+                    useItem = {
+                        button = "RightButton",
+                        modifier = "",
+                    },
+                },
+            },
+
+            ------------------------------------------------------------
+
             commands = {
                 farmingbar = true,
                 farmbar = true,

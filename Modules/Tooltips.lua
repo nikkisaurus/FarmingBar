@@ -3,7 +3,7 @@ local FarmingBar = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
 local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 
 local pairs, unpack = pairs, unpack
-local strformat = string.format
+local strlen, strformat, strsub = string.len, string.format, string.sub
 local GameTooltip_AddBlankLinesToTooltip = GameTooltip_AddBlankLinesToTooltip
 
 -- !Note: tooltip functions from AceGUI widgets will not have a self reference
@@ -34,12 +34,16 @@ function addon:GetObjectiveButtonTooltip(widget, tooltip)
     tooltip:AddDoubleLine(L["Objective"], objectiveInfo.objective or L["FALSE"], unpack(addon.tooltip_keyvalue))
 
     GameTooltip_AddBlankLinesToTooltip(tooltip, 1)
-    if objectiveInfo.displayRef.trackerType then
-        -- !Try to remove this if I can set up a coroutine to handle item caching.
-        addon:GetTrackerDataTable(objectiveInfo.displayRef.trackerType, objectiveInfo.displayRef.trackerID, function(data)
-            tooltip:AddDoubleLine(L["Display Ref"], data.name, unpack(addon.tooltip_keyvalue))
-        end)
-        -- !
+    if objectiveInfo.displayRef.trackerType and objectiveInfo.displayRef.trackerID then
+        if  objectiveInfo.displayRef.trackerType == "MACROTEXT" then
+            tooltip:AddDoubleLine(L["Display Ref"], strsub(objectiveInfo.displayRef.trackerID, 1, 10)..(strlen(objectiveInfo.displayRef.trackerID) > 10 and "..." or ""), unpack(addon.tooltip_keyvalue))
+        else
+            -- !Try to remove this if I can set up a coroutine to handle item caching.
+            addon:GetTrackerDataTable(objectiveInfo.displayRef.trackerType, objectiveInfo.displayRef.trackerID, function(data)
+                tooltip:AddDoubleLine(L["Display Ref"], data.name, unpack(addon.tooltip_keyvalue))
+            end)
+            -- !
+        end
     else
         tooltip:AddDoubleLine(L["Display Ref"], L["NONE"], unpack(addon.tooltip_keyvalue))
     end

@@ -82,6 +82,7 @@ end
 
 local function displayRefMacrotext_OnEnterPressed(self)
     addon:SetObjectiveDBInfo((addon:GetSelectedObjectiveInfo()), "displayRef.trackerID", self:GetText())
+    addon:UpdateButtons(addon.ObjectiveBuilder:GetSelectedObjective())
 end
 
 ------------------------------------------------------------
@@ -97,7 +98,10 @@ local function displayRefTrackerID_OnEnterPressed(self)
         self:ClearFocus()
 
         local ObjectiveBuilder = addon.ObjectiveBuilder
-        ObjectiveBuilder:LoadObjectives(ObjectiveBuilder:GetSelectedObjective())
+        local objectiveTitle = ObjectiveBuilder:GetSelectedObjective()
+        ObjectiveBuilder:LoadObjectives(objectiveTitle)
+        addon:UpdateButtons(objectiveTitle)
+
         FocusNextWidget(self, "EditBox", IsShiftKeyDown())
     else
         addon:ReportError(L.InvalidTrackerID(objectiveInfo.displayRef.trackerType, self:GetText()))
@@ -116,7 +120,9 @@ local function displayRefTrackerType_OnValueChanged(self, selected)
     addon:SetObjectiveDBInfo(objectiveTitle, "displayRef.trackerID", false)
 
     local ObjectiveBuilder = addon.ObjectiveBuilder
-    ObjectiveBuilder:LoadObjectives(ObjectiveBuilder:GetSelectedObjective())
+    local objectiveTitle = ObjectiveBuilder:GetSelectedObjective()
+    ObjectiveBuilder:LoadObjectives(objectiveTitle)
+    addon:UpdateButtons(objectiveTitle)
 
     if selected ~= "NONE" then
         FocusNextWidget(self, selected == "MACROTEXT" and "MultiLineEditBox" or "EditBox")

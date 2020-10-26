@@ -262,7 +262,7 @@ local function Constructor()
     frame:SetHeight(35)
 
     frame:EnableMouse(true)
-    frame:RegisterForClicks("AnyUp")
+    frame:RegisterForClicks("LeftButtonUp", "RightButtonUp")
     frame:RegisterForDrag("LeftButton")
 
 	frame:SetScript("OnClick", Control_OnClick)

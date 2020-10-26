@@ -15,3 +15,16 @@ function addon:ClearDeletedObjectives()
         end
     end
 end
+
+------------------------------------------------------------
+
+function addon:UpdateButtons(objectiveTitle)
+    for _, bar in pairs(self.bars) do
+        for _, button in pairs(bar:GetUserData("buttons")) do
+            local buttonObjectiveTitle = button:GetUserData("objectiveTitle")
+            if buttonObjectiveTitle == objectiveTitle then
+                button:SetObjective(objectiveTitle)
+            end
+        end
+    end
+end
