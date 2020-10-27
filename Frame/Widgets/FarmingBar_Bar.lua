@@ -201,7 +201,7 @@ local methods = {
         for _, button in pairs(self:GetUserData("buttons")) do
             local objectiveTitle = FarmingBar.db.char.bars[self:GetUserData("barID")].objectives[button:GetUserData("buttonID")]
             if objectiveTitle then
-                button:SetObjective(objectiveTitle)
+                button:SetObjectiveID(objectiveTitle)
             end
         end
     end,

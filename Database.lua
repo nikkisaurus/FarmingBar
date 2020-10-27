@@ -68,8 +68,9 @@ function addon:Initialize_DB()
 
                 objectives = {
                     overwriteQuickObjectives = {
-                        enabled = true,
+                        enabled = false,
                         prompt = false,
+                        useExisting = false,
                     },
                 },
 
@@ -186,14 +187,14 @@ function addon:Initialize_DB()
 
         profile = {
             style = {
-                skin = "FarmingBar_Default",
+                skin = "FarmingBar_Minimal",
                 font = {
                     face = "Friz Quadrata TT",
                     outline = "OUTLINE",
                     size = 11,
                     fontStrings = {
                         ["**"] = {
-                            colorType = "CUSTOM", -- "CUSTOM", "INCLUDEBANK", "ITEMQUALITY" --profile.style.count.type
+                            colorType = "ITEMQUALITY", -- "CUSTOM", "INCLUDEBANK", "ITEMQUALITY" --profile.style.count.type
                             color = {1, 1, 1, 1}, --profile.style.count.color
                         },
                         count = {},
@@ -202,8 +203,8 @@ function addon:Initialize_DB()
                 },
                 buttonLayers = {
                     AutoCastable = true, --bank overlay
-                    Border = false, --item quality
-                    Cooldown = false,
+                    Border = true, --item quality
+                    Cooldown = true,
                     CooldownEdge = false,
                 },
             },

@@ -57,7 +57,7 @@ local function Control_OnClick(self, buttonClicked)
     ------------------------------------------------------------
 
     widget:SetSelected(true)
-    if lastSelectedKey then
+    if lastSelectedKey and currentKey then
         local offset = (lastSelectedKey < currentKey) and 1 or -1
         for i = lastSelectedKey + offset, currentKey - offset, offset do
             buttons[i]:SetSelected(true, true)

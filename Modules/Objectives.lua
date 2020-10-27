@@ -4,7 +4,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 
 local pairs = pairs
 local type = type
-local tonumber = tonumber
+local strfind, tonumber = string.find, tonumber
 
 local GetCursorInfo, ClearCursor = GetCursorInfo, ClearCursor
 
@@ -64,15 +64,16 @@ function addon:CreateObjectiveFromCursor()
         tinsert(defaultInfo.trackers, tracker)
 
         local objectiveTitle = "ITEM:"..(select(1, GetItemInfo(cursorID)))
+        local overwriteQuickObjectives = FarmingBar.db.global.settings.objectives.overwriteQuickObjectives
 
-        if addon:GetObjectiveInfo(objectiveTitle) and FarmingBar.db.global.settings.objectives.overwriteQuickObjectives.prompt then
+        if addon:GetObjectiveInfo(objectiveTitle) and overwriteQuickObjectives.prompt then
             local dialog = StaticPopup_Show("FARMINGBAR_CONFIRM_OVERWRITE_OBJECTIVE", objectiveTitle)
             if dialog then
                 dialog.data = objectiveTitle
                 dialog.data2 = defaultInfo
             end
-        else
-            self:CreateObjective(objectiveTitle, defaultInfo, FarmingBar.db.global.settings.objectives.overwriteQuickObjectives.enabled)
+        elseif not overwriteQuickObjectives.useExisting then
+            self:CreateObjective(objectiveTitle, defaultInfo, overwriteQuickObjectives.enabled)
         end
 
         return objectiveTitle
@@ -89,12 +90,18 @@ function addon:DeleteObjective(objectiveTitle)
             if button:GetUserData("selected") then
                 local objectiveTitle = button:GetUserData("objectiveTitle")
                 FarmingBar.db.global.objectives[objectiveTitle] = nil
+                if ObjectiveBuilder:GetSelectedObjective() == objectiveTitle then
+                    ObjectiveBuilder:SelectObjective()
+                end
                 self:UpdateExclusions(objectiveTitle)
                 self:ClearDeletedObjectives(objectiveTitle)
             end
         end
     else
-        FarmingBar.db.global.objectives[objectiveTitle] = ni
+        FarmingBar.db.global.objectives[objectiveTitle] = nil
+        if ObjectiveBuilder:GetSelectedObjective() == objectiveTitle then
+            ObjectiveBuilder:SelectObjective()
+        end
         self:UpdateExclusions(objectiveTitle)
         self:ClearDeletedObjectives(objectiveTitle)
     end
@@ -197,6 +204,18 @@ function addon:GetSelectedObjectiveInfo()
     local trackerInfo = tracker and self:GetTrackerInfo(objectiveTitle, tracker)
 
     return objectiveTitle, objectiveInfo, tracker, trackerInfo
+end
+
+------------------------------------------------------------
+
+function addon:IsObjectiveAutoItem(objectiveTitle)
+    return objectiveTitle and strfind(objectiveTitle, "^ITEM:")
+end
+
+------------------------------------------------------------
+
+function addon:IsObjectiveBankIncluded(objectiveTitle)
+    return self:IsObjectiveAutoItem(objectiveTitle) and self:GetTrackerInfo(objectiveTitle, 1).includeBank
 end
 
 ------------------------------------------------------------

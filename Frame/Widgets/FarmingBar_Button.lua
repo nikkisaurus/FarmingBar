@@ -4,7 +4,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 
 local _G = _G
-
+local floor = math.floor
 
 --*------------------------------------------------------------------------
 
@@ -37,11 +37,10 @@ local postClickMethods = {
     includeBank = function(self, ...)
         local widget = self.widget
         local objectiveTitle = widget:GetUserData("objectiveTitle")
-        local trackers = addon:GetObjectiveInfo(objectiveTitle).trackers
 
-        if #trackers == 1 then
+        if addon:IsObjectiveAutoItem(objectiveTitle) then
             addon:SetTrackerDBInfo(objectiveTitle, 1, "includeBank", "_toggle")
-            widget:SetObjective(objectiveTitle)
+            widget:SetObjectiveID(objectiveTitle)
             -- TODO: Update tracker frame if visible
             -- TODO: Alert bar progress if changed
         end
@@ -109,18 +108,32 @@ local function Control_OnEvent(self, event, ...)
     local barDB = addon.bars[barID]:GetUserData("barDB")
     local buttonID = widget:GetUserData("buttonID")
     local objectiveTitle = widget:GetUserData("objectiveTitle")
+    local objectiveInfo = addon:GetObjectiveInfo(objectiveTitle)
 
-    if event == "BAG_UPDATE" or event == "BAG_UPDATE_COOLDOWN" then
+    if event == "BAG_UPDATE" or event == "BAG_UPDATE_COOLDOWN" or event == "CURRENCY_DISPLAY_UPDATE" then
         if not barDB.alerts.muteAll then
             local count = addon:GetObjectiveCount(objectiveTitle)
             if count ~= widget:GetCount() then
-                widget:SetCount(count)
+                widget:SetCount()
             end
         end
     elseif event == "PLAYER_REGEN_ENABLED" then
         widget:SetAttribute()
         self:UnregisterEvent(event)
         -- TODO: print combat left
+    elseif event == "COMBAT_LOG_EVENT_UNFILTERED" then
+        if not objectiveInfo then return end
+        if FarmingBar.db.profile.style.buttonLayers.Cooldown and objectiveInfo.displayRef.trackerType == "ITEM" then
+            local startTime, duration, enable = GetItemCooldown(objectiveInfo.displayRef.trackerID)
+            widget.Cooldown:SetCooldown(startTime, duration)
+            widget.Cooldown:GetRegions():SetFontObject(NumberFontNormalSmall)
+            -- TODO: custom fonts
+            -- widget.Cooldown:GetRegions():SetFont(LSM:Fetch("font", self:GetBar().db.font.face or addon.db.profile.style.font.face) or "", (self:GetBar().db.font.size or addon.db.profile.style.font.size) * 1.5, self:GetBar().db.font.outline or addon.db.profile.style.font.outline)
+            widget.Cooldown:Show()
+        else
+            widget.Cooldown:SetCooldown(0, 0)
+            widget.Cooldown:Hide()
+        end
     end
 end
 
@@ -140,13 +153,13 @@ local function Control_OnReceiveDrag(self)
         if addon.moveButton then
             widget:SwapButtons(addon.moveButton)
         else
-            widget:SetObjective(objectiveTitle)
+            widget:SetObjectiveID(objectiveTitle)
         end
 
         widget:SetUserData("dragTitle", nil)
     elseif not objectiveTitle then
         objectiveTitle = addon:CreateObjectiveFromCursor()
-        widget:SetObjective(objectiveTitle)
+        widget:SetObjectiveID(objectiveTitle)
     end
 
     addon.DragFrame:Clear()
@@ -161,14 +174,14 @@ local function Control_PostClick(self, buttonClicked, ...)
 
     if cursorType == "item" and not IsModifierKeyDown() and buttonClicked == "LeftButton" then
         local objectiveTitle = addon:CreateObjectiveFromCursor()
-        widget:SetObjective(objectiveTitle)
+        widget:SetObjectiveID(objectiveTitle)
         ClearCursor()
         return
     elseif addon.DragFrame:IsVisible() then
         if addon.moveButton then
             widget:SwapButtons(addon.moveButton)
         else
-            widget:SetObjective(addon.DragFrame:GetObjective())
+            widget:SetObjectiveID(addon.DragFrame:GetObjective())
         end
         addon.DragFrame:Clear()
         return
@@ -201,6 +214,8 @@ local methods = {
         self.frame:ClearAllPoints()
         self.frame:Show()
         self.AutoCastable:Hide()
+
+        self.Cooldown:SetDrawEdge(FarmingBar.db.profile.style.buttonLayers.CooldownEdge)
     end,
 
     ------------------------------------------------------------
@@ -209,12 +224,11 @@ local methods = {
         self:SetUserData("objectiveTitle", nil)
         FarmingBar.db.char.bars[self:GetUserData("barID")].objectives[self:GetUserData("buttonID")] = nil
 
-        self:SetIcon("")
-        self:SetCount("")
-        self.AutoCastable:Hide()
-
         self.frame:UnregisterEvent("BAG_UPDATE")
         self.frame:UnregisterEvent("BAG_UPDATE_COOLDOWN")
+        self.frame:UnregisterEvent("CURRENCY_DISPLAY_UPDATE")
+
+        self:UpdateLayers()
     end,
 
     ------------------------------------------------------------
@@ -231,18 +245,15 @@ local methods = {
         local objectiveTitle = self:GetUserData("objectiveTitle")
         local objectiveInfo = addon:GetObjectiveInfo(objectiveTitle)
 
-        if self.frame:GetAttribute(buttonType) == "macro" and objectiveInfo.displayRef.trackerType == "MACROTEXT" then
+        if objectiveInfo and self.frame:GetAttribute(buttonType) == "macro" and objectiveInfo.displayRef.trackerType == "MACROTEXT" then
             if self.frame:GetAttribute("macrotext") == objectiveInfo.displayRef.trackerID then
                 return
             end
-        elseif self.frame:GetAttribute(buttonType) == "item" and objectiveInfo.displayRef.trackerType == "ITEM" then
+        elseif objectiveInfo and self.frame:GetAttribute(buttonType) == "item" and objectiveInfo.displayRef.trackerType == "ITEM" then
             if self.frame:GetAttribute("item") == ("item"..objectiveInfo.displayRef.trackerID) then
                 return
             end
         end
-
-        self.frame:RegisterEvent("BAG_UPDATE")
-        self.frame:RegisterEvent("BAG_UPDATE_COOLDOWN")
 
         if UnitAffectingCombat("player") then
             self.frame:RegisterEvent("PLAYER_REGEN_ENABLED")
@@ -253,6 +264,8 @@ local methods = {
         self.frame:SetAttribute(buttonType, nil)
         self.frame:SetAttribute("item", nil)
         self.frame:SetAttribute("macrotext", nil)
+
+        if not objectiveInfo then return end
 
         if objectiveInfo.displayRef.trackerType == "ITEM" and objectiveInfo.displayRef.trackerID then
             self.frame:SetAttribute(buttonType, "item")
@@ -265,19 +278,61 @@ local methods = {
 
     ------------------------------------------------------------
 
-    SetCount = function(self, count)
-        self.Count:SetText(count)
+    SetCount = function(self)
+
+        local objectiveTitle = self:GetUserData("objectiveTitle")
+        local objectiveInfo = addon:GetObjectiveInfo(objectiveTitle)
+        local style = FarmingBar.db.profile.style.font.fontStrings.count
+
+        self.Count:SetText(objectiveTitle and addon:GetObjectiveCount(objectiveTitle) or "")
+
+        if not objectiveTitle then return end
+
+        if style.colorType == "ITEMQUALITY" and addon:IsObjectiveAutoItem(objectiveTitle) then -- and item
+            local r, g, b = GetItemQualityColor(C_Item.GetItemQualityByID(objectiveInfo.trackers[1].trackerID))
+            self.Count:SetTextColor(r, g, b, 1)
+        elseif style.colorType == "INCLUDEBANK" and addon:IsObjectiveBankIncluded(objectiveTitle) then -- and includeBank
+            self.Count:SetTextColor(1, .82, 0, 1)
+        else
+            self.Count:SetTextColor(unpack(style.color))
+        end
     end,
 
     ------------------------------------------------------------
 
-    SetIcon = function(self, icon)
-        self.Icon:SetTexture(icon)
+    SetIcon = function(self)
+        local objectiveTitle = self:GetUserData("objectiveTitle")
+        self.Icon:SetTexture(objectiveTitle and addon:GetObjectiveIcon(objectiveTitle) or "")
     end,
 
     ------------------------------------------------------------
 
-    SetObjective = function(self, objectiveTitle)
+    SetObjective = function(self)
+        local objectiveTitle = self:GetUserData("objectiveTitle")
+        local objectiveInfo = addon:GetObjectiveInfo(objectiveTitle)
+
+        if objectiveInfo.objective then
+            local formattedObjective, objective = LibStub("LibAddonUtils-1.0").iformat(objectiveInfo.objective, 2)
+            self.Objective:SetText(formattedObjective)
+
+            local count = addon:GetObjectiveCount(objectiveTitle)
+
+            if count >= objective then
+                self.Objective:SetTextColor(0, 1 , 0, 1)
+                if floor(count / objective) > 1 then
+                    self.Objective:SetText(formattedObjective.."*")
+                end
+            else
+                self.Objective:SetTextColor(1, .82, 0, 1)
+            end
+        else
+            self.Objective:SetText("")
+        end
+    end,
+
+    ------------------------------------------------------------
+
+    SetObjectiveID = function(self, objectiveTitle)
         if not objectiveTitle then
             self:ClearObjective()
             return
@@ -286,10 +341,11 @@ local methods = {
         self:SetUserData("objectiveTitle", objectiveTitle)
         FarmingBar.db.char.bars[self:GetUserData("barID")].objectives[self:GetUserData("buttonID")] = objectiveTitle
 
-        self:SetIcon(addon:GetObjectiveIcon(objectiveTitle))
-        self:SetCount(addon:GetObjectiveCount(objectiveTitle))
-        self:UpdateAutoCastable()
-        self:SetAttribute()
+        self.frame:RegisterEvent("BAG_UPDATE")
+        self.frame:RegisterEvent("BAG_UPDATE_COOLDOWN")
+        self.frame:RegisterEvent("CURRENCY_DISPLAY_UPDATE")
+
+        self:UpdateLayers()
     end,
 
     ------------------------------------------------------------
@@ -312,8 +368,8 @@ local methods = {
         local moveButtonWidget, moveButtonObjectiveTitle = moveButton[1], moveButton[2]
         addon.moveButton = nil
 
-        self:SetObjective(moveButtonObjectiveTitle)
-        moveButtonWidget:SetObjective(objectiveTitle)
+        self:SetObjectiveID(moveButtonObjectiveTitle)
+        moveButtonWidget:SetObjectiveID(objectiveTitle)
 
         UIFrameFlashStop(moveButtonWidget.Flash)
         moveButtonWidget.Flash:Hide()
@@ -323,10 +379,9 @@ local methods = {
 
     UpdateAutoCastable = function(self)
         local objectiveTitle = self:GetUserData("objectiveTitle")
-        local trackers = addon:GetObjectiveInfo(objectiveTitle).trackers
 
         if FarmingBar.db.profile.style.buttonLayers.AutoCastable then
-            if #trackers ~= 1 or not trackers[1].includeBank then
+            if not addon:IsObjectiveBankIncluded(objectiveTitle) then
                 self.AutoCastable:Hide()
             else
                 self.AutoCastable:Show()
@@ -334,6 +389,35 @@ local methods = {
         else
             self.AutoCastable:Hide()
         end
+    end,
+
+    ------------------------------------------------------------
+
+    UpdateBorder = function(self)
+        local objectiveTitle = self:GetUserData("objectiveTitle")
+        local objectiveInfo = addon:GetObjectiveInfo(objectiveTitle)
+
+        if FarmingBar.db.profile.style.buttonLayers.Border then
+            local itemQuality = C_Item.GetItemQualityByID(objectiveInfo.trackers[1].trackerID)
+            if itemQuality > 1 then
+                local r, g, b = GetItemQualityColor(itemQuality)
+                self.Border:SetVertexColor(r, g, b, 1)
+                self.Border:Show()
+            end
+        else
+            self.Border:Hide()
+        end
+    end,
+
+    ------------------------------------------------------------
+
+    UpdateLayers = function(self)
+        self:SetIcon()
+        self:SetCount()
+        self:SetObjective()
+        self:UpdateAutoCastable()
+        self:UpdateBorder()
+        self:SetAttribute()
     end,
 }
 
@@ -351,26 +435,42 @@ local function Constructor()
 	frame:SetScript("OnReceiveDrag", Control_OnReceiveDrag)
     frame:SetScript("PostClick", Control_PostClick)
 
-    local FloatingBG = frame:CreateTexture("$parentFloatingBG", "BACKGROUND", nil, -7)
+    frame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+    frame:RegisterEvent("BANKFRAME_OPENED")
+    frame:RegisterEvent("BANKFRAME_CLOSED")
+
+    local FloatingBG = frame:CreateTexture("$parentFloatingBG", "BACKGROUND", nil, 1)
     FloatingBG:SetAllPoints(frame)
 
-    local Icon = frame:CreateTexture("$parentIcon", "BACKGROUND", nil, -6)
+    local Icon = frame:CreateTexture("$parentIcon", "BACKGROUND", nil, 2)
     Icon:SetAllPoints(frame)
 
-    local Flash = frame:CreateTexture("$parentFlash", "BACKGROUND", nil, -5)
+    local Flash = frame:CreateTexture("$parentFlash", "BACKGROUND", nil, 3)
     Flash:SetAllPoints(frame)
     Flash:Hide()
 
-    local Border = frame:CreateTexture("$parentBorder", "BORDER")
+    local Border = frame:CreateTexture("$parentBorder", "BORDER", nil, 1)
     Border:SetAllPoints(frame)
     Border:Hide()
 
-    local AutoCastable = frame:CreateTexture("$parentAutoCastable", "OVERLAY")
+    local AutoCastable = frame:CreateTexture("$parentAutoCastable", "OVERLAY", nil, 2)
     AutoCastable:SetAllPoints(frame)
 
-    local Count = frame:CreateFontString(nil, "OVERLAY")
+    local Count = frame:CreateFontString(nil, "OVERLAY", nil, 3)
     Count:SetFont([[Fonts\FRIZQT__.TTF]], 12, "OUTLINE")
     Count:SetPoint("BOTTOMRIGHT", -2, 2)
+    Count:SetPoint("BOTTOMLEFT", 2, 2)
+    Count:SetJustifyH("RIGHT")
+
+    local Objective = frame:CreateFontString(nil, "OVERLAY", nil, 3)
+    Objective:SetFont([[Fonts\FRIZQT__.TTF]], 12, "OUTLINE")
+    Objective:SetPoint("TOPLEFT", 2, -2)
+    Objective:SetPoint("TOPRIGHT", -2, -2)
+    Objective:SetJustifyH("LEFT")
+
+    local Cooldown = CreateFrame("Cooldown", "$parentCooldown", frame, "CooldownFrameTemplate")
+    Cooldown:SetAllPoints(frame)
+
 
     ------------------------------------------------------------
 
@@ -383,6 +483,8 @@ local function Constructor()
         Border = Border,
         AutoCastable = AutoCastable,
         Count = Count,
+        Objective = Objective,
+        Cooldown = Cooldown,
     }
 
     frame.widget = widget

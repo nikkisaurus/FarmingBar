@@ -209,7 +209,9 @@ end
 
 local function mainTabGroup_OnGroupSelected(self, selected)
     local objectiveTitle = addon:GetSelectedObjectiveInfo()
-    tabCache[objectiveTitle] = selected
+    if objectiveTitle then
+        tabCache[objectiveTitle] = selected
+    end
 
     self:ReleaseChildren()
     if selected == "objectiveTab" then
@@ -236,13 +238,15 @@ end
 local function objective_OnEnterPressed(self)
     local text = self:GetText() ~= "" and self:GetText() or 0
     local objective = tonumber(text) > 0 and tonumber(text)
+    local objectiveTitle = addon:GetSelectedObjectiveInfo()
 
-    addon:SetObjectiveDBInfo((addon:GetSelectedObjectiveInfo()), "objective", objective)
+    addon:SetObjectiveDBInfo(objectiveTitle, "objective", objective)
 
     self:SetText(objective)
     self:ClearFocus()
 
     FocusNextWidget(self, "EditBox", IsShiftKeyDown())
+    addon:UpdateButtons(objectiveTitle)
 end
 
 ------------------------------------------------------------
@@ -488,7 +492,7 @@ local methods = {
         ------------------------------------------------------------
 
         for objectiveTitle, objective in addon.pairs(FarmingBar.db.global.objectives, function(a, b) return strupper(a) < strupper(b) end) do
-            if (not filter or strfind(strupper(objectiveTitle), strupper(filter))) and (self.filterAutoItems:GetValue() and not strfind(objectiveTitle, "^ITEM:") or not self.filterAutoItems:GetValue()) then
+            if (not filter or strfind(strupper(objectiveTitle), strupper(filter))) and (self.filterAutoItems:GetValue() and not addon:IsObjectiveAutoItem(objectiveTitle) or not self.filterAutoItems:GetValue()) then
                 local button = AceGUI:Create("FarmingBar_ObjectiveButton")
                 button:SetFullWidth(true)
                 button:SetObjective(objectiveTitle)
@@ -627,9 +631,9 @@ function addon:Initialize_ObjectiveBuilder()
 
     local topContent = AceGUI:Create("SimpleGroup")
     topContent:SetFullWidth(true)
-    topContent:SetHeight(30)
+    -- topContent:SetHeight(30)
     topContent:SetLayout("Flow")
-    topContent:SetAutoAdjustHeight(false)
+    -- topContent:SetAutoAdjustHeight(false)
     ObjectiveBuilder:AddChild(topContent)
     ObjectiveBuilder.topContent = topContent
 
