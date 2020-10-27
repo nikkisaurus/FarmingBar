@@ -2,9 +2,11 @@ local addonName, addon = ...
 local FarmingBar = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
 local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
+local LSM = LibStub("LibSharedMedia-3.0")
 
 local _G = _G
 local floor = math.floor
+local tonumber = tonumber
 
 --*------------------------------------------------------------------------
 
@@ -40,7 +42,7 @@ local postClickMethods = {
 
         if addon:IsObjectiveAutoItem(objectiveTitle) then
             addon:SetTrackerDBInfo(objectiveTitle, 1, "includeBank", "_toggle")
-            widget:SetObjectiveID(objectiveTitle)
+            widget:UpdateLayers()
             -- TODO: Update tracker frame if visible
             -- TODO: Alert bar progress if changed
         end
@@ -50,12 +52,13 @@ local postClickMethods = {
         local widget = self.widget
         local bar = addon.bars[widget:GetUserData("barID")]
         local objectiveTitle = widget:GetUserData("objectiveTitle")
+        local objective = widget:GetUserData("objective")
         local buttonID = widget:GetUserData("buttonID")
 
         if objectiveTitle and not addon.moveButton then
             widget.Flash:Show()
             UIFrameFlash(widget.Flash, 0.5, 0.5, -1)
-            addon.moveButton = {widget, objectiveTitle}
+            addon.moveButton = {widget, objectiveTitle, objective}
         elseif addon.moveButton then
             widget:SwapButtons(addon.moveButton)
         end
@@ -63,6 +66,10 @@ local postClickMethods = {
 
     showObjectiveBuilder = function(self, ...)
         addon.ObjectiveBuilder:Load(self.widget:GetUserData("objectiveTitle"))
+    end,
+
+    showObjectiveEditBox = function(self, ...)
+        self.widget.objectiveEditBox:Show()
     end,
 }
 
@@ -79,7 +86,8 @@ local function Control_OnDragStart(self, buttonClicked, ...)
 
         if mod == keybinds.modifier then
             local objectiveTitle = widget:GetUserData("objectiveTitle")
-            addon.moveButton = {widget, objectiveTitle}
+            local objective = widget:GetUserData("objective")
+            addon.moveButton = {widget, objectiveTitle, objective}
             addon.DragFrame:Load(objectiveTitle)
             widget:ClearObjective()
         end
@@ -207,21 +215,74 @@ local function Control_PostClick(self, buttonClicked, ...)
     end
 end
 
+------------------------------------------------------------
+
+local function EditBox_OnEditFocusGained(self)
+    self:SetText(self.widget:GetUserData("objective") or "")
+    self:HighlightText()
+    self:SetCursorPosition(strlen(self:GetText()))
+end
+
+------------------------------------------------------------
+
+local function EditBox_OnEscapePressed(self)
+    self:ClearFocus()
+    self:Hide()
+end
+
+------------------------------------------------------------
+
+local function EditBox_OnShow(self)
+    local widget = self.widget
+    local width = widget.frame:GetWidth()
+    self:SetSize(width, width / 2)
+    self:SetFocus()
+end
+
+------------------------------------------------------------
+
+local function EditBox_OnTextChanged(self)
+    self:SetText(string.gsub(self:GetText(), "[%s%c%p%a]", ""))
+end
+
+------------------------------------------------------------
+
+local function objectiveEditBox_OnEnterPressed(self)
+    local objective = tonumber(self:GetText())
+    objective = objective and (objective > 0 and objective)
+    self.widget:SetObjective(objective)
+
+    if FarmingBar.db.global.settings.alerts.button.sound.enabled then
+        PlaySoundFile(LSM:Fetch("sound", FarmingBar.db.global.settings.alerts.button.sound[objective and "objectiveSet" or "objectiveCleared"]))
+    end
+
+    self:ClearFocus()
+    self:Hide()
+end
+
+------------------------------------------------------------
+
+local function quickAddEditBox_OnEnterPressed(self)
+
+end
+
 --*------------------------------------------------------------------------
 
 local methods = {
     OnAcquire = function(self)
         self.frame:ClearAllPoints()
         self.frame:Show()
-        self.AutoCastable:Hide()
 
-        self.Cooldown:SetDrawEdge(FarmingBar.db.profile.style.buttonLayers.CooldownEdge)
+        self.objectiveEditBox:Hide()
+        self.quickAddEditBox:Hide()
+        self:UpdateLayers()
     end,
 
     ------------------------------------------------------------
 
     ClearObjective = function(self)
         self:SetUserData("objectiveTitle", nil)
+        self:SetUserData("objective", nil)
         FarmingBar.db.char.bars[self:GetUserData("barID")].objectives[self:GetUserData("buttonID")] = nil
 
         self.frame:UnregisterEvent("BAG_UPDATE")
@@ -279,7 +340,6 @@ local methods = {
     ------------------------------------------------------------
 
     SetCount = function(self)
-
         local objectiveTitle = self:GetUserData("objectiveTitle")
         local objectiveInfo = addon:GetObjectiveInfo(objectiveTitle)
         local style = FarmingBar.db.profile.style.font.fontStrings.count
@@ -307,39 +367,23 @@ local methods = {
 
     ------------------------------------------------------------
 
-    SetObjective = function(self)
-        local objectiveTitle = self:GetUserData("objectiveTitle")
-        local objectiveInfo = addon:GetObjectiveInfo(objectiveTitle)
-
-        if objectiveInfo.objective then
-            local formattedObjective, objective = LibStub("LibAddonUtils-1.0").iformat(objectiveInfo.objective, 2)
-            self.Objective:SetText(formattedObjective)
-
-            local count = addon:GetObjectiveCount(objectiveTitle)
-
-            if count >= objective then
-                self.Objective:SetTextColor(0, 1 , 0, 1)
-                if floor(count / objective) > 1 then
-                    self.Objective:SetText(formattedObjective.."*")
-                end
-            else
-                self.Objective:SetTextColor(1, .82, 0, 1)
-            end
-        else
-            self.Objective:SetText("")
-        end
+    SetObjective = function(self, objective)
+        self:SetUserData("objective", objective)
+        FarmingBar.db.char.bars[self:GetUserData("barID")].objectives[self:GetUserData("buttonID")].objective = objective
+        self:UpdateObjective()
     end,
 
     ------------------------------------------------------------
 
-    SetObjectiveID = function(self, objectiveTitle)
+    SetObjectiveID = function(self, objectiveTitle, objective)
         if not objectiveTitle then
             self:ClearObjective()
             return
         end
 
         self:SetUserData("objectiveTitle", objectiveTitle)
-        FarmingBar.db.char.bars[self:GetUserData("barID")].objectives[self:GetUserData("buttonID")] = objectiveTitle
+        self:SetUserData("objective", objective)
+        FarmingBar.db.char.bars[self:GetUserData("barID")].objectives[self:GetUserData("buttonID")] = {objectiveTitle = objectiveTitle, objective = objective}
 
         self.frame:RegisterEvent("BAG_UPDATE")
         self.frame:RegisterEvent("BAG_UPDATE_COOLDOWN")
@@ -365,11 +409,12 @@ local methods = {
 
     SwapButtons = function(self, moveButton)
         local objectiveTitle = self:GetUserData("objectiveTitle")
-        local moveButtonWidget, moveButtonObjectiveTitle = moveButton[1], moveButton[2]
+        local objective = self:GetUserData("objective")
+        local moveButtonWidget, moveButtonObjectiveTitle, moveButtonObjective = moveButton[1], moveButton[2], moveButton[3]
         addon.moveButton = nil
 
-        self:SetObjectiveID(moveButtonObjectiveTitle)
-        moveButtonWidget:SetObjectiveID(objectiveTitle)
+        self:SetObjectiveID(moveButtonObjectiveTitle, moveButtonObjective)
+        moveButtonWidget:SetObjectiveID(objectiveTitle, objective)
 
         UIFrameFlashStop(moveButtonWidget.Flash)
         moveButtonWidget.Flash:Hide()
@@ -380,7 +425,7 @@ local methods = {
     UpdateAutoCastable = function(self)
         local objectiveTitle = self:GetUserData("objectiveTitle")
 
-        if FarmingBar.db.profile.style.buttonLayers.AutoCastable then
+        if objectiveTitle and FarmingBar.db.profile.style.buttonLayers.AutoCastable then
             if not addon:IsObjectiveBankIncluded(objectiveTitle) then
                 self.AutoCastable:Hide()
             else
@@ -397,7 +442,7 @@ local methods = {
         local objectiveTitle = self:GetUserData("objectiveTitle")
         local objectiveInfo = addon:GetObjectiveInfo(objectiveTitle)
 
-        if FarmingBar.db.profile.style.buttonLayers.Border then
+        if objectiveInfo and FarmingBar.db.profile.style.buttonLayers.Border then
             local itemQuality = C_Item.GetItemQualityByID(objectiveInfo.trackers[1].trackerID)
             if itemQuality > 1 then
                 local r, g, b = GetItemQualityColor(itemQuality)
@@ -411,13 +456,45 @@ local methods = {
 
     ------------------------------------------------------------
 
+    UpdateCooldown = function(self)
+        self.Cooldown:SetDrawEdge(FarmingBar.db.profile.style.buttonLayers.CooldownEdge)
+    end,
+
+    ------------------------------------------------------------
+
     UpdateLayers = function(self)
         self:SetIcon()
         self:SetCount()
-        self:SetObjective()
+        self:UpdateObjective()
         self:UpdateAutoCastable()
         self:UpdateBorder()
+        self:UpdateCooldown()
         self:SetAttribute()
+    end,
+
+    ------------------------------------------------------------
+
+    UpdateObjective = function(self)
+        local objectiveTitle = self:GetUserData("objectiveTitle")
+        local objective = self:GetUserData("objective")
+
+        if objective then
+            local formattedObjective, objective = LibStub("LibAddonUtils-1.0").iformat(objective, 2)
+            self.Objective:SetText(formattedObjective)
+
+            local count = addon:GetObjectiveCount(objectiveTitle)
+
+            if count >= objective then
+                self.Objective:SetTextColor(0, 1 , 0, 1)
+                if floor(count / objective) > 1 then
+                    self.Objective:SetText(formattedObjective.."*")
+                end
+            else
+                self.Objective:SetTextColor(1, .82, 0, 1)
+            end
+        else
+            self.Objective:SetText("")
+        end
     end,
 }
 
@@ -471,6 +548,46 @@ local function Constructor()
     local Cooldown = CreateFrame("Cooldown", "$parentCooldown", frame, "CooldownFrameTemplate")
     Cooldown:SetAllPoints(frame)
 
+    local objectiveEditBox = CreateFrame("EditBox", nil, frame)
+    objectiveEditBox:SetFrameStrata("TOOLTIP")
+    objectiveEditBox:SetPoint("TOPLEFT")
+    objectiveEditBox:SetPoint("TOPRIGHT")
+    objectiveEditBox:SetAutoFocus(false)
+    objectiveEditBox:SetMaxLetters(15)
+    objectiveEditBox:SetFont([[Fonts\FRIZQT__.TTF]], 12, "OUTLINE")
+
+    objectiveEditBox.background = objectiveEditBox:CreateTexture(nil, "BACKGROUND")
+    objectiveEditBox.background:SetTexture([[INTERFACE\BUTTONS\WHITE8X8]])
+    objectiveEditBox.background:SetVertexColor(0, 0, 0, .5)
+    objectiveEditBox.background:SetAllPoints(objectiveEditBox)
+
+    objectiveEditBox:SetScript("OnEnterPressed", objectiveEditBox_OnEnterPressed)
+    objectiveEditBox:SetScript("OnEscapePressed", EditBox_OnEscapePressed)
+    objectiveEditBox:SetScript("OnEditFocusGained", EditBox_OnEditFocusGained)
+    objectiveEditBox:SetScript("OnEditFocusLost", EditBox_OnEscapePressed)
+    objectiveEditBox:SetScript("OnShow", EditBox_OnShow)
+    objectiveEditBox:SetScript("OnTextChanged", EditBox_OnTextChanged)
+
+    local quickAddEditBox = CreateFrame("EditBox", nil, frame)
+    quickAddEditBox:SetFrameStrata("TOOLTIP")
+    quickAddEditBox:SetPoint("BOTTOMLEFT")
+    quickAddEditBox:SetPoint("BOTTOMRIGHT")
+    quickAddEditBox:SetAutoFocus(false)
+    quickAddEditBox:SetMaxLetters(15)
+    quickAddEditBox:SetFont([[Fonts\FRIZQT__.TTF]], 12, "OUTLINE")
+
+    quickAddEditBox.background = quickAddEditBox:CreateTexture(nil, "BACKGROUND")
+    quickAddEditBox.background:SetTexture([[INTERFACE\BUTTONS\WHITE8X8]])
+    quickAddEditBox.background:SetVertexColor(0, 0, 0, .5)
+    quickAddEditBox.background:SetAllPoints(quickAddEditBox)
+
+    quickAddEditBox:SetScript("OnEnterPressed", quickAddEditBox_OnEnterPressed)
+    quickAddEditBox:SetScript("OnEscapePressed", EditBox_OnEscapePressed)
+    quickAddEditBox:SetScript("OnEditFocusGained", EditBox_OnEditFocusGained)
+    quickAddEditBox:SetScript("OnEditFocusLost", EditBox_OnEscapePressed)
+    quickAddEditBox:SetScript("OnShow", EditBox_OnShow)
+    quickAddEditBox:SetScript("OnTextChanged", EditBox_OnTextChanged)
+
 
     ------------------------------------------------------------
 
@@ -485,9 +602,11 @@ local function Constructor()
         Count = Count,
         Objective = Objective,
         Cooldown = Cooldown,
+        objectiveEditBox = objectiveEditBox,
+        quickAddEditBox = quickAddEditBox,
     }
 
-    frame.widget = widget
+    frame.widget, objectiveEditBox.widget, quickAddEditBox.widget = widget, widget, widget
 
     for method, func in pairs(methods) do
         widget[method] = func

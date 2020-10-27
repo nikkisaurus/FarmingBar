@@ -123,6 +123,11 @@ function addon:Initialize_DB()
                         modifier = "ctrl",
                     },
 
+                    showObjectiveEditBox = {
+                        button = "LeftButton",
+                        modifier = "ctrl",
+                    },
+
                     useItem = {
                         button = "RightButton",
                         modifier = "",
@@ -277,7 +282,6 @@ function addon:GetDefaultObjective()
             trackerType = false,
         },
         icon = 134400,
-        objective = false,
         trackerCondition = "ALL",
         trackers = {},
     }

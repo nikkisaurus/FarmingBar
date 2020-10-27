@@ -235,19 +235,19 @@ end
 
 ------------------------------------------------------------
 
-local function objective_OnEnterPressed(self)
-    local text = self:GetText() ~= "" and self:GetText() or 0
-    local objective = tonumber(text) > 0 and tonumber(text)
-    local objectiveTitle = addon:GetSelectedObjectiveInfo()
+-- local function objective_OnEnterPressed(self)
+--     local text = self:GetText() ~= "" and self:GetText() or 0
+--     local objective = tonumber(text) > 0 and tonumber(text)
+--     local objectiveTitle = addon:GetSelectedObjectiveInfo()
 
-    addon:SetObjectiveDBInfo(objectiveTitle, "objective", objective)
+--     addon:SetObjectiveDBInfo(objectiveTitle, "objective", objective)
 
-    self:SetText(objective)
-    self:ClearFocus()
+--     self:SetText(objective)
+--     self:ClearFocus()
 
-    FocusNextWidget(self, "EditBox", IsShiftKeyDown())
-    addon:UpdateButtons(objectiveTitle)
-end
+--     FocusNextWidget(self, "EditBox", IsShiftKeyDown())
+--     addon:UpdateButtons(objectiveTitle)
+-- end
 
 ------------------------------------------------------------
 
@@ -891,14 +891,14 @@ function addon:ObjectiveBuilder_LoadObjectiveTab(objectiveTitle)
 
     ------------------------------------------------------------
 
-    local objective = AceGUI:Create("EditBox")
-    objective:SetFullWidth(true)
-    objective:SetText(objectiveInfo.objective)
-    objective:SetLabel(L["Objective"])
-    tabContent:AddChild(objective)
+    -- local objective = AceGUI:Create("EditBox")
+    -- objective:SetFullWidth(true)
+    -- objective:SetText(objectiveInfo.objective)
+    -- objective:SetLabel(L["Objective"])
+    -- tabContent:AddChild(objective)
 
-    objective:SetCallback("OnEnterPressed", objective_OnEnterPressed)
-    objective:SetCallback("OnTextChanged", function(self) numericEditBox_OnTextChanged(self) end)
+    -- objective:SetCallback("OnEnterPressed", objective_OnEnterPressed)
+    -- objective:SetCallback("OnTextChanged", function(self) numericEditBox_OnTextChanged(self) end)
 
     ------------------------------------------------------------
 

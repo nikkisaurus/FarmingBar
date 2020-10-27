@@ -199,9 +199,9 @@ local methods = {
 
     LoadObjectives = function(self)
         for _, button in pairs(self:GetUserData("buttons")) do
-            local objectiveTitle = FarmingBar.db.char.bars[self:GetUserData("barID")].objectives[button:GetUserData("buttonID")]
-            if objectiveTitle then
-                button:SetObjectiveID(objectiveTitle)
+            local objectiveInfo = FarmingBar.db.char.bars[self:GetUserData("barID")].objectives[button:GetUserData("buttonID")]
+            if objectiveInfo then
+                button:SetObjectiveID(objectiveInfo.objectiveTitle, objectiveInfo.objective)
             end
         end
     end,

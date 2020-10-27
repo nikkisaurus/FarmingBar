@@ -1,6 +1,8 @@
 local addonName, addon = ...
 local FarmingBar = LibStub("AceAddon-3.0"):NewAddon("FarmingBar", "AceConsole-3.0", "AceEvent-3.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
+local LSM = LibStub("LibSharedMedia-3.0")
+LibStub("LibAddonUtils-1.0"):Embed(addon)
 
 local pairs, wipe = pairs, table.wipe
 local strupper = string.upper
@@ -8,10 +10,6 @@ local strupper = string.upper
 --*------------------------------------------------------------------------
 
 function FarmingBar:OnInitialize()
-    LibStub("LibAddonUtils-1.0"):Embed(addon)
-
-    ------------------------------------------------------------
-
     addon.bars = {}
 
     addon.maxButtons = 100
@@ -33,6 +31,26 @@ function FarmingBar:OnInitialize()
     addon.barProgress = "%B progress: %progressColor%%c/%t%color%%if(%p>0, (%p%%),)if%"
     addon.withObjective = "%if(%p>=100 and %C<%o,Objective complete!,Farming update:)if% %n %progressColor%%c/%o%color% (%if(%O>1,x%O ,)if%%diffColor%%d%color%)"
     addon.withoutObjective = "Farming update: %n x%c (%diffColor%%d%color%)"
+
+    ------------------------------------------------------------
+
+    --@retail@
+    LSM:Register("sound", L["Auction Open"], 567482) -- id:5274
+    LSM:Register("sound", L["Auction Close"], 567499) -- id:5275
+    LSM:Register("sound", L["Loot Coin"], 567428) -- id:120
+    LSM:Register("sound", L["Quest Activate"], 567400) -- id:618
+    LSM:Register("sound", L["Quest Complete"], 567439) -- id:878
+    LSM:Register("sound", L["Quest Failed"], 567459) -- id:846
+    --@end-retail@
+
+    --[===[@non-retail@
+    LSM:Register("sound", L["Auction Open"], "sound/interface/auctionwindowopen.ogg") -- id:5274
+    LSM:Register("sound", L["Auction Close"], "sound/interface/auctionwindowclose.ogg") -- id:5275
+    LSM:Register("sound", L["Loot Coin"], "sound/interface/lootcoinsmall.ogg") -- id:120
+    LSM:Register("sound", L["Quest Activate"], "sound/interface/iquestactivate.ogg") -- id:618
+    LSM:Register("sound", L["Quest Complete"], "sound/interface/iquestcomplete.ogg") -- id:878
+    LSM:Register("sound", L["Quest Failed"], "sound/interface/igquestfailed.ogg") -- id:846
+    --@end-non-retail@]===]
 
     ------------------------------------------------------------
 

@@ -41,6 +41,16 @@ L.TrackerContextMenuHint = "Right-click this button to delete or move this track
 
 ------------------------------------------------------------
 
+-- Core.lua
+L["Auction Open"] = true
+L["Auction Close"] = true
+L["Loot Coin"] = true
+L["Quest Activate"] = true
+L["Quest Complete"] = true
+L["Quest Failed"] = true
+
+------------------------------------------------------------
+
 -- Modules\ObjectiveBuilder.lua
 L["All"] = true
 L["Any"] = true
