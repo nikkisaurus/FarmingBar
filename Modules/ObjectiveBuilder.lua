@@ -4,7 +4,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 local AceGUI = LibStub("AceGUI-3.0", true)
 
 local tinsert, tremove, wipe, pairs = table.insert, table.remove, table.wipe, pairs
-local strfind, gsub, strupper, tonumber = string.find, string.gsub, string.upper, tonumber
+local strfind, strformat, gsub, strupper, tonumber = string.find, string.format, string.gsub, string.upper, tonumber
 
 local tabCache = {}
 
@@ -176,6 +176,33 @@ local function excludeObjectives_OnEnterPressed(self)
         addon:ReportError(L.InvalidObjectiveTitle)
         self:HighlightText()
     end
+end
+
+------------------------------------------------------------
+
+local function filterAutoItems_OnEnter(self)
+    if FarmingBar.db.global.hints.ObjectiveBuilder then
+        GameTooltip:SetOwner(self.frame, "ANCHOR_BOTTOMRIGHT", 0, 0)
+        GameTooltip:AddLine(strformat("%s:", L["Hint"]))
+        GameTooltip:AddLine(L.FilterAutoItemsHint, unpack(addon.tooltip_description))
+        GameTooltip:Show()
+    end
+end
+
+------------------------------------------------------------
+
+local function filterAutoItems_OnLeave(self)
+    if FarmingBar.db.global.hints.ObjectiveBuilder then
+        GameTooltip:ClearLines()
+        GameTooltip:Hide()
+    end
+end
+
+------------------------------------------------------------
+
+local function filterAutoItems_OnValueChanged(self, _, value)
+    FarmingBar.db.global.settings.misc.filterOBAutoItems = value
+    addon.ObjectiveBuilder:LoadObjectives()
 end
 
 ------------------------------------------------------------
@@ -461,7 +488,7 @@ local methods = {
         ------------------------------------------------------------
 
         for objectiveTitle, objective in addon.pairs(FarmingBar.db.global.objectives, function(a, b) return strupper(a) < strupper(b) end) do
-            if not filter or strfind(strupper(objectiveTitle), strupper(filter)) then
+            if (not filter or strfind(strupper(objectiveTitle), strupper(filter))) and (self.filterAutoItems:GetValue() and not strfind(objectiveTitle, "^ITEM:") or not self.filterAutoItems:GetValue()) then
                 local button = AceGUI:Create("FarmingBar_ObjectiveButton")
                 button:SetFullWidth(true)
                 button:SetObjective(objectiveTitle)
@@ -600,7 +627,7 @@ function addon:Initialize_ObjectiveBuilder()
 
     local topContent = AceGUI:Create("SimpleGroup")
     topContent:SetFullWidth(true)
-    topContent:SetHeight(20)
+    topContent:SetHeight(30)
     topContent:SetLayout("Flow")
     topContent:SetAutoAdjustHeight(false)
     ObjectiveBuilder:AddChild(topContent)
@@ -633,6 +660,19 @@ function addon:Initialize_ObjectiveBuilder()
     topContent:AddChild(importObjectiveButton)
 
     -- importObjectiveButton:SetCallback("OnClick", function() ????? end) -- TODO: implement import/export
+
+    ------------------------------------------------------------
+
+    local filterAutoItems = AceGUI:Create("CheckBox")
+    filterAutoItems:SetLabel(L["Filter Auto Items"])
+    filterAutoItems:SetValue(FarmingBar.db.global.settings.misc.filterOBAutoItems)
+    filterAutoItems:SetWidth(filterAutoItems.text:GetStringWidth() + filterAutoItems.checkbg:GetWidth())
+    topContent:AddChild(filterAutoItems)
+    ObjectiveBuilder.filterAutoItems = filterAutoItems
+
+    filterAutoItems:SetCallback("OnEnter", filterAutoItems_OnEnter)
+    filterAutoItems:SetCallback("OnLeave", filterAutoItems_OnLeave)
+    filterAutoItems:SetCallback("OnValueChanged", filterAutoItems_OnValueChanged)
 
     ------------------------------------------------------------
 

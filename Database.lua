@@ -90,6 +90,7 @@ function addon:Initialize_DB()
 
                 misc = {
                     autoLootOnUse = false, -- global.autoLootItems
+                    filterOBAutoItems = false, -- hides auto added items from ObjectiveBuilder list
                 },
             },
 
@@ -166,7 +167,7 @@ function addon:Initialize_DB()
             debug = {
                 commands = true,
                 barDB = false,
-                ObjectiveBuilder = false,
+                ObjectiveBuilder = true,
                 ObjectiveBuilderTrackers = false,
                 ObjectiveBuilderCondition = false,
             },

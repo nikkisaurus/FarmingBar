@@ -27,6 +27,7 @@ L.TrackerIDExists = function(trackerID) return string.format("Already tracking %
 --*Hints-------------------------------------------------------------------
 
 -- Modules\ObjectiveBuilder.lua
+L.FilterAutoItemsHint = [[Check this option to hide automatically created item objectives (prepended by "ITEM:").]]
 L.NewObjectiveHint = "You can drop an item on this button to quickly add it as an objective."
 L.NewTrackerHint = "You can drop an item on this button to quickly add it as a tracker."
 L.ObjectiveContextMenuHint = "Right-click this button to open a context menu to rename, duplicate, or delete this objective.\nDrag this button onto a bar to track it."
@@ -61,6 +62,7 @@ L["Exclude Objective"] = true
 L["Excluded"] = true
 L["Export"] = true
 L["FALSE"] = true
+L["Filter Auto Items"] = true
 L["Hint"] = true
 L["Import Objective"] = true
 L["Include All Characters"] = true

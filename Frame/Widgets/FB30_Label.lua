@@ -160,7 +160,7 @@ local function Constructor()
 	local frame = CreateFrame("Frame", nil, UIParent)
 	frame:Hide()
 
-	local label = frame:CreateFontString(nil, "BACKGROUND", "GameFontHighlightSmall")
+	local label = frame:CreateFontString(nil, "BACKGROUND", "GameFontHighlight")
 	local image = frame:CreateTexture(nil, "BACKGROUND")
 
 	-- create widget
