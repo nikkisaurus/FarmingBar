@@ -42,7 +42,9 @@ local function customCondition_OnEnterPressed(self)
     local condition = self:GetText()
 
     if addon:ValidateCustomCondition(condition) or condition == "" then
-        addon:SetObjectiveDBInfo((addon:GetSelectedObjectiveInfo()), "customCondition", condition)
+        local objectiveTitle = addon:GetSelectedObjectiveInfo()
+        addon:SetObjectiveDBInfo(objectiveTitle, "customCondition", condition)
+        addon:UpdateButtons(objectiveTitle)
     else
         addon:ReportError(L.InvalidCustomCondition)
         self:SetFocus()
@@ -85,8 +87,9 @@ end
 ------------------------------------------------------------
 
 local function displayRefMacrotext_OnEnterPressed(self)
-    addon:SetObjectiveDBInfo((addon:GetSelectedObjectiveInfo()), "displayRef.trackerID", self:GetText())
-    addon:UpdateButtons(addon.ObjectiveBuilder:GetSelectedObjective())
+    local objectiveTitle = addon:GetSelectedObjectiveInfo()
+    addon:SetObjectiveDBInfo(objectiveTitle, "displayRef.trackerID", self:GetText())
+    addon:UpdateButtons(objectiveTitle)
 end
 
 ------------------------------------------------------------
@@ -235,25 +238,11 @@ end
 
 ------------------------------------------------------------
 
--- local function objective_OnEnterPressed(self)
---     local text = self:GetText() ~= "" and self:GetText() or 0
---     local objective = tonumber(text) > 0 and tonumber(text)
---     local objectiveTitle = addon:GetSelectedObjectiveInfo()
-
---     addon:SetObjectiveDBInfo(objectiveTitle, "objective", objective)
-
---     self:SetText(objective)
---     self:ClearFocus()
-
---     FocusNextWidget(self, "EditBox", IsShiftKeyDown())
---     addon:UpdateButtons(objectiveTitle)
--- end
-
-------------------------------------------------------------
-
 local function trackerCondition_OnValueChanged(selected)
-    addon:SetObjectiveDBInfo((addon:GetSelectedObjectiveInfo()), "trackerCondition", selected)
+    local objectiveTitle = addon:GetSelectedObjectiveInfo()
+    addon:SetObjectiveDBInfo(objectiveTitle, "trackerCondition", selected)
     addon.ObjectiveBuilder:RefreshTab("conditionTab")
+    addon:UpdateButtons(objectiveTitle)
 end
 
 ------------------------------------------------------------
@@ -272,6 +261,7 @@ local function trackerID_OnEnterPressed(self)
 
         ObjectiveBuilder:UpdateTrackerButton(tracker)
         ObjectiveBuilder:RefreshTab("trackerTab")
+        addon:UpdateButtons(objectiveTitle)
         FocusNextWidget(self, "EditBox", IsShiftKeyDown())
 
         return
@@ -304,6 +294,7 @@ local function trackerID_OnEnterPressed(self)
 
             ObjectiveBuilder:UpdateTrackerButton(tracker)
             ObjectiveBuilder:RefreshTab("trackerTab")
+            addon:UpdateButtons(objectiveTitle)
             FocusNextWidget(self, "EditBox", IsShiftKeyDown())
         end
     else
@@ -328,6 +319,7 @@ local function trackerObjective_OnEnterPressed(self)
     self:ClearFocus()
 
     FocusNextWidget(self, "EditBox", IsShiftKeyDown())
+    addon:UpdateButtons(objectiveTitle)
 end
 
 ------------------------------------------------------------
@@ -340,13 +332,8 @@ local function trackerType_OnValueChanged(self, selected)
 
     ObjectiveBuilder:UpdateTrackerButton(tracker)
     ObjectiveBuilder:RefreshTab("trackerTab", tracker)
+    addon:UpdateButtons(objectiveTitle)
     FocusNextWidget(self, "editbox")
-end
-
-------------------------------------------------------------
-
-local function customCondition_OnEnterPressed(self)
-    addon:SetObjectiveDBInfo((addon:GetSelectedObjectiveInfo()), "customCondition", self:GetText())
 end
 
 --*------------------------------------------------------------------------
@@ -354,76 +341,6 @@ end
 local function TrackerButton_OnClick(tracker)
     addon.ObjectiveBuilder.status.tracker = tracker
     addon:ObjectiveBuilder_LoadTrackerInfo(tracker)
-end
-
---*------------------------------------------------------------------------
-
-local function GetObjectiveContextMenu()
-    local selected = addon.ObjectiveBuilder.status.selected
-    local multiSelected = #selected > 1
-
-    local menu = {
-        {
-            text = multiSelected and L["Duplicate All"] or L["Duplicate"],
-            notCheckable = true,
-            func = function() addon:DuplicateSelectedObjectives() end,
-        },
-
-        {text = "", notCheckable = true, notClickable = true},
-
-        {
-            text = multiSelected and L["Delete All"] or L["Delete"],
-            notCheckable = true,
-            func = function() addon:DeleteSelectedObjectives() end,
-        },
-
-        {text = "", notCheckable = true, notClickable = true},
-
-        {
-            text = L["Close"],
-            notCheckable = true,
-        }
-    }
-
-    if not multiSelected then
-        tinsert(menu, 1, {
-            text = L["Rename"],
-            notCheckable = true,
-            func = function(self) selected[1]:RenameObjective() end,
-        })
-
-        tinsert(menu, 3, {
-            text = L["Export"],
-            disabled = true,
-            notCheckable = true,
-            func = function() end,
-        })
-    end
-
-    return menu
-end
-
-------------------------------------------------------------
-
-local function GetTrackerContextMenu()
-    local multiSelected = #addon.ObjectiveBuilder.trackerList.status.selected > 1
-
-    local menu = {
-        {
-            text = multiSelected and L["Delete All"] or L["Delete"],
-            notCheckable = true,
-            func = function() addon:DeleteTracker() end,
-        },
-
-        {text = "", notCheckable = true, notClickable = true},
-
-        {
-            text = L["Close"],
-            notCheckable = true,
-        },
-    }
-
-    return menu
 end
 
 --*------------------------------------------------------------------------
@@ -599,15 +516,6 @@ local methods = {
 
 ------------------------------------------------------------
 
-function addon:ObjectiveBuilder_OnUpdate()
-    -- if #FarmingBar.db.global.objectives ~= #self.ObjectiveBuilder.objectiveList.children then
-    --     print(#FarmingBar.db.global.objectives, #self.ObjectiveBuilder.objectiveList.children)
-    --     -- self:LoadObjectives()
-    -- end
-end
-
-------------------------------------------------------------
-
 function addon:Initialize_ObjectiveBuilder()
     local ObjectiveBuilder = AceGUI:Create("FB30_Window")
     ObjectiveBuilder:SetTitle("Farming Bar "..L["Objective Builder"])
@@ -616,8 +524,6 @@ function addon:Initialize_ObjectiveBuilder()
     ObjectiveBuilder:Hide()
     self.ObjectiveBuilder = ObjectiveBuilder
     ObjectiveBuilder.status = {children = {}, selected = {}}
-
-    ObjectiveBuilder:SetCallback("OnUpdate", function() addon:ObjectiveBuilder_OnUpdate() end)
 
     for method, func in pairs(methods) do
         ObjectiveBuilder[method] = func
@@ -631,9 +537,7 @@ function addon:Initialize_ObjectiveBuilder()
 
     local topContent = AceGUI:Create("SimpleGroup")
     topContent:SetFullWidth(true)
-    -- topContent:SetHeight(30)
     topContent:SetLayout("Flow")
-    -- topContent:SetAutoAdjustHeight(false)
     ObjectiveBuilder:AddChild(topContent)
     ObjectiveBuilder.topContent = topContent
 
@@ -765,7 +669,6 @@ function addon:ObjectiveBuilder_DrawTabs()
         {text = L["Condition"], value = "conditionTab"},
         {text = L["Trackers"], value = "trackersTab"}
     })
-    -- mainTabGroup:SelectTab("objectiveTab")
 
     ------------------------------------------------------------
 
@@ -888,17 +791,6 @@ function addon:ObjectiveBuilder_LoadObjectiveTab(objectiveTitle)
 
         -- chooseButton:SetCallback("OnClick", function() self.IconSelector:Show() end) -- TODO: Icon selector frame
     end
-
-    ------------------------------------------------------------
-
-    -- local objective = AceGUI:Create("EditBox")
-    -- objective:SetFullWidth(true)
-    -- objective:SetText(objectiveInfo.objective)
-    -- objective:SetLabel(L["Objective"])
-    -- tabContent:AddChild(objective)
-
-    -- objective:SetCallback("OnEnterPressed", objective_OnEnterPressed)
-    -- objective:SetCallback("OnTextChanged", function(self) numericEditBox_OnTextChanged(self) end)
 
     ------------------------------------------------------------
 

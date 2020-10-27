@@ -119,11 +119,72 @@ local function Control_OnEvent(self, event, ...)
     local objectiveInfo = addon:GetObjectiveInfo(objectiveTitle)
 
     if event == "BAG_UPDATE" or event == "BAG_UPDATE_COOLDOWN" or event == "CURRENCY_DISPLAY_UPDATE" then
-        if not barDB.alerts.muteAll then
-            local count = addon:GetObjectiveCount(objectiveTitle)
-            if count ~= widget:GetCount() then
-                widget:SetCount()
+        local oldCount = widget:GetCount()
+        local newCount = addon:GetObjectiveCount(objectiveTitle)
+        local objective = widget:GetUserData("objective")
+        local alert, soundID, barAlert
+
+        if newCount ~= oldCount then
+            if not barDB.alerts.muteAll then
+                if objective then
+                    if barDB.alerts.completedObjectives or (not barDB.alerts.completedObjectives and ((oldCount < objective) or (newCount < oldCount and newCount < objective))) then
+                        alert = FarmingBar.db.global.settings.alerts.button.format.withObjective
+
+                        if oldCount < objective and newCount >= objective then
+                            soundID = "objectiveComplete"
+                            barAlert = "complete"
+                        else
+                            soundID = oldCount < newCount and "farmingProgress"
+                            -- Have to check if we lost an objective
+                            if oldCount >= objective and newCount < objective then
+                                barAlert = "lost"
+                            end
+                        end
+                    end
+                else
+                    alert = FarmingBar.db.global.settings.alerts.button.format.withoutObjective
+                    soundID = oldCount < newCount and "progress"
+                end
+
+                local alertInfo = {
+                    objectiveTitle = gsub(objectiveTitle, "^ITEM:", ""),
+                    objective = objective,
+                    oldCount = oldCount,
+                    newCount = newCount,
+                    difference = newCount - oldCount,
+                }
+
+                -- Play alerts
+                if FarmingBar.db.global.settings.alerts.button.chat and alert then
+                    FarmingBar:Print(addon:ParseAlert(alert, alertInfo))
+                end
+
+                if FarmingBar.db.global.settings.alerts.button.screen and alert then
+                    -- if not addon.CoroutineUpdater:IsVisible() then
+                        UIErrorsFrame:AddMessage(addon:ParseAlert(alert, alertInfo), 1, 1, 1)
+                    -- else
+                    --     addon.CoroutineUpdater.alert:SetText(addon:ParseAlert(alert, alertInfo))
+                    -- end
+                end
+
+                if FarmingBar.db.global.settings.alerts.button.sound.enabled and soundID then
+                    PlaySoundFile(LSM:Fetch("sound", FarmingBar.db.global.settings.alerts.button.sound[soundID]))
+                end
+
+                if barAlert then
+                    -- local progressCount, progressTotal = self:GetBar():GetProgress()
+
+                    -- if barAlert == "complete" then
+                    --     progressCount = progressCount - 1
+                    -- elseif barAlert == "lost" then
+                    --     progressCount = progressCount + 1
+                    -- end
+
+                    -- self:GetBar():AlertProgress(progressCount, progressTotal)
+                end
             end
+
+            widget:UpdateLayers()
         end
     elseif event == "PLAYER_REGEN_ENABLED" then
         widget:SetAttribute()
@@ -295,7 +356,7 @@ local methods = {
     ------------------------------------------------------------
 
     GetCount = function(self)
-        return self.Count:GetText()
+        return tonumber(self.Count:GetText())
     end,
 
     ------------------------------------------------------------
@@ -345,6 +406,7 @@ local methods = {
         local style = FarmingBar.db.profile.style.font.fontStrings.count
 
         self.Count:SetText(objectiveTitle and addon:GetObjectiveCount(objectiveTitle) or "")
+        self:UpdateObjective()
 
         if not objectiveTitle then return end
 
@@ -368,6 +430,7 @@ local methods = {
     ------------------------------------------------------------
 
     SetObjective = function(self, objective)
+        objective = tonumber(objective)
         self:SetUserData("objective", objective)
         FarmingBar.db.char.bars[self:GetUserData("barID")].objectives[self:GetUserData("buttonID")].objective = objective
         self:UpdateObjective()
@@ -444,7 +507,7 @@ local methods = {
 
         if objectiveInfo and FarmingBar.db.profile.style.buttonLayers.Border then
             local itemQuality = C_Item.GetItemQualityByID(objectiveInfo.trackers[1].trackerID)
-            if itemQuality > 1 then
+            if itemQuality and itemQuality > 1 then
                 local r, g, b = GetItemQualityColor(itemQuality)
                 self.Border:SetVertexColor(r, g, b, 1)
                 self.Border:Show()

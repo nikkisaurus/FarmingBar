@@ -82,9 +82,15 @@ function addon:GetTrackerCount(trackerInfo)
 
     if trackerInfo.trackerType == "ITEM" then
         count = GetItemCount(trackerInfo.trackerID, trackerInfo.includeBank)
-    elseif trackerInfo.trackerType == "CURRENCY" then
+    elseif trackerInfo.trackerType == "CURRENCY" and trackerInfo.trackerID ~= "" then
         count = C_CurrencyInfo.GetCurrencyInfo(trackerInfo.trackerID) and C_CurrencyInfo.GetCurrencyInfo(trackerInfo.trackerID).quantity
     end
+
+    if not count then
+        return 0
+    end
+
+    count = math.floor(count / trackerInfo.objective)
 
     if #trackerInfo.exclude > 0 then
         for _, objectiveTitle in pairs(trackerInfo.exclude) do
@@ -103,7 +109,7 @@ function addon:GetTrackerCount(trackerInfo)
         end
     end
 
-    return count
+    return count > 0 and count or 0
 end
 
 ------------------------------------------------------------
@@ -139,7 +145,7 @@ end
 ------------------------------------------------------------
 
 function addon:GetTrackerInfo(objectiveTitle, tracker)
-    return FarmingBar.db.global.objectives[objectiveTitle].trackers[tracker]
+    return FarmingBar.db.global.objectives[objectiveTitle] and FarmingBar.db.global.objectives[objectiveTitle].trackers[tracker]
 end
 
 ------------------------------------------------------------

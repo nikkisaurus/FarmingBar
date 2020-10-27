@@ -49,6 +49,7 @@ Frame\Widgets.xml
 Modules\Skins.lua
 Modules\SkinBuilder.lua
 Modules\Tooltips.lua
+Modules\Alerts.lua
 Modules\Bars.lua
 Modules\Buttons.lua
 Modules\DragFrame.lua

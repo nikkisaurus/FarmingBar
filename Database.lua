@@ -173,7 +173,7 @@ function addon:Initialize_DB()
             debug = {
                 commands = true,
                 barDB = false,
-                ObjectiveBuilder = true,
+                ObjectiveBuilder = false,
                 ObjectiveBuilderTrackers = false,
                 ObjectiveBuilderCondition = false,
             },
@@ -199,7 +199,7 @@ function addon:Initialize_DB()
                     size = 11,
                     fontStrings = {
                         ["**"] = {
-                            colorType = "ITEMQUALITY", -- "CUSTOM", "INCLUDEBANK", "ITEMQUALITY" --profile.style.count.type
+                            colorType = "CUSTOM", -- "CUSTOM", "INCLUDEBANK", "ITEMQUALITY" --profile.style.count.type
                             color = {1, 1, 1, 1}, --profile.style.count.color
                         },
                         count = {},
@@ -257,7 +257,7 @@ function addon:GetDefaultBar()
         alerts = {
             barProgress = false, --bar.trackProgress
             completedObjectives = true, --bar.trackCompletedObjectives
-            muteAll = true, --bar.muteAlerts
+            muteAll = false, --bar.muteAlerts
         },
 
         button = {

@@ -11,6 +11,7 @@ local GetCursorInfo, ClearCursor = GetCursorInfo, ClearCursor
 --*------------------------------------------------------------------------
 
 function addon:CreateObjective(objectiveTitle, objectiveInfo, overwrite, supressUpdate)
+    local ObjectiveBuilder = self.ObjectiveBuilder
     local defaultInfo = self:GetDefaultObjective()
 
     ------------------------------------------------------------
@@ -36,9 +37,9 @@ function addon:CreateObjective(objectiveTitle, objectiveInfo, overwrite, supress
     ------------------------------------------------------------
 
     if not supressUpdate then
-        self.ObjectiveBuilder:LoadObjectives(newObjectiveTitle)
-        if not overwrite then
-            self.ObjectiveBuilder:GetObjectiveButton(newObjectiveTitle):RenameObjective()
+        ObjectiveBuilder:LoadObjectives(newObjectiveTitle)
+        if not overwrite and ObjectiveBuilder:IsVisible() then
+            ObjectiveBuilder:GetObjectiveButton(newObjectiveTitle):RenameObjective()
         end
     end
 

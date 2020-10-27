@@ -29,8 +29,8 @@ function FarmingBar:OnInitialize()
     addon.tooltip_keyvalue = {1, .82, 0, 1, 1, 1, 1}
 
     addon.barProgress = "%B progress: %progressColor%%c/%t%color%%if(%p>0, (%p%%),)if%"
-    addon.withObjective = "%if(%p>=100 and %C<%o,Objective complete!,Farming update:)if% %n %progressColor%%c/%o%color% (%if(%O>1,x%O ,)if%%diffColor%%d%color%)"
-    addon.withoutObjective = "Farming update: %n x%c (%diffColor%%d%color%)"
+    addon.withObjective = "%if(%p>=100 and %C<%o,Objective complete!,Farming update:)if% %t %progressColor%%c/%o%color% (%if(%O>1,x%O ,)if%%diffColor%%d%color%)"
+    addon.withoutObjective = "Farming update: %t x%c (%diffColor%%d%color%)"
 
     ------------------------------------------------------------
 
