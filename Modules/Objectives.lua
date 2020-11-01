@@ -312,15 +312,26 @@ end
 
 ------------------------------------------------------------
 
-function addon:SetObjectiveDBInfo(objectiveTitle, key, value)
+function addon:SetObjectiveDBInfo(key, value, objectiveTitle)
+    local title = objectiveTitle or addon.ObjectiveBuilder:GetSelectedObjective()
     local keys = {strsplit(".", key)}
-    local path = FarmingBar.db.global.objectives[objectiveTitle]
+    local path = FarmingBar.db.global.objectives[title]
+
     for k, key in pairs(keys) do
         if k < #keys then
             path = path[key]
         end
     end
+
     path[keys[#keys]] = value
+
+    ------------------------------------------------------------
+
+    addon:UpdateButtons(title)
+
+    if not objectiveTitle then
+        addon.ObjectiveBuilder:LoadObjectives()
+    end
 end
 
 ------------------------------------------------------------
@@ -328,5 +339,5 @@ end
 function addon:ValidateCustomCondition(condition)
     local func, err = loadstring(gsub(condition, "%%", ""))
     err = err or not strfind(condition, "return")
-    return not err
+    return not err or condition == ""
 end

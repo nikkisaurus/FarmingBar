@@ -303,3 +303,33 @@ function addon:GetDefaultTracker()
 
     return tracker
 end
+
+--*------------------------------------------------------------------------
+
+function addon:GetDBValue(scope, key)
+    local keys = {strsplit(".", key)}
+    local path = FarmingBar.db[scope]
+
+    for k, key in pairs(keys) do
+        if k < #keys then
+            path = path[key]
+        end
+    end
+
+    return path[keys[#keys]]
+end
+
+------------------------------------------------------------
+
+function addon:SetDBValue(scope, key, value)
+    local keys = {strsplit(".", key)}
+    local path = FarmingBar.db[scope]
+
+    for k, key in pairs(keys) do
+        if k < #keys then
+            path = path[key]
+        end
+    end
+
+    path[keys[#keys]] = value
+end

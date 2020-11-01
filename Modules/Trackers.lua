@@ -187,6 +187,8 @@ function addon:SetTrackerDBInfo(objectiveTitle, tracker, key, value)
     else
         path[keys[#keys]] = value
     end
+
+    addon:UpdateButtons(objectiveTitle)
 end
 
 ------------------------------------------------------------
@@ -223,5 +225,7 @@ function addon:ValidateObjectiveData(trackerType, trackerID)
     elseif trackerType == "CURRENCY" then
         local currency = C_CurrencyInfo.GetCurrencyInfo(tonumber(trackerID) or 0)
         return currency and currency.name
+    elseif trackerID == "" then
+        return true
     end
 end

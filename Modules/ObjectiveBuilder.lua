@@ -6,34 +6,12 @@ local AceGUI = LibStub("AceGUI-3.0", true)
 local tinsert, tremove, wipe, pairs = table.insert, table.remove, table.wipe, pairs
 local strfind, strformat, gsub, strupper, tonumber = string.find, string.format, string.gsub, string.upper, tonumber
 
-local tabCache = {}
-
---*------------------------------------------------------------------------
-
-local function FocusNextWidget(widget, widgetType, reverse)
-    local widgetKey
-    for key, w in addon.pairs(widget.parent.children, reverse and function(a, b) return a > b end or function(a, b) return a < b end) do
-        if w == widget then
-            widgetKey = key
-        elseif widgetKey and (not widgetType or w.type == widgetType) then
-            w:SetFocus()
-            if widgetType == "editbox" then
-                w:HighlightText()
-            end
-            return
-        end
-    end
-end
+local ObjectiveBuilder = addon.ObjectiveBuilder
 
 --*------------------------------------------------------------------------
 
 local function autoIcon_OnValueChanged(self)
-    addon:SetObjectiveDBInfo((addon:GetSelectedObjectiveInfo()), "autoIcon", self:GetValue())
-
-    local ObjectiveBuilder = addon.ObjectiveBuilder
-    local objectiveTitle = ObjectiveBuilder:GetSelectedObjective()
-    ObjectiveBuilder:LoadObjectives(objectiveTitle)
-    addon:UpdateButtons(objectiveTitle)
+    addon:SetObjectiveDBInfo("autoIcon", self:GetValue())
 end
 
 ------------------------------------------------------------
@@ -41,10 +19,8 @@ end
 local function customCondition_OnEnterPressed(self)
     local condition = self:GetText()
 
-    if addon:ValidateCustomCondition(condition) or condition == "" then
-        local objectiveTitle = addon:GetSelectedObjectiveInfo()
-        addon:SetObjectiveDBInfo(objectiveTitle, "customCondition", condition)
-        addon:UpdateButtons(objectiveTitle)
+    if addon:ValidateCustomCondition(condition) then
+        addon:SetObjectiveDBInfo("customCondition", condition)
     else
         addon:ReportError(L.InvalidCustomCondition)
         self:SetFocus()
@@ -55,28 +31,23 @@ end
 ------------------------------------------------------------
 
 local function displayIcon_OnEnterPressed(self)
-    addon:SetObjectiveDBInfo((addon:GetSelectedObjectiveInfo()), "icon", self:GetText())
-
-    local ObjectiveBuilder = addon.ObjectiveBuilder
-    local objectiveTitle = ObjectiveBuilder:GetSelectedObjective()
-    ObjectiveBuilder:LoadObjectives(objectiveTitle)
-    addon:UpdateButtons(objectiveTitle)
-    FocusNextWidget(self, "EditBox", IsShiftKeyDown())
+    addon:SetObjectiveDBInfo("icon", self:GetText())
 end
 
 ------------------------------------------------------------
 
+--!
 local function displayRefHelp_OnClick(mainContent, label)
     if label:GetText() and label:GetText() ~= " " then
         label:SetText("")
         label:SetWidth(30)
     else
         --@retail@
-            label:SetText(L.DisplayReferenceDescription)
+        label:SetText(L.DisplayReferenceDescription)
         --@end-retail@
         --[===[@non-retail@
-            -- Removing the currency reference from Classic here to make the localization page cleanier/easier to translate.
-            label:SetText(gsub(L.DisplayReferenceDescription, L.DisplayReferenceDescription_Gsub, ""))
+        -- Removing the currency reference from Classic here to make the localization page cleanier/easier to translate.
+        label:SetText(gsub(L.DisplayReferenceDescription, L.DisplayReferenceDescription_Gsub, ""))
         --@end-non-retail@]===]
         label:SetWidth(label.frame:GetParent():GetWidth() - 10)
     end
@@ -87,31 +58,22 @@ end
 ------------------------------------------------------------
 
 local function displayRefMacrotext_OnEnterPressed(self)
-    local objectiveTitle = addon:GetSelectedObjectiveInfo()
-    addon:SetObjectiveDBInfo(objectiveTitle, "displayRef.trackerID", self:GetText())
-    addon:UpdateButtons(objectiveTitle)
+    addon:SetObjectiveDBInfo("displayRef.trackerID", self:GetText())
 end
 
 ------------------------------------------------------------
 
 local function displayRefTrackerID_OnEnterPressed(self)
     local objectiveTitle, objectiveInfo = addon:GetSelectedObjectiveInfo()
-    local validTrackerID = addon:ValidateObjectiveData(objectiveInfo.displayRef.trackerType, self:GetText())
+    local trackerID = self:GetText()
 
-    if validTrackerID or self:GetText() == "" then
-        addon:SetObjectiveDBInfo(objectiveTitle, "displayRef.trackerID", objectiveInfo.displayRef.trackerType == "ITEM" and validTrackerID or tonumber(self:GetText()))
+    if addon:ValidateObjectiveData(objectiveInfo.displayRef.trackerType, trackerID) then
+        addon:SetObjectiveDBInfo("displayRef.trackerID", objectiveInfo.displayRef.trackerType == "ITEM" and validTrackerID or tonumber(trackerID))
 
         self:SetText(objectiveInfo.displayRef.trackerID)
         self:ClearFocus()
-
-        local ObjectiveBuilder = addon.ObjectiveBuilder
-        local objectiveTitle = ObjectiveBuilder:GetSelectedObjective()
-        ObjectiveBuilder:LoadObjectives(objectiveTitle)
-        addon:UpdateButtons(objectiveTitle)
-
-        FocusNextWidget(self, "EditBox", IsShiftKeyDown())
     else
-        addon:ReportError(L.InvalidTrackerID(objectiveInfo.displayRef.trackerType, self:GetText()))
+        addon:ReportError(L.InvalidTrackerID(objectiveInfo.displayRef.trackerType, trackerID))
 
         self:SetText("")
         self:SetFocus()
@@ -121,23 +83,14 @@ end
 ------------------------------------------------------------
 
 local function displayRefTrackerType_OnValueChanged(self, selected)
-    local objectiveTitle = addon:GetSelectedObjectiveInfo()
-
-    addon:SetObjectiveDBInfo(objectiveTitle, "displayRef.trackerType", selected ~= "NONE" and selected or false)
-    addon:SetObjectiveDBInfo(objectiveTitle, "displayRef.trackerID", false)
-
-    local ObjectiveBuilder = addon.ObjectiveBuilder
-    local objectiveTitle = ObjectiveBuilder:GetSelectedObjective()
-    ObjectiveBuilder:LoadObjectives(objectiveTitle)
-    addon:UpdateButtons(objectiveTitle)
-
-    if selected ~= "NONE" then
-        FocusNextWidget(self, selected == "MACROTEXT" and "MultiLineEditBox" or "EditBox")
-    end
+    addon:SetObjectiveDBInfo("displayRef.trackerType", selected ~= "NONE" and selected or false)
+    -- addon:SetObjectiveDBInfo("displayRef.trackerID", false)
+    --! have to add checks if we do this ^
 end
 
 ------------------------------------------------------------
 
+--!
 local function excludeListLabel_OnClick(self, buttonClicked, key)
     if IsShiftKeyDown() and buttonClicked == "RightButton" then
         tremove(select(4, addon:GetSelectedObjectiveInfo()).exclude, key)
@@ -148,13 +101,6 @@ end
 ------------------------------------------------------------
 
 local function excludeObjectives_OnEnterPressed(self)
-    if IsShiftKeyDown() then
-        FocusNextWidget(self, "EditBox", IsShiftKeyDown())
-        return
-    end
-
-    ------------------------------------------------------------
-
     local objective = self:GetText()
     local validObjective = addon:ObjectiveExists(objective)
 
@@ -162,6 +108,7 @@ local function excludeObjectives_OnEnterPressed(self)
         local objectiveTitle, _, _, trackerInfo = addon:GetSelectedObjectiveInfo()
         local excluded = trackerInfo.exclude
 
+        --! Should I not move this below the error reporting and rehighlight on err?
         self:SetText()
 
         if strupper(objectiveTitle) == strupper(objective) then
@@ -183,6 +130,7 @@ end
 
 ------------------------------------------------------------
 
+-- ! Move this
 local function filterAutoItems_OnEnter(self)
     if FarmingBar.db.global.hints.ObjectiveBuilder then
         GameTooltip:SetOwner(self.frame, "ANCHOR_BOTTOMRIGHT", 0, 0)
@@ -200,23 +148,26 @@ local function filterAutoItems_OnLeave(self)
         GameTooltip:Hide()
     end
 end
+-- !
 
 ------------------------------------------------------------
 
 local function filterAutoItems_OnValueChanged(self, _, value)
-    FarmingBar.db.global.settings.misc.filterOBAutoItems = value
-    addon.ObjectiveBuilder:LoadObjectives()
+    addon:SetDBValue("global", "settings.misc.filterOBAutoItems", value)
+    ObjectiveBuilder:LoadObjectives()
 end
 
 ------------------------------------------------------------
 
 local function mainTabGroup_OnGroupSelected(self, selected)
     local objectiveTitle = addon:GetSelectedObjectiveInfo()
+
     if objectiveTitle then
-        tabCache[objectiveTitle] = selected
+        ObjectiveBuilder:GetUserData("selectedTabs")[objectiveTitle] = selected
     end
 
     self:ReleaseChildren()
+
     if selected == "objectiveTab" then
         self:SetLayout("Fill")
         addon:ObjectiveBuilder_LoadObjectiveTab(objectiveTitle)
@@ -225,13 +176,13 @@ local function mainTabGroup_OnGroupSelected(self, selected)
         addon:ObjectiveBuilder_LoadConditionTab(objectiveTitle)
     elseif selected == "trackersTab" then
         self:SetLayout("FB30_2RowSplitBottom")
-        addon:LoadTrackersTab(objectiveTitle)
+        addon:ObjectiveBuilder_LoadTrackersTab(objectiveTitle)
     end
 end
 
 ------------------------------------------------------------
 
-local function numericEditBox_OnTextChanged(self)
+local function NumericEditBox_OnTextChanged(self)
     self:SetText(string.gsub(self:GetText(), "[%s%c%p%a]", ""))
     self.editbox:SetCursorPosition(strlen(self:GetText()))
 end
@@ -239,16 +190,13 @@ end
 ------------------------------------------------------------
 
 local function trackerCondition_OnValueChanged(selected)
-    local objectiveTitle = addon:GetSelectedObjectiveInfo()
-    addon:SetObjectiveDBInfo(objectiveTitle, "trackerCondition", selected)
-    addon.ObjectiveBuilder:RefreshTab("conditionTab")
-    addon:UpdateButtons(objectiveTitle)
+    addon:SetObjectiveDBInfo("trackerCondition", selected)
 end
 
 ------------------------------------------------------------
 
+--!
 local function trackerID_OnEnterPressed(self)
-    local ObjectiveBuilder = addon.ObjectiveBuilder
     local objectiveTitle, _, tracker, trackerInfo = addon:GetSelectedObjectiveInfo()
 
     ------------------------------------------------------------
@@ -259,11 +207,8 @@ local function trackerID_OnEnterPressed(self)
 
         self:ClearFocus()
 
-        ObjectiveBuilder:UpdateTrackerButton(tracker)
-        ObjectiveBuilder:RefreshTab("trackerTab")
-        addon:UpdateButtons(objectiveTitle)
-        FocusNextWidget(self, "EditBox", IsShiftKeyDown())
-
+        -- ObjectiveBuilder:UpdateTrackerButton(tracker) --!
+        RefreshObjectiveBuilder()
         return
     end
 
@@ -283,8 +228,6 @@ local function trackerID_OnEnterPressed(self)
 
                 self:HighlightText()
                 self:SetFocus()
-            else
-                FocusNextWidget(self, "EditBox", IsShiftKeyDown())
             end
         else
             addon:SetTrackerDBInfo(objectiveTitle, tracker, "trackerID", newTrackerID)
@@ -292,10 +235,8 @@ local function trackerID_OnEnterPressed(self)
             self:SetText(trackerInfo.trackerID)
             self:ClearFocus()
 
-            ObjectiveBuilder:UpdateTrackerButton(tracker)
-            ObjectiveBuilder:RefreshTab("trackerTab")
-            addon:UpdateButtons(objectiveTitle)
-            FocusNextWidget(self, "EditBox", IsShiftKeyDown())
+            -- ObjectiveBuilder:UpdateTrackerButton(tracker) --!
+            RefreshObjectiveBuilder()
         end
     else
         addon:ReportError(L.InvalidTrackerID(trackerInfo.trackerType, self:GetText()))
@@ -317,29 +258,22 @@ local function trackerObjective_OnEnterPressed(self)
 
     self:SetText(objective)
     self:ClearFocus()
-
-    FocusNextWidget(self, "EditBox", IsShiftKeyDown())
-    addon:UpdateButtons(objectiveTitle)
 end
 
 ------------------------------------------------------------
 
 local function trackerType_OnValueChanged(self, selected)
-    local ObjectiveBuilder = addon.ObjectiveBuilder
     local objectiveTitle, _, tracker = addon:GetSelectedObjectiveInfo()
 
     addon:SetTrackerDBInfo(objectiveTitle, tracker, "trackerType", selected)
 
-    ObjectiveBuilder:UpdateTrackerButton(tracker)
-    ObjectiveBuilder:RefreshTab("trackerTab", tracker)
-    addon:UpdateButtons(objectiveTitle)
-    FocusNextWidget(self, "editbox")
+    RefreshObjectiveBuilder()
 end
 
 --*------------------------------------------------------------------------
 
 local function TrackerButton_OnClick(tracker)
-    addon.ObjectiveBuilder.status.tracker = tracker
+    ObjectiveBuilder:SetUserData("selectedTracker", tracker)
     addon:ObjectiveBuilder_LoadTrackerInfo(tracker)
 end
 
@@ -353,8 +287,25 @@ local methods = {
 
     ------------------------------------------------------------
 
+    GetSelectedObjectiveInfo = function(self)
+        local objectiveTitle = self:GetSelectedObjective()
+        local objectiveInfo = addon:GetObjectiveInfo(objectiveTitle)
+        local tracker = self:GetSelectedTracker()
+        local trackerInfo = tracker and addon:GetTrackerInfo(objectiveTitle, tracker)
+
+        return objectiveTitle, objectiveInfo, tracker, trackerInfo
+    end,
+
+    ------------------------------------------------------------
+
+    GetSelectedTab = function(self, objectiveTitle)
+        return self:GetUserData("selectedTabs")[objectiveTitle]
+    end,
+
+    ------------------------------------------------------------
+
     GetSelectedTracker = function(self)
-        return self.status.tracker
+        return self:GetUserData("selectedTracker")
     end,
 
     ------------------------------------------------------------
@@ -401,7 +352,7 @@ local methods = {
     ------------------------------------------------------------
 
     LoadObjectives = function(self, objectiveTitle)
-        local objectiveList, mainPanel = self.objectiveList, self.mainPanel
+        local objectiveList = self.objectiveList
         local filter = self.objectiveSearchBox:GetText()
 
         objectiveList:ReleaseChildren()
@@ -409,7 +360,11 @@ local methods = {
         ------------------------------------------------------------
 
         for objectiveTitle, objective in addon.pairs(FarmingBar.db.global.objectives, function(a, b) return strupper(a) < strupper(b) end) do
-            if (not filter or strfind(strupper(objectiveTitle), strupper(filter))) and (self.filterAutoItems:GetValue() and not addon:IsObjectiveAutoItem(objectiveTitle) or not self.filterAutoItems:GetValue()) then
+            local notFiltered = not filter or strfind(strupper(objectiveTitle), strupper(filter))
+            local autoFilterEnabled = addon:GetDBValue("global", "settings.misc.filterOBAutoItems")
+            local notAutoFiltered = autoFilterEnabled and not addon:IsObjectiveAutoItem(objectiveTitle) or not autoFilterEnabled
+
+            if notFiltered and notAutoFiltered then
                 local button = AceGUI:Create("FarmingBar_ObjectiveButton")
                 button:SetFullWidth(true)
                 button:SetObjective(objectiveTitle)
@@ -417,12 +372,14 @@ local methods = {
             end
         end
 
-        if objectiveTitle then
-            self:SetSelected(objectiveTitle)
-        elseif self:GetSelectedObjective() then
-            self:SetSelected(self:GetSelectedObjective())
+        ------------------------------------------------------------
+
+        local selectedObjectiveTitle = objectiveTitle or self:GetSelectedObjective()
+
+        if selectedObjectiveTitle then
+            self:GetObjectiveButton(selectedObjectiveTitle).frame:Click()
         else
-            mainPanel:ReleaseChildren()
+            self.mainPanel:ReleaseChildren()
         end
     end,
 
@@ -459,35 +416,6 @@ local methods = {
 
     ------------------------------------------------------------
 
-    Release = function(self)
-        AceGUI:Release(self)
-    end,
-
-    ------------------------------------------------------------
-
-    RefreshTab = function(self, reloadTab, reloadTracker)
-        if reloadTab then
-            self.mainContent:SelectTab(reloadTab)
-        end
-
-        if reloadTracker then
-            addon:ObjectiveBuilder_LoadTrackerInfo(reloadTracker)
-        end
-    end,
-
-    ------------------------------------------------------------
-
-    SetSelected = function(self, objectiveTitle)
-        for _, button in pairs(self.objectiveList.children) do
-            if button:GetUserData("objectiveTitle") == objectiveTitle then
-                button.frame:Click()
-                return
-            end
-        end
-    end,
-
-    ------------------------------------------------------------
-
     SelectObjective = function(self, objectiveTitle)
         self:SetUserData("selectedObjective", objectiveTitle)
 
@@ -498,7 +426,7 @@ local methods = {
             mainPanel:Hide()
         end
 
-        self.mainContent:SelectTab(tabCache[objectiveTitle] or "objectiveTab")
+        self.mainContent:SelectTab(self:GetSelectedTab(objectiveTitle) or "objectiveTab")
     end,
 
     ------------------------------------------------------------
@@ -517,13 +445,13 @@ local methods = {
 ------------------------------------------------------------
 
 function addon:Initialize_ObjectiveBuilder()
-    local ObjectiveBuilder = AceGUI:Create("FB30_Window")
+    ObjectiveBuilder = AceGUI:Create("FB30_Window")
     ObjectiveBuilder:SetTitle("Farming Bar "..L["Objective Builder"])
     ObjectiveBuilder:SetSize(700, 500)
     ObjectiveBuilder:SetLayout("FB30_2RowSplitBottom")
+    ObjectiveBuilder:SetUserData("selectedTabs", {})
     ObjectiveBuilder:Hide()
     self.ObjectiveBuilder = ObjectiveBuilder
-    ObjectiveBuilder.status = {children = {}, selected = {}}
 
     for method, func in pairs(methods) do
         ObjectiveBuilder[method] = func
@@ -539,7 +467,6 @@ function addon:Initialize_ObjectiveBuilder()
     topContent:SetFullWidth(true)
     topContent:SetLayout("Flow")
     ObjectiveBuilder:AddChild(topContent)
-    ObjectiveBuilder.topContent = topContent
 
     ------------------------------------------------------------
 
@@ -627,22 +554,22 @@ function addon:Initialize_ObjectiveBuilder()
         C_Timer.After(1, function()
             ObjectiveBuilder:Load()
 
-            for key, objective in pairs(addon.ObjectiveBuilder.status.children) do
-                objective.button.frame:Click()
-                if FarmingBar.db.global.debug.ObjectiveBuilderTrackers then
-                    addon.ObjectiveBuilder.mainContent:SelectTab("trackersTab")
+            -- for key, objective in pairs(addon.ObjectiveBuilder.children) do
+            --     objective.button.frame:Click()
+            --     if FarmingBar.db.global.debug.ObjectiveBuilderTrackers then
+            --         addon.ObjectiveBuilder.mainContent:SelectTab("trackersTab")
 
-                    if key == #addon.ObjectiveBuilder.status.children then
-                        for _, tracker in pairs(ObjectiveBuilder.trackerList.status.children) do
-                            tracker.button.frame:Click()
-                            break
-                        end
-                    end
-                elseif FarmingBar.db.global.debug.ObjectiveBuilderCondition then
-                    addon.ObjectiveBuilder.mainContent:SelectTab("conditionTab")
-                end
-                break
-            end
+            --         if key == #addon.ObjectiveBuilder.children then
+            --             for _, tracker in pairs(ObjectiveBuilder.trackerList.status.children) do
+            --                 tracker.button.frame:Click()
+            --                 break
+            --             end
+            --         end
+            --     elseif FarmingBar.db.global.debug.ObjectiveBuilderCondition then
+            --         addon.ObjectiveBuilder.mainContent:SelectTab("conditionTab")
+            --     end
+            --     break
+            -- end
         end)
     end
     ------------------------------------------------------------
@@ -852,7 +779,7 @@ end
 
 ------------------------------------------------------------
 
-function addon:LoadTrackersTab(objectiveTitle)
+function addon:ObjectiveBuilder_LoadTrackersTab(objectiveTitle)
     local ObjectiveBuilder = addon.ObjectiveBuilder
     local tabContent = ObjectiveBuilder.mainContent
 
@@ -959,7 +886,7 @@ function addon:ObjectiveBuilder_LoadTrackerInfo(tracker)
     tabContent:AddChild(trackerObjective)
 
     trackerObjective:SetCallback("OnEnterPressed", trackerObjective_OnEnterPressed)
-    trackerObjective:SetCallback("OnTextChanged", function(self) numericEditBox_OnTextChanged(self) end)
+    trackerObjective:SetCallback("OnTextChanged", function(self) NumericEditBox_OnTextChanged(self) end)
 
     ------------------------------------------------------------
 
