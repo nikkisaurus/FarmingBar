@@ -147,7 +147,7 @@ local function Control_OnEvent(self, event, ...)
                 end
 
                 local alertInfo = {
-                    objectiveTitle = gsub(objectiveTitle, "^ITEM:", ""),
+                    objectiveTitle = gsub(objectiveTitle, "^item:", ""),
                     objective = objective,
                     oldCount = oldCount,
                     newCount = newCount,
@@ -505,7 +505,7 @@ local methods = {
         local objectiveTitle = self:GetUserData("objectiveTitle")
         local objectiveInfo = addon:GetObjectiveInfo(objectiveTitle)
 
-        if objectiveInfo and FarmingBar.db.profile.style.buttonLayers.Border then
+        if objectiveInfo and FarmingBar.db.profile.style.buttonLayers.Border and objectiveInfo.trackers[1] then
             local itemQuality = C_Item.GetItemQualityByID(objectiveInfo.trackers[1].trackerID)
             if itemQuality and itemQuality > 1 then
                 local r, g, b = GetItemQualityColor(itemQuality)

@@ -12,14 +12,31 @@ local Version = 1
 
 --*------------------------------------------------------------------------
 
+local function frame_OnEscapePressed(self, ...)
+    self.obj:Fire("OnEscapePressed", ...)
+    self:SetText("")
+    self:ClearFocus()
+end
+
+------------------------------------------------------------
+
+local function frame_OnTextChanged(self, ...)
+    self.obj:Fire("OnTextChanged", ...)
+end
+
+--*------------------------------------------------------------------------
+
 local methods = {
     OnAcquire = function(self)
-        if IsAddOnLoaded("ElvUI") then
-            local E = unpack(_G["ElvUI"])
-            local S = E:GetModule('Skins')
+        self:SetText("")
+    end,
 
-            S:HandleEditBox(self.frame)
-        end
+    GetText = function(self)
+        return self.frame:GetText()
+    end,
+
+    SetText = function(self, text)
+        self.frame:SetText(text)
     end,
 }
 
@@ -27,8 +44,21 @@ local methods = {
 
 local function Constructor()
     local frame = CreateFrame("EditBox", nil, UIParent, "SearchBoxTemplate")
-    frame:SetAutoFocus(false)
     frame:SetHeight(19)
+    frame:SetAutoFocus(false)
+    frame:SetMaxLetters(256)
+
+    frame:SetScript("OnEscapePressed", frame_OnEscapePressed)
+    frame:HookScript("OnTextChanged", frame_OnTextChanged)
+
+    ------------------------------------------------------------
+
+    if IsAddOnLoaded("ElvUI") then
+        local E = unpack(_G["ElvUI"])
+        local S = E:GetModule('Skins')
+
+        S:HandleEditBox(frame)
+    end
 
     ------------------------------------------------------------
 
@@ -49,4 +79,3 @@ local function Constructor()
 end
 
 AceGUI:RegisterWidgetType(Type, Constructor, Version)
-

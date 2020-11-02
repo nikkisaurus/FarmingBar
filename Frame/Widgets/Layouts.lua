@@ -90,10 +90,8 @@ end)
 
 -- add setting: constrainOverflow
 
-local fillToRow = {}
-
 AceGUI:RegisterLayout("FB30_Table", function(content, children)
-    if layoutrecursionblock then return end
+    if layoutrecursionblock or #children == 0 then return end
     local container = content.obj or content.widget
     local tableInfo = container:GetUserData("table")
     if not tableInfo then return end
@@ -105,6 +103,8 @@ AceGUI:RegisterLayout("FB30_Table", function(content, children)
     for row, rowInfo in pairs(tableInfo) do
         local colsFilled = 0
         local rowHeight = rowInfo.vOffset or 0
+
+        local fillToRow = {}
 
         for col, colInfo in pairs(rowInfo.cols) do
             local child = children[i]
@@ -190,8 +190,6 @@ AceGUI:RegisterLayout("FB30_Table", function(content, children)
             -- won't draw any more rows if this row is filling
             break
         end
-
-        wipe(fillToRow)
     end
 
     ------------------------------------------------------------

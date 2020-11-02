@@ -64,7 +64,7 @@ function addon:CreateObjectiveFromCursor()
 
         tinsert(defaultInfo.trackers, tracker)
 
-        local objectiveTitle = "ITEM:"..(select(1, GetItemInfo(cursorID)))
+        local objectiveTitle = "item:"..(select(1, GetItemInfo(cursorID)))
         local overwriteQuickObjectives = FarmingBar.db.global.settings.objectives.overwriteQuickObjectives
 
         if addon:GetObjectiveInfo(objectiveTitle) and overwriteQuickObjectives.prompt then
@@ -87,7 +87,7 @@ function addon:DeleteObjective(objectiveTitle)
     local ObjectiveBuilder = self.ObjectiveBuilder
 
     if not objectiveTitle then
-        for _, button in pairs(ObjectiveBuilder.objectiveList.children) do
+        for _, button in pairs(ObjectiveBuilder:GetUserData("objectiveList").children) do
             if button:GetUserData("selected") then
                 local objectiveTitle = button:GetUserData("objectiveTitle")
                 FarmingBar.db.global.objectives[objectiveTitle] = nil
@@ -115,7 +115,7 @@ end
 function addon:DeleteSelectedObjectives()
     local selectedButton
     local numSelectedButtons = 0
-    for _, button in pairs(self.ObjectiveBuilder.objectiveList.children) do
+    for _, button in pairs(self.ObjectiveBuilder:GetUserData("objectiveList").children) do
         if button:GetUserData("selected") then
             numSelectedButtons = numSelectedButtons + 1
             selectedButton = button
@@ -140,7 +140,7 @@ end
 
 function addon:DuplicateSelectedObjectives()
     local ObjectiveBuilder = self.ObjectiveBuilder
-    local buttons = ObjectiveBuilder.objectiveList.children
+    local buttons = ObjectiveBuilder:GetUserData("objectiveList").children
 
     local objectiveTitles = {}
     for key, button in pairs(buttons) do
@@ -210,7 +210,7 @@ end
 ------------------------------------------------------------
 
 function addon:IsObjectiveAutoItem(objectiveTitle)
-    return objectiveTitle and strfind(objectiveTitle, "^ITEM:")
+    return objectiveTitle and strfind(objectiveTitle, "^item:")
 end
 
 ------------------------------------------------------------

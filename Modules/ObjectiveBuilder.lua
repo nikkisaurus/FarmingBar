@@ -31,7 +31,7 @@ local mainTabGroupTabs = {
 
 ------------------------------------------------------------
 
-ObjectiveBuilder_TableInfo = {
+local ObjectiveBuilder_TableInfo = {
     {
         cols = {
             {width = "fill"},
@@ -44,6 +44,20 @@ ObjectiveBuilder_TableInfo = {
         },
         hpadding = 5,
         vOffset = 5,
+        rowHeight = "fill",
+    },
+}
+
+local ObjectiveBuilderMainPanel_TableInfo = {
+    {
+        cols = {
+            {width = "fill"},
+        },
+    },
+    {
+        cols = {
+            {width = "fill"},
+        },
         rowHeight = "fill",
     },
 }
@@ -221,16 +235,16 @@ local function mainTabGroup_OnGroupSelected(self, _, selected)
 
     self:ReleaseChildren()
 
-    local mainTabContent = AceGUI:Create("ScrollFrame")
-    mainTabContent:SetLayout("Flow")
-    self:AddChild(mainTabContent)
+    local mainContent = AceGUI:Create("ScrollFrame")
+    mainContent:SetLayout("Flow")
+    self:AddChild(mainContent)
 
     ------------------------------------------------------------
 
     if selected == "objectiveTab" then
-        addon:ObjectiveBuilder_LoadObjectiveTab(mainTabContent)
+        addon:ObjectiveBuilder_LoadObjectiveTab(mainContent)
     elseif selected == "trackersTab" then
-        addon:ObjectiveBuilder_LoadTrackersTab(mainTabContent)
+        addon:ObjectiveBuilder_LoadTrackersTab(mainContent)
     end
 end
 
@@ -365,7 +379,7 @@ local methods = {
     ------------------------------------------------------------
 
     GetObjectiveButton = function(self, objectiveTitle)
-        for _, button in pairs(self.objectiveList.children) do
+        for _, button in pairs(self:GetUserData("objectiveList").children) do
             if button:GetUserData("objectiveTitle") == objectiveTitle then
                 return button
             end
@@ -376,7 +390,7 @@ local methods = {
 
     Load = function(self, objectiveTitle)
         self:Show()
-        -- self:LoadObjectives(objectiveTitle)
+        self:LoadObjectives(objectiveTitle)
     end,
 
     ------------------------------------------------------------
@@ -390,11 +404,10 @@ local methods = {
         ------------------------------------------------------------
 
         for key, objectiveTitle in pairs(trackerInfo.exclude) do
-            local label = AceGUI:Create("FB30_InteractiveLabel")
+            local label = AceGUI:Create("FarmingBar_InteractiveLabel")
             label:SetFullWidth(true)
             label:SetText(objectiveTitle)
-            label:SetImageSize(15, 15)
-            label:SetImage(addon:GetObjectiveIcon(objectiveTitle))
+            label:SetIcon(addon:GetObjectiveIcon(objectiveTitle), nil, 15, 15)
             excludeList:AddChild(label)
 
             label:SetCallback("OnClick", function(_, _, buttonClicked) excludeListLabel_OnClick(self, buttonClicked, key) end)
@@ -406,14 +419,13 @@ local methods = {
     ------------------------------------------------------------
 
     LoadObjectives = function(self, objectiveTitle)
-        local objectiveList = self.objectiveList
-        local filter = self.objectiveSearchBox:GetText()
-
+        local objectiveList = self:GetUserData("objectiveList")
+        local filter = self:GetUserData("objectiveSearchBox"):GetText()
         objectiveList:ReleaseChildren()
 
         ------------------------------------------------------------
 
-        for objectiveTitle, objective in addon.pairs(FarmingBar.db.global.objectives, function(a, b) return strupper(a) < strupper(b) end) do
+        for objectiveTitle, objectiveInfo in addon.pairs(FarmingBar.db.global.objectives, function(a, b) return strupper(a) < strupper(b) end) do
             local notFiltered = not filter or strfind(strupper(objectiveTitle), strupper(filter))
             local autoFilterEnabled = addon:GetDBValue("global", "settings.misc.filterOBAutoItems")
             local notAutoFiltered = autoFilterEnabled and not addon:IsObjectiveAutoItem(objectiveTitle) or not autoFilterEnabled
@@ -431,10 +443,15 @@ local methods = {
         local selectedObjectiveTitle = objectiveTitle or self:GetSelectedObjective()
 
         if selectedObjectiveTitle then
-            self:GetObjectiveButton(selectedObjectiveTitle).frame:Click()
+            self:GetObjectiveButton(selectedObjectiveTitle):Select()
         else
             -- self.mainPanel:ReleaseChildren()
         end
+
+        ------------------------------------------------------------
+
+        -- Scrollbar won't disappear when deleting objectives if we don't call DoLayout
+        objectiveList:DoLayout()
     end,
 
     ------------------------------------------------------------
@@ -471,12 +488,20 @@ local methods = {
     ------------------------------------------------------------
 
     SelectObjective = function(self, objectiveTitle)
+        local mainPanel = self:GetUserData("mainPanel")
         self:SetUserData("selectedObjective", objectiveTitle)
 
-        local mainPanel = self.mainPanel
         mainPanel:ReleaseChildren()
 
         if objectiveTitle then
+            local title = AceGUI:Create("FarmingBar_InteractiveLabel")
+            title:SetFontObject(GameFontNormalLarge)
+            title:SetText(objectiveTitle)
+            title:SetIcon(addon:GetObjectiveIcon(objectiveTitle), nil, 20, 20)
+            mainPanel:AddChild(title)
+
+            ------------------------------------------------------------
+
             local mainTabGroup = AceGUI:Create("TabGroup")
             mainTabGroup:SetLayout("Fill")
             mainTabGroup:SetTabs(mainTabGroupTabs)
@@ -507,6 +532,7 @@ function addon:Initialize_ObjectiveBuilder()
     ObjectiveBuilder:SetTitle("Farming Bar "..L["Objective Builder"])
     ObjectiveBuilder:SetLayout("FB30_Table")
     ObjectiveBuilder:SetUserData("table", ObjectiveBuilder_TableInfo)
+    ObjectiveBuilder:SetUserData("selectedTabs", {})
     addon.ObjectiveBuilder = ObjectiveBuilder
 
     for method, func in pairs(methods) do
@@ -572,9 +598,12 @@ function addon:Initialize_ObjectiveBuilder()
 
     ------------------------------------------------------------
 
-    local searchBox = AceGUI:Create("FarmingBar_SearchBox")
-    searchBox:SetFullWidth(true)
-    sidebar:AddChild(searchBox)
+    local objectiveSearchBox = AceGUI:Create("FarmingBar_SearchBox")
+    objectiveSearchBox:SetFullWidth(true)
+    sidebar:AddChild(objectiveSearchBox)
+    ObjectiveBuilder:SetUserData("objectiveSearchBox", objectiveSearchBox)
+
+    objectiveSearchBox:SetCallback("OnTextChanged", function() ObjectiveBuilder:LoadObjectives() end)
 
     ------------------------------------------------------------
 
@@ -587,126 +616,19 @@ function addon:Initialize_ObjectiveBuilder()
     ------------------------------------------------------------
 
     local objectiveList = AceGUI:Create("ScrollFrame")
-    objectiveList:SetLayout("FB30_PaddedList")
-    objectiveList:SetUserData("childPadding", 5)
+    objectiveList:SetLayout("List") --! fix FB30_PaddedList
+    -- objectiveList:SetUserData("childPadding", 5)
+    objectiveList:SetUserData("renaming", {})
     objectiveListContainer:AddChild(objectiveList)
+    ObjectiveBuilder:SetUserData("objectiveList", objectiveList)
 
     -- ------------------------------------------------------------
 
     local mainPanel = AceGUI:Create("FarmingBar_InlineGroup")
-    mainPanel:SetLayout("Fill")
+    mainPanel:SetLayout("FB30_Table")
+    mainPanel:SetUserData("table", ObjectiveBuilderMainPanel_TableInfo)
     ObjectiveBuilder:AddChild(mainPanel)
-
-    ------------------------------------------------------------
-
-    local mainContent = AceGUI:Create("ScrollFrame")
-    mainContent:SetLayout("Flow")
-    mainPanel:AddChild(mainContent)
-
-    for i = 1, 100 do
-        local label = AceGUI:Create("Label")
-        label:SetFullWidth(true)
-        label:SetText("Test main "..i)
-        mainContent:AddChild(label)
-    end
-
-    --*------------------------------------------------------------------------
-
-    -- ObjectiveBuilder = AceGUI:Create("FB30_Window")
-    -- ObjectiveBuilder:SetTitle("Farming Bar "..L["Objective Builder"])
-    -- ObjectiveBuilder:SetSize(700, 500)
-    -- ObjectiveBuilder:SetLayout("FB30_2RowSplitBottom")
-    -- ObjectiveBuilder:SetUserData("selectedTabs", {})
-    -- ObjectiveBuilder:Hide()
-    -- self.ObjectiveBuilder = ObjectiveBuilder
-
-    -- for method, func in pairs(methods) do
-    --     ObjectiveBuilder[method] = func
-    -- end
-
-    -- ------------------------------------------------------------
-
-    -- ------------------------------------------------------------
-
-    -- local topContent = AceGUI:Create("InlineGroup")
-    -- topContent:SetFullWidth(true)
-    -- topContent:SetLayout("Flow")
-    -- ObjectiveBuilder:AddChild(topContent)
-
-    -- ------------------------------------------------------------
-
-    -- local newObjectiveButton = AceGUI:Create("FB30_InteractiveLabel")
-    -- newObjectiveButton:SetText(L["New Objective"])
-    -- newObjectiveButton:SetWidth(newObjectiveButton.label:GetStringWidth() + newObjectiveButton.image:GetWidth())
-    -- newObjectiveButton:SetImageSize(newObjectiveButton.label:GetHeight(), newObjectiveButton.label:GetHeight())
-    -- newObjectiveButton:SetImage(514607)
-    -- topContent:AddChild(newObjectiveButton)
-
-    -- newObjectiveButton:SetCallback("OnClick", function() addon:CreateObjective() end)
-    -- newObjectiveButton:SetCallback("OnReceiveDrag", function() addon:CreateObjectiveFromCursor() end)
-
-    -- if FarmingBar.db.global.hints.ObjectiveBuilder then
-    --     newObjectiveButton:SetTooltip(addon.GetNewObjectiveButtonTooltip)
-    -- end
-
-    -- ------------------------------------------------------------
-
-    -- local importObjectiveButton = AceGUI:Create("FB30_InteractiveLabel")
-    -- importObjectiveButton:SetText(L["Import Objective"])
-    -- importObjectiveButton:SetWidth(importObjectiveButton.label:GetStringWidth() + importObjectiveButton.image:GetWidth())
-    -- importObjectiveButton:SetImageSize(importObjectiveButton.label:GetHeight(), importObjectiveButton.label:GetHeight())
-    -- importObjectiveButton:SetImage(131906, 1, 0, 0, 1)
-    -- importObjectiveButton:SetDisabled(true)
-    -- topContent:AddChild(importObjectiveButton)
-
-    -- -- importObjectiveButton:SetCallback("OnClick", function() ????? end) -- TODO: implement import/export
-
-    -- ------------------------------------------------------------
-
-    -- local filterAutoItems = AceGUI:Create("CheckBox")
-    -- filterAutoItems:SetLabel(L["Filter Auto Items"])
-    -- filterAutoItems:SetValue(FarmingBar.db.global.settings.misc.filterOBAutoItems)
-    -- filterAutoItems:SetWidth(filterAutoItems.text:GetStringWidth() + filterAutoItems.checkbg:GetWidth())
-    -- topContent:AddChild(filterAutoItems)
-    -- ObjectiveBuilder.filterAutoItems = filterAutoItems
-
-    -- filterAutoItems:SetCallback("OnEnter", filterAutoItems_OnEnter)
-    -- filterAutoItems:SetCallback("OnLeave", filterAutoItems_OnLeave)
-    -- filterAutoItems:SetCallback("OnValueChanged", filterAutoItems_OnValueChanged)
-
-    -- ------------------------------------------------------------
-
-    -- local sidePanel = AceGUI:Create("SimpleGroup")
-    -- sidePanel:SetRelativeWidth(1/4)
-    -- sidePanel:SetFullHeight(true)
-    -- sidePanel:SetLayout("FB30_2RowFill")
-    -- ObjectiveBuilder:AddChild(sidePanel)
-
-    -- ------------------------------------------------------------
-
-    -- local objectiveSearchBox = AceGUI:Create("FB30_SearchEditBox")
-    -- objectiveSearchBox:SetFullWidth(true)
-    -- sidePanel:AddChild(objectiveSearchBox)
-    -- ObjectiveBuilder.objectiveSearchBox = objectiveSearchBox
-
-    -- objectiveSearchBox:SetCallback("OnTextChanged", function(self) ObjectiveBuilder:LoadObjectives() end)
-
-    -- ------------------------------------------------------------
-
-    -- local objectiveList = AceGUI:Create("ScrollFrame")
-    -- objectiveList:SetLayout("List")
-    -- sidePanel:AddChild(objectiveList)
-    -- objectiveList:SetUserData("renaming", {})
-    -- ObjectiveBuilder.objectiveList = objectiveList
-
-    -- ------------------------------------------------------------
-
-    -- local mainPanel = AceGUI:Create("SimpleGroup")
-    -- mainPanel:SetRelativeWidth(3/4)
-    -- mainPanel:SetFullHeight(true)
-    -- mainPanel:SetLayout("Fill")
-    -- ObjectiveBuilder:AddChild(mainPanel)
-    -- ObjectiveBuilder.mainPanel = mainPanel
+    ObjectiveBuilder:SetUserData("mainPanel", mainPanel)
 
     ------------------------------------------------------------
 
@@ -747,16 +669,6 @@ end
 function addon:ObjectiveBuilder_LoadObjectiveTab(tabContent)
     local objectiveTitle, objectiveInfo = ObjectiveBuilder:GetSelectedObjectiveInfo()
     if not objectiveTitle then return end
-
-    ------------------------------------------------------------
-
-    local title = AceGUI:Create("Label")
-    title:SetFullWidth(true)
-    title:SetText(objectiveTitle)
-    title:SetFontObject(GameFontNormalLarge)
-    title:SetImageSize(20, 20)
-    title:SetImage(self:GetObjectiveIcon(objectiveTitle))
-    tabContent:AddChild(title)
 
     ------------------------------------------------------------
 
@@ -808,10 +720,9 @@ function addon:ObjectiveBuilder_LoadObjectiveTab(tabContent)
 
     ------------------------------------------------------------
 
-    local displayRefHelp = AceGUI:Create("FB30_InteractiveLabel")
+    local displayRefHelp = AceGUI:Create("FarmingBar_InteractiveLabel")
     displayRefHelp:SetText(" ")
-    displayRefHelp:SetImage(616343)
-    displayRefHelp:SetImageSize(25, 25)
+    displayRefHelp:SetIcon(616343, nil, 25, 25)
     displayRefHelp:SetWidth(30)
     tabContent:AddChild(displayRefHelp)
 
@@ -869,11 +780,9 @@ function addon:ObjectiveBuilder_LoadTrackersTab(tabContent)
 
     ------------------------------------------------------------
 
-    local newTrackerButton = AceGUI:Create("FB30_InteractiveLabel")
+    local newTrackerButton = AceGUI:Create("FarmingBar_InteractiveLabel")
     newTrackerButton:SetText(L["New Tracker"])
-    newTrackerButton:SetWidth(newTrackerButton.label:GetStringWidth() + newTrackerButton.image:GetWidth())
-    newTrackerButton:SetImageSize(newTrackerButton.label:GetHeight(), newTrackerButton.label:GetHeight())
-    newTrackerButton:SetImage(514607)
+    newTrackerButton:SetIcon(514607, nil, 20, 20)
     tabContent:AddChild(newTrackerButton)
 
     newTrackerButton:SetCallback("OnClick", function() addon:CreateTracker() end)

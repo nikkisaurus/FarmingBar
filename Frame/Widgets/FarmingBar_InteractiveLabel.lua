@@ -170,6 +170,12 @@ local methods = {
 
     ------------------------------------------------------------
 
+    SetFontObject = function(self, fontObj)
+		self.text:SetFontObject(fontObj)
+    end,
+
+    ------------------------------------------------------------
+
     SetIcon = function(self, iconTexture, point, width, height)
         local icon = self.icon
 
