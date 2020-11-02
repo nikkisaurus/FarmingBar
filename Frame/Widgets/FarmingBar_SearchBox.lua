@@ -37,7 +37,7 @@ local function Constructor()
         frame = frame,
     }
 
-    frame.widget = widget
+    frame.obj = widget
 
     for method, func in pairs(methods) do
         widget[method] = func

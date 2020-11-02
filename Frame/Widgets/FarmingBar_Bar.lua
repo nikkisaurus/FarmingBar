@@ -14,7 +14,7 @@ local Version = 1
 --*------------------------------------------------------------------------
 
 local function addButton_OnClick(self)
-    local widget = self.widget
+    local widget = self.obj
     local barDB = widget:GetUserData("barDB")
 
     if barDB.numVisibleButtons < addon.maxButtons then
@@ -26,13 +26,13 @@ end
 ------------------------------------------------------------
 
 local function Control_OnDragStart(self)
-    self.widget.frame:StartMoving()
+    self.obj.frame:StartMoving()
 end
 
 ------------------------------------------------------------
 
 local function Control_OnDragStop(self)
-    local widget = self.widget
+    local widget = self.obj
     local barDB = widget:GetUserData("barDB")
 
     widget.frame:StopMovingOrSizing()
@@ -43,17 +43,17 @@ end
 
 local function Control_OnEvent(self, event)
     if event == "PLAYER_REGEN_DISABLED" then
-        self.widget.addButton:Disable()
-        self.widget.removeButton:Disable()
+        self.obj.addButton:Disable()
+        self.obj.removeButton:Disable()
     elseif event == "PLAYER_REGEN_ENABLED" then
-        self.widget:SetQuickButtonStates()
+        self.obj:SetQuickButtonStates()
     end
 end
 
 ------------------------------------------------------------
 
 -- local function Control_OnUpdate(self, ...)
---     local widget = self.widget
+--     local widget = self.obj
 --     local buttons = widget:GetUserData("buttons")
 
 --     for key, button in pairs(buttons) do
@@ -69,7 +69,7 @@ end
 ------------------------------------------------------------
 
 local function removeButton_OnClick(self)
-    local widget = self.widget
+    local widget = self.obj
     local barDB = widget:GetUserData("barDB")
 
     if barDB.numVisibleButtons > 0 then
@@ -365,7 +365,7 @@ local function Constructor()
         barID = barID,
     }
 
-    frame.widget, anchor.widget, addButton.widget, removeButton.widget = widget, widget, widget, widget
+    frame.obj, anchor.obj, addButton.obj, removeButton.obj = widget, widget, widget, widget
 
     for method, func in pairs(methods) do
         widget[method] = func

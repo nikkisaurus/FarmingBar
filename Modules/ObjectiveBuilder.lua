@@ -5,6 +5,7 @@ local AceGUI = LibStub("AceGUI-3.0", true)
 
 local tinsert, tremove, wipe, pairs = table.insert, table.remove, table.wipe, pairs
 local strfind, strformat, gsub, strupper, tonumber = string.find, string.format, string.gsub, string.upper, tonumber
+local CreateFrame, UIParent = CreateFrame, UIParent
 
 local ObjectiveBuilder = addon.ObjectiveBuilder
 
@@ -515,8 +516,8 @@ function addon:Initialize_ObjectiveBuilder()
     ------------------------------------------------------------
 
     local topPanel = AceGUI:Create("FarmingBar_InlineGroup")
-    topPanel:SetLayout("Flow")
     topPanel:SetFullWidth(true)
+    topPanel:SetLayout("Flow")
     ObjectiveBuilder:AddChild(topPanel)
 
     ------------------------------------------------------------
@@ -617,8 +618,6 @@ function addon:Initialize_ObjectiveBuilder()
 
     -- ------------------------------------------------------------
 
-    -- self.MenuFrame = self.MenuFrame or CreateFrame("Frame", "FarmingBarMenuFrame", UIParent, "UIDropDownMenuTemplate")
-
     -- ------------------------------------------------------------
 
     -- local topContent = AceGUI:Create("InlineGroup")
@@ -703,6 +702,8 @@ function addon:Initialize_ObjectiveBuilder()
 
     ------------------------------------------------------------
 
+
+    self.MenuFrame = self.MenuFrame or CreateFrame("Frame", "FarmingBarMenuFrame", UIParent, "UIDropDownMenuTemplate")
     self:Initialize_DragFrame()
 
     ------------------------------------------------------------

@@ -65,6 +65,12 @@ local function frame_OnLeave(self)
     end
 end
 
+------------------------------------------------------------
+
+local function frame_OnReceiveDrag(self)
+	self.obj:Fire("OnReceiveDrag")
+end
+
 --*------------------------------------------------------------------------
 
 local methods = {
@@ -281,6 +287,7 @@ local function Constructor()
     frame:SetScript("OnClick", frame_OnClick)
     frame:SetScript("OnEnter", frame_OnEnter)
     frame:SetScript("OnLeave", frame_OnLeave)
+	frame:SetScript("OnReceiveDrag", frame_OnReceiveDrag)
 
     local icon = frame:CreateTexture(nil, "ARTWORK")
     local text = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")

@@ -33,11 +33,11 @@ end
 
 local postClickMethods = {
     clearObjective = function(self, ...)
-        self.widget:ClearObjective()
+        self.obj:ClearObjective()
     end,
 
     includeBank = function(self, ...)
-        local widget = self.widget
+        local widget = self.obj
         local objectiveTitle = widget:GetUserData("objectiveTitle")
 
         if addon:IsObjectiveAutoItem(objectiveTitle) then
@@ -49,7 +49,7 @@ local postClickMethods = {
     end,
 
     moveObjective = function(self, ...)
-        local widget = self.widget
+        local widget = self.obj
         local bar = addon.bars[widget:GetUserData("barID")]
         local objectiveTitle = widget:GetUserData("objectiveTitle")
         local objective = widget:GetUserData("objective")
@@ -65,18 +65,18 @@ local postClickMethods = {
     end,
 
     showObjectiveBuilder = function(self, ...)
-        addon.ObjectiveBuilder:Load(self.widget:GetUserData("objectiveTitle"))
+        addon.ObjectiveBuilder:Load(self.obj:GetUserData("objectiveTitle"))
     end,
 
     showObjectiveEditBox = function(self, ...)
-        self.widget.objectiveEditBox:Show()
+        self.obj.objectiveEditBox:Show()
     end,
 }
 
 --*------------------------------------------------------------------------
 
 local function Control_OnDragStart(self, buttonClicked, ...)
-    local widget = self.widget
+    local widget = self.obj
     local keybinds = FarmingBar.db.global.keybinds.dragButton
 
     widget:SetUserData("isDragging", true)
@@ -97,21 +97,21 @@ end
 ------------------------------------------------------------
 
 local function Control_OnDragStop(self)
-    self.widget:SetUserData("isDragging", nil)
+    self.obj:SetUserData("isDragging", nil)
 end
 
 ------------------------------------------------------------
 
 local function Control_OnEnter(self)
     if addon.DragFrame:IsVisible() then
-        self.widget:SetUserData("dragTitle", addon.DragFrame:GetObjective())
+        self.obj:SetUserData("dragTitle", addon.DragFrame:GetObjective())
     end
 end
 
 ------------------------------------------------------------
 
 local function Control_OnEvent(self, event, ...)
-    local widget = self.widget
+    local widget = self.obj
     local barID = widget:GetUserData("barID")
     local barDB = addon.bars[barID]:GetUserData("barDB")
     local buttonID = widget:GetUserData("buttonID")
@@ -209,13 +209,13 @@ end
 ------------------------------------------------------------
 
 local function Control_OnLeave(self)
-    self.widget:SetUserData("dragTitle")
+    self.obj:SetUserData("dragTitle")
 end
 
 ------------------------------------------------------------
 
 local function Control_OnReceiveDrag(self)
-    local widget = self.widget
+    local widget = self.obj
     local objectiveTitle = widget:GetUserData("dragTitle")
 
     if objectiveTitle then
@@ -237,7 +237,7 @@ end
 ------------------------------------------------------------
 
 local function Control_PostClick(self, buttonClicked, ...)
-    local widget = self.widget
+    local widget = self.obj
     if widget:GetUserData("isDragging") then return end
     local cursorType, cursorID = GetCursorInfo()
 
@@ -279,7 +279,7 @@ end
 ------------------------------------------------------------
 
 local function EditBox_OnEditFocusGained(self)
-    self:SetText(self.widget:GetUserData("objective") or "")
+    self:SetText(self.obj:GetUserData("objective") or "")
     self:HighlightText()
     self:SetCursorPosition(strlen(self:GetText()))
 end
@@ -294,7 +294,7 @@ end
 ------------------------------------------------------------
 
 local function EditBox_OnShow(self)
-    local widget = self.widget
+    local widget = self.obj
     local width = widget.frame:GetWidth()
     self:SetSize(width, width / 2)
     self:SetFocus()
@@ -311,7 +311,7 @@ end
 local function objectiveEditBox_OnEnterPressed(self)
     local objective = tonumber(self:GetText())
     objective = objective and (objective > 0 and objective)
-    self.widget:SetObjective(objective)
+    self.obj:SetObjective(objective)
 
     if FarmingBar.db.global.settings.alerts.button.sound.enabled then
         PlaySoundFile(LSM:Fetch("sound", FarmingBar.db.global.settings.alerts.button.sound[objective and "objectiveSet" or "objectiveCleared"]))
@@ -669,7 +669,7 @@ local function Constructor()
         quickAddEditBox = quickAddEditBox,
     }
 
-    frame.widget, objectiveEditBox.widget, quickAddEditBox.widget = widget, widget, widget
+    frame.obj, objectiveEditBox.obj, quickAddEditBox.obj = widget, widget, widget
 
     for method, func in pairs(methods) do
         widget[method] = func

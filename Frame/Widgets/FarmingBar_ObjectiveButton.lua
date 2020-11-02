@@ -27,7 +27,7 @@ end
 
 local function Control_OnClick(self, buttonClicked)
     local ObjectiveBuilder = addon.ObjectiveBuilder
-    local widget = self.widget
+    local widget = self.obj
     local selected = widget:GetUserData("selected")
 
     ------------------------------------------------------------
@@ -78,7 +78,7 @@ end
 ------------------------------------------------------------
 
 local function Control_OnDragStart(self)
-    addon.DragFrame:Load(self.widget:GetUserData("objectiveTitle"))
+    addon.DragFrame:Load(self.obj:GetUserData("objectiveTitle"))
 end
 
 ------------------------------------------------------------
@@ -91,7 +91,7 @@ end
 
 local function Control_OnEnter(self)
     GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT", 0, 0)
-    addon:GetObjectiveButtonTooltip(self.widget, GameTooltip)
+    addon:GetObjectiveButtonTooltip(self.obj, GameTooltip)
     GameTooltip:Show()
 end
 
@@ -111,7 +111,7 @@ end
 --*------------------------------------------------------------------------
 
 local function EditBox_OnEscapePressed(self)
-    addon.ObjectiveBuilder.objectiveList:GetUserData("renaming")[self.widget:GetUserData("objectiveTitle")] = false
+    addon.ObjectiveBuilder.objectiveList:GetUserData("renaming")[self.obj:GetUserData("objectiveTitle")] = false
 
     self:Hide()
     FocusRenamingEditBox()
@@ -120,7 +120,7 @@ end
 ------------------------------------------------------------
 
 local function EditBox_OnEnterPressed(self)
-    local widget = self.widget
+    local widget = self.obj
     local oldObjectiveTitle = widget:GetUserData("objectiveTitle")
     local newObjectiveTitle = self:GetText()
 
@@ -142,7 +142,7 @@ local function EditBox_OnHide(self)
     self:ClearFocus()
     self:SetText("")
 
-    local widget = self.widget
+    local widget = self.obj
     widget.text:Show()
     widget.text:SetText(widget:GetUserData("objectiveTitle"))
 end
@@ -150,7 +150,7 @@ end
 ------------------------------------------------------------
 
 local function EditBox_OnShow(self)
-    local widget = self.widget
+    local widget = self.obj
     local objectiveTitle = widget:GetUserData("objectiveTitle")
     addon.ObjectiveBuilder.objectiveList:GetUserData("renaming")[objectiveTitle] = true
 
@@ -313,7 +313,7 @@ local function Constructor()
         editbox = editbox,
     }
 
-    frame.widget, editbox.widget = widget, widget
+    frame.obj, editbox.obj = widget, widget
 
     for method, func in pairs(methods) do
         widget[method] = func
