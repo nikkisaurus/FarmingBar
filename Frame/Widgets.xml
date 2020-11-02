@@ -4,11 +4,10 @@
 	<Script file="Widgets\FarmingBar_Button.lua"/>
 	<Script file="Widgets\FarmingBar_Frame.lua"/>
 	<Script file="Widgets\FarmingBar_InlineGroup.lua"/>
+	<Script file="Widgets\FarmingBar_InteractiveLabel.lua"/>
 	<Script file="Widgets\FarmingBar_ObjectiveButton.lua"/>
 	<Script file="Widgets\FarmingBar_SearchBox.lua"/>
 	<Script file="Widgets\FarmingBar_SimpleGroup.lua"/>
 	<Script file="Widgets\FarmingBar_TrackerButton.lua"/>
-	<Script file="Widgets\FB30_InteractiveLabel.lua"/>
-	<Script file="Widgets\FB30_Label.lua"/>
 	<Script file="Widgets\Layouts.lua"/>
 </Ui>

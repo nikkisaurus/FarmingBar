@@ -39,11 +39,10 @@ ObjectiveBuilder_TableInfo = {
     {
         cols = {
             {width = "relative", relWidth = 1/3},
-            -- {width = 5, hpadding = -5},
-            {width = "relative", relWidth = 2/3, hpadding = -5},
+            {width = "relative", relWidth = 2/3},
         },
         hpadding = 5,
-        vOffset = 10,
+        vOffset = 5,
         rowHeight = "fill",
     },
 }
@@ -520,10 +519,47 @@ function addon:Initialize_ObjectiveBuilder()
     topPanel:SetFullWidth(true)
     ObjectiveBuilder:AddChild(topPanel)
 
-    local label = AceGUI:Create("Label")
-    label:SetFullWidth(true)
-    label:SetText("Test top")
-    topPanel:AddChild(label)
+    ------------------------------------------------------------
+
+    local newObjective = AceGUI:Create("FarmingBar_InteractiveLabel")
+    newObjective:SetText(L["New Objective"])
+    newObjective:SetTextHighlight(1, .82, 0, 1)
+    newObjective:SetWordWrap(false)
+    newObjective:SetIcon(514607, nil, 13, 13)
+    topPanel:AddChild(newObjective)
+
+    newObjective:SetCallback("OnClick", function() addon:CreateObjective() end)
+    newObjective:SetCallback("OnReceiveDrag", function() addon:CreateObjectiveFromCursor() end)
+
+    if FarmingBar.db.global.hints.ObjectiveBuilder then
+        newObjective:SetTooltip(addon.GetNewObjectiveButtonTooltip)
+    end
+
+    ------------------------------------------------------------
+
+    local importObjective = AceGUI:Create("FarmingBar_InteractiveLabel")
+    importObjective:SetText(L["Import Objective"])
+    importObjective:SetIcon([[INTERFACE\ADDONS\FARMINGBAR\MEDIA\IMPORT]], nil, 13, 13)
+    importObjective:SetTextHighlight(1, .82, 0, 1)
+    importObjective:SetIconHighlightColor(1, .82, 0, 1)
+    -- importObjective:SetImage(131906, 1, 0, 0, 1)
+    importObjective:SetDisabled(true)
+    topPanel:AddChild(importObjective)
+
+    -- importObjectiveButton:SetCallback("OnClick", function() ????? end) -- TODO: implement import/export
+
+    ------------------------------------------------------------
+
+    local filterAutoItems = AceGUI:Create("CheckBox")
+    filterAutoItems:SetLabel(L["Filter Auto Items"])
+    filterAutoItems:SetValue(FarmingBar.db.global.settings.misc.filterOBAutoItems)
+    filterAutoItems:SetWidth(filterAutoItems.text:GetStringWidth() + filterAutoItems.checkbg:GetWidth())
+    topPanel:AddChild(filterAutoItems)
+    ObjectiveBuilder.filterAutoItems = filterAutoItems
+
+    filterAutoItems:SetCallback("OnEnter", filterAutoItems_OnEnter)
+    filterAutoItems:SetCallback("OnLeave", filterAutoItems_OnLeave)
+    filterAutoItems:SetCallback("OnValueChanged", filterAutoItems_OnValueChanged)
 
     -- ------------------------------------------------------------
 

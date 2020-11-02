@@ -148,7 +148,7 @@ AceGUI:RegisterLayout("FB30_Table", function(content, children)
                 frame:SetPoint("RIGHT")
             elseif frameWidth == "relative" then
 				child.relWidth = child.relWidth or colInfo.relWidth or 0
-				safelayoutcall(child, "SetWidth", contentWidth * child.relWidth)
+				safelayoutcall(child, "SetWidth", (contentWidth - (hpadding * (#rowInfo.cols - 1))) * child.relWidth)
             else
 				safelayoutcall(child, "SetWidth", frameWidth)
             end
