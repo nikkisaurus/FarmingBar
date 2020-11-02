@@ -20,6 +20,7 @@ end
 --*------------------------------------------------------------------------
 
 AceGUI:RegisterLayout("FB30_PaddedList", function(content, children)
+    local height = 0
     for i = 1, #children do
         local child = children[i]
         if child then
@@ -33,6 +34,8 @@ AceGUI:RegisterLayout("FB30_PaddedList", function(content, children)
                 frame:SetPoint("TOPLEFT", children[i - 1].frame, "BOTTOMLEFT", 0, -padding)
             end
 
+            height = height + frame:GetHeight()
+
             if child.height == "fill" then
                 frame:SetPoint("BOTTOM")
                 break
@@ -45,7 +48,7 @@ AceGUI:RegisterLayout("FB30_PaddedList", function(content, children)
     end
 
     if content.obj.LayoutFinished then
-        content.obj:LayoutFinished()
+        content.obj:LayoutFinished(nil, height)
     end
 end)
 

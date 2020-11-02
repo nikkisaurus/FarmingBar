@@ -581,7 +581,8 @@ function addon:Initialize_ObjectiveBuilder()
     sidebar:AddChild(objectiveListContainer)
 
     local objectiveList = AceGUI:Create("ScrollFrame")
-    objectiveList:SetLayout("List")
+    objectiveList:SetLayout("FB30_PaddedList")
+    objectiveList:SetUserData("childPadding", 5)
     objectiveList:SetFullWidth(true)
     objectiveListContainer:AddChild(objectiveList)
 
