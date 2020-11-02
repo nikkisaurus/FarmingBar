@@ -25,25 +25,25 @@ end
 ------------------------------------------------------------
 
 local function dragger_OnMouseDown(self)
-    local widget = self.widget:GetUserData("widget")
-    if not widget then return end
-    widget.frame:SetResizable(true)
-    widget.frame:StartSizing("RIGHT")
-    self:SetScript("OnUpdate", function(self)
-        widget:SetUserData("relWidth", widget.frame:GetWidth() / widget.parent.frame:GetWidth())
-        widget.parent:DoLayout()
-    end)
+    -- local widget = self.widget:GetUserData("widget")
+    -- if not widget then return end
+    -- widget.frame:SetResizable(true)
+    -- widget.frame:StartSizing("RIGHT")
+    -- self:SetScript("OnUpdate", function(self)
+    --     widget:SetUserData("relWidth", widget.frame:GetWidth() / widget.parent.frame:GetWidth())
+    --     widget.parent:DoLayout()
+    -- end)
 end
 
 ------------------------------------------------------------
 
 local function dragger_OnMouseUp(self)
-    local widget = self.widget:GetUserData("widget")
-    if not widget then return end
-    widget.frame:StopMovingOrSizing()
-    widget.frame:SetResizable(false)
-    self:SetScript("OnUpdate", nil)
-    widget.parent:DoLayout()
+    -- local widget = self.widget:GetUserData("widget")
+    -- if not widget then return end
+    -- widget.frame:StopMovingOrSizing()
+    -- widget.frame:SetResizable(false)
+    -- self:SetScript("OnUpdate", nil)
+    -- widget.parent:DoLayout()
 end
 
 
@@ -53,8 +53,18 @@ local methods = {
 	OnAcquire = function(self)
     end,
 
+    OnRelease = function(self)
+        -- Restore widget's previous resizable status
+        local widget = self:GetUserData("widget")
+        if widget and not widget:GetUserData("resizable") then
+            widget.frame:SetResizable(false)
+        end
+    end,
+
     SetWidget = function(self, widget)
         self:SetUserData("widget", widget)
+        widget:SetUserData("resizable", widget.frame:IsResizable())
+        widget.frame:SetResizable(true)
     end,
 }
 

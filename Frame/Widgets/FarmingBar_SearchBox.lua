@@ -14,6 +14,12 @@ local Version = 1
 
 local methods = {
     OnAcquire = function(self)
+        if IsAddOnLoaded("ElvUI") then
+            local E = unpack(_G["ElvUI"])
+            local S = E:GetModule('Skins')
+
+            S:HandleEditBox(self.frame)
+        end
     end,
 }
 
@@ -23,15 +29,6 @@ local function Constructor()
     local frame = CreateFrame("EditBox", nil, UIParent, "SearchBoxTemplate")
     frame:SetAutoFocus(false)
     frame:SetHeight(19)
-
-    ------------------------------------------------------------
-
-    if IsAddOnLoaded("ElvUI") then
-        local E = unpack(_G["ElvUI"])
-        local S = E:GetModule('Skins')
-
-        S:HandleEditBox(frame)
-    end
 
     ------------------------------------------------------------
 

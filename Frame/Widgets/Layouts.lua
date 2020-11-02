@@ -264,12 +264,18 @@ AceGUI:RegisterLayout("FB30_Table", function(content, children)
         height = height + rowHeight
 
         -- Set rows to max rowHeight after the whole row is drawn, to make sure we have the overall height
-        for child, _ in pairs(fillToRow) do
-            local frame = children[child].frame
+        for numChild, _ in pairs(fillToRow) do
+            local child = children[numChild]
+            local frame = child.frame
+
             if rowInfo.rowHeight == "fill" then
                 frame:SetPoint("BOTTOM", 0, 0)
             else
                 frame:SetPoint("BOTTOM", content, "TOP", 0, -height)
+            end
+
+            if child.DoLayout then
+                child:DoLayout()
             end
         end
 

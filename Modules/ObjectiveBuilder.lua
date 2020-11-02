@@ -758,7 +758,7 @@ function addon:Initialize_ObjectiveBuilder()
     --Debug-----------------------------------------------------
     ------------------------------------------------------------
     if FarmingBar.db.global.debug.ObjectiveBuilder then
-        C_Timer.After(1, function()
+        C_Timer.After(2, function()
             ObjectiveBuilder:Load()
 
             -- for key, objective in pairs(addon.ObjectiveBuilder.children) do
