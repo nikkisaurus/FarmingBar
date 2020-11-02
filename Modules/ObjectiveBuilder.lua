@@ -541,8 +541,7 @@ function addon:Initialize_ObjectiveBuilder()
     importObjective:SetText(L["Import Objective"])
     importObjective:SetIcon([[INTERFACE\ADDONS\FARMINGBAR\MEDIA\IMPORT]], nil, 13, 13)
     importObjective:SetTextHighlight(1, .82, 0, 1)
-    importObjective:SetIconHighlightColor(1, .82, 0, 1)
-    -- importObjective:SetImage(131906, 1, 0, 0, 1)
+    importObjective:SetIconColor(1, .82, 0, 1)
     importObjective:SetDisabled(true)
     topPanel:AddChild(importObjective)
 
@@ -567,12 +566,15 @@ function addon:Initialize_ObjectiveBuilder()
     sidebar:SetLayout("FB30_PaddedList")
     sidebar:SetUserData("childPadding", 10)
     sidebar:SetFullHeight(true)
-
     ObjectiveBuilder:AddChild(sidebar)
+
+    ------------------------------------------------------------
 
     local searchBox = AceGUI:Create("FarmingBar_SearchBox")
     searchBox:SetFullWidth(true)
     sidebar:AddChild(searchBox)
+
+    ------------------------------------------------------------
 
     local objectiveListContainer = AceGUI:Create("FarmingBar_InlineGroup")
     objectiveListContainer:SetLayout("Fill")
@@ -580,17 +582,13 @@ function addon:Initialize_ObjectiveBuilder()
     objectiveListContainer:SetFullHeight(true)
     sidebar:AddChild(objectiveListContainer)
 
+    ------------------------------------------------------------
+
     local objectiveList = AceGUI:Create("ScrollFrame")
     objectiveList:SetLayout("FB30_PaddedList")
     objectiveList:SetUserData("childPadding", 5)
     objectiveList:SetFullWidth(true)
     objectiveListContainer:AddChild(objectiveList)
-
-    for i = 1, 100 do
-        local label = AceGUI:Create("Label")
-        label:SetText("Label "..i)
-        objectiveList:AddChild(label)
-    end
 
     -- ------------------------------------------------------------
 

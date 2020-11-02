@@ -15,6 +15,13 @@ local Version = 1
 
 --*------------------------------------------------------------------------
 
+local function frame_OnClick(self, button)
+	self.obj:Fire("OnClick", button)
+	AceGUI:ClearFocus()
+end
+
+------------------------------------------------------------
+
 local function frame_OnEnter(self)
     local widget = self.obj
     local highlightColor = widget:GetUserData("highlightColor")
@@ -271,6 +278,7 @@ local methods = {
 
 local function Constructor()
     local frame = CreateFrame("Button", nil, UIParent)
+    frame:SetScript("OnClick", frame_OnClick)
     frame:SetScript("OnEnter", frame_OnEnter)
     frame:SetScript("OnLeave", frame_OnLeave)
 
