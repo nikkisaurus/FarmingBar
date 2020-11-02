@@ -103,6 +103,7 @@ AceGUI:RegisterLayout("FB30_Table", function(content, children)
     for row, rowInfo in pairs(tableInfo) do
         local colsFilled = 0
         local rowHeight = rowInfo.vOffset or 0
+        local usedWidth = 0
 
         local fillToRow = {}
 
@@ -132,35 +133,38 @@ AceGUI:RegisterLayout("FB30_Table", function(content, children)
                 frame:SetPoint("TOPLEFT")
                 frame:SetPoint("BOTTOM", content, "TOP", 0, -frameHeight)
                 colsFilled = colsFilled + 1
+                -- usedWidth = usedWidth + frameWidth
             elseif colsFilled == 0 then
                 -- new row
                 frame:SetPoint("TOPLEFT", 0, -(height + rowHeight + vOffset))
                 frame:SetPoint("BOTTOM", content, "TOP", 0, -(frameHeight + height))
                 colsFilled = colsFilled + 1
+                -- usedWidth = usedWidth + frameWidth
             elseif colsFilled <= #rowInfo.cols then
                 -- same row
                 frame:SetPoint("TOPLEFT", children[i - 1].frame, "TOPRIGHT", hpadding, -vOffset)
                 frame:SetPoint("BOTTOM", content, "TOP", 0, -(frameHeight + height))
                 colsFilled = colsFilled + 1
-            end
-
-            ------------------------------------------------------------
-
-            if frameWidth == "fill" then
-                safelayoutcall(child, "SetWidth", contentWidth)
-                frame:SetPoint("RIGHT")
-            elseif frameWidth == "relative" then
-				child.relWidth = child.relWidth or colInfo.relWidth or 0
-				safelayoutcall(child, "SetWidth", (contentWidth - (hpadding * (#rowInfo.cols - 1))) * child.relWidth)
-            else
-				safelayoutcall(child, "SetWidth", frameWidth)
+                -- usedWidth = usedWidth + frameWidth
             end
 
             if child.DoLayout then
                 child:DoLayout()
             end
 
-            frameWidth = frame:GetWidth()
+            ------------------------------------------------------------
+
+            if frameWidth == "fill" then
+                child.width = contentWidth
+            elseif frameWidth == "relative" then
+                child.relWidth = child.relWidth or colInfo.relWidth or 0
+                child.width = contentWidth * child.relWidth
+            else
+                child.width = width
+            end
+
+            frame:SetPoint("RIGHT", content, "LEFT", child.width + usedWidth, 0)
+            usedWidth = usedWidth + frame:GetWidth()
 
             ------------------------------------------------------------
 
