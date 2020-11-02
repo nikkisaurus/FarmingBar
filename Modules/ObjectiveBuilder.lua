@@ -39,7 +39,7 @@ ObjectiveBuilder_TableInfo = {
     {
         cols = {
             {width = "relative", relWidth = 1/3},
-            {width = 5, hpadding = -5},
+            -- {width = 5, hpadding = -5},
             {width = "relative", relWidth = 2/3, hpadding = -5},
         },
         hpadding = 5,
@@ -517,6 +517,7 @@ function addon:Initialize_ObjectiveBuilder()
 
     local topPanel = AceGUI:Create("FarmingBar_InlineGroup")
     topPanel:SetLayout("Flow")
+    topPanel:SetFullWidth(true)
     ObjectiveBuilder:AddChild(topPanel)
 
     local label = AceGUI:Create("Label")
@@ -556,18 +557,6 @@ function addon:Initialize_ObjectiveBuilder()
 
     -- ------------------------------------------------------------
 
-    local sidebarSizer = AceGUI:Create("FarmingBar_Sizer")
-    sidebarSizer:SetFullHeight(true)
-    sidebarSizer:SetWidth(5)
-    sidebarSizer:SetWidget(sidebar)
-    ObjectiveBuilder:AddChild(sidebarSizer)
-
-    sidebarSizer:SetCallback("OnMouseDown", function(self, event, ...)
-        print("COW")
-    end)
-
-    -- ------------------------------------------------------------
-
     local mainPanel = AceGUI:Create("FarmingBar_InlineGroup")
     mainPanel:SetLayout("Flow")
     ObjectiveBuilder:AddChild(mainPanel)
@@ -576,79 +565,6 @@ function addon:Initialize_ObjectiveBuilder()
     label:SetFullWidth(true)
     label:SetText("Test main")
     mainPanel:AddChild(label)
-
-
-    --*------------------------------------------------------------------------
-
-
-    ------------------------------------------------------------
-
-    -- for i = 1, 50 do
-    --     local topPanel = AceGUI:Create("FarmingBar_InlineGroup")
-    --     topPanel:SetLayout("Flow")
-    --     scroll:AddChild(topPanel)
-    --     if i == 1 then
-    --         topPanel:SetFullWidth(true)
-    --         topPanel:SetUserData("cell", {
-    --             colspan = 2
-    --         })
-    --     end
-
-    --     if i ~= 3 then
-    --         local label = AceGUI:Create("Label")
-    --         label:SetFullWidth(true)
-    --         label:SetText("Test"..i)
-    --         topPanel:AddChild(label)
-    --         local label = AceGUI:Create("Label")
-    --         label:SetFullWidth(true)
-    --         label:SetText("Test"..i)
-    --         topPanel:AddChild(label)
-    --         local label = AceGUI:Create("Label")
-    --         label:SetFullWidth(true)
-    --         label:SetText("Test"..i)
-    --         topPanel:AddChild(label)
-    --         local label = AceGUI:Create("Label")
-    --         label:SetFullWidth(true)
-    --         label:SetText("Test"..i)
-    --         topPanel:AddChild(label)
-    --     end
-    -- end
-
-    ------------------------------------------------------------
-
-    -- local sidebar = AceGUI:Create("FarmingBar_Sidebar")
-    -- sidebar:SetLayout("FB30_PaddedList")
-    -- sidebar:SetUserData("childPadding", 10)
-    -- sidebar:SetFullWidth(true)
-    -- sidebar:SetFullHeight(true)
-    -- ObjectiveBuilder:AddChild(sidebar)
-
-    -- ------------------------------------------------------------
-
-    -- local objectiveListContainer = AceGUI:Create("SimpleGroup")
-    -- objectiveListContainer:SetLayout("Fill")
-    -- objectiveListContainer:SetFullWidth(true)
-    -- objectiveListContainer:SetFullHeight(true)
-    -- mainContainer:AddChild(objectiveListContainer)
-
-    -- ------------------------------------------------------------
-
-    -- local objectiveList = AceGUI:Create("ScrollFrame")
-    -- objectiveList:SetLayout("List")
-    -- objectiveList:SetFullWidth(true)
-    -- objectiveListContainer:AddChild(objectiveList)
-
-    -- for i = 1, 100 do
-    --     local label = AceGUI:Create("Label")
-    --     label:SetText("Label "..i)
-    --     objectiveList:AddChild(label)
-    -- end
-
-    -- ------------------------------------------------------------
-
-    -- local mainPanel = AceGUI:Create("InlineGroup")
-    -- mainPanel:SetFullWidth(true)
-    -- ObjectiveBuilder:AddChild(mainPanel)
 
     --*------------------------------------------------------------------------
 
@@ -758,7 +674,7 @@ function addon:Initialize_ObjectiveBuilder()
     --Debug-----------------------------------------------------
     ------------------------------------------------------------
     if FarmingBar.db.global.debug.ObjectiveBuilder then
-        C_Timer.After(2, function()
+        C_Timer.After(1, function()
             ObjectiveBuilder:Load()
 
             -- for key, objective in pairs(addon.ObjectiveBuilder.children) do

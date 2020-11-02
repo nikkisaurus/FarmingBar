@@ -8,101 +8,14 @@ local pairs, wipe = pairs, table.wipe
 
 --*------------------------------------------------------------------------
 
-AceGUI:RegisterLayout("FB30_2Column", function(content, children)
-    local widget = content.obj or content.widget
-    local columnRatio = widget:GetUserData("columnRatio")
-    local padding = widget.type == "FarmingBar_SimpleGroup" and 0 or 5
-    if not columnRatio then return end
-
-    for i = 1, 2 do
-        local child = children[i]
-        if child then
-            local frame = child.frame
-            print(child.relWidth)
-
-            if i == 1 then
-                frame:SetPoint("TOPLEFT", padding, 0)
-            elseif i == 2 then
-                frame:SetPoint("TOPRIGHT", -padding, 0)
-                frame:SetPoint("LEFT", children[1].frame:GetWidth(), 0)
-            end
-
-            local relWidth = columnRatio[i] / (columnRatio[1] + columnRatio[2])
-            child:SetWidth(content:GetWidth() * relWidth)
-
-            if child.height == "fill" then
-                child:SetPoint("BOTTOM")
-            end
-
-            if child.DoLayout then
-                child:DoLayout()
-            end
-        end
-    end
-
-    if content.obj.LayoutFinished then
-        content.obj:LayoutFinished()
-    end
-end)
-
---*------------------------------------------------------------------------
-
-AceGUI:RegisterLayout("FB30_2RowFill", function(content, children)
-    for i = 1, 2 do
-        local child = children[i]
-        if child then
-            local frame = child.frame
-            frame:SetWidth(content:GetWidth())
-
-            if i == 1 then
-                frame:SetPoint("TOPLEFT")
-            elseif i == 2 then
-                frame:SetPoint("TOPLEFT", children[1].frame, "BOTTOMLEFT", 0, 0)
-                frame:SetPoint("BOTTOMRIGHT")
-            end
-
-            if child.DoLayout then
-                child:DoLayout()
-            end
-        end
-    end
-
-    if content.obj.LayoutFinished then
-        content.obj:LayoutFinished(nil, nil)
-    end
-end)
-
---*------------------------------------------------------------------------
-
-AceGUI:RegisterLayout("FB30_2RowSplitBottom", function(content, children)
-    for i = 1, 3 do
-        local child = children[i]
-        if child then
-            local frame = child.frame
-
-            if i == 1 then
-                frame:SetWidth(content:GetWidth())
-                frame:SetPoint("TOPLEFT", 5, 0)
-            elseif i == 2 then
-                frame:SetWidth(content:GetWidth() / 4)
-                frame:SetPoint("TOPLEFT", children[1].frame, "BOTTOMLEFT", 0, 0)
-                frame:SetPoint("BOTTOM")
-            elseif i == 3 then
-                frame:SetWidth((content:GetWidth() / 4) * 3)
-                frame:SetPoint("TOPLEFT", children[2].frame, "TOPRIGHT", 10, 0)
-                frame:SetPoint("BOTTOMRIGHT", -5, 0)
-            end
-
-            if child.DoLayout then
-                child:DoLayout()
-            end
-        end
-    end
-
-    if content.obj.LayoutFinished then
-        content.obj:LayoutFinished(nil, nil)
-    end
-end)
+-- from AceGUI-3.0.lua
+-- Used to set width/height without calling the layout function (e.g. when we're calling during the layout function)
+local layoutrecursionblock = nil
+local function safelayoutcall(object, func, ...)
+	layoutrecursionblock = true
+	object[func](object, ...)
+	layoutrecursionblock = nil
+end
 
 --*------------------------------------------------------------------------
 
@@ -138,17 +51,6 @@ end)
 
 --*------------------------------------------------------------------------
 
--- from AceGUI-3.0.lua
--- Used to set width/height without calling the layout function (e.g. when we're calling during the layout function)
-local layoutrecursionblock = nil
-local function safelayoutcall(object, func, ...)
-	layoutrecursionblock = true
-	object[func](object, ...)
-	layoutrecursionblock = nil
-end
-
-------------------------------------------------------------
-
 -- scroll:SetLayout("FB30_Table")
 -- scroll:SetUserData("table", {
 --     {
@@ -183,6 +85,8 @@ end
 -- any children unaccounted for within the table userdata will not be displayed (in the example above, 5 children are shown: 1, 3, 1)
 -- haven't decided whether or not I want everything to fit without overflowing or let that be a user problem to set up correctly; for now I'm not implementing this
 
+-- add setting: constrainOverflow
+
 local fillToRow = {}
 
 AceGUI:RegisterLayout("FB30_Table", function(content, children)
@@ -204,7 +108,7 @@ AceGUI:RegisterLayout("FB30_Table", function(content, children)
             if not child then break end
 
             local frame = child.frame
-            local frameWidth = colInfo.width or frame.width or frame:GetWidth() or 0
+            local frameWidth = child:GetUserData("userWidth") or colInfo.width or frame.width or frame:GetWidth() or 0
             local frameHeight = colInfo.height or rowInfo.rowHeight or frame.height or frame:GetHeight() or 0
 
             if not tonumber(frameHeight) then -- rowInfo.rowHeight == "stretch" or colInfo.height == "row"
