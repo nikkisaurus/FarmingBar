@@ -546,10 +546,11 @@ function addon:Initialize_ObjectiveBuilder()
     importObjective:SetDisabled(true)
     topPanel:AddChild(importObjective)
 
-    -- importObjectiveButton:SetCallback("OnClick", function() ????? end) -- TODO: implement import/export
+    -- importObjectiveButton:SetCallback("OnClick", importObjective_OnClick) -- TODO: implement import/export
 
     ------------------------------------------------------------
 
+    -- TODO: Custom checkbox
     local filterAutoItems = AceGUI:Create("CheckBox")
     filterAutoItems:SetLabel(L["Filter Auto Items"])
     filterAutoItems:SetValue(FarmingBar.db.global.settings.misc.filterOBAutoItems)
@@ -564,9 +565,9 @@ function addon:Initialize_ObjectiveBuilder()
     -- ------------------------------------------------------------
 
     local sidebar = AceGUI:Create("FarmingBar_InlineGroup")
+    sidebar:SetFullHeight(true)
     sidebar:SetLayout("FB30_PaddedList")
     sidebar:SetUserData("childPadding", 10)
-    sidebar:SetFullHeight(true)
     ObjectiveBuilder:AddChild(sidebar)
 
     ------------------------------------------------------------
@@ -578,9 +579,9 @@ function addon:Initialize_ObjectiveBuilder()
     ------------------------------------------------------------
 
     local objectiveListContainer = AceGUI:Create("FarmingBar_InlineGroup")
-    objectiveListContainer:SetLayout("Fill")
     objectiveListContainer:SetFullWidth(true)
     objectiveListContainer:SetFullHeight(true)
+    objectiveListContainer:SetLayout("Fill")
     sidebar:AddChild(objectiveListContainer)
 
     ------------------------------------------------------------
@@ -588,19 +589,26 @@ function addon:Initialize_ObjectiveBuilder()
     local objectiveList = AceGUI:Create("ScrollFrame")
     objectiveList:SetLayout("FB30_PaddedList")
     objectiveList:SetUserData("childPadding", 5)
-    objectiveList:SetFullWidth(true)
     objectiveListContainer:AddChild(objectiveList)
 
     -- ------------------------------------------------------------
 
     local mainPanel = AceGUI:Create("FarmingBar_InlineGroup")
-    mainPanel:SetLayout("Flow")
+    mainPanel:SetLayout("Fill")
     ObjectiveBuilder:AddChild(mainPanel)
 
-    local label = AceGUI:Create("Label")
-    label:SetFullWidth(true)
-    label:SetText("Test main")
-    mainPanel:AddChild(label)
+    ------------------------------------------------------------
+
+    local mainContent = AceGUI:Create("ScrollFrame")
+    mainContent:SetLayout("Flow")
+    mainPanel:AddChild(mainContent)
+
+    for i = 1, 100 do
+        local label = AceGUI:Create("Label")
+        label:SetFullWidth(true)
+        label:SetText("Test main "..i)
+        mainContent:AddChild(label)
+    end
 
     --*------------------------------------------------------------------------
 
@@ -701,7 +709,6 @@ function addon:Initialize_ObjectiveBuilder()
     -- ObjectiveBuilder.mainPanel = mainPanel
 
     ------------------------------------------------------------
-
 
     self.MenuFrame = self.MenuFrame or CreateFrame("Frame", "FarmingBarMenuFrame", UIParent, "UIDropDownMenuTemplate")
     self:Initialize_DragFrame()
