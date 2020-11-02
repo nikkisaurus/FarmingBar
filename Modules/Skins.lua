@@ -6,6 +6,22 @@ local unpack = unpack
 
 --*------------------------------------------------------------------------
 
+local panelBackdrop = {
+    bgFile = 130871,
+    tile = true,
+    tileSize = 16,
+    edgeFile = 137057,
+    edgeSize = 16,
+    insets = {
+        left = 3,
+        right = 3,
+        top = 3,
+        bottom = 3,
+    }
+}
+
+------------------------------------------------------------
+
 addon.skins = {
     FarmingBar_Default = {
         bar = {
@@ -180,6 +196,14 @@ addon.skins = {
 }
 
 --*------------------------------------------------------------------------
+
+function addon:SetPanelBackdrop(panel)
+    panel:SetBackdrop(panelBackdrop)
+	panel:SetBackdropColor(0.1, 0.1, 0.1, 0.5)
+    panel:SetBackdropBorderColor(0.4, 0.4, 0.4)
+end
+
+------------------------------------------------------------
 
 function addon:StripBarTextures(bar)
     local frame = bar.anchor

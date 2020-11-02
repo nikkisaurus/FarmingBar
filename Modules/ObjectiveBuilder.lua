@@ -10,6 +10,58 @@ local ObjectiveBuilder = addon.ObjectiveBuilder
 
 --*------------------------------------------------------------------------
 
+local displayRefTrackerTypeList =  {
+    ITEM = L["Item"],
+    CURRENCY = L["Currency"],
+    MACROTEXT = L["Macrotext"],
+    NONE = L["None"],
+}
+
+------------------------------------------------------------
+
+local displayRefTrackerTypeListSort = {"ITEM", "CURRENCY", "MACROTEXT", "NONE"}
+
+------------------------------------------------------------
+
+local mainTabGroupTabs = {
+    {text = L["Objective"], value = "objectiveTab"},
+    {text = L["Trackers"], value = "trackersTab"}
+}
+
+------------------------------------------------------------
+
+ObjectiveBuilder_TableInfo = {
+    {
+        cols = {
+            {width = "fill"},
+        },
+    },
+    {
+        cols = {
+            {width = "relative", relWidth = 1/3},
+            {width = 5, hpadding = -5},
+            {width = "relative", relWidth = 2/3, hpadding = -5},
+        },
+        hpadding = 5,
+        vOffset = 10,
+        rowHeight = "fill",
+    },
+}
+
+------------------------------------------------------------
+
+local trackerConditionList = {
+    ANY = L["Any"],
+    ALL = L["All"],
+    CUSTOM = L["Custom"],
+}
+
+------------------------------------------------------------
+
+local trackerConditionListSort = {"ANY", "ALL", "CUSTOM"}
+
+--*------------------------------------------------------------------------
+
 local function autoIcon_OnValueChanged(self)
     addon:SetObjectiveDBInfo("autoIcon", self:GetValue())
 end
@@ -82,7 +134,7 @@ end
 
 ------------------------------------------------------------
 
-local function displayRefTrackerType_OnValueChanged(self, selected)
+local function displayRefTrackerType_OnValueChanged(self, _, selected)
     addon:SetObjectiveDBInfo("displayRef.trackerType", selected ~= "NONE" and selected or false)
     -- addon:SetObjectiveDBInfo("displayRef.trackerID", false)
     --! have to add checks if we do this ^
@@ -159,24 +211,26 @@ end
 
 ------------------------------------------------------------
 
-local function mainTabGroup_OnGroupSelected(self, selected)
+local function mainTabGroup_OnGroupSelected(self, _, selected)
     local objectiveTitle = addon:GetSelectedObjectiveInfo()
-
     if objectiveTitle then
         ObjectiveBuilder:GetUserData("selectedTabs")[objectiveTitle] = selected
     end
 
+    ------------------------------------------------------------
+
     self:ReleaseChildren()
 
+    local mainTabContent = AceGUI:Create("ScrollFrame")
+    mainTabContent:SetLayout("Flow")
+    self:AddChild(mainTabContent)
+
+    ------------------------------------------------------------
+
     if selected == "objectiveTab" then
-        self:SetLayout("Fill")
-        addon:ObjectiveBuilder_LoadObjectiveTab(objectiveTitle)
-    elseif selected == "conditionTab" then
-        self:SetLayout("Fill")
-        addon:ObjectiveBuilder_LoadConditionTab(objectiveTitle)
+        addon:ObjectiveBuilder_LoadObjectiveTab(mainTabContent)
     elseif selected == "trackersTab" then
-        self:SetLayout("FB30_2RowSplitBottom")
-        addon:ObjectiveBuilder_LoadTrackersTab(objectiveTitle)
+        addon:ObjectiveBuilder_LoadTrackersTab(mainTabContent)
     end
 end
 
@@ -189,7 +243,7 @@ end
 
 ------------------------------------------------------------
 
-local function trackerCondition_OnValueChanged(selected)
+local function trackerCondition_OnValueChanged(_, _, selected)
     addon:SetObjectiveDBInfo("trackerCondition", selected)
 end
 
@@ -322,7 +376,7 @@ local methods = {
 
     Load = function(self, objectiveTitle)
         self:Show()
-        self:LoadObjectives(objectiveTitle)
+        -- self:LoadObjectives(objectiveTitle)
     end,
 
     ------------------------------------------------------------
@@ -379,39 +433,39 @@ local methods = {
         if selectedObjectiveTitle then
             self:GetObjectiveButton(selectedObjectiveTitle).frame:Click()
         else
-            self.mainPanel:ReleaseChildren()
+            -- self.mainPanel:ReleaseChildren()
         end
     end,
 
     ------------------------------------------------------------
 
     LoadTrackers = function(self)
-        local _, objectiveInfo = addon:GetSelectedObjectiveInfo()
-        local trackerList = addon.ObjectiveBuilder.trackerList
+        -- local _, objectiveInfo = addon:GetSelectedObjectiveInfo()
+        -- local trackerList = addon.ObjectiveBuilder.trackerList
 
-        trackerList:ReleaseChildren()
-        wipe(trackerList.status.selected)
-        wipe(trackerList.status.children)
+        -- trackerList:ReleaseChildren()
+        -- wipe(trackerList.status.selected)
+        -- wipe(trackerList.status.children)
 
-        ------------------------------------------------------------
+        -- ------------------------------------------------------------
 
-        for tracker, trackerInfo in pairs(objectiveInfo.trackers) do
-            local button = AceGUI:Create("FarmingBar_TrackerButton")
-            button:SetFullWidth(true)
-            addon:GetTrackerDataTable(trackerInfo.trackerType, trackerInfo.trackerID, function(data)
-                button:SetText(data.name)
-                button:SetIcon(data.icon)
-                tinsert(trackerList.status.children, {trackerTitle = data.name, button = button})
-            end)
-            button:SetStatus(trackerList.status)
-            button:SetMenuFunc(GetTrackerContextMenu)
-            button:SetTooltip(addon.GetTrackerButtonTooltip)
-            trackerList:AddChild(button)
+        -- for tracker, trackerInfo in pairs(objectiveInfo.trackers) do
+        --     local button = AceGUI:Create("FarmingBar_TrackerButton")
+        --     button:SetFullWidth(true)
+        --     addon:GetTrackerDataTable(trackerInfo.trackerType, trackerInfo.trackerID, function(data)
+        --         button:SetText(data.name)
+        --         button:SetIcon(data.icon)
+        --         tinsert(trackerList.status.children, {trackerTitle = data.name, button = button})
+        --     end)
+        --     button:SetStatus(trackerList.status)
+        --     button:SetMenuFunc(GetTrackerContextMenu)
+        --     button:SetTooltip(addon.GetTrackerButtonTooltip)
+        --     trackerList:AddChild(button)
 
-            ------------------------------------------------------------
+        --     ------------------------------------------------------------
 
-            button:SetCallback("OnClick", function(self, event, ...) TrackerButton_OnClick(tracker) end)
-        end
+        --     button:SetCallback("OnClick", function(self, event, ...) TrackerButton_OnClick(tracker) end)
+        -- end
     end,
 
     ------------------------------------------------------------
@@ -419,14 +473,18 @@ local methods = {
     SelectObjective = function(self, objectiveTitle)
         self:SetUserData("selectedObjective", objectiveTitle)
 
-        local mainPanel = self.mainPanel.frame
-        if objectiveTitle then
-            mainPanel:Show()
-        else
-            mainPanel:Hide()
-        end
+        local mainPanel = self.mainPanel
+        mainPanel:ReleaseChildren()
 
-        self.mainContent:SelectTab(self:GetSelectedTab(objectiveTitle) or "objectiveTab")
+        if objectiveTitle then
+            local mainTabGroup = AceGUI:Create("TabGroup")
+            mainTabGroup:SetLayout("Fill")
+            mainTabGroup:SetTabs(mainTabGroupTabs)
+            mainPanel:AddChild(mainTabGroup)
+
+            mainTabGroup:SetCallback("OnGroupSelected", mainTabGroup_OnGroupSelected)
+            mainTabGroup:SelectTab(self:GetSelectedTab(objectiveTitle) or "objectiveTab")
+        end
     end,
 
     ------------------------------------------------------------
@@ -445,13 +503,11 @@ local methods = {
 ------------------------------------------------------------
 
 function addon:Initialize_ObjectiveBuilder()
-    ObjectiveBuilder = AceGUI:Create("FB30_Window")
+    ObjectiveBuilder = AceGUI:Create("FarmingBar_Frame")
     ObjectiveBuilder:SetTitle("Farming Bar "..L["Objective Builder"])
-    ObjectiveBuilder:SetSize(700, 500)
-    ObjectiveBuilder:SetLayout("FB30_2RowSplitBottom")
-    ObjectiveBuilder:SetUserData("selectedTabs", {})
-    ObjectiveBuilder:Hide()
-    self.ObjectiveBuilder = ObjectiveBuilder
+    ObjectiveBuilder:SetLayout("FB30_Table")
+    ObjectiveBuilder:SetUserData("table", ObjectiveBuilder_TableInfo)
+    addon.ObjectiveBuilder = ObjectiveBuilder
 
     for method, func in pairs(methods) do
         ObjectiveBuilder[method] = func
@@ -459,89 +515,240 @@ function addon:Initialize_ObjectiveBuilder()
 
     ------------------------------------------------------------
 
-    self.MenuFrame = self.MenuFrame or CreateFrame("Frame", "FarmingBarMenuFrame", UIParent, "UIDropDownMenuTemplate")
+    local topPanel = AceGUI:Create("FarmingBar_InlineGroup")
+    topPanel:SetLayout("Flow")
+    ObjectiveBuilder:AddChild(topPanel)
 
-    ------------------------------------------------------------
+    local label = AceGUI:Create("Label")
+    label:SetFullWidth(true)
+    label:SetText("Test top")
+    topPanel:AddChild(label)
 
-    local topContent = AceGUI:Create("SimpleGroup")
-    topContent:SetFullWidth(true)
-    topContent:SetLayout("Flow")
-    ObjectiveBuilder:AddChild(topContent)
+    -- ------------------------------------------------------------
 
-    ------------------------------------------------------------
+    local sidebar = AceGUI:Create("FarmingBar_InlineGroup")
+    sidebar:SetLayout("FB30_PaddedList")
+    sidebar:SetUserData("childPadding", 10)
+    sidebar:SetFullHeight(true)
 
-    local newObjectiveButton = AceGUI:Create("FB30_InteractiveLabel")
-    newObjectiveButton:SetText(L["New Objective"])
-    newObjectiveButton:SetWidth(newObjectiveButton.label:GetStringWidth() + newObjectiveButton.image:GetWidth())
-    newObjectiveButton:SetImageSize(newObjectiveButton.label:GetHeight(), newObjectiveButton.label:GetHeight())
-    newObjectiveButton:SetImage(514607)
-    topContent:AddChild(newObjectiveButton)
+    ObjectiveBuilder:AddChild(sidebar)
 
-    newObjectiveButton:SetCallback("OnClick", function() addon:CreateObjective() end)
-    newObjectiveButton:SetCallback("OnReceiveDrag", function() addon:CreateObjectiveFromCursor() end)
+    local searchBox = AceGUI:Create("FarmingBar_SearchBox")
+    searchBox:SetFullWidth(true)
+    sidebar:AddChild(searchBox)
 
-    if FarmingBar.db.global.hints.ObjectiveBuilder then
-        newObjectiveButton:SetTooltip(addon.GetNewObjectiveButtonTooltip)
-    end
-
-    ------------------------------------------------------------
-
-    local importObjectiveButton = AceGUI:Create("FB30_InteractiveLabel")
-    importObjectiveButton:SetText(L["Import Objective"])
-    importObjectiveButton:SetWidth(importObjectiveButton.label:GetStringWidth() + importObjectiveButton.image:GetWidth())
-    importObjectiveButton:SetImageSize(importObjectiveButton.label:GetHeight(), importObjectiveButton.label:GetHeight())
-    importObjectiveButton:SetImage(131906, 1, 0, 0, 1)
-    importObjectiveButton:SetDisabled(true)
-    topContent:AddChild(importObjectiveButton)
-
-    -- importObjectiveButton:SetCallback("OnClick", function() ????? end) -- TODO: implement import/export
-
-    ------------------------------------------------------------
-
-    local filterAutoItems = AceGUI:Create("CheckBox")
-    filterAutoItems:SetLabel(L["Filter Auto Items"])
-    filterAutoItems:SetValue(FarmingBar.db.global.settings.misc.filterOBAutoItems)
-    filterAutoItems:SetWidth(filterAutoItems.text:GetStringWidth() + filterAutoItems.checkbg:GetWidth())
-    topContent:AddChild(filterAutoItems)
-    ObjectiveBuilder.filterAutoItems = filterAutoItems
-
-    filterAutoItems:SetCallback("OnEnter", filterAutoItems_OnEnter)
-    filterAutoItems:SetCallback("OnLeave", filterAutoItems_OnLeave)
-    filterAutoItems:SetCallback("OnValueChanged", filterAutoItems_OnValueChanged)
-
-    ------------------------------------------------------------
-
-    local sidePanel = AceGUI:Create("SimpleGroup")
-    sidePanel:SetRelativeWidth(1/4)
-    sidePanel:SetFullHeight(true)
-    sidePanel:SetLayout("FB30_2RowFill")
-    ObjectiveBuilder:AddChild(sidePanel)
-
-    ------------------------------------------------------------
-
-    local objectiveSearchBox = AceGUI:Create("FB30_SearchEditBox")
-    objectiveSearchBox:SetFullWidth(true)
-    sidePanel:AddChild(objectiveSearchBox)
-    ObjectiveBuilder.objectiveSearchBox = objectiveSearchBox
-
-    objectiveSearchBox:SetCallback("OnTextChanged", function(self) ObjectiveBuilder:LoadObjectives() end)
-
-    ------------------------------------------------------------
+    local objectiveListContainer = AceGUI:Create("FarmingBar_InlineGroup")
+    objectiveListContainer:SetLayout("Fill")
+    objectiveListContainer:SetFullWidth(true)
+    objectiveListContainer:SetFullHeight(true)
+    sidebar:AddChild(objectiveListContainer)
 
     local objectiveList = AceGUI:Create("ScrollFrame")
     objectiveList:SetLayout("List")
-    sidePanel:AddChild(objectiveList)
-    objectiveList:SetUserData("renaming", {})
-    ObjectiveBuilder.objectiveList = objectiveList
+    objectiveList:SetFullWidth(true)
+    objectiveListContainer:AddChild(objectiveList)
+
+    for i = 1, 100 do
+        local label = AceGUI:Create("Label")
+        label:SetText("Label "..i)
+        objectiveList:AddChild(label)
+    end
+
+    -- ------------------------------------------------------------
+
+    local sidebarSizer = AceGUI:Create("FarmingBar_Sizer")
+    sidebarSizer:SetFullHeight(true)
+    sidebarSizer:SetWidth(5)
+    sidebarSizer:SetWidget(sidebar)
+    ObjectiveBuilder:AddChild(sidebarSizer)
+
+    sidebarSizer:SetCallback("OnMouseDown", function(self, event, ...)
+        print("COW")
+    end)
+
+    -- ------------------------------------------------------------
+
+    local mainPanel = AceGUI:Create("FarmingBar_InlineGroup")
+    mainPanel:SetLayout("Flow")
+    ObjectiveBuilder:AddChild(mainPanel)
+
+    local label = AceGUI:Create("Label")
+    label:SetFullWidth(true)
+    label:SetText("Test main")
+    mainPanel:AddChild(label)
+
+
+    --*------------------------------------------------------------------------
+
 
     ------------------------------------------------------------
 
-    local mainPanel = AceGUI:Create("SimpleGroup")
-    mainPanel:SetRelativeWidth(3/4)
-    mainPanel:SetFullHeight(true)
-    mainPanel:SetLayout("Fill")
-    ObjectiveBuilder:AddChild(mainPanel)
-    ObjectiveBuilder.mainPanel = mainPanel
+    -- for i = 1, 50 do
+    --     local topPanel = AceGUI:Create("FarmingBar_InlineGroup")
+    --     topPanel:SetLayout("Flow")
+    --     scroll:AddChild(topPanel)
+    --     if i == 1 then
+    --         topPanel:SetFullWidth(true)
+    --         topPanel:SetUserData("cell", {
+    --             colspan = 2
+    --         })
+    --     end
+
+    --     if i ~= 3 then
+    --         local label = AceGUI:Create("Label")
+    --         label:SetFullWidth(true)
+    --         label:SetText("Test"..i)
+    --         topPanel:AddChild(label)
+    --         local label = AceGUI:Create("Label")
+    --         label:SetFullWidth(true)
+    --         label:SetText("Test"..i)
+    --         topPanel:AddChild(label)
+    --         local label = AceGUI:Create("Label")
+    --         label:SetFullWidth(true)
+    --         label:SetText("Test"..i)
+    --         topPanel:AddChild(label)
+    --         local label = AceGUI:Create("Label")
+    --         label:SetFullWidth(true)
+    --         label:SetText("Test"..i)
+    --         topPanel:AddChild(label)
+    --     end
+    -- end
+
+    ------------------------------------------------------------
+
+    -- local sidebar = AceGUI:Create("FarmingBar_Sidebar")
+    -- sidebar:SetLayout("FB30_PaddedList")
+    -- sidebar:SetUserData("childPadding", 10)
+    -- sidebar:SetFullWidth(true)
+    -- sidebar:SetFullHeight(true)
+    -- ObjectiveBuilder:AddChild(sidebar)
+
+    -- ------------------------------------------------------------
+
+    -- local objectiveListContainer = AceGUI:Create("SimpleGroup")
+    -- objectiveListContainer:SetLayout("Fill")
+    -- objectiveListContainer:SetFullWidth(true)
+    -- objectiveListContainer:SetFullHeight(true)
+    -- mainContainer:AddChild(objectiveListContainer)
+
+    -- ------------------------------------------------------------
+
+    -- local objectiveList = AceGUI:Create("ScrollFrame")
+    -- objectiveList:SetLayout("List")
+    -- objectiveList:SetFullWidth(true)
+    -- objectiveListContainer:AddChild(objectiveList)
+
+    -- for i = 1, 100 do
+    --     local label = AceGUI:Create("Label")
+    --     label:SetText("Label "..i)
+    --     objectiveList:AddChild(label)
+    -- end
+
+    -- ------------------------------------------------------------
+
+    -- local mainPanel = AceGUI:Create("InlineGroup")
+    -- mainPanel:SetFullWidth(true)
+    -- ObjectiveBuilder:AddChild(mainPanel)
+
+    --*------------------------------------------------------------------------
+
+    -- ObjectiveBuilder = AceGUI:Create("FB30_Window")
+    -- ObjectiveBuilder:SetTitle("Farming Bar "..L["Objective Builder"])
+    -- ObjectiveBuilder:SetSize(700, 500)
+    -- ObjectiveBuilder:SetLayout("FB30_2RowSplitBottom")
+    -- ObjectiveBuilder:SetUserData("selectedTabs", {})
+    -- ObjectiveBuilder:Hide()
+    -- self.ObjectiveBuilder = ObjectiveBuilder
+
+    -- for method, func in pairs(methods) do
+    --     ObjectiveBuilder[method] = func
+    -- end
+
+    -- ------------------------------------------------------------
+
+    -- self.MenuFrame = self.MenuFrame or CreateFrame("Frame", "FarmingBarMenuFrame", UIParent, "UIDropDownMenuTemplate")
+
+    -- ------------------------------------------------------------
+
+    -- local topContent = AceGUI:Create("InlineGroup")
+    -- topContent:SetFullWidth(true)
+    -- topContent:SetLayout("Flow")
+    -- ObjectiveBuilder:AddChild(topContent)
+
+    -- ------------------------------------------------------------
+
+    -- local newObjectiveButton = AceGUI:Create("FB30_InteractiveLabel")
+    -- newObjectiveButton:SetText(L["New Objective"])
+    -- newObjectiveButton:SetWidth(newObjectiveButton.label:GetStringWidth() + newObjectiveButton.image:GetWidth())
+    -- newObjectiveButton:SetImageSize(newObjectiveButton.label:GetHeight(), newObjectiveButton.label:GetHeight())
+    -- newObjectiveButton:SetImage(514607)
+    -- topContent:AddChild(newObjectiveButton)
+
+    -- newObjectiveButton:SetCallback("OnClick", function() addon:CreateObjective() end)
+    -- newObjectiveButton:SetCallback("OnReceiveDrag", function() addon:CreateObjectiveFromCursor() end)
+
+    -- if FarmingBar.db.global.hints.ObjectiveBuilder then
+    --     newObjectiveButton:SetTooltip(addon.GetNewObjectiveButtonTooltip)
+    -- end
+
+    -- ------------------------------------------------------------
+
+    -- local importObjectiveButton = AceGUI:Create("FB30_InteractiveLabel")
+    -- importObjectiveButton:SetText(L["Import Objective"])
+    -- importObjectiveButton:SetWidth(importObjectiveButton.label:GetStringWidth() + importObjectiveButton.image:GetWidth())
+    -- importObjectiveButton:SetImageSize(importObjectiveButton.label:GetHeight(), importObjectiveButton.label:GetHeight())
+    -- importObjectiveButton:SetImage(131906, 1, 0, 0, 1)
+    -- importObjectiveButton:SetDisabled(true)
+    -- topContent:AddChild(importObjectiveButton)
+
+    -- -- importObjectiveButton:SetCallback("OnClick", function() ????? end) -- TODO: implement import/export
+
+    -- ------------------------------------------------------------
+
+    -- local filterAutoItems = AceGUI:Create("CheckBox")
+    -- filterAutoItems:SetLabel(L["Filter Auto Items"])
+    -- filterAutoItems:SetValue(FarmingBar.db.global.settings.misc.filterOBAutoItems)
+    -- filterAutoItems:SetWidth(filterAutoItems.text:GetStringWidth() + filterAutoItems.checkbg:GetWidth())
+    -- topContent:AddChild(filterAutoItems)
+    -- ObjectiveBuilder.filterAutoItems = filterAutoItems
+
+    -- filterAutoItems:SetCallback("OnEnter", filterAutoItems_OnEnter)
+    -- filterAutoItems:SetCallback("OnLeave", filterAutoItems_OnLeave)
+    -- filterAutoItems:SetCallback("OnValueChanged", filterAutoItems_OnValueChanged)
+
+    -- ------------------------------------------------------------
+
+    -- local sidePanel = AceGUI:Create("SimpleGroup")
+    -- sidePanel:SetRelativeWidth(1/4)
+    -- sidePanel:SetFullHeight(true)
+    -- sidePanel:SetLayout("FB30_2RowFill")
+    -- ObjectiveBuilder:AddChild(sidePanel)
+
+    -- ------------------------------------------------------------
+
+    -- local objectiveSearchBox = AceGUI:Create("FB30_SearchEditBox")
+    -- objectiveSearchBox:SetFullWidth(true)
+    -- sidePanel:AddChild(objectiveSearchBox)
+    -- ObjectiveBuilder.objectiveSearchBox = objectiveSearchBox
+
+    -- objectiveSearchBox:SetCallback("OnTextChanged", function(self) ObjectiveBuilder:LoadObjectives() end)
+
+    -- ------------------------------------------------------------
+
+    -- local objectiveList = AceGUI:Create("ScrollFrame")
+    -- objectiveList:SetLayout("List")
+    -- sidePanel:AddChild(objectiveList)
+    -- objectiveList:SetUserData("renaming", {})
+    -- ObjectiveBuilder.objectiveList = objectiveList
+
+    -- ------------------------------------------------------------
+
+    -- local mainPanel = AceGUI:Create("SimpleGroup")
+    -- mainPanel:SetRelativeWidth(3/4)
+    -- mainPanel:SetFullHeight(true)
+    -- mainPanel:SetLayout("Fill")
+    -- ObjectiveBuilder:AddChild(mainPanel)
+    -- ObjectiveBuilder.mainPanel = mainPanel
 
     ------------------------------------------------------------
 
@@ -578,106 +785,9 @@ end
 
 --*------------------------------------------------------------------------
 
-function addon:ObjectiveBuilder_DrawTabs()
-    local ObjectiveBuilder = self.ObjectiveBuilder
-    local mainPanel = ObjectiveBuilder.mainPanel
-
-    mainPanel:ReleaseChildren()
-
-    ------------------------------------------------------------
-
-    local mainTabGroup = AceGUI:Create("TabGroup")
-    mainTabGroup:SetLayout("Fill")
-    mainPanel:AddChild(mainTabGroup)
-    ObjectiveBuilder.mainContent = mainTabGroup
-
-    mainTabGroup:SetTabs({
-        {text = L["Objective"], value = "objectiveTab"},
-        {text = L["Condition"], value = "conditionTab"},
-        {text = L["Trackers"], value = "trackersTab"}
-    })
-
-    ------------------------------------------------------------
-
-    mainTabGroup:SetCallback("OnGroupSelected", function(self, _, selected) mainTabGroup_OnGroupSelected(self, selected) end)
-end
-
---*------------------------------------------------------------------------
-
-function addon:ObjectiveBuilder_LoadConditionTab(objectiveTitle)
-    local mainContent = self.ObjectiveBuilder.mainContent
-
+function addon:ObjectiveBuilder_LoadObjectiveTab(tabContent)
+    local objectiveTitle, objectiveInfo = ObjectiveBuilder:GetSelectedObjectiveInfo()
     if not objectiveTitle then return end
-    local objectiveInfo = self:GetObjectiveInfo(objectiveTitle)
-
-    ------------------------------------------------------------
-
-    local tabContent = AceGUI:Create("ScrollFrame")
-    tabContent:SetLayout("Flow")
-    mainContent:AddChild(tabContent)
-    mainContent:SetLayout("Fill")
-
-    ------------------------------------------------------------
-
-    local trackerCondition = AceGUI:Create("Dropdown")
-    trackerCondition:SetFullWidth(true)
-    trackerCondition:SetLabel(L["Tracker Condition"])
-    trackerCondition:SetList(
-        {
-            ANY = L["Any"],
-            ALL = L["All"],
-            CUSTOM = L["Custom"],
-        },
-        {"ANY", "ALL", "CUSTOM"}
-    )
-    trackerCondition:SetValue(objectiveInfo.trackerCondition)
-    tabContent:AddChild(trackerCondition)
-
-    trackerCondition:SetCallback("OnValueChanged", function(_, _, selected) trackerCondition_OnValueChanged(selected) end)
-
-    ------------------------------------------------------------
-
-    if objectiveInfo.trackerCondition == "CUSTOM" then
-        local customCondition = AceGUI:Create("MultiLineEditBox")
-        customCondition:SetFullWidth(true)
-        customCondition:SetLabel(L["Custom Function"])
-        customCondition:SetText(objectiveInfo.customCondition)
-        tabContent:AddChild(customCondition)
-
-        customCondition:SetCallback("OnEnterPressed", customCondition_OnEnterPressed)
-    end
-
-    ------------------------------------------------------------
-    --Debug-----------------------------------------------------
-    ------------------------------------------------------------
-    if FarmingBar.db.global.debug.ObjectiveBuilder then
-        local debug_checkCount = AceGUI:Create("Button")
-        debug_checkCount:SetFullWidth(true)
-        debug_checkCount:SetText("Check Count")
-        tabContent:AddChild(debug_checkCount)
-
-        debug_checkCount:SetCallback("OnClick", function(self, event, ...)
-            print(addon:GetObjectiveCount((addon:GetSelectedObjectiveInfo())))
-        end)
-    end
-    ------------------------------------------------------------
-    ------------------------------------------------------------
-end
-
-------------------------------------------------------------
-
-function addon:ObjectiveBuilder_LoadObjectiveTab(objectiveTitle)
-    local mainContent = self.ObjectiveBuilder.mainContent
-
-    if not objectiveTitle then return end
-    local objectiveInfo = self:GetObjectiveInfo(objectiveTitle)
-
-    ------------------------------------------------------------
-
-    local tabContent = AceGUI:Create("ScrollFrame")
-    tabContent:SetLayout("Flow")
-    mainContent:AddChild(tabContent)
-    mainContent:SetLayout("Fill")
 
     ------------------------------------------------------------
 
@@ -731,19 +841,11 @@ function addon:ObjectiveBuilder_LoadObjectiveTab(objectiveTitle)
     local displayRefTrackerType = AceGUI:Create("Dropdown")
     displayRefTrackerType:SetRelativeWidth(0.92)
     displayRefTrackerType:SetLabel(L["Type"])
-    displayRefTrackerType:SetList(
-        {
-            ITEM = L["Item"],
-            CURRENCY = L["Currency"],
-            MACROTEXT = L["Macrotext"],
-            NONE = L["None"],
-        },
-        {"ITEM", "CURRENCY", "MACROTEXT", "NONE"}
-    )
+    displayRefTrackerType:SetList(displayRefTrackerTypeList, displayRefTrackerTypeListSort)
     displayRefTrackerType:SetValue(objectiveInfo.displayRef.trackerType or "NONE")
     tabContent:AddChild(displayRefTrackerType)
 
-    displayRefTrackerType:SetCallback("OnValueChanged", function(self, _, selected) displayRefTrackerType_OnValueChanged(self, selected) end)
+    displayRefTrackerType:SetCallback("OnValueChanged", displayRefTrackerType_OnValueChanged)
 
     ------------------------------------------------------------
 
@@ -754,7 +856,7 @@ function addon:ObjectiveBuilder_LoadObjectiveTab(objectiveTitle)
     displayRefHelp:SetWidth(30)
     tabContent:AddChild(displayRefHelp)
 
-    displayRefHelp:SetCallback("OnClick", function(label) displayRefHelp_OnClick(tabContent, label) end)
+    displayRefHelp:SetCallback("OnClick", function(label) displayRefHelp_OnClick(tabContent, label) end) --!
 
     ------------------------------------------------------------
 
@@ -779,21 +881,32 @@ end
 
 ------------------------------------------------------------
 
-function addon:ObjectiveBuilder_LoadTrackersTab(objectiveTitle)
-    local ObjectiveBuilder = addon.ObjectiveBuilder
-    local tabContent = ObjectiveBuilder.mainContent
-
+function addon:ObjectiveBuilder_LoadTrackersTab(tabContent)
+    local objectiveTitle, objectiveInfo = ObjectiveBuilder:GetSelectedObjectiveInfo()
     if not objectiveTitle then return end
-    local objectiveInfo = self:GetObjectiveInfo(objectiveTitle)
 
     ------------------------------------------------------------
 
-    local topContent = AceGUI:Create("SimpleGroup")
-    topContent:SetFullWidth(true)
-    topContent:SetHeight(20)
-    topContent:SetLayout("Flow")
-    topContent:SetAutoAdjustHeight(false)
-    tabContent:AddChild(topContent)
+    local trackerCondition = AceGUI:Create("Dropdown")
+    trackerCondition:SetFullWidth(true)
+    trackerCondition:SetLabel(L["Tracker Condition"])
+    trackerCondition:SetList(trackerConditionList, trackerConditionListSort)
+    trackerCondition:SetValue(objectiveInfo.trackerCondition)
+    tabContent:AddChild(trackerCondition)
+
+    trackerCondition:SetCallback("OnValueChanged", trackerCondition_OnValueChanged)
+
+    ------------------------------------------------------------
+
+    if objectiveInfo.trackerCondition == "CUSTOM" then
+        local customCondition = AceGUI:Create("MultiLineEditBox")
+        customCondition:SetFullWidth(true)
+        customCondition:SetLabel(L["Custom Function"])
+        customCondition:SetText(objectiveInfo.customCondition)
+        tabContent:AddChild(customCondition)
+
+        customCondition:SetCallback("OnEnterPressed", customCondition_OnEnterPressed)
+    end
 
     ------------------------------------------------------------
 
@@ -802,7 +915,7 @@ function addon:ObjectiveBuilder_LoadTrackersTab(objectiveTitle)
     newTrackerButton:SetWidth(newTrackerButton.label:GetStringWidth() + newTrackerButton.image:GetWidth())
     newTrackerButton:SetImageSize(newTrackerButton.label:GetHeight(), newTrackerButton.label:GetHeight())
     newTrackerButton:SetImage(514607)
-    topContent:AddChild(newTrackerButton)
+    tabContent:AddChild(newTrackerButton)
 
     newTrackerButton:SetCallback("OnClick", function() addon:CreateTracker() end)
     newTrackerButton:SetCallback("OnReceiveDrag", function() addon:CreateTracker(true) end)
@@ -812,28 +925,54 @@ function addon:ObjectiveBuilder_LoadTrackersTab(objectiveTitle)
 
     ------------------------------------------------------------
 
-    local trackerListContainer = AceGUI:Create("SimpleGroup")
-    trackerListContainer:SetLayout("Fill")
-    tabContent:AddChild(trackerListContainer)
+    local spacer = AceGUI:Create("Label")
+    spacer:SetFullWidth(true)
+    spacer:SetText("")
+    tabContent:AddChild(spacer)
 
     ------------------------------------------------------------
 
-    local trackerList = AceGUI:Create("ScrollFrame")
-    trackerList:SetLayout("List")
-    trackerListContainer:AddChild(trackerList)
-    ObjectiveBuilder.trackerList = trackerList
-    trackerList.status = {children = {}, selected = {}}
+    -- local trackerContent = AceGUI:Create("SimpleGroup")
+    -- trackerContent:SetFullWidth(true)
+    -- trackerContent:SetHeight(400)
+    -- trackerContent:SetLayout("Flow")
+    -- tabContent:AddChild(trackerContent)
 
     ------------------------------------------------------------
 
-    local trackerInfo = AceGUI:Create("ScrollFrame")
-    trackerInfo:SetLayout("List")
-    tabContent:AddChild(trackerInfo)
-    trackerList.status.content = trackerInfo
+    -- local trackerListContainer = AceGUI:Create("SimpleGroup")
+    -- trackerListContainer:SetRelativeWidth(1/3)
+    -- trackerListContainer:SetFullHeight(true)
+    -- trackerListContainer:SetLayout("Fill")
+    -- tabContent:AddChild(trackerListContainer)
+
+    -- ------------------------------------------------------------
+
+    -- -- local trackerList = AceGUI:Create("ScrollFrame")
+    -- -- trackerList:SetFullWidth(true)
+    -- -- -- trackerList:SetFullHeight(true)
+    -- -- trackerList:SetLayout("Flow")
+    -- -- trackerListContainer:AddChild(trackerList)
+
+    -- ------------------------------------------------------------
+
+    -- local trackerInfoContainer = AceGUI:Create("SimpleGroup")
+    -- trackerInfoContainer:SetRelativeWidth(2/3)
+    -- trackerInfoContainer:SetFullHeight(true)
+    -- trackerInfoContainer:SetLayout("Fill")
+    -- tabContent:AddChild(trackerInfoContainer)
 
     ------------------------------------------------------------
 
-    ObjectiveBuilder:LoadTrackers()
+    -- local trackerInfo = AceGUI:Create("ScrollFrame")
+    -- trackerInfo:SetFullWidth(true)
+    -- -- trackerInfo:SetFullHeight(true)
+    -- trackerInfo:SetLayout("Flow")
+    -- trackerInfoContainer:AddChild(trackerInfo)
+
+    -- ------------------------------------------------------------
+
+    -- ObjectiveBuilder:LoadTrackers()
 end
 
 --*------------------------------------------------------------------------
@@ -950,3 +1089,5 @@ function addon:ObjectiveBuilder_LoadTrackerInfo(tracker)
 
     ObjectiveBuilder:LoadExcludeList()
 end
+
+

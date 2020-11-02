@@ -355,6 +355,7 @@ local function Constructor()
     ------------------------------------------------------------
 
     local widget = {
+		type  = Type,
         frame = frame,
         backdrop = backdrop,
         anchor = anchor,
@@ -362,7 +363,6 @@ local function Constructor()
         addButton = addButton,
         removeButton = removeButton,
         barID = barID,
-		type  = Type,
     }
 
     frame.widget, anchor.widget, addButton.widget, removeButton.widget = widget, widget, widget, widget

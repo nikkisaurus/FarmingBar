@@ -70,7 +70,7 @@ local function Control_OnClick(self, buttonClicked)
         widget:ShowMenu()
     else
         PlaySound(852) -- SOUNDKIT.IG_MAINMENU_OPTION
-        addon:ObjectiveBuilder_DrawTabs()
+        -- addon:ObjectiveBuilder_DrawTabs()
         ObjectiveBuilder:SelectObjective(widget:GetUserData("objectiveTitle"))
     end
 end
