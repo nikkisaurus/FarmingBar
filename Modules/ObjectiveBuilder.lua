@@ -103,22 +103,9 @@ end
 ------------------------------------------------------------
 
 --!
-local function displayRefHelp_OnClick(mainContent, label)
-    if label:GetText() and label:GetText() ~= " " then
-        label:SetText("")
-        label:SetWidth(30)
-    else
-        --@retail@
-        label:SetText(L.DisplayReferenceDescription)
-        --@end-retail@
-        --[===[@non-retail@
-        -- Removing the currency reference from Classic here to make the localization page cleanier/easier to translate.
-        label:SetText(gsub(L.DisplayReferenceDescription, L.DisplayReferenceDescription_Gsub, ""))
-        --@end-non-retail@]===]
-        label:SetWidth(label.frame:GetParent():GetWidth() - 10)
-    end
-
-    mainContent:DoLayout()
+local function displayRefHelp_OnClick(self)
+    ObjectiveBuilder:SetUserData("showDisplayRefHelp", not ObjectiveBuilder:GetUserData("showDisplayRefHelp"))
+    ObjectiveBuilder:LoadObjectives()
 end
 
 ------------------------------------------------------------
@@ -407,7 +394,7 @@ local methods = {
             local label = AceGUI:Create("FarmingBar_InteractiveLabel")
             label:SetFullWidth(true)
             label:SetText(objectiveTitle)
-            label:SetIcon(addon:GetObjectiveIcon(objectiveTitle), nil, 15, 15)
+            label:SetIcon(addon:GetObjectiveIcon(objectiveTitle), nil, 13, 13)
             excludeList:AddChild(label)
 
             label:SetCallback("OnClick", function(_, _, buttonClicked) excludeListLabel_OnClick(self, buttonClicked, key) end)
@@ -451,7 +438,7 @@ local methods = {
         ------------------------------------------------------------
 
         -- Scrollbar won't disappear when deleting objectives if we don't call DoLayout
-        objectiveList:DoLayout()
+        -- objectiveList:DoLayout()
     end,
 
     ------------------------------------------------------------
@@ -506,6 +493,7 @@ local methods = {
             mainTabGroup:SetLayout("Fill")
             mainTabGroup:SetTabs(mainTabGroupTabs)
             mainPanel:AddChild(mainTabGroup)
+            self:SetUserData("mainTabGroup", mainTabGroup)
 
             mainTabGroup:SetCallback("OnGroupSelected", mainTabGroup_OnGroupSelected)
             mainTabGroup:SelectTab(self:GetSelectedTab(objectiveTitle) or "objectiveTab")
@@ -710,7 +698,7 @@ function addon:ObjectiveBuilder_LoadObjectiveTab(tabContent)
     ------------------------------------------------------------
 
     local displayRefTrackerType = AceGUI:Create("Dropdown")
-    displayRefTrackerType:SetRelativeWidth(0.92)
+    displayRefTrackerType:SetRelativeWidth(0.9)
     displayRefTrackerType:SetLabel(L["Type"])
     displayRefTrackerType:SetList(displayRefTrackerTypeList, displayRefTrackerTypeListSort)
     displayRefTrackerType:SetValue(objectiveInfo.displayRef.trackerType or "NONE")
@@ -721,12 +709,28 @@ function addon:ObjectiveBuilder_LoadObjectiveTab(tabContent)
     ------------------------------------------------------------
 
     local displayRefHelp = AceGUI:Create("FarmingBar_InteractiveLabel")
-    displayRefHelp:SetText(" ")
+    displayRefHelp:SetRelativeWidth(0.1)
     displayRefHelp:SetIcon(616343, nil, 25, 25)
-    displayRefHelp:SetWidth(30)
     tabContent:AddChild(displayRefHelp)
 
-    displayRefHelp:SetCallback("OnClick", function(label) displayRefHelp_OnClick(tabContent, label) end) --!
+    displayRefHelp:SetCallback("OnClick", displayRefHelp_OnClick)
+
+    ------------------------------------------------------------
+
+    if ObjectiveBuilder:GetUserData("showDisplayRefHelp") then
+        local displayRefHelpLabel = AceGUI:Create("InteractiveLabel")
+        displayRefHelpLabel:SetFullWidth(true)
+        --@retail@
+        displayRefHelpLabel:SetText(L.DisplayReferenceDescription)
+        --@end-retail@
+        --[===[@non-retail@
+        -- Removing the currency reference from Classic here to make the localization page cleanier/easier to translate.
+        displayRefHelpLabel:SetText(gsub(L.DisplayReferenceDescription, L.DisplayReferenceDescription_Gsub, ""))
+        --@end-non-retail@]===]
+        tabContent:AddChild(displayRefHelpLabel)
+
+        displayRefHelpLabel:SetCallback("OnClick", displayRefHelp_OnClick)
+    end
 
     ------------------------------------------------------------
 
@@ -782,7 +786,9 @@ function addon:ObjectiveBuilder_LoadTrackersTab(tabContent)
 
     local newTrackerButton = AceGUI:Create("FarmingBar_InteractiveLabel")
     newTrackerButton:SetText(L["New Tracker"])
-    newTrackerButton:SetIcon(514607, nil, 20, 20)
+    newTrackerButton:SetTextHighlight(1, .82, 0, 1)
+    newTrackerButton:SetWordWrap(false)
+    newTrackerButton:SetIcon(514607, nil, 13, 13)
     tabContent:AddChild(newTrackerButton)
 
     newTrackerButton:SetCallback("OnClick", function() addon:CreateTracker() end)

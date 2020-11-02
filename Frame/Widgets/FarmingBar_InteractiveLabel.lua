@@ -99,12 +99,16 @@ local methods = {
             if point == "LEFT" then
                 icon:SetPoint("LEFT", padding, 0)
                 text:ClearAllPoints()
+                text:SetPoint("TOP", 0, -(padding + vTextOffset))
+                text:SetPoint("BOTTOM", 0, (padding + vTextOffset))
                 text:SetPoint("LEFT", icon, "RIGHT", padding + hTextOffset, vTextOffset)
                 text:SetPoint("RIGHT", -padding, 0)
                 text:SetJustifyH("LEFT")
             elseif point == "RIGHT" then
                 icon:SetPoint("RIGHT", -padding, 0)
                 text:ClearAllPoints()
+                text:SetPoint("TOP", 0, -(padding + vTextOffset))
+                text:SetPoint("BOTTOM", 0, (padding + vTextOffset))
                 text:SetPoint("RIGHT", icon, "LEFT", -(padding + hTextOffset), vTextOffset)
                 text:SetPoint("LEFT", padding, 0)
                 text:SetJustifyH("RIGHT")
@@ -130,7 +134,7 @@ local methods = {
             text:SetJustifyH("MIDDLE")
         end
 
-        self:UpdateWidth()
+        self:UpdateDimensions()
     end,
 
     ------------------------------------------------------------
@@ -276,13 +280,15 @@ local methods = {
 
     ------------------------------------------------------------
 
-    UpdateWidth = function(self)
+    UpdateDimensions = function(self)
+        local text = self.text
         if not self:GetUserData("noAutoWidth") then
             local padding = self:GetUserData("padding") or 5
             local hTextOffset = self:GetUserData("hTextOffset") or 0
 
-            self:SetWidth(self.text:GetStringWidth() + self.icon:GetWidth() + hTextOffset + (padding * 3))
+            self:SetWidth(text:GetStringWidth() + self.icon:GetWidth() + hTextOffset + (padding * 3))
         end
+        -- TODO: fix height/word wrap
     end,
 }
 
