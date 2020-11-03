@@ -235,7 +235,18 @@ local function mainTabGroup_OnGroupSelected(self, _, selected)
 
     local mainContent = AceGUI:Create("ScrollFrame")
     mainContent:SetLayout("Flow")
+    mainContent:SetStatusTable(ObjectiveBuilder:GetUserData("scrollFrames").mainContent)
     self:AddChild(mainContent)
+
+    for k, v in pairs(mainContent.status) do print(k, v) end
+
+    local height, viewheight = mainContent.scrollframe:GetHeight(), mainContent.content:GetHeight()
+    -- local value = ((mainContent.status.offset or 0) / (viewheight - height) * 1000)
+
+    mainContent:MoveScroll(mainContent.status.offset or 0 / ((height - viewheight) / 1000.0))
+    -- mainContent.scrollbar:HookScript("OnValueChanged", function()
+    --     print(mainContent.content:GetHeight(), mainContent.status.scrollvalue, value)
+    -- end)
 
     ------------------------------------------------------------
 
@@ -538,6 +549,9 @@ function addon:Initialize_ObjectiveBuilder()
     ObjectiveBuilder:SetLayout("FB30_Table")
     ObjectiveBuilder:SetUserData("table", ObjectiveBuilder_TableInfo)
     ObjectiveBuilder:SetUserData("selectedTabs", {})
+    ObjectiveBuilder:SetUserData("scrollFrames", {
+        mainContent = {},
+    })
     addon.ObjectiveBuilder = ObjectiveBuilder
 
     for method, func in pairs(methods) do
