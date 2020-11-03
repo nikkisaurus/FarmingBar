@@ -41,7 +41,7 @@ local methods = {
         local frame = self.frame
         frame:ClearAllPoints()
         frame:SetPoint("CENTER")
-        frame:SetSize(700, 500)
+        frame:SetSize(750, 600)
     end,
 
     Hide = function(self, ...)

@@ -697,19 +697,8 @@ function addon:ObjectiveBuilder_LoadObjectiveTab(tabContent)
 
     ------------------------------------------------------------
 
-    local displayRefTrackerType = AceGUI:Create("Dropdown")
-    displayRefTrackerType:SetRelativeWidth(0.9)
-    displayRefTrackerType:SetLabel(L["Type"])
-    displayRefTrackerType:SetList(displayRefTrackerTypeList, displayRefTrackerTypeListSort)
-    displayRefTrackerType:SetValue(objectiveInfo.displayRef.trackerType or "NONE")
-    tabContent:AddChild(displayRefTrackerType)
-
-    displayRefTrackerType:SetCallback("OnValueChanged", displayRefTrackerType_OnValueChanged)
-
-    ------------------------------------------------------------
-
     local displayRefHelp = AceGUI:Create("FarmingBar_InteractiveLabel")
-    displayRefHelp:SetRelativeWidth(0.1)
+    displayRefHelp:SetWidth(30)
     displayRefHelp:SetIcon(616343, nil, 25, 25)
     tabContent:AddChild(displayRefHelp)
 
@@ -731,6 +720,17 @@ function addon:ObjectiveBuilder_LoadObjectiveTab(tabContent)
 
         displayRefHelpLabel:SetCallback("OnClick", displayRefHelp_OnClick)
     end
+
+    ------------------------------------------------------------
+
+    local displayRefTrackerType = AceGUI:Create("Dropdown")
+    displayRefTrackerType:SetFullWidth(true)
+    displayRefTrackerType:SetLabel(L["Type"])
+    displayRefTrackerType:SetList(displayRefTrackerTypeList, displayRefTrackerTypeListSort)
+    displayRefTrackerType:SetValue(objectiveInfo.displayRef.trackerType or "NONE")
+    tabContent:AddChild(displayRefTrackerType)
+
+    displayRefTrackerType:SetCallback("OnValueChanged", displayRefTrackerType_OnValueChanged)
 
     ------------------------------------------------------------
 
