@@ -62,6 +62,17 @@ local ObjectiveBuilderMainPanel_TableInfo = {
     },
 }
 
+local ObjectiveBuilderTrackerContent_TableInfo = {
+    {
+        cols = {
+            {width = "relative", relWidth = 1/3},
+            {width = "relative", relWidth = 2/3},
+        },
+        hpadding = 5,
+        rowHeight = "fill",
+    }
+}
+
 ------------------------------------------------------------
 
 local trackerConditionList = {
@@ -375,6 +386,16 @@ local methods = {
 
     ------------------------------------------------------------
 
+    GetTrackerButton = function(self, trackerInfo)
+        for _, button in pairs(self:GetUserData("trackerList").children) do
+            if button:GetUserData("trackerType") == trackerInfo.trackerType and button:GetUserData("trackerID") == trackerInfo.trackerID then
+                return button
+            end
+        end
+    end,
+
+    ------------------------------------------------------------
+
     Load = function(self, objectiveTitle)
         self:Show()
         self:LoadObjectives(objectiveTitle)
@@ -430,46 +451,34 @@ local methods = {
         local selectedObjectiveTitle = objectiveTitle or self:GetSelectedObjective()
 
         if selectedObjectiveTitle then
-            self:GetObjectiveButton(selectedObjectiveTitle):Select()
-        else
-            -- self.mainPanel:ReleaseChildren()
+            self:GetObjectiveButton(selectedObjectiveTitle):Select() --! "attempt to index a nil value" deleting while renaming
         end
-
-        ------------------------------------------------------------
-
-        -- Scrollbar won't disappear when deleting objectives if we don't call DoLayout
-        -- objectiveList:DoLayout()
     end,
 
     ------------------------------------------------------------
 
-    LoadTrackers = function(self)
-        -- local _, objectiveInfo = addon:GetSelectedObjectiveInfo()
-        -- local trackerList = addon.ObjectiveBuilder.trackerList
+    LoadTrackers = function(self, trackerInfo)
+        local _, objectiveInfo, _, selectedTrackerInfo = self:GetSelectedObjectiveInfo()
+        local trackerList = ObjectiveBuilder:GetUserData("trackerList")
 
-        -- trackerList:ReleaseChildren()
-        -- wipe(trackerList.status.selected)
-        -- wipe(trackerList.status.children)
+        trackerList:ReleaseChildren()
 
-        -- ------------------------------------------------------------
+        ------------------------------------------------------------
 
-        -- for tracker, trackerInfo in pairs(objectiveInfo.trackers) do
-        --     local button = AceGUI:Create("FarmingBar_TrackerButton")
-        --     button:SetFullWidth(true)
-        --     addon:GetTrackerDataTable(trackerInfo.trackerType, trackerInfo.trackerID, function(data)
-        --         button:SetText(data.name)
-        --         button:SetIcon(data.icon)
-        --         tinsert(trackerList.status.children, {trackerTitle = data.name, button = button})
-        --     end)
-        --     button:SetStatus(trackerList.status)
-        --     button:SetMenuFunc(GetTrackerContextMenu)
-        --     button:SetTooltip(addon.GetTrackerButtonTooltip)
-        --     trackerList:AddChild(button)
+        for tracker, trackerInfo in pairs(objectiveInfo.trackers) do
+            local button = AceGUI:Create("FarmingBar_TrackerButton")
+            button:SetFullWidth(true)
+            button:SetTracker(trackerInfo)
+            trackerList:AddChild(button)
+        end
 
-        --     ------------------------------------------------------------
+        ------------------------------------------------------------
 
-        --     button:SetCallback("OnClick", function(self, event, ...) TrackerButton_OnClick(tracker) end)
-        -- end
+        local selectedTracker = trackerInfo or selectedTrackerInfo
+
+        if selectedTracker then
+            self:GetTrackerButton(selectedTracker):Select()
+        end
     end,
 
     ------------------------------------------------------------
@@ -604,8 +613,8 @@ function addon:Initialize_ObjectiveBuilder()
     ------------------------------------------------------------
 
     local objectiveList = AceGUI:Create("ScrollFrame")
-    objectiveList:SetLayout("List") --! fix FB30_PaddedList
-    -- objectiveList:SetUserData("childPadding", 5)
+    objectiveList:SetLayout("FB30_PaddedList")
+    objectiveList:SetUserData("childPadding", 5)
     objectiveList:SetUserData("renaming", {})
     objectiveListContainer:AddChild(objectiveList)
     ObjectiveBuilder:SetUserData("objectiveList", objectiveList)
@@ -724,7 +733,7 @@ function addon:ObjectiveBuilder_LoadObjectiveTab(tabContent)
     ------------------------------------------------------------
 
     local displayRefTrackerType = AceGUI:Create("Dropdown")
-    displayRefTrackerType:SetFullWidth(true)
+    displayRefTrackerType:SetFullWidth(0.9)
     displayRefTrackerType:SetLabel(L["Type"])
     displayRefTrackerType:SetList(displayRefTrackerTypeList, displayRefTrackerTypeListSort)
     displayRefTrackerType:SetValue(objectiveInfo.displayRef.trackerType or "NONE")
@@ -806,47 +815,39 @@ function addon:ObjectiveBuilder_LoadTrackersTab(tabContent)
 
     ------------------------------------------------------------
 
-    -- local trackerContent = AceGUI:Create("SimpleGroup")
-    -- trackerContent:SetFullWidth(true)
-    -- trackerContent:SetHeight(400)
-    -- trackerContent:SetLayout("Flow")
-    -- tabContent:AddChild(trackerContent)
+    local trackerContent = AceGUI:Create("FarmingBar_SimpleGroup")
+    trackerContent:SetFullWidth(true)
+    trackerContent:SetAutoAdjustHeight(false)
+    trackerContent:SetHeight(200)
+    trackerContent:SetLayout("FB30_Table")
+    trackerContent:SetUserData("table", ObjectiveBuilderTrackerContent_TableInfo)
+    tabContent:AddChild(trackerContent)
 
     ------------------------------------------------------------
 
-    -- local trackerListContainer = AceGUI:Create("SimpleGroup")
-    -- trackerListContainer:SetRelativeWidth(1/3)
-    -- trackerListContainer:SetFullHeight(true)
-    -- trackerListContainer:SetLayout("Fill")
-    -- tabContent:AddChild(trackerListContainer)
-
-    -- ------------------------------------------------------------
-
-    -- -- local trackerList = AceGUI:Create("ScrollFrame")
-    -- -- trackerList:SetFullWidth(true)
-    -- -- -- trackerList:SetFullHeight(true)
-    -- -- trackerList:SetLayout("Flow")
-    -- -- trackerListContainer:AddChild(trackerList)
-
-    -- ------------------------------------------------------------
-
-    -- local trackerInfoContainer = AceGUI:Create("SimpleGroup")
-    -- trackerInfoContainer:SetRelativeWidth(2/3)
-    -- trackerInfoContainer:SetFullHeight(true)
-    -- trackerInfoContainer:SetLayout("Fill")
-    -- tabContent:AddChild(trackerInfoContainer)
+    local trackerListContainer = AceGUI:Create("FarmingBar_InlineGroup")
+    trackerListContainer:SetFullWidth(true)
+    trackerListContainer:SetFullHeight(true)
+    trackerListContainer:SetLayout("Fill")
+    trackerContent:AddChild(trackerListContainer)
 
     ------------------------------------------------------------
 
-    -- local trackerInfo = AceGUI:Create("ScrollFrame")
-    -- trackerInfo:SetFullWidth(true)
-    -- -- trackerInfo:SetFullHeight(true)
-    -- trackerInfo:SetLayout("Flow")
-    -- trackerInfoContainer:AddChild(trackerInfo)
+    local trackerList = AceGUI:Create("ScrollFrame")
+    trackerList:SetLayout("FB30_PaddedList")
+    trackerList:SetUserData("childPadding", 5)
+    trackerListContainer:AddChild(trackerList)
+    ObjectiveBuilder:SetUserData("trackerList", trackerList)
 
-    -- ------------------------------------------------------------
+    ------------------------------------------------------------
 
-    -- ObjectiveBuilder:LoadTrackers()
+    local trackerPanel = AceGUI:Create("FarmingBar_InlineGroup")
+    trackerPanel:SetLayout("Flow")
+    trackerContent:AddChild(trackerPanel)
+
+    ------------------------------------------------------------
+
+    ObjectiveBuilder:LoadTrackers()
 end
 
 --*------------------------------------------------------------------------

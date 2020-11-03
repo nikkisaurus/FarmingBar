@@ -1,180 +1,100 @@
 local addonName, addon = ...
 local FarmingBar = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
 local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
-local db = FarmingBar.db
-
---*------------------------------------------------------------------------
-
-local Type, Version = "FarmingBar_TrackerButton", 1
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
-if not AceGUI or (AceGUI:GetWidgetVersion(Type) or 0) >= Version then return end
 
-local pairs, tinsert, tremove, wipe = pairs, table.insert, table.remove, table.wipe
-
-local PlaySound, CreateFrame, UIParent, EasyMenu = PlaySound, CreateFrame, UIParent, EasyMenu
+local pairs = pairs
+local CreateFrame, UIParent = CreateFrame, UIParent
+local ObjectiveBuilder, trackerList
 
 --*------------------------------------------------------------------------
 
-local function Button_OnClick(frame, ...)
-    local buttonClicked = (select(1, ...))
+local Type = "FarmingBar_TrackerButton"
+local Version = 1
 
-    local loadPrevious = frame.obj:ToggleSelected(buttonClicked == "RightButton")
+--*------------------------------------------------------------------------
 
-    if not loadPrevious then
-        AceGUI:ClearFocus()
-        PlaySound(852) -- SOUNDKIT.IG_MAINMENU_OPTION
-        frame.obj:Fire("OnClick", ...)
-    else
-        frame.obj.statustable.selected[#frame.obj.statustable.selected].frame.obj:Fire("OnClick", ...)
-    end
+local function frame_OnClick(self, buttonClicked, ...)
+    local widget = self.obj
+    local selected = widget:GetUserData("selected")
 
-    if buttonClicked == "RightButton" then
-        addon.MenuFrame = addon.MenuFrame or CreateFrame("Frame", "FarmingBarMenuFrame", UIParent, "UIDropDownMenuTemplate")
-        EasyMenu(frame.obj:GetMenu(), addon.MenuFrame, frame, 0, 0, "MENU")
-    end
-end
+    ------------------------------------------------------------
 
-local function Control_OnEnter(frame)
-    if frame.obj.tooltip then
-        GameTooltip:SetOwner(frame, frame.obj.tooltipAnchor or "ANCHOR_BOTTOMRIGHT", 0, 0)
-        frame.obj:tooltip(frame.obj, GameTooltip)
-        GameTooltip:Show()
-    end
-end
+    local buttons = trackerList.children
+    local first, target
 
-local function Control_OnLeave(frame)
-    if frame.obj.tooltip then
-        GameTooltip:ClearLines()
-        GameTooltip:Hide()
-    end
-end
+    if IsShiftKeyDown() then
+        for key, button in pairs(buttons) do
+            if button == trackerList:GetUserData("lastSelected") then
+                first = key
+            elseif button == widget then
+                target = key
+            end
+        end
+    elseif not IsControlKeyDown() then
+        if selected and buttonClicked == "RightButton" then
+            widget:ShowMenu()
+            return
+        end
 
-local function Control_OnDragStart(frame)
-	frame.obj:Fire("OnDragStart")
-end
-
-local function Control_OnDragStop(frame)
-	frame.obj:Fire("OnDragStop")
-end
-
-local function EditBox_OnEscapePressed(frame)
-	frame:ClearFocus()
-    frame:Hide()
-end
-
-local function EditBox_OnEnterPressed(frame)
-    addon:RenameObjective(frame.obj:GetObjectiveTitle(), frame:GetText())
-    frame:Hide()
-
-    local statustable = frame.obj.statustable.children
-    if not statustable then return end
-    for _, objective in pairs(statustable) do
-        local editbox = objective.button.editbox
-        if editbox:IsVisible() then
-            editbox:SetFocus()
-            editbox:HighlightText()
+        for key, button in pairs(buttons) do
+            button:SetSelected(false)
         end
     end
-end
 
-local function EditBox_OnHide(frame)
-	AceGUI:ClearFocus()
-    frame.obj.text:Show()
-end
+    ------------------------------------------------------------
 
-local function EditBox_OnShow(frame)
-    frame.obj.text:Hide()
-    frame:SetText(frame.obj:GetObjectiveTitle())
-    frame:SetFocus()
-    frame:HighlightText()
+    widget:SetSelected(true)
+
+    if first and target then
+        local offset = (first < target) and 1 or -1
+        for i = first + offset, target - offset, offset do
+            buttons[i]:SetSelected(true, true)
+        end
+    end
+
+    ------------------------------------------------------------
+
+    if buttonClicked == "RightButton" then
+        widget:ShowMenu()
+    else
+        PlaySound(852)
+        print(widget:GetUserData("trackerName"))
+    end
+
+    widget:Fire("OnClick", buttonClicked, ...)
 end
 
 --*------------------------------------------------------------------------
 
 local methods = {
-	["OnAcquire"] = function(self)
-		-- restore default values
-		self:SetHeight(35)
-		self:SetWidth(200)
-		self:SetDisabled(false)
-		self:SetIcon()
-		self:SetMenuFunc()
-		self:SetSelected(false)
-		self:SetAutoWidth(false)
-		self:SetText()
-        self:SetTooltip()
-        self.statustable = nil
-	end,
+    OnAcquire = function(self)
+        ObjectiveBuilder = addon.ObjectiveBuilder
+        trackerList = ObjectiveBuilder:GetUserData("trackerList")
 
-	["SetText"] = function(self, text)
-		self.text:SetText(text)
-		if self.autoWidth then
-			self:SetWidth(self.text:GetStringWidth() + 30)
-		end
-	end,
+        self:SetHeight(25)
+        self.text:SetText("")
+        self.icon:SetTexture(134400)
 
-	["SetAutoWidth"] = function(self, autoWidth)
-		self.autoWidth = autoWidth
-		if self.autoWidth then
-			self:SetWidth(self.text:GetStringWidth() + 30)
-		end
-	end,
-
-	["SetDisabled"] = function(self, disabled)
-		self.disabled = disabled
-		if disabled then
-			self.frame:Disable()
-		else
-			self.frame:Enable()
-		end
+        self:SetSelected(false)
     end,
 
     ------------------------------------------------------------
 
-    ["CacheSelected"] = function(self, selectedButton)
-        local selected = self.statustable and self.statustable.selected
-        if not selected then return end
+    Select = function(self)
+        print("COW")
+        self.frame:Click()
+    end,
 
-        for _, objective in pairs(selected) do
-            if objective == selectedButton then
-                return
-            end
+    ------------------------------------------------------------
+
+    SetSelected = function(self, selected, supressLastSelected)
+        self:SetUserData("selected", selected)
+
+        if not supressLastSelected then
+            trackerList:SetUserData("lastSelected", self)
         end
 
-        tinsert(selected, selectedButton)
-    end,
-
-    ["GetButtonIndex"] = function(self)
-        local statustable = self.statustable and self.statustable.children
-        if not statustable then return end
-
-        for k, v in pairs(statustable) do
-            if v.button == self then
-                return k
-            end
-        end
-    end,
-
-    ["GetMenu"] = function(self)
-        return self.menuFunc()
-    end,
-
-    ["GetObjectiveTitle"] = function(self)
-        return self.frame:GetText()
-    end,
-
-    ["RenameObjective"] = function(self)
-        self.text:Hide()
-        self.editbox:Show()
-    end,
-
-    ["SetStatus"] = function(self, statustable)
-        self.statustable = statustable
-        self.statustable.selected = statustable.selected or {}
-        self.statustable.children = statustable.children or {}
-    end,
-
-    ["SetHighlight"] = function(self, selected)
         if selected then
             self.frame:LockHighlight()
         else
@@ -182,138 +102,104 @@ local methods = {
         end
     end,
 
-    ["SetIcon"] = function(self, icon)
-        self.icon:SetTexture(icon or 134400)
+    ------------------------------------------------------------
+
+    SetTracker = function(self, trackerInfo)
+        self:SetUserData("trackerType", trackerInfo.trackerType)
+        self:SetUserData("trackerID", trackerInfo.trackerID)
+
+        addon:GetTrackerDataTable(trackerInfo.trackerType, trackerInfo.trackerID, function(data)
+            self:SetUserData("trackerName", data.name)
+            self:SetUserData("trackerIcon", data.icon)
+
+            self.text:SetText(data.name)
+            self.icon:SetTexture(data.icon)
+        end)
     end,
 
-    ["SetMenuFunc"] = function(self, menuFunc)
-        self.menuFunc = menuFunc
-    end,
+    ------------------------------------------------------------
 
-    ["SetSelected"] = function(self, selected)
-        self.selected = selected
-        self:SetHighlight(selected)
-    end,
+    ShowMenu = function(self)
+        local numSelectedButtons = 0
 
-    ["SetTooltip"] = function(self, tooltip, anchor)
-		self.tooltip = tooltip
-		self.tooltipAnchor = anchor
-    end,
-
-    ["ToggleSelected"] = function(self, openedContext)
-        local statustable = self.statustable and self.statustable.children
-        local selected = self.statustable and self.statustable.selected
-
-        if statustable then
-            if IsShiftKeyDown() then
-                local first, target
-
-                for key, objective in pairs(statustable) do
-                    if objective.button == selected[#selected] then
-                        first = key
-                    elseif objective.button == self then
-                        target = key
-                    end
-                end
-
-                if first and target then
-                    local offset = (first < target) and 1 or -1
-                    for i = first + offset, target - offset, offset do
-                        statustable[i].button:SetSelected(true)
-                        self:CacheSelected(statustable[i].button)
-                    end
-                end
-            elseif IsControlKeyDown() then
-                local key = addon.GetTableKey(selected, self)
-                if key and #selected > 1 and not openedContext then
-                    self:SetSelected(false)
-                    tremove(selected, key)
-                    return true -- trigger to load the last selected button
-                end
-            elseif not openedContext or not self.selected then
-                for key, objective in pairs(statustable) do
-                    objective.button:SetSelected(false)
-                end
-                wipe(selected)
+        for _, button in pairs(trackerList.children) do
+            if button:GetUserData("selected") then
+                numSelectedButtons = numSelectedButtons + 1
             end
         end
 
-        self:SetSelected(self.selected and false or true)
-        if selected and self.selected then
-            self:CacheSelected(self)
-        end
+        ------------------------------------------------------------
+
+        local menu = {
+            {
+                text = numSelectedButtons > 1 and L["Delete All"] or L["Delete"],
+                notCheckable = true,
+                func = function() addon:DeleteTracker() end,
+            },
+
+            {text = "", notCheckable = true, notClickable = true},
+
+            {
+                text = L["Close"],
+                notCheckable = true,
+            },
+        }
+
+        ------------------------------------------------------------
+
+        EasyMenu(menu, addon.MenuFrame, self.frame, 0, 0, "MENU")
     end,
 }
 
 --*------------------------------------------------------------------------
 
 local function Constructor()
-	local name = "AceGUI30Button" .. AceGUI:GetNextWidgetNum(Type)
-    local frame = CreateFrame("Button", name, UIParent, "OptionsListButtonTemplate")
-    frame:SetHeight(35)
-	frame:SetWidth(200)
-	frame:Hide()
+    local frame = CreateFrame("Button", nil, UIParent)
+    -- frame:RegisterForDrag("LeftButton")
+    frame:RegisterForClicks("LeftButtonUp", "RightButtonUp")
+    frame:SetScript("OnClick", frame_OnClick)
+    -- frame:SetScript("OnDragStart", frame_OnDragStart)
+	-- frame:SetScript("OnEnter", frame_OnEnter)
+	-- frame:SetScript("OnLeave", frame_OnLeave)
+	-- frame:SetScript("OnReceiveDrag", frame_OnReceiveDrag)
 
-    frame:EnableMouse(true)
-    frame:RegisterForDrag("LeftButton")
-	frame:SetScript("OnClick", Button_OnClick)
-	frame:SetScript("OnEnter", Control_OnEnter)
-    frame:SetScript("OnLeave", Control_OnLeave)
-    frame:SetScript("OnDragStart", Control_OnDragStart)
-    frame:SetScript("OnDragStop", Control_OnDragStop)
-    frame:SetPushedTextOffset(0, 0)
-    frame:GetHighlightTexture():SetVertexColor(0.5, 0.5, 0.5, .5)
+    ------------------------------------------------------------
 
     local background = frame:CreateTexture(nil, "BACKGROUND")
-    background:SetTexture("Interface\\BUTTONS\\UI-LISTBOX-HIGHLIGHT2")
-    background:SetBlendMode("ADD")
-    background:SetVertexColor(0.4, 0.4, 0.4, 0.25)
     background:SetAllPoints(frame)
+    background:SetTexture(130783)
+    background:SetVertexColor(1, 1, 1, .05)
 
-    local icon = frame:CreateTexture(nil, "OVERLAY")
-    icon:SetWidth(25)
-    icon:SetHeight(25)
-    icon:SetPoint("LEFT", frame, "LEFT", 3, 0)
-    icon:SetTexture(134400)
+    frame:SetHighlightTexture(130783)
+    frame:GetHighlightTexture():SetVertexColor(1, 1, 1, .15)
 
-	local text = frame:GetFontString()
-	text:ClearAllPoints()
-    text:SetPoint("TOPLEFT", icon, "TOPRIGHT", 3, -1)
-    text:SetPoint("RIGHT", -3, 0)
+    ------------------------------------------------------------
+
+    local icon = frame:CreateTexture(nil, "ARTWORK")
+    icon:SetSize(20, 20)
+    icon:SetPoint("LEFT", 0, 0)
+
+    ------------------------------------------------------------
+
+    local text = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     text:SetJustifyH("LEFT")
+    text:SetWordWrap(false)
+    text:SetPoint("TOPLEFT", icon, "TOPRIGHT", 5, -2)
+    text:SetPoint("RIGHT")
 
-	local editbox = CreateFrame("EditBox", nil, frame, "InputBoxTemplate")
-	editbox:SetAutoFocus(false)
-	editbox:SetFontObject(ChatFontNormal)
-	editbox:SetScript("OnEscapePressed", EditBox_OnEscapePressed)
-	editbox:SetScript("OnEnterPressed", EditBox_OnEnterPressed)
-	editbox:SetScript("OnHide", EditBox_OnHide)
-	editbox:SetScript("OnShow", EditBox_OnShow)
-	editbox:SetTextInsets(0, 0, 3, 3)
-	editbox:SetMaxLetters(256)
-	editbox:SetPoint("LEFT", icon, "RIGHT", 7, 0)
-	editbox:SetPoint("RIGHT", -5, 5)
-    editbox:SetHeight(19)
-    editbox:Hide()
+    ------------------------------------------------------------
 
-	local widget = {
-		text  = text,
-		frame = frame,
-        type  = Type,
+    local widget = {
+		type  = Type,
+        frame = frame,
         icon = icon,
-        editbox = editbox,
-        background = background,
-	}
-	for method, func in pairs(methods) do
-		widget[method] = func
-    end
-    editbox.obj = widget
+        text = text,
+    }
 
-    if IsAddOnLoaded("ElvUI") then
-        local E = unpack(_G["ElvUI"])
-        local S = E:GetModule('Skins')
+    frame.obj = widget
 
-		S:HandleEditBox(widget.editbox)
+    for method, func in pairs(methods) do
+        widget[method] = func
     end
 
 	return AceGUI:RegisterAsWidget(widget)

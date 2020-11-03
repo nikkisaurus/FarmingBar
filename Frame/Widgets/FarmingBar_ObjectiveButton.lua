@@ -154,7 +154,7 @@ end
 ------------------------------------------------------------
 
 local function frame_OnReceiveDrag(self)
-
+    -- TODO
 end
 
 --*------------------------------------------------------------------------
@@ -281,7 +281,6 @@ local methods = {
 
 local function Constructor()
     local frame = CreateFrame("Button", nil, UIParent)
-    -- frame:EnableMouse(true)
     frame:RegisterForDrag("LeftButton")
     frame:RegisterForClicks("LeftButtonUp", "RightButtonUp")
     frame:SetScript("OnClick", frame_OnClick)

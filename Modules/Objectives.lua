@@ -85,9 +85,10 @@ end
 
 function addon:DeleteObjective(objectiveTitle)
     local ObjectiveBuilder = self.ObjectiveBuilder
+    local objectiveList = ObjectiveBuilder:GetUserData("objectiveList")
 
     if not objectiveTitle then
-        for _, button in pairs(ObjectiveBuilder:GetUserData("objectiveList").children) do
+        for _, button in pairs(objectiveList.children) do
             if button:GetUserData("selected") then
                 local objectiveTitle = button:GetUserData("objectiveTitle")
                 FarmingBar.db.global.objectives[objectiveTitle] = nil
@@ -108,6 +109,7 @@ function addon:DeleteObjective(objectiveTitle)
     end
 
     ObjectiveBuilder:LoadObjectives()
+    objectiveList:DoLayout()
 end
 
 ------------------------------------------------------------

@@ -5,18 +5,17 @@ local AceGUI = LibStub("AceGUI-3.0", true)
 
 local strupper, tonumber = string.upper, tonumber
 local floor, min = math.floor, math.min
+local wipe = table.wipe
 
 --*------------------------------------------------------------------------
 
 function addon:CreateTracker(fromCursor)
     local ObjectiveBuilder = self.ObjectiveBuilder
-    local objectiveTitle = self:GetSelectedObjectiveInfo()
-    local trackersTable = FarmingBar.db.global.objectives[objectiveTitle].trackers
-    local trackerStatus = ObjectiveBuilder.trackerList.status
+    local objectiveTitle, objectiveInfo = ObjectiveBuilder:GetSelectedObjectiveInfo()
 
     ------------------------------------------------------------
 
-    local defaultTracker = addon:GetDefaultTracker()
+    local defaultTracker = self:GetDefaultTracker()
 
     if fromCursor then
         -- Create tracker from cursor
@@ -32,52 +31,50 @@ function addon:CreateTracker(fromCursor)
         end
     end
 
-    tinsert(trackersTable, defaultTracker)
+    tinsert(FarmingBar.db.global.objectives[objectiveTitle].trackers, defaultTracker)
 
     ------------------------------------------------------------
 
-    ObjectiveBuilder:LoadTrackers()
-
-    trackerStatus.children[#trackersTable].button.frame:Click()
-    if not fromCursor then
-        C_Timer.After(.01, function()
-            trackerStatus.trackerID:SetFocus()
-        end)
-    end
+    ObjectiveBuilder:LoadTrackers(trackerInfo)
 end
 
 ------------------------------------------------------------
 
 function addon:DeleteTracker()
     local ObjectiveBuilder = self.ObjectiveBuilder
-    local trackersTable = FarmingBar.db.global.objectives[(self:GetSelectedObjectiveInfo())].trackers
+    local objectiveTitle = ObjectiveBuilder:GetSelectedObjectiveInfo()
+    local trackerList = ObjectiveBuilder:GetUserData("trackerList")
+    local trackersTable = FarmingBar.db.global.objectives[objectiveTitle].trackers
 
     ------------------------------------------------------------
 
-    local trackers = {}
-    for k, v in pairs(ObjectiveBuilder.trackerList.status.children) do
-        if v.button.selected then
-            trackersTable[k] = nil
+    for key, button in pairs(trackerList.children) do
+        if button:GetUserData("selected") then
+            FarmingBar.db.global.objectives[objectiveTitle].trackers[key] = nil
         end
     end
 
     ------------------------------------------------------------
 
     -- Reindex trackers table so trackerList buttons aren't messed up
-    for k, v in pairs(trackersTable) do
-        tinsert(trackers, v)
+    local trackers = {}
+    for _, trackerInfo in pairs(trackersTable) do
+        tinsert(trackers, trackerInfo)
     end
-    trackersTable = trackers
+
+    FarmingBar.db.global.objectives[objectiveTitle].trackers = trackers
 
     ------------------------------------------------------------
 
     ObjectiveBuilder:LoadTrackers()
-    self:ObjectiveBuilder_LoadTrackerInfo()
+    trackerList:DoLayout()
+    -- self:ObjectiveBuilder_LoadTrackerInfo() --! Not sure if I can delete this or not
 end
 
 ------------------------------------------------------------
 
 function addon:GetTrackerCount(trackerInfo)
+    if not trackerInfo then return 0 end
     local count
 
     if trackerInfo.trackerType == "ITEM" then
@@ -122,7 +119,7 @@ function addon:GetTrackerDataTable(...)
     if dataType == "ITEM" then
         self:CacheItem(dataID, function(dataType, dataID, callback)
             local name, _, _, _, _, _, _, _, _, icon = GetItemInfo(dataID)
-            local data = {name = name == "" and L["Invalid Tracker"] or name, icon = icon, label = addon:GetTrackerTypeLabel(dataType), trackerType = dataType, trackerID = dataID}
+            local data = {name = (not name or name == "") and L["Invalid Tracker"] or name, icon = icon or 134400, label = addon:GetTrackerTypeLabel(dataType), trackerType = dataType, trackerID = dataID}
 
             if callback then
                 callback(data)
