@@ -8,6 +8,7 @@
 	<Script file="Widgets\FarmingBar_ObjectiveButton.lua"/>
 	<Script file="Widgets\FarmingBar_SearchBox.lua"/>
 	<Script file="Widgets\FarmingBar_SimpleGroup.lua"/>
+	<Script file="Widgets\FarmingBar_Sizer.lua"/>
 	<Script file="Widgets\FarmingBar_TrackerButton.lua"/>
 	<Script file="Widgets\Layouts.lua"/>
 </Ui>

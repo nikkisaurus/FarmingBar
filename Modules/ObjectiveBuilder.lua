@@ -70,7 +70,7 @@ local ObjectiveBuilderTrackerContent_TableInfo = {
         },
         hpadding = 5,
         rowHeight = "fill",
-    }
+    },
 }
 
 ------------------------------------------------------------
@@ -257,6 +257,14 @@ end
 
 local function trackerCondition_OnValueChanged(_, _, selected)
     addon:SetObjectiveDBInfo("trackerCondition", selected)
+end
+
+------------------------------------------------------------
+
+local function trackerContentSizer_OnMouseUp(self, trackerContent, tabContent)
+    ObjectiveBuilder:SetUserData("trackerContentHeight", trackerContent.frame:GetHeight())
+    tabContent:ReleaseChildren()
+    addon:ObjectiveBuilder_LoadTrackersTab(tabContent)
 end
 
 ------------------------------------------------------------
@@ -818,7 +826,7 @@ function addon:ObjectiveBuilder_LoadTrackersTab(tabContent)
     local trackerContent = AceGUI:Create("FarmingBar_SimpleGroup")
     trackerContent:SetFullWidth(true)
     trackerContent:SetAutoAdjustHeight(false)
-    trackerContent:SetHeight(200)
+    trackerContent:SetHeight(ObjectiveBuilder:GetUserData("trackerContentHeight") or 200)
     trackerContent:SetLayout("FB30_Table")
     trackerContent:SetUserData("table", ObjectiveBuilderTrackerContent_TableInfo)
     tabContent:AddChild(trackerContent)
@@ -844,6 +852,16 @@ function addon:ObjectiveBuilder_LoadTrackersTab(tabContent)
     local trackerPanel = AceGUI:Create("FarmingBar_InlineGroup")
     trackerPanel:SetLayout("Flow")
     trackerContent:AddChild(trackerPanel)
+
+    ------------------------------------------------------------
+
+    local trackerContentSizer = AceGUI:Create("FarmingBar_Sizer")
+    trackerContentSizer:SetFullWidth(true)
+    trackerContentSizer:SetHeight(5)
+    trackerContentSizer:SetWidget(trackerContent, "BOTTOM")
+    tabContent:AddChild(trackerContentSizer)
+
+    trackerContentSizer:SetCallback("OnMouseUp", function(self) trackerContentSizer_OnMouseUp(self, trackerContent, tabContent) end)
 
     ------------------------------------------------------------
 
