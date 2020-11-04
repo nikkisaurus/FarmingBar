@@ -14,12 +14,20 @@ local Version = 1
 
 local function sizer_OnMouseDown(self)
     self:GetParent():StartSizing()
+    self.obj:Fire("OnMouseDown")
 end
 
 ------------------------------------------------------------
 
 local function sizer_OnMouseUp(self)
     self:GetParent():StopMovingOrSizing()
+    self.obj:Fire("OnMouseUp")
+end
+
+------------------------------------------------------------
+
+local function sizer_OnUpdate(self)
+    self.obj:Fire("OnUpdate")
 end
 
 ------------------------------------------------------------
@@ -108,6 +116,7 @@ local function Constructor()
     sizer:GetNormalTexture():SetVertexColor(1, 1, 1, .5)
     sizer:SetScript("OnMouseDown", sizer_OnMouseDown)
     sizer:SetScript("OnMouseUp", sizer_OnMouseUp)
+    sizer:SetScript("OnUpdate", sizer_OnUpdate)
 
     local content = CreateFrame("Frame", nil, frame)
     content:SetPoint("TOPLEFT", background, "TOPLEFT", 5, -5)
@@ -134,7 +143,7 @@ local function Constructor()
         content = content,
     }
 
-    frame.obj, title.obj = widget, widget
+    frame.obj, title.obj, sizer.obj = widget, widget, widget
 
     for method, func in pairs(methods) do
         widget[method] = func

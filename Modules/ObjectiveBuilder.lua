@@ -31,6 +31,15 @@ local mainTabGroupTabs = {
 
 ------------------------------------------------------------
 
+local ObjectiveBuilder_ScrollFrames = {
+    objectiveList = {},
+    mainContent = {},
+    trackerList = {},
+    excludeList = {},
+}
+
+------------------------------------------------------------
+
 local ObjectiveBuilder_TableInfo = {
     {
         cols = {
@@ -48,6 +57,8 @@ local ObjectiveBuilder_TableInfo = {
     },
 }
 
+------------------------------------------------------------
+
 local ObjectiveBuilderMainPanel_TableInfo = {
     {
         cols = {
@@ -61,6 +72,8 @@ local ObjectiveBuilderMainPanel_TableInfo = {
         rowHeight = "fill",
     },
 }
+
+------------------------------------------------------------
 
 local ObjectiveBuilderTrackerContent_TableInfo = {
     {
@@ -236,17 +249,10 @@ local function mainTabGroup_OnGroupSelected(self, _, selected)
     local mainContent = AceGUI:Create("ScrollFrame")
     mainContent:SetLayout("Flow")
     mainContent:SetStatusTable(ObjectiveBuilder:GetUserData("scrollFrames").mainContent)
+    ObjectiveBuilder:SetUserData("mainContent", mainContent)
     self:AddChild(mainContent)
 
-    for k, v in pairs(mainContent.status) do print(k, v) end
-
-    local height, viewheight = mainContent.scrollframe:GetHeight(), mainContent.content:GetHeight()
-    -- local value = ((mainContent.status.offset or 0) / (viewheight - height) * 1000)
-
-    mainContent:MoveScroll(mainContent.status.offset or 0 / ((height - viewheight) / 1000.0))
-    -- mainContent.scrollbar:HookScript("OnValueChanged", function()
-    --     print(mainContent.content:GetHeight(), mainContent.status.scrollvalue, value)
-    -- end)
+    mainContent:SetScroll(mainContent.status.scrollvalue)
 
     ------------------------------------------------------------
 
@@ -549,10 +555,28 @@ function addon:Initialize_ObjectiveBuilder()
     ObjectiveBuilder:SetLayout("FB30_Table")
     ObjectiveBuilder:SetUserData("table", ObjectiveBuilder_TableInfo)
     ObjectiveBuilder:SetUserData("selectedTabs", {})
-    ObjectiveBuilder:SetUserData("scrollFrames", {
-        mainContent = {},
-    })
+    ObjectiveBuilder:SetUserData("scrollFrames", ObjectiveBuilder_ScrollFrames)
+    ObjectiveBuilder:SetUserData("scrollvalues", {})
     addon.ObjectiveBuilder = ObjectiveBuilder
+
+    ObjectiveBuilder:SetCallback("OnMouseDown", function(self)
+        for scrollFrame, status in pairs(self:GetUserData("scrollFrames")) do
+            local widget = self:GetUserData(scrollFrame)
+            if widget then
+                self:GetUserData("scrollvalues")[scrollFrame] = status.scrollvalue
+            end
+        end
+    end)
+
+    ObjectiveBuilder:SetCallback("OnMouseUp", function(self)
+        for scrollFrame, scrollvalue in pairs(self:GetUserData("scrollvalues")) do
+            local widget = self:GetUserData(scrollFrame)
+            if widget then
+                widget:SetScroll(scrollvalue)
+                widget.scrollbar:SetValue(scrollvalue)
+            end
+        end
+    end)
 
     for method, func in pairs(methods) do
         ObjectiveBuilder[method] = func
@@ -638,8 +662,11 @@ function addon:Initialize_ObjectiveBuilder()
     objectiveList:SetLayout("FB30_PaddedList")
     objectiveList:SetUserData("childPadding", 5)
     objectiveList:SetUserData("renaming", {})
+    objectiveList:SetStatusTable(ObjectiveBuilder:GetUserData("scrollFrames").objectiveList)
     objectiveListContainer:AddChild(objectiveList)
     ObjectiveBuilder:SetUserData("objectiveList", objectiveList)
+
+    objectiveList:SetScroll(objectiveList.status.scrollvalue)
 
     -- ------------------------------------------------------------
 
@@ -858,8 +885,11 @@ function addon:ObjectiveBuilder_LoadTrackersTab(tabContent)
     local trackerList = AceGUI:Create("ScrollFrame")
     trackerList:SetLayout("FB30_PaddedList")
     trackerList:SetUserData("childPadding", 5)
+    trackerList:SetStatusTable(ObjectiveBuilder:GetUserData("scrollFrames").trackerList)
     trackerListContainer:AddChild(trackerList)
     ObjectiveBuilder:SetUserData("trackerList", trackerList)
+
+    trackerList:SetScroll(trackerList.status.scrollvalue)
 
     ------------------------------------------------------------
 
@@ -991,8 +1021,13 @@ function addon:ObjectiveBuilder_LoadTrackerInfo(tracker)
 
     local excludeList = AceGUI:Create("ScrollFrame")
     excludeList:SetLayout("FB30_PaddedList")
+    excludeList:SetStatusTable(ObjectiveBuilder:GetUserData("scrollFrames").excludeList)
     excludeListContainer:AddChild(excludeList)
     ObjectiveBuilder.excludeList = excludeList
+
+    excludeList:SetScroll(excludeList.status.scrollvalue)
+
+    ------------------------------------------------------------
 
     ObjectiveBuilder:LoadExcludeList()
 end
