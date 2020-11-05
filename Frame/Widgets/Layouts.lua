@@ -4,27 +4,32 @@ local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 
 local AceGUI = LibStub("AceGUI-3.0", true)
 
-local pairs, wipe = pairs, table.wipe
+local pairs, sort, wipe = pairs, table.sort, table.wipe
 
 --*------------------------------------------------------------------------
 
--- Adds padding between list items and allows the last item to fill the remaining height of the frame
+-- Adds padding between list items, allows the last item to fill the remaining height of the frame, and allows sorting children
 AceGUI:RegisterLayout("FB30_List", function(content, children)
     local padding = (content.obj and content.obj:GetUserData("childPadding")) or (content.widget and content.widget:GetUserData("childPadding")) or 5
     local height = 0
 
-    for i = 1, #children do
-        local child = children[i]
-        if child then
-            local frame = child.frame
-            frame:ClearAllPoints()
+    local sortFunc = content.obj:GetUserData("sortFunc")
+    if sortFunc then
+        sort(children, sortFunc)
+    end
+
+    for key, child in addon.pairs(children) do
+        local frame = child.frame
+        frame:ClearAllPoints()
+
+        if not child:GetUserData("filtered") then
             frame:Show()
             frame:SetWidth(content:GetWidth() - 10)
 
             if i == 1 then
-                frame:SetPoint("TOPLEFT", 5, -5)
+                frame:SetPoint("TOPLEFT", padding, -padding)
             else
-                frame:SetPoint("TOPLEFT", 0, -(padding + height))
+                frame:SetPoint("TOPLEFT", padding, -(padding + height))
             end
 
             height = height + frame:GetHeight() + padding
@@ -37,6 +42,8 @@ AceGUI:RegisterLayout("FB30_List", function(content, children)
             if child.DoLayout then
                 child:DoLayout()
             end
+        else
+            frame:Hide()
         end
     end
 

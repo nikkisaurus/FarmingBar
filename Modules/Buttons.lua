@@ -28,3 +28,17 @@ function addon:UpdateButtons(objectiveTitle)
         end
     end
 end
+
+------------------------------------------------------------
+
+function addon:UpdateRenamedObjectiveButton(oldObjectiveTitle, newObjectiveTitle)
+    for _, bar in pairs(self.bars) do
+        for _, button in pairs(bar:GetUserData("buttons")) do
+            local objectiveTitle = button:GetUserData("objectiveTitle")
+            print(objectiveTitle, oldObjectiveTitle, newObjectiveTitle)
+            if objectiveTitle and objectiveTitle == oldObjectiveTitle then
+                button:SetObjectiveID(newObjectiveTitle)
+            end
+        end
+    end
+end

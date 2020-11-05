@@ -10,7 +10,7 @@ local GetCursorInfo, ClearCursor = GetCursorInfo, ClearCursor
 
 --*------------------------------------------------------------------------
 
-function addon:CreateObjective(objectiveTitle, objectiveInfo, overwrite, supressUpdate)
+function addon:CreateObjective(objectiveTitle, objectiveInfo, overwrite, supressSelect)
     local ObjectiveBuilder = self.ObjectiveBuilder
     local defaultInfo = self:GetDefaultObjective()
 
@@ -36,12 +36,15 @@ function addon:CreateObjective(objectiveTitle, objectiveInfo, overwrite, supress
 
     ------------------------------------------------------------
 
-    if not supressUpdate then
-        ObjectiveBuilder:LoadObjectives(newObjectiveTitle)
-        if not overwrite and ObjectiveBuilder:IsVisible() then
-            ObjectiveBuilder:GetObjectiveButton(newObjectiveTitle):RenameObjective()
-        end
+    local button = addon:AddObjectiveButton(newObjectiveTitle)
+    if not overwrite and ObjectiveBuilder:IsVisible() then
+        button:RenameObjective()
     end
+    if not supressSelect then
+        ObjectiveBuilder:SelectObjective(newObjectiveTitle)
+    end
+
+    ------------------------------------------------------------
 
     return newObjectiveTitle
 end
@@ -89,11 +92,12 @@ function addon:DeleteObjective(objectiveTitle)
 
     if not objectiveTitle then
         for _, button in pairs(objectiveList.children) do
-            if button:GetUserData("selected") then
-                local objectiveTitle = button:GetUserData("objectiveTitle")
+            if button:GetUserData("selected") and not button:GetUserData("filtered") then
+                local objectiveTitle = button:GetObjective()
                 FarmingBar.db.global.objectives[objectiveTitle] = nil
+                button:SetSelected(false)
                 if ObjectiveBuilder:GetSelectedObjective() == objectiveTitle then
-                    ObjectiveBuilder:SelectObjective()
+                    ObjectiveBuilder:ClearSelectedObjective()
                 end
                 self:UpdateExclusions(objectiveTitle)
                 self:ClearDeletedObjectives(objectiveTitle)
@@ -102,14 +106,13 @@ function addon:DeleteObjective(objectiveTitle)
     else
         FarmingBar.db.global.objectives[objectiveTitle] = nil
         if ObjectiveBuilder:GetSelectedObjective() == objectiveTitle then
-            ObjectiveBuilder:SelectObjective()
+            ObjectiveBuilder:ClearSelectedObjective()
         end
         self:UpdateExclusions(objectiveTitle)
         self:ClearDeletedObjectives(objectiveTitle)
     end
 
-    ObjectiveBuilder:LoadObjectives()
-    objectiveList:DoLayout()
+    ObjectiveBuilder:RefreshObjectives()
 end
 
 ------------------------------------------------------------
@@ -118,7 +121,7 @@ function addon:DeleteSelectedObjectives()
     local selectedButton
     local numSelectedButtons = 0
     for _, button in pairs(self.ObjectiveBuilder:GetUserData("objectiveList").children) do
-        if button:GetUserData("selected") then
+        if button:GetUserData("selected") and not button:GetUserData("filtered") then
             numSelectedButtons = numSelectedButtons + 1
             selectedButton = button
         end
@@ -144,27 +147,23 @@ function addon:DuplicateSelectedObjectives()
     local ObjectiveBuilder = self.ObjectiveBuilder
     local buttons = ObjectiveBuilder:GetUserData("objectiveList").children
 
-    local objectiveTitles = {}
+    local pendingSelect
     for key, button in pairs(buttons) do
-        if button:GetUserData("selected") then
-            local objectiveTitle = button:GetUserData("objectiveTitle")
-            tinsert(objectiveTitles, self:CreateObjective(objectiveTitle, self:GetObjectiveInfo(objectiveTitle), _, true))
+        local objectiveTitle = button:GetObjective()
+        if button:GetUserData("selected") and not button:GetUserData("deleted") then
+            button:SetSelected(false)
+            pendingSelect = self:CreateObjective(objectiveTitle, self:GetObjectiveInfo(objectiveTitle), _, true)
         end
     end
 
-    ------------------------------------------------------------
-
-    ObjectiveBuilder:LoadObjectives(objectiveTitles[#objectiveTitles])
-
-    for _, objectiveTitle in pairs(objectiveTitles) do
-        ObjectiveBuilder:GetObjectiveButton(objectiveTitle):RenameObjective()
-    end
+    ObjectiveBuilder:SelectObjective(pendingSelect)
 end
 
 ------------------------------------------------------------
 
 function addon:GetObjectiveIcon(objectiveTitle)
     local objectiveInfo = addon:GetObjectiveInfo(objectiveTitle)
+    if not objectiveInfo then return end
 
     local icon
     if objectiveInfo.autoIcon then
@@ -252,6 +251,7 @@ end
 
 function addon:GetObjectiveCount(objectiveTitle)
     local objectiveInfo = self:GetObjectiveInfo(objectiveTitle)
+    if not objectiveInfo then return end
 
     if #objectiveInfo.trackers == 0 then return 0 end
 
@@ -308,8 +308,7 @@ function addon:RenameObjective(objectiveTitle, newObjectiveTitle)
     FarmingBar.db.global.objectives[objectiveTitle] = nil
 
     self:UpdateExclusions(objectiveTitle, newObjectiveTitle)
-
-    -- self.ObjectiveBuilder:LoadObjectives(newObjectiveTitle)
+    self:UpdateRenamedObjectiveButton(objectiveTitle, newObjectiveTitle)
 end
 
 ------------------------------------------------------------
@@ -332,7 +331,7 @@ function addon:SetObjectiveDBInfo(key, value, objectiveTitle)
     addon:UpdateButtons(title)
 
     if not objectiveTitle then
-        addon.ObjectiveBuilder:LoadObjectives()
+        self.ObjectiveBuilder:RefreshObjectives()
     end
 end
 

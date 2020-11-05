@@ -37,7 +37,8 @@ local function EditBox_OnEnterPressed(self)
 
     widget:SetObjective(newObjectiveTitle)
 
-    ObjectiveBuilder:LoadObjectives(newObjectiveTitle)
+    ObjectiveBuilder:RefreshObjectives()
+    ObjectiveBuilder:SelectObjective(newObjectiveTitle)
     objectiveList:GetUserData("renaming")[oldObjectiveTitle] = false
 
     self:Hide()
@@ -114,7 +115,10 @@ local function frame_OnClick(self, buttonClicked, ...)
     if first and target then
         local offset = (first < target) and 1 or -1
         for i = first + offset, target - offset, offset do
-            buttons[i]:SetSelected(true, true)
+            local button = buttons[i]
+            if not button:GetUserData("deleted") and not button:GetUserData("filtered") then
+                button:SetSelected(true, true)
+            end
         end
     end
 

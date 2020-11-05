@@ -84,12 +84,12 @@ local methods = {
     OnRelease = function(self)
         local widget = self:GetUserData("widget")
 
-        widget:SetUserData("resizePoint", nil)
+        widget:SetUserData("resizePoint")
         if not widget:GetUserData("resizable") then
             widget.frame:SetResizable(false)
         end
 
-        widget:SetUserData("defaultSize", nil)
+        widget:SetUserData("defaultSize")
     end,
 
     ------------------------------------------------------------
@@ -116,7 +116,7 @@ local methods = {
     ------------------------------------------------------------
 
     StopDragging = function(self)
-        self:SetUserData("isDragging", nil)
+        self:SetUserData("isDragging")
     end,
 }
 

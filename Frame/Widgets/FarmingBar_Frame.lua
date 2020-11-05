@@ -76,7 +76,7 @@ local function Constructor()
     local frame = CreateFrame("Frame", Type..AceGUI:GetNextWidgetNum(Type), UIParent, "BackdropTemplate, BaseBasicFrameTemplate")
     tinsert(UISpecialFrames, frame:GetName())
 
-    frame:SetFrameStrata("FULLSCREEN")
+    frame:SetFrameStrata("HIGH")
     frame:SetMovable(true)
     frame:SetResizable(true)
     frame:SetPoint("CENTER")

@@ -72,7 +72,7 @@ end
 --!
 local function displayRefHelp_OnClick(self)
     ObjectiveBuilder:SetUserData("showDisplayRefHelp", not ObjectiveBuilder:GetUserData("showDisplayRefHelp"))
-    ObjectiveBuilder:LoadObjectives()
+    ObjectiveBuilder:RefreshObjectives()
 end
 
 ------------------------------------------------------------
@@ -174,7 +174,7 @@ end
 
 local function filterAutoItems_OnValueChanged(self, _, value)
     addon:SetDBValue("global", "settings.misc.filterOBAutoItems", value)
-    ObjectiveBuilder:LoadObjectives()
+    ObjectiveBuilder:RefreshObjectives()
 end
 
 ------------------------------------------------------------
@@ -208,6 +208,27 @@ end
 local function NumericEditBox_OnTextChanged(self)
     self:SetText(string.gsub(self:GetText(), "[%s%c%p%a]", ""))
     self.editbox:SetCursorPosition(strlen(self:GetText()))
+end
+
+------------------------------------------------------------
+
+local function objectiveSearchBox_OnTextChanged(self)
+    ObjectiveBuilder:RefreshObjectives()
+    -- local objectiveList = ObjectiveBuilder:GetUserData("objectiveList")
+
+    -- for _, button in pairs(objectiveList.children) do
+    --     local objectiveTitle = button:GetObjective()
+    --     local filter = self:GetText()
+    --     local notFiltered = not filter or strfind(strupper(objectiveTitle), strupper(filter))
+
+    --     if notFiltered and FarmingBar.db.global.objectives[objectiveTitle] then
+    --         button:SetUserData("filtered", false)
+    --     else
+    --         button:SetUserData("filtered", true)
+    --     end
+    -- end
+
+    -- objectiveList:DoLayout()
 end
 
 ------------------------------------------------------------
@@ -310,6 +331,14 @@ end
 --*------------------------------------------------------------------------
 
 local methods = {
+    ClearSelectedObjective = function(self)
+        local objectiveTitle = self:GetSelectedObjective()
+        self:GetUserData("selectedTabs")[objectiveTitle] = nil
+        self:SetUserData("selectedObjective")
+        self:SetUserData("selectedTracker")
+        self:GetUserData("mainPanel"):ReleaseChildren()
+    end,
+
     GetSelectedObjective = function(self)
         return self:GetUserData("selectedObjective")
 
@@ -360,9 +389,8 @@ local methods = {
 
     ------------------------------------------------------------
 
-    Load = function(self, objectiveTitle)
+    Load = function(self)
         self:Show()
-        self:LoadObjectives(objectiveTitle)
     end,
 
     ------------------------------------------------------------
@@ -390,33 +418,12 @@ local methods = {
 
     ------------------------------------------------------------
 
-    LoadObjectives = function(self, objectiveTitle)
-        local objectiveList = self:GetUserData("objectiveList")
-        local filter = self:GetUserData("objectiveSearchBox"):GetText()
-        objectiveList:ReleaseChildren()
-
-        ------------------------------------------------------------
-
-        for objectiveTitle, objectiveInfo in addon.pairs(FarmingBar.db.global.objectives, function(a, b) return strupper(a) < strupper(b) end) do
-            local notFiltered = not filter or strfind(strupper(objectiveTitle), strupper(filter))
-            local autoFilterEnabled = addon:GetDBValue("global", "settings.misc.filterOBAutoItems")
-            local notAutoFiltered = autoFilterEnabled and not addon:IsObjectiveAutoItem(objectiveTitle) or not autoFilterEnabled
-
-            if notFiltered and notAutoFiltered then
-                local button = AceGUI:Create("FarmingBar_ObjectiveButton")
-                button:SetFullWidth(true)
-                button:SetObjective(objectiveTitle)
-                objectiveList:AddChild(button)
-            end
+    LoadObjectives = function(self)
+        for objectiveTitle, _ in addon.pairs(FarmingBar.db.global.objectives) do
+            addon:AddObjectiveButton(objectiveTitle)
         end
 
-        ------------------------------------------------------------
-
-        -- local selectedObjectiveTitle = objectiveTitle or self:GetSelectedObjective()
-
-        -- if selectedObjectiveTitle then
-        --     self:GetObjectiveButton(selectedObjectiveTitle):Select() --! "attempt to index a nil value" deleting while renaming
-        -- end
+        self:RefreshObjectives()
     end,
 
     ------------------------------------------------------------
@@ -443,6 +450,44 @@ local methods = {
         if selectedTracker then
             self:GetTrackerButton(selectedTracker):Select()
         end
+    end,
+
+    ------------------------------------------------------------
+
+    RefreshObjectives = function(self, objectiveTitle)
+        local objectiveList = self:GetUserData("objectiveList")
+
+        for _, button in pairs(objectiveList.children) do
+            local objectiveTitle = button:GetObjective()
+
+            local filter = self:GetUserData("objectiveSearchBox"):GetText()
+            local filtered = filter and not strfind(strupper(objectiveTitle), strupper(filter))
+
+            local autoFilterEnabled = addon:GetDBValue("global", "settings.misc.filterOBAutoItems")
+            local autoFiltered = autoFilterEnabled and addon:IsObjectiveAutoItem(objectiveTitle)
+
+            local objectiveExists = FarmingBar.db.global.objectives[objectiveTitle]
+
+            ------------------------------------------------------------
+
+            if objectiveExists and not filtered and not autoFiltered and not button:GetUserData("deleted") then
+                button:SetUserData("filtered", false)
+            else
+                button:SetUserData("filtered", true)
+                button:SetSelected(false)
+
+                if not objectiveExists then
+                    button:SetUserData("deleted", true)
+                    if self:GetSelectedObjective() == objectiveTitle then
+                        self:ClearSelectedObjective()
+                    end
+                elseif autoFiltered and self:GetSelectedObjective() == objectiveTitle then
+                    self:ClearSelectedObjective()
+                end
+            end
+        end
+
+        objectiveList:DoLayout()
     end,
 
     ------------------------------------------------------------
@@ -563,10 +608,7 @@ function addon:Initialize_ObjectiveBuilder()
     sidebar:AddChild(objectiveSearchBox)
     ObjectiveBuilder:SetUserData("objectiveSearchBox", objectiveSearchBox)
 
-    -- objectiveSearchBox:SetCallback("OnTextChanged", function(self)
-    --     if self:GetUserData("test") then return end
-    --     ObjectiveBuilder:LoadObjectives()
-    -- end)
+    objectiveSearchBox:SetCallback("OnTextChanged", objectiveSearchBox_OnTextChanged)
 
     ------------------------------------------------------------
 
@@ -582,10 +624,11 @@ function addon:Initialize_ObjectiveBuilder()
     objectiveList:SetLayout("FB30_List")
     objectiveList:SetUserData("childPadding", 5)
     objectiveList:SetUserData("renaming", {})
+    objectiveList:SetUserData("sortFunc", function(a, b)
+        return strupper(a:GetObjective()) < strupper(b:GetObjective())
+    end)
     objectiveListContainer:AddChild(objectiveList)
     ObjectiveBuilder:SetUserData("objectiveList", objectiveList)
-    -- ObjectiveBuilder:SetUserData("objectiveListStatus", {})
-    -- objectiveList:SetStatusTable(ObjectiveBuilder:GetUserData("objectiveListStatus"))
 
     ------------------------------------------------------------
 
@@ -598,6 +641,7 @@ function addon:Initialize_ObjectiveBuilder()
 
     self.MenuFrame = self.MenuFrame or CreateFrame("Frame", "FarmingBarMenuFrame", UIParent, "UIDropDownMenuTemplate")
     self:Initialize_DragFrame()
+    ObjectiveBuilder:LoadObjectives()
 
     ------------------------------------------------------------
     --Debug-----------------------------------------------------
@@ -626,6 +670,20 @@ function addon:Initialize_ObjectiveBuilder()
     end
     ------------------------------------------------------------
     ------------------------------------------------------------
+end
+
+--*------------------------------------------------------------------------
+
+function addon:AddObjectiveButton(objectiveTitle)
+    local objectiveList = ObjectiveBuilder:GetUserData("objectiveList")
+
+    local button = AceGUI:Create("FarmingBar_ObjectiveButton")
+    button:SetFullWidth(true)
+    button:SetObjective(objectiveTitle)
+    objectiveList:AddChild(button)
+    objectiveList:DoLayout()
+
+    return button
 end
 
 --*------------------------------------------------------------------------

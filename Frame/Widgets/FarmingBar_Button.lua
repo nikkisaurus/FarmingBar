@@ -97,7 +97,7 @@ end
 ------------------------------------------------------------
 
 local function Control_OnDragStop(self)
-    self.obj:SetUserData("isDragging", nil)
+    self.obj:SetUserData("isDragging")
 end
 
 ------------------------------------------------------------
@@ -225,7 +225,7 @@ local function Control_OnReceiveDrag(self)
             widget:SetObjectiveID(objectiveTitle)
         end
 
-        widget:SetUserData("dragTitle", nil)
+        widget:SetUserData("dragTitle")
     elseif not objectiveTitle then
         objectiveTitle = addon:CreateObjectiveFromCursor()
         widget:SetObjectiveID(objectiveTitle)
@@ -342,8 +342,8 @@ local methods = {
     ------------------------------------------------------------
 
     ClearObjective = function(self)
-        self:SetUserData("objectiveTitle", nil)
-        self:SetUserData("objective", nil)
+        self:SetUserData("objectiveTitle")
+        self:SetUserData("objective")
         FarmingBar.db.char.bars[self:GetUserData("barID")].objectives[self:GetUserData("buttonID")] = nil
 
         self.frame:UnregisterEvent("BAG_UPDATE")
