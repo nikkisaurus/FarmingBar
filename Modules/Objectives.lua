@@ -150,7 +150,7 @@ function addon:DuplicateSelectedObjectives()
     local pendingSelect
     for key, button in pairs(buttons) do
         local objectiveTitle = button:GetObjective()
-        if button:GetUserData("selected") and not button:GetUserData("deleted") then
+        if button:GetUserData("selected") then
             button:SetSelected(false)
             pendingSelect = self:CreateObjective(objectiveTitle, self:GetObjectiveInfo(objectiveTitle), _, true)
         end
@@ -308,7 +308,7 @@ function addon:RenameObjective(objectiveTitle, newObjectiveTitle)
     FarmingBar.db.global.objectives[objectiveTitle] = nil
 
     self:UpdateExclusions(objectiveTitle, newObjectiveTitle)
-    self:UpdateRenamedObjectiveButton(objectiveTitle, newObjectiveTitle)
+    self:UpdateRenamedObjectiveButtons(objectiveTitle, newObjectiveTitle)
 end
 
 ------------------------------------------------------------
@@ -330,9 +330,9 @@ function addon:SetObjectiveDBInfo(key, value, objectiveTitle)
 
     addon:UpdateButtons(title)
 
-    if not objectiveTitle then
+    -- if not objectiveTitle then
         self.ObjectiveBuilder:RefreshObjectives()
-    end
+    -- end
 end
 
 ------------------------------------------------------------

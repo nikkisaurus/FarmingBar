@@ -116,7 +116,7 @@ local function frame_OnClick(self, buttonClicked, ...)
         local offset = (first < target) and 1 or -1
         for i = first + offset, target - offset, offset do
             local button = buttons[i]
-            if not button:GetUserData("deleted") and not button:GetUserData("filtered") then
+            if not button:GetUserData("filtered") then
                 button:SetSelected(true, true)
             end
         end
@@ -180,6 +180,12 @@ local methods = {
 
     GetObjective = function(self)
         return self:GetUserData("objectiveTitle")
+    end,
+
+    ------------------------------------------------------------
+
+    RefreshIcon = function(self)
+        self.icon:SetTexture(addon:GetObjectiveIcon(self:GetObjective()))
     end,
 
     ------------------------------------------------------------

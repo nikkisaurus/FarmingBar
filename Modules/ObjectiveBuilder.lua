@@ -43,8 +43,49 @@ local trackerConditionListSort = {"ANY", "ALL", "CUSTOM"}
 
 --*------------------------------------------------------------------------
 
+local function LoadDisplayIcon()
+    local objectiveTitle, objectiveInfo = ObjectiveBuilder:GetSelectedObjectiveInfo()
+    local tabContent = ObjectiveBuilder:GetUserData("mainContent")
+
+    if not objectiveInfo.autoIcon then
+        local displayIcon = AceGUI:Create("EditBox")
+        displayIcon:SetRelativeWidth(1/2)
+        displayIcon:SetText(objectiveInfo.icon)
+        ObjectiveBuilder:SetUserData("displayIcon", displayIcon)
+        tabContent:AddChild(displayIcon, tabContent.children[2])
+
+        displayIcon:SetCallback("OnEnterPressed", displayIcon_OnEnterPressed)
+
+        ------------------------------------------------------------
+
+        local chooseButton = AceGUI:Create("Button")
+        chooseButton:SetRelativeWidth(1/2)
+        chooseButton:SetText(L["Choose"])
+        ObjectiveBuilder:SetUserData("chooseButton", chooseButton)
+        tabContent:AddChild(chooseButton, tabContent.children[3])
+
+        -- chooseButton:SetCallback("OnClick", function() self.IconSelector:Show() end) -- TODO: Icon selector frame
+    elseif ObjectiveBuilder:GetUserData("displayIcon") and ObjectiveBuilder:GetUserData("chooseButton") then
+        -- Releasing widgets doesn't remove them from the parent container's children table, so we need to do it manually
+        -- Remove the userdata reference to prevent error about already having been released
+
+        ObjectiveBuilder:GetUserData("displayIcon"):Release()
+        ObjectiveBuilder:SetUserData("displayIcon")
+        tremove(ObjectiveBuilder:GetUserData("mainContent").children, 2)
+
+        ObjectiveBuilder:GetUserData("chooseButton"):Release()
+        ObjectiveBuilder:SetUserData("chooseButton")
+        tremove(ObjectiveBuilder:GetUserData("mainContent").children, 2)
+
+        tabContent:DoLayout()
+    end
+end
+
+--*------------------------------------------------------------------------
+
 local function autoIcon_OnValueChanged(self)
     addon:SetObjectiveDBInfo("autoIcon", self:GetValue())
+    LoadDisplayIcon()
 end
 
 ------------------------------------------------------------
@@ -214,21 +255,6 @@ end
 
 local function objectiveSearchBox_OnTextChanged(self)
     ObjectiveBuilder:RefreshObjectives()
-    -- local objectiveList = ObjectiveBuilder:GetUserData("objectiveList")
-
-    -- for _, button in pairs(objectiveList.children) do
-    --     local objectiveTitle = button:GetObjective()
-    --     local filter = self:GetText()
-    --     local notFiltered = not filter or strfind(strupper(objectiveTitle), strupper(filter))
-
-    --     if notFiltered and FarmingBar.db.global.objectives[objectiveTitle] then
-    --         button:SetUserData("filtered", false)
-    --     else
-    --         button:SetUserData("filtered", true)
-    --     end
-    -- end
-
-    -- objectiveList:DoLayout()
 end
 
 ------------------------------------------------------------
@@ -457,7 +483,8 @@ local methods = {
     RefreshObjectives = function(self, objectiveTitle)
         local objectiveList = self:GetUserData("objectiveList")
 
-        for _, button in pairs(objectiveList.children) do
+        local deletedKeys
+        for key, button in pairs(objectiveList.children) do
             local objectiveTitle = button:GetObjective()
 
             local filter = self:GetUserData("objectiveSearchBox"):GetText()
@@ -470,20 +497,38 @@ local methods = {
 
             ------------------------------------------------------------
 
-            if objectiveExists and not filtered and not autoFiltered and not button:GetUserData("deleted") then
+            if objectiveExists and not filtered and not autoFiltered then
+                -- Show the button and refresh the icon (this method is called on icon changes)
                 button:SetUserData("filtered", false)
+                button:RefreshIcon()
             else
+                -- Hide the button and clear selected
                 button:SetUserData("filtered", true)
                 button:SetSelected(false)
 
                 if not objectiveExists then
-                    button:SetUserData("deleted", true)
+                    -- Objective was deleted
+                    button:Release()
+
+                    -- Store keys to delete from the children table after we're done looping
+                    deletedKeys = deletedKeys or {}
+                    tinsert(deletedKeys, key)
+
+                    -- If deleted objective was the selected objective, clear the selection
                     if self:GetSelectedObjective() == objectiveTitle then
                         self:ClearSelectedObjective()
                     end
                 elseif autoFiltered and self:GetSelectedObjective() == objectiveTitle then
+                    -- If an auto item is selected and then filtered, clear the selection
                     self:ClearSelectedObjective()
                 end
+            end
+        end
+
+        -- Remove released widgets from children table
+        if type(deletedKeys) == "table" then
+            for k, v in addon.pairs(deletedKeys, function(a, b) return b < a end) do
+                tremove(objectiveList.children, v)
             end
         end
 
@@ -702,25 +747,7 @@ function addon:ObjectiveBuilder_LoadObjectiveTab(tabContent)
 
     autoIcon:SetCallback("OnValueChanged", autoIcon_OnValueChanged)
 
-    ------------------------------------------------------------
-
-    if not objectiveInfo.autoIcon then
-        local displayIcon = AceGUI:Create("EditBox")
-        displayIcon:SetRelativeWidth(1/2)
-        displayIcon:SetText(objectiveInfo.icon)
-        tabContent:AddChild(displayIcon, tabContent.objective)
-
-        displayIcon:SetCallback("OnEnterPressed", displayIcon_OnEnterPressed)
-
-        ------------------------------------------------------------
-
-        local chooseButton = AceGUI:Create("Button")
-        chooseButton:SetRelativeWidth(1/2)
-        chooseButton:SetText(L["Choose"])
-        tabContent:AddChild(chooseButton, tabContent.objective)
-
-        -- chooseButton:SetCallback("OnClick", function() self.IconSelector:Show() end) -- TODO: Icon selector frame
-    end
+    LoadDisplayIcon()
 
     ------------------------------------------------------------
 

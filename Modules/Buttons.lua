@@ -31,12 +31,11 @@ end
 
 ------------------------------------------------------------
 
-function addon:UpdateRenamedObjectiveButton(oldObjectiveTitle, newObjectiveTitle)
+function addon:UpdateRenamedObjectiveButtons(oldObjectiveTitle, newObjectiveTitle)
     for _, bar in pairs(self.bars) do
         for _, button in pairs(bar:GetUserData("buttons")) do
             local objectiveTitle = button:GetUserData("objectiveTitle")
-            print(objectiveTitle, oldObjectiveTitle, newObjectiveTitle)
-            if objectiveTitle and objectiveTitle == oldObjectiveTitle then
+            if objectiveTitle == oldObjectiveTitle then
                 button:SetObjectiveID(newObjectiveTitle)
             end
         end
