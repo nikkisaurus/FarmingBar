@@ -8,18 +8,8 @@ local pairs, wipe = pairs, table.wipe
 
 --*------------------------------------------------------------------------
 
--- from AceGUI-3.0.lua
--- Used to set width/height without calling the layout function (e.g. when we're calling during the layout function)
-local layoutrecursionblock = nil
-local function safelayoutcall(object, func, ...)
-	layoutrecursionblock = true
-	object[func](object, ...)
-	layoutrecursionblock = nil
-end
-
---*------------------------------------------------------------------------
-
-AceGUI:RegisterLayout("FB30_PaddedList", function(content, children)
+-- Adds padding between list items and allows the last item to fill the remaining height of the frame
+AceGUI:RegisterLayout("FB30_List", function(content, children)
     local padding = (content.obj and content.obj:GetUserData("childPadding")) or (content.widget and content.widget:GetUserData("childPadding")) or 5
     local height = 0
 
@@ -27,12 +17,14 @@ AceGUI:RegisterLayout("FB30_PaddedList", function(content, children)
         local child = children[i]
         if child then
             local frame = child.frame
+            frame:ClearAllPoints()
+            frame:Show()
             frame:SetWidth(content:GetWidth() - 10)
 
             if i == 1 then
                 frame:SetPoint("TOPLEFT", 5, -5)
             else
-                frame:SetPoint("TOPLEFT", children[i - 1].frame, "BOTTOMLEFT", 0, -padding)
+                frame:SetPoint("TOPLEFT", 0, -(padding + height))
             end
 
             height = height + frame:GetHeight() + padding
@@ -54,6 +46,93 @@ AceGUI:RegisterLayout("FB30_PaddedList", function(content, children)
 end)
 
 --*------------------------------------------------------------------------
+
+-- Content should contain two children containers to create a sidebar and main panel
+AceGUI:RegisterLayout("FB30_SidebarGroup", function(content, children)
+    local contentWidth = content.width or content:GetWidth() or 0
+    local height = 0
+
+    for i = 1, 2 do
+        local child = children[i]
+        if child then
+            local frame = child.frame
+            frame:ClearAllPoints()
+            frame:Show()
+
+            if i == 1 then
+                frame:SetPoint("TOPLEFT", content, "TOPLEFT", 0, 0)
+                frame:SetPoint("BOTTOMRIGHT", content, "BOTTOMLEFT", contentWidth / 3, 0)
+            elseif i == 2 then
+                frame:SetPoint("TOPLEFT", children[1].frame, "TOPRIGHT", 0, 0)
+                frame:SetPoint("BOTTOMRIGHT", content, "BOTTOMRIGHT", 0, 0)
+            end
+
+            height = height + frame:GetHeight()
+
+            if child.DoLayout then
+                child:DoLayout()
+            end
+        end
+    end
+
+    if content.obj.LayoutFinished then
+        content.obj:LayoutFinished(nil, height)
+    end
+end)
+
+--*------------------------------------------------------------------------
+
+-- Content should contain three children containers to create a top panel, sidebar, and main panel
+AceGUI:RegisterLayout("FB30_TopSidebarGroup", function(content, children)
+    local contentWidth = content.width or content:GetWidth() or 0
+    local height = 0
+
+    for i = 1, 3 do
+        local child = children[i]
+        if child then
+            local frame = child.frame
+            frame:ClearAllPoints()
+            frame:Show()
+
+            if i == 1 then
+                frame:SetPoint("TOPLEFT")
+                frame:SetPoint("TOPRIGHT")
+            elseif i == 2 then
+                frame:SetPoint("TOPLEFT", children[1].frame, "BOTTOMLEFT")
+                frame:SetPoint("BOTTOMRIGHT", content, "BOTTOMLEFT", contentWidth / 3, 0)
+            elseif i == 3 then
+                frame:SetPoint("TOPLEFT", children[2].frame, "TOPRIGHT")
+                frame:SetPoint("BOTTOMRIGHT")
+            end
+
+            height = height + frame:GetHeight()
+
+            if child.DoLayout then
+                child:DoLayout()
+            end
+        end
+    end
+
+    if content.obj.LayoutFinished then
+        content.obj:LayoutFinished(nil, height)
+    end
+end)
+
+
+--*------------------------------------------------------------------------
+--*Needs work... a lot of it*----------------------------------------------
+--*------------------------------------------------------------------------
+
+-- from AceGUI-3.0.lua
+-- Used to set width/height without calling the layout function (e.g. when we're calling during the layout function)
+local layoutrecursionblock = nil
+local function safelayoutcall(object, func, ...)
+	layoutrecursionblock = true
+	object[func](object, ...)
+	layoutrecursionblock = nil
+end
+
+------------------------------------------------------------
 
 -- scroll:SetLayout("FB30_Table")
 -- scroll:SetUserData("table", {
@@ -80,6 +159,8 @@ end)
 --     },
 -- })
 
+------------------------------------------------------------
+
 -- table is set as a table filled with row tables
 -- row tables can include the arguments: cols (table), rowHeight (integer, "fill" to fill to bottom of frame or "stretch" to stretch all cells to the max height of the row), hpadding (horizontal padding between cells (cols)), vOffset (vertical offset; note that same row offsets will be in relation to the first cell in a row)
 -- rowHeight fills will stop after next row
@@ -90,6 +171,8 @@ end)
 -- haven't decided whether or not I want everything to fit without overflowing or let that be a user problem to set up correctly; for now I'm not implementing this
 
 -- add setting: constrainOverflow
+
+------------------------------------------------------------
 
 AceGUI:RegisterLayout("FB30_Table", function(content, children)
     if layoutrecursionblock or #children == 0 then return end

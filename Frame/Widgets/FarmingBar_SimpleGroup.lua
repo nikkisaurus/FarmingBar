@@ -24,13 +24,25 @@ local methods = {
 	------------------------------------------------------------
 
 	OnHeightSet = function(self, height)
-		self.height = height
+		local content = self.content
+		local contentheight = height
+		if contentheight < 0 then
+			contentheight = 0
+		end
+		content:SetHeight(contentheight)
+        content.height = contentheight
 	end,
 
 	------------------------------------------------------------
 
 	OnWidthSet = function(self, width)
-		self.width = width
+		local content = self.content
+		local contentwidth = width
+		if contentwidth < 0 then
+			contentwidth = 0
+		end
+		content:SetWidth(contentwidth)
+		content.width = contentwidth
 	end,
 }
 

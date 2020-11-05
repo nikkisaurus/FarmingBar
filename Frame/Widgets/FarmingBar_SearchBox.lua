@@ -28,7 +28,10 @@ end
 
 local methods = {
     OnAcquire = function(self)
-        self:SetText("")
+    end,
+
+    OnRelease = function(self)
+        -- self:SetText("")
     end,
 
     GetText = function(self)

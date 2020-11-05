@@ -38,8 +38,11 @@ end
 local function dragger_OnMouseUp(self, ...)
     local widget = self.obj:GetUserData("widget")
     if not widget then return end
-    widget.frame:StopMovingOrSizing()
     self.obj:StopDragging()
+    widget.frame:StopMovingOrSizing()
+	widget.frame:SetUserPlaced(false)
+    widget.frame:ClearAllPoints()
+    widget.parent:DoLayout()
     self.obj:Fire("OnMouseUp", ...)
 end
 
@@ -49,24 +52,24 @@ local function dragger_OnUpdate(self, ...)
     local widget = self.obj:GetUserData("widget")
     if not widget or not self.obj:GetUserData("isDragging") then return end
     local frame = widget.frame
+
     local minWidth, minHeight = frame:GetMinResize()
-    minWidth = minWidth > 0 and minWidth or 100
-    minHeight = minHeight > 0 and minHeight or 100
+    minWidth = minWidth > 0 and minWidth or (widget:GetUserData("defaultSize")[1] - 1)
+    minHeight = minHeight > 0 and minHeight or (widget:GetUserData("defaultSize")[2] - 1)
+
+    ------------------------------------------------------------
 
     if frame:GetWidth() < minWidth then
         frame:SetWidth(minWidth)
-        frame:StopMovingOrSizing()
-        self.obj:SetUserData("isDragging", nil)
-        self.obj:Fire("OnMouseUp", ...)
     end
 
     if frame:GetHeight() < minHeight then
         frame:SetHeight(minHeight)
-        frame:StopMovingOrSizing()
-        self.obj:SetUserData("isDragging", nil)
-        self.obj:Fire("OnMouseUp", ...)
     end
 
+    ------------------------------------------------------------
+
+    widget.parent:DoLayout()
     self.obj:Fire("OnUpdate", ...)
 end
 
@@ -80,33 +83,40 @@ local methods = {
 
     OnRelease = function(self)
         local widget = self:GetUserData("widget")
+
         widget:SetUserData("resizePoint", nil)
         if not widget:GetUserData("resizable") then
             widget.frame:SetResizable(false)
         end
+
+        widget:SetUserData("defaultSize", nil)
     end,
 
     ------------------------------------------------------------
 
     SetWidget = function(self, widget, resizePoint)
         self:SetUserData("widget", widget)
+
         widget:SetUserData("resizePoint", resizePoint)
         widget:SetUserData("resizable", widget.frame:IsResizable())
         widget.frame:SetResizable(true)
+
+        -- Prevent overwriting the defaultSize after resizing
+        if not widget:GetUserData("defaultSize") then
+            widget:SetUserData("defaultSize", {widget.frame:GetWidth(), widget.frame:GetHeight()})
+        end
     end,
 
     ------------------------------------------------------------
 
     StartDragging = function(self)
         self:SetUserData("isDragging", true)
-        self.frame:GetNormalTexture():SetVertexColor(1, 1, 1, 0)
     end,
 
     ------------------------------------------------------------
 
     StopDragging = function(self)
         self:SetUserData("isDragging", nil)
-        self.frame:GetNormalTexture():SetVertexColor(1, 1, 1, .05)
     end,
 }
 

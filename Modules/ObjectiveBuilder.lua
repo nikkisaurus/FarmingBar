@@ -31,63 +31,6 @@ local mainTabGroupTabs = {
 
 ------------------------------------------------------------
 
-local ObjectiveBuilder_ScrollFrames = {
-    objectiveList = {},
-    mainContent = {},
-    trackerList = {},
-    excludeList = {},
-}
-
-------------------------------------------------------------
-
-local ObjectiveBuilder_TableInfo = {
-    {
-        cols = {
-            {width = "fill"},
-        },
-    },
-    {
-        cols = {
-            {width = "relative", relWidth = 1/3},
-            {width = "relative", relWidth = 2/3},
-        },
-        hpadding = 5,
-        vOffset = 5,
-        rowHeight = "fill",
-    },
-}
-
-------------------------------------------------------------
-
-local ObjectiveBuilderMainPanel_TableInfo = {
-    {
-        cols = {
-            {width = "fill"},
-        },
-    },
-    {
-        cols = {
-            {width = "fill"},
-        },
-        rowHeight = "fill",
-    },
-}
-
-------------------------------------------------------------
-
-local ObjectiveBuilderTrackerContent_TableInfo = {
-    {
-        cols = {
-            {width = "relative", relWidth = 1/3},
-            {width = "relative", relWidth = 2/3},
-        },
-        hpadding = 5,
-        rowHeight = "fill",
-    },
-}
-
-------------------------------------------------------------
-
 local trackerConditionList = {
     ANY = L["Any"],
     ALL = L["All"],
@@ -247,12 +190,9 @@ local function mainTabGroup_OnGroupSelected(self, _, selected)
     self:ReleaseChildren()
 
     local mainContent = AceGUI:Create("ScrollFrame")
-    mainContent:SetLayout("Flow")
-    mainContent:SetStatusTable(ObjectiveBuilder:GetUserData("scrollFrames").mainContent)
+    mainContent:SetLayout("FB30_List")
     ObjectiveBuilder:SetUserData("mainContent", mainContent)
     self:AddChild(mainContent)
-
-    mainContent:SetScroll(mainContent.status.scrollvalue)
 
     ------------------------------------------------------------
 
@@ -280,8 +220,7 @@ end
 
 local function trackerContentSizer_OnMouseUp(self, trackerContent, tabContent)
     ObjectiveBuilder:SetUserData("trackerContentHeight", trackerContent.frame:GetHeight())
-    tabContent:ReleaseChildren()
-    addon:ObjectiveBuilder_LoadTrackersTab(tabContent)
+    ObjectiveBuilder:GetUserData("mainTabGroup"):DoLayout()
 end
 
 ------------------------------------------------------------
@@ -473,11 +412,11 @@ local methods = {
 
         ------------------------------------------------------------
 
-        local selectedObjectiveTitle = objectiveTitle or self:GetSelectedObjective()
+        -- local selectedObjectiveTitle = objectiveTitle or self:GetSelectedObjective()
 
-        if selectedObjectiveTitle then
-            self:GetObjectiveButton(selectedObjectiveTitle):Select() --! "attempt to index a nil value" deleting while renaming
-        end
+        -- if selectedObjectiveTitle then
+        --     self:GetObjectiveButton(selectedObjectiveTitle):Select() --! "attempt to index a nil value" deleting while renaming
+        -- end
     end,
 
     ------------------------------------------------------------
@@ -524,6 +463,8 @@ local methods = {
             ------------------------------------------------------------
 
             local mainTabGroup = AceGUI:Create("TabGroup")
+            mainTabGroup:SetFullWidth(true)
+            mainTabGroup:SetFullHeight(true)
             mainTabGroup:SetLayout("Fill")
             mainTabGroup:SetTabs(mainTabGroupTabs)
             mainPanel:AddChild(mainTabGroup)
@@ -552,31 +493,9 @@ local methods = {
 function addon:Initialize_ObjectiveBuilder()
     ObjectiveBuilder = AceGUI:Create("FarmingBar_Frame")
     ObjectiveBuilder:SetTitle("Farming Bar "..L["Objective Builder"])
-    ObjectiveBuilder:SetLayout("FB30_Table")
-    ObjectiveBuilder:SetUserData("table", ObjectiveBuilder_TableInfo)
+    ObjectiveBuilder:SetLayout("FB30_TopSidebarGroup")
     ObjectiveBuilder:SetUserData("selectedTabs", {})
-    ObjectiveBuilder:SetUserData("scrollFrames", ObjectiveBuilder_ScrollFrames)
-    ObjectiveBuilder:SetUserData("scrollvalues", {})
     addon.ObjectiveBuilder = ObjectiveBuilder
-
-    ObjectiveBuilder:SetCallback("OnMouseDown", function(self)
-        for scrollFrame, status in pairs(self:GetUserData("scrollFrames")) do
-            local widget = self:GetUserData(scrollFrame)
-            if widget then
-                self:GetUserData("scrollvalues")[scrollFrame] = status.scrollvalue
-            end
-        end
-    end)
-
-    ObjectiveBuilder:SetCallback("OnMouseUp", function(self)
-        for scrollFrame, scrollvalue in pairs(self:GetUserData("scrollvalues")) do
-            local widget = self:GetUserData(scrollFrame)
-            if widget then
-                widget:SetScroll(scrollvalue)
-                widget.scrollbar:SetValue(scrollvalue)
-            end
-        end
-    end)
 
     for method, func in pairs(methods) do
         ObjectiveBuilder[method] = func
@@ -585,7 +504,6 @@ function addon:Initialize_ObjectiveBuilder()
     ------------------------------------------------------------
 
     local topPanel = AceGUI:Create("FarmingBar_InlineGroup")
-    topPanel:SetFullWidth(true)
     topPanel:SetLayout("Flow")
     ObjectiveBuilder:AddChild(topPanel)
 
@@ -634,8 +552,7 @@ function addon:Initialize_ObjectiveBuilder()
     -- ------------------------------------------------------------
 
     local sidebar = AceGUI:Create("FarmingBar_InlineGroup")
-    sidebar:SetFullHeight(true)
-    sidebar:SetLayout("FB30_PaddedList")
+    sidebar:SetLayout("FB30_List")
     sidebar:SetUserData("childPadding", 10)
     ObjectiveBuilder:AddChild(sidebar)
 
@@ -646,7 +563,10 @@ function addon:Initialize_ObjectiveBuilder()
     sidebar:AddChild(objectiveSearchBox)
     ObjectiveBuilder:SetUserData("objectiveSearchBox", objectiveSearchBox)
 
-    objectiveSearchBox:SetCallback("OnTextChanged", function() ObjectiveBuilder:LoadObjectives() end)
+    -- objectiveSearchBox:SetCallback("OnTextChanged", function(self)
+    --     if self:GetUserData("test") then return end
+    --     ObjectiveBuilder:LoadObjectives()
+    -- end)
 
     ------------------------------------------------------------
 
@@ -659,20 +579,18 @@ function addon:Initialize_ObjectiveBuilder()
     ------------------------------------------------------------
 
     local objectiveList = AceGUI:Create("ScrollFrame")
-    objectiveList:SetLayout("FB30_PaddedList")
+    objectiveList:SetLayout("FB30_List")
     objectiveList:SetUserData("childPadding", 5)
     objectiveList:SetUserData("renaming", {})
-    objectiveList:SetStatusTable(ObjectiveBuilder:GetUserData("scrollFrames").objectiveList)
     objectiveListContainer:AddChild(objectiveList)
     ObjectiveBuilder:SetUserData("objectiveList", objectiveList)
+    -- ObjectiveBuilder:SetUserData("objectiveListStatus", {})
+    -- objectiveList:SetStatusTable(ObjectiveBuilder:GetUserData("objectiveListStatus"))
 
-    objectiveList:SetScroll(objectiveList.status.scrollvalue)
-
-    -- ------------------------------------------------------------
+    ------------------------------------------------------------
 
     local mainPanel = AceGUI:Create("FarmingBar_InlineGroup")
-    mainPanel:SetLayout("FB30_Table")
-    mainPanel:SetUserData("table", ObjectiveBuilderMainPanel_TableInfo)
+    mainPanel:SetLayout("Flow")
     ObjectiveBuilder:AddChild(mainPanel)
     ObjectiveBuilder:SetUserData("mainPanel", mainPanel)
 
@@ -864,32 +782,26 @@ function addon:ObjectiveBuilder_LoadTrackersTab(tabContent)
 
     ------------------------------------------------------------
 
-    local trackerContent = AceGUI:Create("FarmingBar_SimpleGroup")
+    local trackerContent = AceGUI:Create("SimpleGroup")
     trackerContent:SetFullWidth(true)
-    trackerContent:SetAutoAdjustHeight(false)
     trackerContent:SetHeight(ObjectiveBuilder:GetUserData("trackerContentHeight") or 200)
-    trackerContent:SetLayout("FB30_Table")
-    trackerContent:SetUserData("table", ObjectiveBuilderTrackerContent_TableInfo)
+    trackerContent:SetAutoAdjustHeight(false)
+    trackerContent:SetLayout("FB30_SidebarGroup")
     tabContent:AddChild(trackerContent)
 
     ------------------------------------------------------------
 
     local trackerListContainer = AceGUI:Create("FarmingBar_InlineGroup")
-    trackerListContainer:SetFullWidth(true)
-    trackerListContainer:SetFullHeight(true)
     trackerListContainer:SetLayout("Fill")
     trackerContent:AddChild(trackerListContainer)
 
     ------------------------------------------------------------
 
     local trackerList = AceGUI:Create("ScrollFrame")
-    trackerList:SetLayout("FB30_PaddedList")
+    trackerList:SetLayout("FB30_List")
     trackerList:SetUserData("childPadding", 5)
-    trackerList:SetStatusTable(ObjectiveBuilder:GetUserData("scrollFrames").trackerList)
     trackerListContainer:AddChild(trackerList)
     ObjectiveBuilder:SetUserData("trackerList", trackerList)
-
-    trackerList:SetScroll(trackerList.status.scrollvalue)
 
     ------------------------------------------------------------
 
@@ -1020,12 +932,9 @@ function addon:ObjectiveBuilder_LoadTrackerInfo(tracker)
     ------------------------------------------------------------
 
     local excludeList = AceGUI:Create("ScrollFrame")
-    excludeList:SetLayout("FB30_PaddedList")
-    excludeList:SetStatusTable(ObjectiveBuilder:GetUserData("scrollFrames").excludeList)
+    excludeList:SetLayout("FB30_List")
     excludeListContainer:AddChild(excludeList)
     ObjectiveBuilder.excludeList = excludeList
-
-    excludeList:SetScroll(excludeList.status.scrollvalue)
 
     ------------------------------------------------------------
 
