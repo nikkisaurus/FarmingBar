@@ -339,7 +339,7 @@ end
 ------------------------------------------------------------
 
 function addon:ApplyMasqueSkin(buttonType, button)
-    if not self.MSQ or self.MSQ[buttonType].db.Disabled then
+    if not self.MSQ or self.MSQ[buttonType].db.Disabled or not button.widget then
         return
     end
 

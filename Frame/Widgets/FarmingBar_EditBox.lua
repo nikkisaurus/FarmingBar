@@ -19,6 +19,13 @@ local Version = 1
 
 --*------------------------------------------------------------------------
 
+local function HideButton(self)
+	self.button:Hide()
+	self.editbox:SetTextInsets(0, 0, 3, 3)
+end
+
+------------------------------------------------------------
+
 local function EditBox_OnEnterPressed(frame)
 	local self = frame.obj
 	local value = frame:GetText()
@@ -54,13 +61,6 @@ function _G.AceGUIEditBoxInsertLink(text)
 end
 
 --*------------------------------------------------------------------------
-
-local function HideButton(self)
-	self.button:Hide()
-	self.editbox:SetTextInsets(0, 0, 3, 3)
-end
-
-------------------------------------------------------------
 
 local function ShowButton(self)
 	if not self.disablebutton then
