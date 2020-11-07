@@ -2,6 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<Script file="Widgets\FarmingBar_Bar.lua"/>
 	<Script file="Widgets\FarmingBar_Button.lua"/>
+	<Script file="Widgets\FarmingBar_EditBox.lua"/>
 	<Script file="Widgets\FarmingBar_Frame.lua"/>
 	<Script file="Widgets\FarmingBar_InlineGroup.lua"/>
 	<Script file="Widgets\FarmingBar_InteractiveLabel.lua"/>

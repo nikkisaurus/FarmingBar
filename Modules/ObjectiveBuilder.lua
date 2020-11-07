@@ -43,6 +43,46 @@ local trackerConditionListSort = {"ANY", "ALL", "CUSTOM"}
 
 --*------------------------------------------------------------------------
 
+local function displayRefMacrotext_OnEnterPressed(self)
+    addon:SetObjectiveDBInfo("displayRef.trackerID", self:GetText())
+end
+
+------------------------------------------------------------
+
+local function displayRefMacrotext_OnEscapePressed(self)
+    local objectiveTitle, objectiveInfo = addon:GetSelectedObjectiveInfo()
+    self:SetText(objectiveInfo.displayRef.trackerID)
+end
+
+------------------------------------------------------------
+
+local function displayRefTrackerID_OnEnterPressed(self)
+    local objectiveTitle, objectiveInfo = addon:GetSelectedObjectiveInfo()
+    local trackerID = self:GetText()
+    local validTrackerID, trackerType = addon:ValidateObjectiveData(objectiveInfo.displayRef.trackerType, trackerID)
+
+    if validTrackerID then
+        addon:SetObjectiveDBInfo("displayRef.trackerID", trackerType == "ITEM" and validTrackerID or tonumber(trackerID))
+
+        self:SetText(objectiveInfo.displayRef.trackerID)
+        self:ClearFocus()
+    else
+        addon:ReportError(L.InvalidTrackerID(trackerType, trackerID))
+
+        self:SetText("")
+        self:SetFocus()
+    end
+end
+
+------------------------------------------------------------
+
+local function displayRefTrackerID_OnEscapePressed(self)
+    local objectiveTitle, objectiveInfo = addon:GetSelectedObjectiveInfo()
+    self:SetText(objectiveInfo.displayRef.trackerID)
+end
+
+--*------------------------------------------------------------------------
+
 local function LoadDisplayIcon()
     local objectiveTitle, objectiveInfo = ObjectiveBuilder:GetSelectedObjectiveInfo()
     local tabContent = ObjectiveBuilder:GetUserData("mainContent")
@@ -66,16 +106,42 @@ local function LoadDisplayIcon()
 
         -- chooseButton:SetCallback("OnClick", function() self.IconSelector:Show() end) -- TODO: Icon selector frame
     elseif ObjectiveBuilder:GetUserData("displayIcon") and ObjectiveBuilder:GetUserData("chooseButton") then
-        -- Releasing widgets doesn't remove them from the parent container's children table, so we need to do it manually
-        -- Remove the userdata reference to prevent error about already having been released
+        ObjectiveBuilder:ReleaseChild("displayIcon")
+        ObjectiveBuilder:ReleaseChild("chooseButton")
 
-        ObjectiveBuilder:GetUserData("displayIcon"):Release()
-        ObjectiveBuilder:SetUserData("displayIcon")
-        tremove(tabContent.children, 2)
+        tabContent:DoLayout()
+    end
+end
 
-        ObjectiveBuilder:GetUserData("chooseButton"):Release()
-        ObjectiveBuilder:SetUserData("chooseButton")
-        tremove(tabContent.children, 2)
+------------------------------------------------------------
+
+local function LoadDisplayRefEditbox()
+    local objectiveTitle, objectiveInfo = addon:GetSelectedObjectiveInfo()
+    local tabContent = ObjectiveBuilder:GetUserData("mainContent")
+
+    ObjectiveBuilder:ReleaseChild("displayRefMacrotext")
+    ObjectiveBuilder:ReleaseChild("displayRefTrackerID")
+
+    local editbox
+    if objectiveInfo.displayRef.trackerType == "MACROTEXT" then
+        editbox = AceGUI:Create("MultiLineEditBox")
+        editbox:SetLabel(L["Macrotext"])
+        ObjectiveBuilder:SetUserData("displayRefMacrotext", editbox)
+        editbox:SetCallback("OnEnterPressed", displayRefMacrotext_OnEnterPressed)
+        editbox:SetCallback("OnEscapePressed", displayRefMacrotext_OnEscapePressed)
+    elseif objectiveInfo.displayRef.trackerType and objectiveInfo.displayRef.trackerType ~= "NONE" then
+        editbox = AceGUI:Create("FarmingBar_EditBox")
+        editbox:SetLink(true)
+        editbox:SetLabel(addon:GetTrackerTypeLabel(objectiveInfo.displayRef.trackerType))
+        ObjectiveBuilder:SetUserData("displayRefTrackerID", editbox)
+        editbox:SetCallback("OnEnterPressed", displayRefTrackerID_OnEnterPressed)
+        editbox:SetCallback("OnEscapePressed", displayRefTrackerID_OnEscapePressed)
+    end
+
+    if editbox then
+        editbox:SetFullWidth(true)
+        editbox:SetText(objectiveInfo.displayRef.trackerID or "")
+        tabContent:AddChild(editbox)
 
         tabContent:DoLayout()
     end
@@ -128,35 +194,10 @@ end
 
 ------------------------------------------------------------
 
-local function displayRefMacrotext_OnEnterPressed(self)
-    addon:SetObjectiveDBInfo("displayRef.trackerID", self:GetText())
-end
-
-------------------------------------------------------------
-
-local function displayRefTrackerID_OnEnterPressed(self)
-    local objectiveTitle, objectiveInfo = addon:GetSelectedObjectiveInfo()
-    local trackerID = self:GetText()
-
-    if addon:ValidateObjectiveData(objectiveInfo.displayRef.trackerType, trackerID) then
-        addon:SetObjectiveDBInfo("displayRef.trackerID", objectiveInfo.displayRef.trackerType == "ITEM" and validTrackerID or tonumber(trackerID))
-
-        self:SetText(objectiveInfo.displayRef.trackerID)
-        self:ClearFocus()
-    else
-        addon:ReportError(L.InvalidTrackerID(objectiveInfo.displayRef.trackerType, trackerID))
-
-        self:SetText("")
-        self:SetFocus()
-    end
-end
-
-------------------------------------------------------------
-
 local function displayRefTrackerType_OnValueChanged(self, _, selected)
     addon:SetObjectiveDBInfo("displayRef.trackerType", selected ~= "NONE" and selected or false)
-    -- addon:SetObjectiveDBInfo("displayRef.trackerID", false)
-    --! have to add checks if we do this ^
+    -- addon:SetObjectiveDBInfo("displayRef.trackerID", false) --! have to add checks if we do this
+    LoadDisplayRefEditbox()
 end
 
 ------------------------------------------------------------
@@ -551,6 +592,25 @@ local methods = {
 
     ------------------------------------------------------------
 
+    ReleaseChild = function(self, widget)
+        -- Releasing widgets doesn't remove them from the parent container's children table, so we need to do it manually
+        -- Remove the userdata reference to prevent error about already having been released
+
+        widget = ObjectiveBuilder:GetUserData(widget)
+        if not widget then return end
+        local children = widget.parent.children
+
+        for key, child in pairs(children) do
+            if widget == child then
+                child:Release()
+                ObjectiveBuilder:SetUserData(widget)
+                tremove(children, key)
+            end
+        end
+    end,
+
+    ------------------------------------------------------------
+
     SelectObjective = function(self, objectiveTitle)
         local mainPanel = self:GetUserData("mainPanel")
         self:SetUserData("selectedObjective", objectiveTitle)
@@ -789,25 +849,7 @@ function addon:ObjectiveBuilder_LoadObjectiveTab(tabContent)
 
     displayRefTrackerType:SetCallback("OnValueChanged", displayRefTrackerType_OnValueChanged)
 
-    ------------------------------------------------------------
-
-    if objectiveInfo.displayRef.trackerType == "MACROTEXT" then
-        local displayRefMacrotext = AceGUI:Create("MultiLineEditBox")
-        displayRefMacrotext:SetFullWidth(true)
-        displayRefMacrotext:SetLabel(L["Macrotext"])
-        displayRefMacrotext:SetText(objectiveInfo.displayRef.trackerID or "")
-        tabContent:AddChild(displayRefMacrotext)
-
-        displayRefMacrotext:SetCallback("OnEnterPressed", displayRefMacrotext_OnEnterPressed)
-    elseif objectiveInfo.displayRef.trackerType and objectiveInfo.displayRef.trackerType ~= "NONE" then
-        local displayRefTrackerID = AceGUI:Create("EditBox")
-        displayRefTrackerID:SetFullWidth(true)
-        displayRefTrackerID:SetLabel(self:GetTrackerTypeLabel(objectiveInfo.displayRef.trackerType))
-        displayRefTrackerID:SetText(objectiveInfo.displayRef.trackerID or "")
-        tabContent:AddChild(displayRefTrackerID)
-
-        displayRefTrackerID:SetCallback("OnEnterPressed", displayRefTrackerID_OnEnterPressed)
-    end
+    LoadDisplayRefEditbox()
 end
 
 ------------------------------------------------------------
