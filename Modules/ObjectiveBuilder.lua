@@ -369,9 +369,13 @@ end
 local methods = {
     ClearSelectedObjective = function(self)
         local objectiveTitle = self:GetSelectedObjective()
+        if not objectiveTitle then return end
+        self:GetObjectiveButton(objectiveTitle):SetSelected(false)
+
         self:GetUserData("selectedTabs")[objectiveTitle] = nil
         self:SetUserData("selectedObjective")
         self:SetUserData("selectedTracker")
+
         self:GetUserData("mainPanel"):ReleaseChildren()
     end,
 
@@ -407,7 +411,7 @@ local methods = {
 
     GetObjectiveButton = function(self, objectiveTitle)
         for _, button in pairs(self:GetUserData("objectiveList").children) do
-            if button:GetUserData("objectiveTitle") == objectiveTitle then
+            if button:GetObjective() == objectiveTitle then
                 return button
             end
         end

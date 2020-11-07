@@ -41,6 +41,7 @@ function addon:CreateObjective(objectiveTitle, objectiveInfo, overwrite, supress
         button:RenameObjective()
     end
     if not supressSelect then
+        ObjectiveBuilder:ClearSelectedObjective()
         ObjectiveBuilder:SelectObjective(newObjectiveTitle)
     end
 
@@ -156,6 +157,7 @@ function addon:DuplicateSelectedObjectives()
         end
     end
 
+    ObjectiveBuilder:ClearSelectedObjective()
     ObjectiveBuilder:SelectObjective(pendingSelect)
 end
 
