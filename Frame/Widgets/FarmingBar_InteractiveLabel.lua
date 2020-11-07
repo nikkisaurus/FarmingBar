@@ -3,6 +3,7 @@ local FarmingBar = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
 local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 
+local max = math.max
 local pairs, unpack = pairs, unpack
 local strupper = string.upper
 local CreateFrame, UIParent = CreateFrame, UIParent
@@ -90,48 +91,65 @@ local methods = {
         local frame = self.frame
         local icon = self.icon
         local text = self.text
+
         local padding = self:GetUserData("padding") or 5
         local hTextOffset = self:GetUserData("hTextOffset") or 0
+        local hOffset = padding + hTextOffset
         local vTextOffset = self:GetUserData("vTextOffset") or 0
+        local vOffset = padding + vTextOffset
+
+        local resize = not self:GetUserData("noAutoHeight")
 
         if self:GetUserData("iconVisible") then
             local point = strupper(self:GetUserData("iconPoint"))
-            if point == "LEFT" then
-                icon:SetPoint("LEFT", padding, 0)
-                text:ClearAllPoints()
+            local isHorizontal = point == "LEFT" or point == "RIGHT"
+            local isLeft = point == "LEFT"
+            local isBottom = point == "BOTTOM"
+
+            icon:SetPoint(point, (isLeft or isBottom) and padding or -padding)
+            text:ClearAllPoints()
+            text:SetJustifyH(isHorizontal and point or "MIDDLE")
+
+            if isHorizontal then
+                local relPoint = isLeft and "RIGHT" or "LEFT"
+                text:SetPoint(point, icon, relPoint, isLeft and hOffset or -hOffset, vTextOffset)
+                text:SetPoint(relPoint, isLeft and -hOffset or hOffset, 0)
+
+                if resize then
+                    if text:GetHeight() > frame:GetHeight() then
+                        self:SetHeight(text:GetHeight() + ((padding + vTextOffset) * 2))
+                        icon:SetPoint("TOP")
+                    else
+                        self:SetHeight(max(text:GetHeight(), icon:GetHeight()) + ((padding + vTextOffset) * 2))
+                    end
+                end
+
                 text:SetPoint("TOP", 0, -(padding + vTextOffset))
                 text:SetPoint("BOTTOM", 0, (padding + vTextOffset))
-                text:SetPoint("LEFT", icon, "RIGHT", padding + hTextOffset, vTextOffset)
-                text:SetPoint("RIGHT", -padding, 0)
-                text:SetJustifyH("LEFT")
-            elseif point == "RIGHT" then
-                icon:SetPoint("RIGHT", -padding, 0)
-                text:ClearAllPoints()
-                text:SetPoint("TOP", 0, -(padding + vTextOffset))
-                text:SetPoint("BOTTOM", 0, (padding + vTextOffset))
-                text:SetPoint("RIGHT", icon, "LEFT", -(padding + hTextOffset), vTextOffset)
-                text:SetPoint("LEFT", padding, 0)
-                text:SetJustifyH("RIGHT")
-            elseif point == "TOP" then
-                icon:SetPoint("TOP", 0, -padding)
-                text:ClearAllPoints()
-                text:SetPoint("TOP", icon, "BOTTOM", hTextOffset, -(padding + vTextOffset))
+            else
                 text:SetPoint("LEFT", padding, 0)
                 text:SetPoint("RIGHT", -padding, 0)
-                text:SetJustifyH("MIDDLE")
-            elseif point == "BOTTOM" then
-                icon:SetPoint("BOTTOM", 0, padding)
-                text:ClearAllPoints()
-                text:SetPoint("BOTTOM", icon, "TOP", hTextOffset, padding + vTextOffset)
-                text:SetPoint("LEFT", padding, 0)
-                text:SetPoint("RIGHT", -padding, 0)
-                text:SetJustifyH("MIDDLE")
+
+                if resize then
+                    if text:GetHeight() > frame:GetHeight() then
+                        self:SetHeight(icon:GetHeight() + text:GetHeight() + ((padding + vTextOffset) * 2))
+                    else
+                        self:SetHeight(max(text:GetHeight(), icon:GetHeight()) + ((padding + vTextOffset) * 2))
+                    end
+                end
+
+                text:SetPoint(point, icon, isBottom and "TOP" or "BOTTOM", htextOffset, isBottom and vOffset or -vOffset)
             end
         else
             text:ClearAllPoints()
+            text:SetJustifyH("MIDDLE")
+
+            if text:GetHeight() > frame:GetHeight() and resize then
+                self:SetHeight(text:GetHeight() + ((padding + vTextOffset) * 2))
+            end
+
             text:SetPoint("LEFT", padding, 0)
             text:SetPoint("RIGHT", -padding, 0)
-            text:SetJustifyH("MIDDLE")
         end
 
         self:UpdateDimensions()
@@ -147,6 +165,12 @@ local methods = {
 
     SetAutoWidth = function(self, enabled)
         self:SetUserData("noAutoWidth", not enabled)
+    end,
+
+    ------------------------------------------------------------
+
+    SetAutoHeight = function(self, enabled)
+        self:SetUserData("noAutoHeight", not enabled)
     end,
 
     ------------------------------------------------------------
@@ -243,6 +267,9 @@ local methods = {
     SetText = function(self, text)
         self.text:SetText(text)
         self:AnchorTextures()
+        if self.text:GetText() then
+            self:SetHeight(self.frame:GetHeight())
+        end
     end,
 
     ------------------------------------------------------------
@@ -288,7 +315,6 @@ local methods = {
 
             self:SetWidth(text:GetStringWidth() + self.icon:GetWidth() + hTextOffset + (padding * 3))
         end
-        -- TODO: fix height/word wrap
     end,
 }
 

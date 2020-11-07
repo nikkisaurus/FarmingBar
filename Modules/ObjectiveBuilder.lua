@@ -71,11 +71,11 @@ local function LoadDisplayIcon()
 
         ObjectiveBuilder:GetUserData("displayIcon"):Release()
         ObjectiveBuilder:SetUserData("displayIcon")
-        tremove(ObjectiveBuilder:GetUserData("mainContent").children, 2)
+        tremove(tabContent.children, 2)
 
         ObjectiveBuilder:GetUserData("chooseButton"):Release()
         ObjectiveBuilder:SetUserData("chooseButton")
-        tremove(ObjectiveBuilder:GetUserData("mainContent").children, 2)
+        tremove(tabContent.children, 2)
 
         tabContent:DoLayout()
     end
@@ -110,10 +110,20 @@ end
 
 ------------------------------------------------------------
 
---!
 local function displayRefHelp_OnClick(self)
-    ObjectiveBuilder:SetUserData("showDisplayRefHelp", not ObjectiveBuilder:GetUserData("showDisplayRefHelp"))
-    ObjectiveBuilder:RefreshObjectives()
+    if not self.text:GetText() then
+        --@retail@
+        self:SetText(L.DisplayReferenceDescription)
+        --@end-retail@
+        --[===[@non-retail@
+        -- Removing the currency reference from Classic here to make the localization page cleanier/easier to translate.
+        displayRefHelpLabel:SetText(gsub(L.DisplayReferenceDescription, L.DisplayReferenceDescription_Gsub, ""))
+        --@end-non-retail@]===]
+    else
+        self:SetText()
+    end
+
+    self.parent:DoLayout()
 end
 
 ------------------------------------------------------------
@@ -759,28 +769,10 @@ function addon:ObjectiveBuilder_LoadObjectiveTab(tabContent)
     ------------------------------------------------------------
 
     local displayRefHelp = AceGUI:Create("FarmingBar_InteractiveLabel")
-    displayRefHelp:SetWidth(30)
     displayRefHelp:SetIcon(616343, nil, 25, 25)
     tabContent:AddChild(displayRefHelp)
 
     displayRefHelp:SetCallback("OnClick", displayRefHelp_OnClick)
-
-    ------------------------------------------------------------
-
-    if ObjectiveBuilder:GetUserData("showDisplayRefHelp") then
-        local displayRefHelpLabel = AceGUI:Create("InteractiveLabel")
-        displayRefHelpLabel:SetFullWidth(true)
-        --@retail@
-        displayRefHelpLabel:SetText(L.DisplayReferenceDescription)
-        --@end-retail@
-        --[===[@non-retail@
-        -- Removing the currency reference from Classic here to make the localization page cleanier/easier to translate.
-        displayRefHelpLabel:SetText(gsub(L.DisplayReferenceDescription, L.DisplayReferenceDescription_Gsub, ""))
-        --@end-non-retail@]===]
-        tabContent:AddChild(displayRefHelpLabel)
-
-        displayRefHelpLabel:SetCallback("OnClick", displayRefHelp_OnClick)
-    end
 
     ------------------------------------------------------------
 
