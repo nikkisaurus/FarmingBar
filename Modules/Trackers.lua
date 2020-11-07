@@ -218,11 +218,11 @@ end
 
 function addon:ValidateObjectiveData(trackerType, trackerID)
     if trackerType == "ITEM" then
-        return (GetItemInfoInstant(trackerID))
+        return (GetItemInfoInstant(trackerID)), "ITEM"
     elseif trackerType == "CURRENCY" then
         local currency = C_CurrencyInfo.GetCurrencyInfo(tonumber(trackerID) or 0)
-        return currency and currency.name
+        return currency and currency.name, "CURRENCY"
     elseif trackerID == "" then
-        return true
+        return true, "NONE"
     end
 end

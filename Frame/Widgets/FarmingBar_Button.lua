@@ -192,9 +192,12 @@ local function Control_OnEvent(self, event, ...)
         -- TODO: print combat left
     elseif event == "COMBAT_LOG_EVENT_UNFILTERED" then
         if not objectiveInfo then return end
-        if FarmingBar.db.profile.style.buttonLayers.Cooldown and objectiveInfo.displayRef.trackerType == "ITEM" then
+        local validTrackerID, trackerType = addon:ValidateObjectiveData(objectiveInfo.displayRef.trackerType, objectiveInfo.displayRef.trackerID)
+
+        if FarmingBar.db.profile.style.buttonLayers.Cooldown and trackerType == "ITEM" and validTrackerID then
             local startTime, duration, enable = GetItemCooldown(objectiveInfo.displayRef.trackerID)
             widget.Cooldown:SetCooldown(startTime, duration)
+
             widget.Cooldown:GetRegions():SetFontObject(NumberFontNormalSmall)
             -- TODO: custom fonts
             -- widget.Cooldown:GetRegions():SetFont(LSM:Fetch("font", self:GetBar().db.font.face or addon.db.profile.style.font.face) or "", (self:GetBar().db.font.size or addon.db.profile.style.font.size) * 1.5, self:GetBar().db.font.outline or addon.db.profile.style.font.outline)
