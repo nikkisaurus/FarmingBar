@@ -25,13 +25,13 @@ end
 
 ------------------------------------------------------------
 
-local function Control_OnDragStart(self)
+local function frame_OnDragStart(self)
     self.obj.frame:StartMoving()
 end
 
 ------------------------------------------------------------
 
-local function Control_OnDragStop(self)
+local function frame_OnDragStop(self)
     local widget = self.obj
     local barDB = widget:GetUserData("barDB")
 
@@ -41,7 +41,7 @@ end
 
 ------------------------------------------------------------
 
-local function Control_OnEvent(self, event)
+local function frame_OnEvent(self, event)
     if event == "PLAYER_REGEN_DISABLED" then
         self.obj.addButton:Disable()
         self.obj.removeButton:Disable()
@@ -49,22 +49,6 @@ local function Control_OnEvent(self, event)
         self.obj:SetQuickButtonStates()
     end
 end
-
-------------------------------------------------------------
-
--- local function Control_OnUpdate(self, ...)
---     local widget = self.obj
---     local buttons = widget:GetUserData("buttons")
-
---     for key, button in pairs(buttons) do
---         local objectiveTitle = button:GetUserData("objectiveTitle")
---         local buttonInfo = button:GetUserData("objectiveInfo")
-
---         if buttonInfo ~= addon:GetObjectiveInfo(objectiveTitle) then
---             button:Update()
---         end
---     end
--- end
 
 ------------------------------------------------------------
 
@@ -318,7 +302,7 @@ local function Constructor()
     frame:RegisterEvent("PLAYER_REGEN_ENABLED")
     frame:RegisterEvent("PLAYER_REGEN_DISABLED")
 
-    frame:SetScript("OnEvent", Control_OnEvent)
+    frame:SetScript("OnEvent", frame_OnEvent)
 
     local backdrop = CreateFrame("Frame", nil, frame, "BackdropTemplate")
     backdrop:EnableMouse(true)
@@ -331,8 +315,8 @@ local function Constructor()
     anchor:SetMovable(true)
     anchor:RegisterForDrag("LeftButton")
 
-    anchor:SetScript("OnDragStart", Control_OnDragStart)
-    anchor:SetScript("OnDragStop", Control_OnDragStop)
+    anchor:SetScript("OnDragStart", frame_OnDragStart)
+    anchor:SetScript("OnDragStop", frame_OnDragStop)
 
     local FloatingBG = anchor:CreateTexture("$parentFloatingBG", "BACKGROUND")
     FloatingBG:SetAllPoints(anchor)

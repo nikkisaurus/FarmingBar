@@ -6,7 +6,7 @@ local LSM = LibStub("LibSharedMedia-3.0")
 
 local _G = _G
 local floor = math.floor
-local tonumber = tonumber
+local format, tonumber = string.format, tonumber
 
 --*------------------------------------------------------------------------
 
@@ -75,7 +75,37 @@ local postClickMethods = {
 
 --*------------------------------------------------------------------------
 
-local function Control_OnDragStart(self, buttonClicked, ...)
+local function EditBox_OnEditFocusGained(self)
+    self:SetText(self.obj:GetUserData("objective") or "")
+    self:HighlightText()
+    self:SetCursorPosition(strlen(self:GetText()))
+end
+
+------------------------------------------------------------
+
+local function EditBox_OnEscapePressed(self)
+    self:ClearFocus()
+    self:Hide()
+end
+
+------------------------------------------------------------
+
+local function EditBox_OnShow(self)
+    local widget = self.obj
+    local width = widget.frame:GetWidth()
+    self:SetSize(width, width / 2)
+    self:SetFocus()
+end
+
+------------------------------------------------------------
+
+local function EditBox_OnTextChanged(self)
+    self:SetText(string.gsub(self:GetText(), "[%s%c%p%a]", ""))
+end
+
+------------------------------------------------------------
+
+local function frame_OnDragStart(self, buttonClicked, ...)
     local widget = self.obj
     local keybinds = FarmingBar.db.global.keybinds.dragButton
 
@@ -96,24 +126,22 @@ end
 
 ------------------------------------------------------------
 
-local function Control_OnDragStop(self)
+local function frame_OnDragStop(self)
     self.obj:SetUserData("isDragging")
 end
 
 ------------------------------------------------------------
 
-local function Control_OnEnter(self)
+local function frame_OnEnter(self)
     if addon.DragFrame:IsVisible() then
         self.obj:SetUserData("dragTitle", addon.DragFrame:GetObjective())
     end
-    GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT", 0, 0)
-    addon:GetButtonTooltip(self.obj, GameTooltip)
-    GameTooltip:Show()
+    -- Tooltip is taken care of with tooltipScanner
 end
 
 ------------------------------------------------------------
 
-local function Control_OnEvent(self, event, ...)
+local function frame_OnEvent(self, event, ...)
     local widget = self.obj
     local barID = widget:GetUserData("barID")
     if not barID then return end
@@ -215,7 +243,7 @@ end
 
 ------------------------------------------------------------
 
-local function Control_OnLeave(self)
+local function frame_OnLeave(self)
     self.obj:SetUserData("dragTitle")
     GameTooltip:ClearLines()
     GameTooltip:Hide()
@@ -223,7 +251,7 @@ end
 
 ------------------------------------------------------------
 
-local function Control_OnReceiveDrag(self)
+local function frame_OnReceiveDrag(self)
     local widget = self.obj
     local objectiveTitle = widget:GetUserData("dragTitle")
 
@@ -245,7 +273,7 @@ end
 
 ------------------------------------------------------------
 
-local function Control_PostClick(self, buttonClicked, ...)
+local function frame_PostClick(self, buttonClicked, ...)
     local widget = self.obj
     if widget:GetUserData("isDragging") then return end
     local cursorType, cursorID = GetCursorInfo()
@@ -287,36 +315,6 @@ end
 
 ------------------------------------------------------------
 
-local function EditBox_OnEditFocusGained(self)
-    self:SetText(self.obj:GetUserData("objective") or "")
-    self:HighlightText()
-    self:SetCursorPosition(strlen(self:GetText()))
-end
-
-------------------------------------------------------------
-
-local function EditBox_OnEscapePressed(self)
-    self:ClearFocus()
-    self:Hide()
-end
-
-------------------------------------------------------------
-
-local function EditBox_OnShow(self)
-    local widget = self.obj
-    local width = widget.frame:GetWidth()
-    self:SetSize(width, width / 2)
-    self:SetFocus()
-end
-
-------------------------------------------------------------
-
-local function EditBox_OnTextChanged(self)
-    self:SetText(string.gsub(self:GetText(), "[%s%c%p%a]", ""))
-end
-
-------------------------------------------------------------
-
 local function objectiveEditBox_OnEnterPressed(self)
     local objective = tonumber(self:GetText())
     objective = objective and (objective > 0 and objective)
@@ -340,6 +338,8 @@ end
 
 local methods = {
     OnAcquire = function(self)
+        self:SetUserData("tooltip", "GetButtonTooltip")
+
         self.frame:ClearAllPoints()
         self.frame:Show()
 
@@ -364,8 +364,17 @@ local methods = {
 
     ------------------------------------------------------------
 
+    GetButtonID = function(self)
+        local barID = self:GetUserData("barID")
+        local buttonID = self:GetUserData("buttonID")
+
+        return format("%d:%d", barID, buttonID)
+    end,
+
+    ------------------------------------------------------------
+
     GetCount = function(self)
-        return tonumber(self.Count:GetText())
+        return self:GetUserData("count") or 0
     end,
     ------------------------------------------------------------
 
@@ -424,8 +433,11 @@ local methods = {
         local objectiveTitle = self:GetUserData("objectiveTitle")
         local objectiveInfo = addon:GetObjectiveInfo(objectiveTitle)
         local style = FarmingBar.db.profile.style.font.fontStrings.count
+        if objectiveTitle then
+            self:SetUserData("count", addon:GetObjectiveCount(self, objectiveTitle))
+        end
 
-        self.Count:SetText(objectiveTitle and addon:GetObjectiveCount(self, objectiveTitle) or "")
+        self.Count:SetText(objectiveTitle and addon.iformat(self:GetCount(), 2) or "")
         self:UpdateObjective()
 
         if not objectiveTitle then return end
@@ -563,7 +575,7 @@ local methods = {
         local objective = self:GetUserData("objective")
 
         if objective then
-            local formattedObjective, objective = LibStub("LibAddonUtils-1.0").iformat(objective, 2)
+            local formattedObjective, objective = addon.iformat(objective, 2)
             self.Objective:SetText(formattedObjective)
 
             local count = addon:GetObjectiveCount(self, objectiveTitle)
@@ -589,13 +601,13 @@ local function Constructor()
 	frame:Hide()
     frame:RegisterForClicks("AnyUp")
     frame:RegisterForDrag("LeftButton", "RightButton")
-	frame:SetScript("OnDragStart", Control_OnDragStart)
-	frame:SetScript("OnDragStop", Control_OnDragStop)
-	frame:SetScript("OnEnter", Control_OnEnter)
-	frame:SetScript("OnEvent", Control_OnEvent)
-	frame:SetScript("OnLeave", Control_OnLeave)
-	frame:SetScript("OnReceiveDrag", Control_OnReceiveDrag)
-    frame:SetScript("PostClick", Control_PostClick)
+	frame:SetScript("OnDragStart", frame_OnDragStart)
+	frame:SetScript("OnDragStop", frame_OnDragStop)
+	frame:SetScript("OnEnter", frame_OnEnter)
+	frame:SetScript("OnEvent", frame_OnEvent)
+	frame:SetScript("OnLeave", frame_OnLeave)
+	frame:SetScript("OnReceiveDrag", frame_OnReceiveDrag)
+    frame:SetScript("PostClick", frame_PostClick)
 
     frame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
     frame:RegisterEvent("BANKFRAME_OPENED")

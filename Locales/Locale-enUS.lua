@@ -3,7 +3,7 @@ local L = LibStub("AceLocale-3.0"):NewLocale("FarmingBar", "enUS", true)
 
 --*------------------------------------------------------------------------
 
-local strupper = string.upper
+local format, gsub, strlower, strupper = string.format, string.gsub, string.lower, string.upper
 
 --*------------------------------------------------------------------------
 --*Errors------------------------------------------------------------------
@@ -24,12 +24,15 @@ L.InvalidTrackerExclusion = "Cannot exclude parent objective."
 L.ObjectiveIsExcluded = "Objective is already being excluded."
 
 L.invalidSyntax = function(err) return "Syntax error: "..err end
-L.InvalidTrackerID = function(trackerType, trackerID) return string.format("Invalid tracker ID: %s:%s", strupper(trackerType), trackerID) end
-L.TrackerIDExists = function(trackerID) return string.format("Already tracking %s", trackerID) end
+L.InvalidTrackerID = function(trackerType, trackerID) return format("Invalid tracker ID: %s:%s", strupper(trackerType), trackerID) end
+L.TrackerIDExists = function(trackerID) return format("Already tracking %s", trackerID) end
 
 
 --*------------------------------------------------------------------------
 --*Hints-------------------------------------------------------------------
+
+L["Hint"] = true
+L["Hints"] = true
 
 -- Modules\ObjectiveBuilder.lua
 L.FilterAutoItemsHint = [[Check this option to hide automatically created item objectives (prepended by "item:").]]
@@ -37,6 +40,31 @@ L.NewObjectiveHint = "You can drop an item on this button to quickly add it as a
 L.ObjectiveContextMenuHint = "Right-click this button to open a context menu to rename, duplicate, or delete this objective.\nDrag this button onto a bar to track it."
 L.RemoveExcludeHint = "Shift+right-click this objective to remove it from the list."
 L.TrackerContextMenuHint = "Right-click this button to delete or move this tracker."
+
+------------------------------------------------------------
+
+-- Modules\Tooltips.lua
+local function GetCommandString(commandInfo)
+    -- Ctrl+right-click
+    local mods = strupper(strsub(commandInfo.modifier, 1, 1))..strlower(strsub(commandInfo.modifier, 2))
+    local button = gsub(commandInfo.button, "Button", "")
+    button = mods == "" and button or format("+%s", strlower(button))
+
+    return format("%s%s-click", mods, button)
+end
+
+L.ButtonHints = function(command, commandInfo)
+    local commands = {
+        useItem = format("%s use the display item or run the display macrotext.", GetCommandString(commandInfo)),
+        moveObjective = format("%s to move this objective.", GetCommandString(commandInfo)),
+        clearObjective = format("%s to clear this objective.", GetCommandString(commandInfo)),
+        includeBank = format("%s to toggle bank inclusion.", GetCommandString(commandInfo)),
+        showObjectiveBuilder = format("%s to show the Objective Builder.", GetCommandString(commandInfo)),
+        showObjectiveEditBox = format("%s to show the objective editbox.", GetCommandString(commandInfo)),
+    }
+
+    return commands[command] or ""
+end
 
 --*------------------------------------------------------------------------
 --*Strings-----------------------------------------------------------------
@@ -79,7 +107,6 @@ L["Export"] = true
 L["FALSE"] = true
 L["Filter Auto Items"] = true
 L["Help"] = true
-L["Hint"] = true
 L["Import Objective"] = true
 L["Include All Characters"] = true
 L["Include Bank"] = true
@@ -106,6 +133,15 @@ L.DisplayReferenceDescription_Gsub = "/currency"
 
 -- Modules\Objectives.lua
 L["New"] = true
+
+------------------------------------------------------------
+
+-- Modules\Tooltips.lua
+L["Button ID"] = true
+L["Count"] = true
+L["Objective Complete"] = true
+
+-- L.ButtonID = function(id) return format("Button ID: %s", id) end
 
 ------------------------------------------------------------
 

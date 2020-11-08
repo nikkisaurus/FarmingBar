@@ -143,23 +143,9 @@ end
 
 ------------------------------------------------------------
 
-local function frame_OnEnter(self)
-    GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT", 0, 0)
-    addon:GetObjectiveButtonTooltip(self.obj, GameTooltip)
-    GameTooltip:Show()
-end
-
-------------------------------------------------------------
-
 local function frame_OnLeave(self)
     GameTooltip:ClearLines()
     GameTooltip:Hide()
-end
-
-------------------------------------------------------------
-
-local function frame_OnReceiveDrag(self)
-    -- TODO
 end
 
 --*------------------------------------------------------------------------
@@ -168,6 +154,7 @@ local methods = {
     OnAcquire = function(self)
         ObjectiveBuilder = addon.ObjectiveBuilder
         objectiveList = ObjectiveBuilder:GetUserData("objectiveList")
+        self:SetUserData("tooltip", "GetObjectiveButtonTooltip")
 
         self:SetHeight(25)
         self.text:SetText("")
@@ -297,9 +284,7 @@ local function Constructor()
     frame:RegisterForClicks("LeftButtonUp", "RightButtonUp")
     frame:SetScript("OnClick", frame_OnClick)
     frame:SetScript("OnDragStart", frame_OnDragStart)
-	frame:SetScript("OnEnter", frame_OnEnter)
 	frame:SetScript("OnLeave", frame_OnLeave)
-	frame:SetScript("OnReceiveDrag", frame_OnReceiveDrag)
 
     ------------------------------------------------------------
 

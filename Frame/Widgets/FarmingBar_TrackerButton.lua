@@ -70,14 +70,6 @@ end
 
 ------------------------------------------------------------
 
-local function frame_OnEnter(self)
-    GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT", 0, 0)
-    addon:GetTrackerButtonTooltip(self.obj, GameTooltip)
-    GameTooltip:Show()
-end
-
-------------------------------------------------------------
-
 local function frame_OnLeave(self)
     GameTooltip:ClearLines()
     GameTooltip:Hide()
@@ -89,6 +81,7 @@ local methods = {
     OnAcquire = function(self)
         ObjectiveBuilder = addon.ObjectiveBuilder
         trackerList = ObjectiveBuilder:GetUserData("trackerList")
+        self:SetUserData("tooltip", "GetTrackerButtonTooltip")
 
         self:SetHeight(25)
         self.text:SetText("")
@@ -200,13 +193,9 @@ local methods = {
 local function Constructor()
     local frame = CreateFrame("Button", nil, UIParent)
 	frame:Hide()
-    -- frame:RegisterForDrag("LeftButton")
     frame:RegisterForClicks("LeftButtonUp", "RightButtonUp")
     frame:SetScript("OnClick", frame_OnClick)
-    -- frame:SetScript("OnDragStart", frame_OnDragStart)
 	frame:SetScript("OnEnter", frame_OnEnter)
-	frame:SetScript("OnLeave", frame_OnLeave)
-	-- frame:SetScript("OnReceiveDrag", frame_OnReceiveDrag)
 
     ------------------------------------------------------------
 

@@ -29,7 +29,6 @@ local function frame_OnEnter(self)
     local widget = self.obj
     local highlightColor = widget:GetUserData("highlightColor")
     local iconHighlightColor = widget:GetUserData("iconHighlightColor")
-    local tooltip = widget:GetUserData("tooltip")
 
     if highlightColor then
         widget.text:SetTextColor(unpack(highlightColor))
@@ -39,18 +38,13 @@ local function frame_OnEnter(self)
         widget.icon:SetVertexColor(unpack(iconHighlightColor))
     end
 
-    if tooltip then
-        GameTooltip:SetOwner(self, widget:GetUserData("tooltipAnchor") or "ANCHOR_BOTTOMRIGHT", 0, 0)
-        tooltip(_, widget, GameTooltip)
-        GameTooltip:Show()
-    end
+    widget:Fire("OnEnter")
 end
 
 ------------------------------------------------------------
 
 local function frame_OnLeave(self)
     local widget = self.obj
-    local tooltip = widget:GetUserData("tooltip")
 
     if widget:GetUserData("highlightColor") then
         local textColor = widget:GetUserData("textColor") or {1, 1, 1, 1}
@@ -62,10 +56,7 @@ local function frame_OnLeave(self)
         widget.icon:SetVertexColor(unpack(vertexColor))
     end
 
-    if tooltip then
-        GameTooltip:ClearLines()
-        GameTooltip:Hide()
-    end
+    widget:Fire("OnLeave")
 end
 
 ------------------------------------------------------------
@@ -331,13 +322,6 @@ local methods = {
 
     SetTextHighlight = function(self, ...)
         self:SetUserData("highlightColor", {...})
-    end,
-
-    ------------------------------------------------------------
-
-    SetTooltip = function(self, func, anchor)
-        self:SetUserData("tooltip", func)
-        self:SetUserData("tooltipAnchor", anchor)
     end,
 
     ------------------------------------------------------------

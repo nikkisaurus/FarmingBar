@@ -132,8 +132,17 @@ end
 
 local function displayRefTrackerType_OnValueChanged(self, _, selected)
     addon:SetObjectiveDBInfo("displayRef.trackerType", selected ~= "NONE" and selected or false)
-    -- addon:SetObjectiveDBInfo("displayRef.trackerID", false) --! have to add checks if we do this
     ObjectiveBuilder:LoadDisplayRefEditbox()
+end
+
+------------------------------------------------------------
+
+local function excludeLabel_OnEnter(self)
+    if FarmingBar.db.global.hints.ObjectiveBuilder and addon:IsTooltipMod() then
+        GameTooltip:SetOwner(self.frame, "ANCHOR_BOTTOMRIGHT", 0, 0)
+        addon:GetExcludeListLabelTooltip(self, GameTooltip)
+        GameTooltip:Show()
+    end
 end
 
 ------------------------------------------------------------
@@ -169,25 +178,13 @@ end
 
 ------------------------------------------------------------
 
--- ! Move this
 local function filterAutoItems_OnEnter(self)
-    if FarmingBar.db.global.hints.ObjectiveBuilder then
+    if FarmingBar.db.global.hints.ObjectiveBuilder and addon:IsTooltipMod() then
         GameTooltip:SetOwner(self.frame, "ANCHOR_BOTTOMRIGHT", 0, 0)
-        GameTooltip:AddLine(strformat("%s:", L["Hint"]))
-        GameTooltip:AddLine(L.FilterAutoItemsHint, unpack(addon.tooltip_description))
+        addon:GetFilterAutoItemsTooltip(self, GameTooltip)
         GameTooltip:Show()
     end
 end
-
-------------------------------------------------------------
-
-local function filterAutoItems_OnLeave(self)
-    if FarmingBar.db.global.hints.ObjectiveBuilder then
-        GameTooltip:ClearLines()
-        GameTooltip:Hide()
-    end
-end
--- !
 
 ------------------------------------------------------------
 
@@ -244,6 +241,16 @@ end
 
 ------------------------------------------------------------
 
+local function newObjective_OnEnter(self)
+    if FarmingBar.db.global.hints.ObjectiveBuilder and addon:IsTooltipMod() then
+        GameTooltip:SetOwner(self.frame, "ANCHOR_BOTTOMRIGHT", 0, 0)
+        addon:GetNewObjectiveButtonTooltip(self, GameTooltip)
+        GameTooltip:Show()
+    end
+end
+
+------------------------------------------------------------
+
 local function newTrackerButton_OnClick(self)
     local objectiveTitle = ObjectiveBuilder:GetSelectedObjective()
     local trackerType = ObjectiveBuilder:GetUserData("trackerType"):GetValue()
@@ -289,6 +296,13 @@ end
 
 local function objectiveSearchBox_OnTextChanged(self)
     ObjectiveBuilder:RefreshObjectives()
+end
+
+------------------------------------------------------------
+
+local function Tooltip_OnLeave(self)
+    GameTooltip:ClearLines()
+    GameTooltip:Hide()
 end
 
 ------------------------------------------------------------
@@ -713,14 +727,13 @@ function addon:Initialize_ObjectiveBuilder()
     newObjective:SetTextHighlight(1, .82, 0, 1)
     newObjective:SetWordWrap(false)
     newObjective:SetIcon(514607, nil, 13, 13)
+    newObjective:SetUserData("tooltip", "GetNewObjectiveButtonTooltip")
     topPanel:AddChild(newObjective)
 
     newObjective:SetCallback("OnClick", function() addon:CreateObjective() end)
     newObjective:SetCallback("OnReceiveDrag", function() addon:CreateObjectiveFromCursor() end)
-
-    if FarmingBar.db.global.hints.ObjectiveBuilder then
-        newObjective:SetTooltip(addon.GetNewObjectiveButtonTooltip)
-    end
+    newObjective:SetCallback("OnEnter", newObjective_OnEnter)
+    newObjective:SetCallback("OnLeave", Tooltip_OnLeave)
 
     ------------------------------------------------------------
 
@@ -741,11 +754,12 @@ function addon:Initialize_ObjectiveBuilder()
     filterAutoItems:SetLabel(L["Filter Auto Items"])
     filterAutoItems:SetValue(FarmingBar.db.global.settings.misc.filterOBAutoItems)
     filterAutoItems:SetWidth(filterAutoItems.text:GetStringWidth() + filterAutoItems.checkbg:GetWidth())
+    filterAutoItems:SetUserData("tooltip", "GetFilterAutoItemsTooltip")
     topPanel:AddChild(filterAutoItems)
     ObjectiveBuilder.filterAutoItems = filterAutoItems
 
     filterAutoItems:SetCallback("OnEnter", filterAutoItems_OnEnter)
-    filterAutoItems:SetCallback("OnLeave", filterAutoItems_OnLeave)
+    filterAutoItems:SetCallback("OnLeave", Tooltip_OnLeave)
     filterAutoItems:SetCallback("OnValueChanged", filterAutoItems_OnValueChanged)
 
     ------------------------------------------------------------
@@ -901,16 +915,18 @@ end
 --*------------------------------------------------------------------------
 
 function addon:AddExcludeLabel(objectiveTitle)
-    local label = AceGUI:Create("FarmingBar_InteractiveLabel")
-    label:SetFullWidth(true)
-    label:SetText(objectiveTitle)
-    label:SetIcon(self:GetObjectiveIcon(objectiveTitle), nil, 13, 13)
-    label:SetTooltip(self.GetExcludeListLabelTooltip)
-    ObjectiveBuilder:GetUserData("excludeList"):AddChild(label)
+    local excludeLabel = AceGUI:Create("FarmingBar_InteractiveLabel")
+    excludeLabel:SetFullWidth(true)
+    excludeLabel:SetText(objectiveTitle)
+    excludeLabel:SetIcon(self:GetObjectiveIcon(objectiveTitle), nil, 13, 13)
+    excludeLabel:SetUserData("tooltip", "GetExcludeListLabelTooltip")
+    ObjectiveBuilder:GetUserData("excludeList"):AddChild(excludeLabel)
 
-    label:SetCallback("OnClick", function(self, _, buttonClicked) excludeListLabel_OnClick(self, buttonClicked) end)
+    excludeLabel:SetCallback("OnClick", function(self, _, buttonClicked) excludeListLabel_OnClick(self, buttonClicked) end)
+    excludeLabel:SetCallback("OnEnter", excludeLabel_OnEnter)
+    excludeLabel:SetCallback("OnLeave", Tooltip_OnLeave)
 
-    return label
+    return excludeLabel
 end
 ------------------------------------------------------------
 
