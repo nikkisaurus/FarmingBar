@@ -199,6 +199,41 @@ end
 
 ------------------------------------------------------------
 
+function addon:MoveTracker(currentKey, direction)
+    local ObjectiveBuilder = self.ObjectiveBuilder
+    local objectiveTitle, objectiveInfo = ObjectiveBuilder:GetSelectedObjectiveInfo()
+
+    local currentInfo = objectiveInfo.trackers[currentKey]
+    local currentButton = ObjectiveBuilder:GetTrackerButton(currentInfo)
+
+    local destinationKey = currentKey + direction
+    local destinationInfo = objectiveInfo.trackers[destinationKey]
+    local destinationButton = ObjectiveBuilder:GetTrackerButton(destinationInfo)
+
+    ------------------------------------------------------------
+
+    -- Swap trackerInfo in the database
+    FarmingBar.db.global.objectives[objectiveTitle].trackers[currentKey] = destinationInfo
+    FarmingBar.db.global.objectives[objectiveTitle].trackers[destinationKey] = currentInfo
+
+    ------------------------------------------------------------
+
+    -- Update the trackers on buttons to make sure they have the correct information
+    for tracker, trackerInfo in pairs(objectiveInfo.trackers) do
+        ObjectiveBuilder:GetUserData("trackerList").children[tracker]:SetTracker(tracker, trackerInfo)
+    end
+
+    -- Reselect the current tracker
+    destinationButton:Select()
+
+    ------------------------------------------------------------
+
+    -- Refresh counts
+    addon:UpdateButtons(objectiveTitle)
+end
+
+------------------------------------------------------------
+
 function addon:SetTrackerDBInfo(objectiveTitle, tracker, key, value)
     local keys = {strsplit(".", key)}
     local path = FarmingBar.db.global.objectives[objectiveTitle].trackers[tracker]

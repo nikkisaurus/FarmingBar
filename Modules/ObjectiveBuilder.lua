@@ -64,10 +64,6 @@ local function customCondition_OnEnterPressed(self)
     end
 end
 
--- local x = 10
--- local tbl =  {{t1 = x, t2 = 2, t3 = 3}, {t1 = 5}}
--- return tbl
-
 ------------------------------------------------------------
 
 local function displayIcon_OnEnterPressed(self)

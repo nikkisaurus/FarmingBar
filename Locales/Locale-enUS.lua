@@ -113,3 +113,9 @@ L["New"] = true
 -- Modules\Trackers.lua
 L["Currency ID/Link"] = true
 L["Item ID/Name/Link"] = true
+
+------------------------------------------------------------
+
+-- Frame\Widgets\FarmingBar_TrackerButton.lua
+L["Move Down"] = true
+L["Move Up"] = true

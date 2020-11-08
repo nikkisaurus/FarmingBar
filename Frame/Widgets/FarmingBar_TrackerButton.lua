@@ -156,6 +156,26 @@ local methods = {
 
         ------------------------------------------------------------
 
+        if numSelectedButtons == 1 then
+            tinsert(menu, 1, {text = "", notCheckable = true, notClickable = true})
+
+            tinsert(menu, 1, {
+                notCheckable = true,
+                disabled = self:GetUserData("trackerKey") == #self.parent.children,
+                text = L["Move Down"],
+                func = function() addon:MoveTracker(self:GetUserData("trackerKey"), 1) end,
+            })
+
+            tinsert(menu, 1, {
+                notCheckable = true,
+                disabled = self:GetUserData("trackerKey") == 1,
+                text = L["Move Up"],
+                func = function() addon:MoveTracker(self:GetUserData("trackerKey"), -1) end,
+            })
+        end
+
+        ------------------------------------------------------------
+
         EasyMenu(menu, addon.MenuFrame, self.frame, 0, 0, "MENU")
     end,
 }
