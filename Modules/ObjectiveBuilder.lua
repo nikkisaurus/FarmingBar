@@ -640,8 +640,8 @@ local methods = {
 
     SelectObjective = function(self, objectiveTitle)
         local mainPanel = self:GetUserData("mainPanel")
-        self:ClearSelectedObjective()
         self:SetUserData("selectedObjective", objectiveTitle)
+        self:SetUserData("selectedTracker")
 
         mainPanel:ReleaseChildren()
 
