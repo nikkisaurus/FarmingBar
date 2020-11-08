@@ -121,7 +121,7 @@ local function Control_OnEvent(self, event, ...)
 
     if event == "BAG_UPDATE" or event == "BAG_UPDATE_COOLDOWN" or event == "CURRENCY_DISPLAY_UPDATE" then
         local oldCount = widget:GetCount()
-        local newCount = addon:GetObjectiveCount(objectiveTitle)
+        local newCount = addon:GetObjectiveCount(widget, objectiveTitle)
         local objective = widget:GetUserData("objective")
         local alert, soundID, barAlert
 
@@ -362,6 +362,17 @@ local methods = {
     GetCount = function(self)
         return tonumber(self.Count:GetText())
     end,
+    ------------------------------------------------------------
+
+    GetObjective = function(self)
+        return tonumber(self:GetUserData("objective"))
+    end,
+
+    ------------------------------------------------------------
+
+    GetObjectiveTitle = function(self)
+        return self:GetUserData("objectiveTitle")
+    end,
 
     ------------------------------------------------------------
 
@@ -409,7 +420,7 @@ local methods = {
         local objectiveInfo = addon:GetObjectiveInfo(objectiveTitle)
         local style = FarmingBar.db.profile.style.font.fontStrings.count
 
-        self.Count:SetText(objectiveTitle and addon:GetObjectiveCount(objectiveTitle) or "")
+        self.Count:SetText(objectiveTitle and addon:GetObjectiveCount(self, objectiveTitle) or "")
         self:UpdateObjective()
 
         if not objectiveTitle then return end
@@ -438,6 +449,7 @@ local methods = {
         self:SetUserData("objective", objective)
         FarmingBar.db.char.bars[self:GetUserData("barID")].objectives[self:GetUserData("buttonID")].objective = objective
         self:UpdateObjective()
+        addon:UpdateButtons()
     end,
 
     ------------------------------------------------------------
@@ -549,7 +561,7 @@ local methods = {
             local formattedObjective, objective = LibStub("LibAddonUtils-1.0").iformat(objective, 2)
             self.Objective:SetText(formattedObjective)
 
-            local count = addon:GetObjectiveCount(objectiveTitle)
+            local count = addon:GetObjectiveCount(self, objectiveTitle)
 
             if count >= objective then
                 self.Objective:SetTextColor(0, 1 , 0, 1)

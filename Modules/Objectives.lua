@@ -235,13 +235,6 @@ end
 
 ------------------------------------------------------------
 
-function addon:IsTrackingObjective(objectiveTitle)
-    -- loop over bars, then buttons and check objectiveID; break on first found
-    return false
-end
-
-------------------------------------------------------------
-
 function addon:ObjectiveExists(objective)
     for objectiveTitle, _ in pairs(FarmingBar.db.global.objectives) do
         if strupper(objectiveTitle) == strupper(objective) then
@@ -262,7 +255,7 @@ end
 
 ------------------------------------------------------------
 
-function addon:GetObjectiveCount(objectiveTitle)
+function addon:GetObjectiveCount(button, objectiveTitle)
     local objectiveInfo = self:GetObjectiveInfo(objectiveTitle)
     if not objectiveInfo then return end
 

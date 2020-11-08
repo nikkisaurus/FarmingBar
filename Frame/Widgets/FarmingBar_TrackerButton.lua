@@ -161,16 +161,16 @@ local methods = {
 
             tinsert(menu, 1, {
                 notCheckable = true,
-                disabled = self:GetUserData("trackerKey") == #self.parent.children,
+                disabled = self:GetTrackerKey() == #self.parent.children,
                 text = L["Move Down"],
-                func = function() addon:MoveTracker(self:GetUserData("trackerKey"), 1) end,
+                func = function() addon:MoveTracker(self:GetTrackerKey(), 1) end,
             })
 
             tinsert(menu, 1, {
                 notCheckable = true,
-                disabled = self:GetUserData("trackerKey") == 1,
+                disabled = self:GetTrackerKey() == 1,
                 text = L["Move Up"],
-                func = function() addon:MoveTracker(self:GetUserData("trackerKey"), -1) end,
+                func = function() addon:MoveTracker(self:GetTrackerKey(), -1) end,
             })
         end
 

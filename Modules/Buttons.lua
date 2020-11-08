@@ -22,7 +22,7 @@ function addon:UpdateButtons(objectiveTitle)
     for _, bar in pairs(self.bars) do
         for _, button in pairs(bar:GetUserData("buttons")) do
             local buttonObjectiveTitle = button:GetUserData("objectiveTitle")
-            if buttonObjectiveTitle == objectiveTitle then
+            if buttonObjectiveTitle == objectiveTitle or not objectiveTitle then
                 button:UpdateLayers(objectiveTitle)
             end
         end

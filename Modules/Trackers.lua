@@ -114,7 +114,30 @@ end
 
 ------------------------------------------------------------
 
+function addon:GetMaxTrackerObjective(objectiveTitle)
+    local objective, objectiveButton
+    for _, bar in pairs(self.bars) do
+        for _, button in pairs(bar:GetUserData("buttons")) do
+            local buttonObjectiveTitle = button:GetUserData("objectiveTitle")
+            if buttonObjectiveTitle == objectiveTitle then
+                local buttonObjective = button:GetObjective()
+                if not objective then
+                    objective = buttonObjective
+                else
+                    objective = max(objective, buttonObjective)
+                    objectiveButton = objective == buttonObjective and button or objectiveButton
+                end
+            end
+        end
+    end
+    return objective, objectiveButton
+end
+
+------------------------------------------------------------
+
 function addon:GetTrackerCount(trackerInfo)
+    local ObjectiveBuilder = addon.ObjectiveBuilder
+
     if not trackerInfo then return 0 end
     local count
 
@@ -128,24 +151,26 @@ function addon:GetTrackerCount(trackerInfo)
         return 0
     end
 
-    count = math.floor(count / trackerInfo.objective)
-
     if #trackerInfo.exclude > 0 then
         for _, objectiveTitle in pairs(trackerInfo.exclude) do
             local objectiveInfo = addon:GetObjectiveInfo(objectiveTitle)
-            -- Only exclude if enabled and an objective is set (otherwise, how do we know how many to exclude?)
-            if addon:IsTrackingObjective(objectiveTitle) and objectiveInfo.objective and objectiveInfo.objective > 0 then
+            local objective, objectiveButton = addon:GetMaxTrackerObjective(objectiveTitle)
+
+            -- Only exclude if an objective is set (otherwise, how do we know how many to exclude?)
+            if objective then
                 for _, eTrackerInfo in pairs(objectiveInfo.trackers) do
                     if eTrackerInfo.trackerID == trackerInfo.trackerID then
                         -- Get the max amount used for the objective: either the objective itself or the count
-                        local max = min(addon:GetObjectiveCount(objectiveTitle), objectiveInfo.objective)
+                        local maxCount = min(addon:GetObjectiveCount(objectiveButton, objectiveTitle), objective)
                         -- The number of of this tracker required for the objective is the tracker objective x max
-                        count = count - (eTrackerInfo.objective * max)
+                        count = count - maxCount
                     end
                 end
             end
         end
     end
+
+    count = math.floor(count / trackerInfo.objective)
 
     return count > 0 and count or 0
 end
