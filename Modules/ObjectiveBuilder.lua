@@ -52,15 +52,21 @@ end
 
 local function customCondition_OnEnterPressed(self)
     local condition = self:GetText()
+    local validCondition, err = addon:ValidateCustomCondition(condition)
 
-    if addon:ValidateCustomCondition(condition) then
+    if validCondition then
         addon:SetObjectiveDBInfo("customCondition", condition)
     else
         addon:ReportError(L.InvalidCustomCondition)
+        print(err)
         self:SetFocus()
         self:HighlightText()
     end
 end
+
+-- local x = 10
+-- local tbl =  {{t1 = x, t2 = 2, t3 = 3}, {t1 = 5}}
+-- return tbl
 
 ------------------------------------------------------------
 

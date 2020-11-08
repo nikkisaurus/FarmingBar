@@ -321,7 +321,7 @@ function addon:GetObjectiveCount(objectiveTitle)
                         countsUsed[trackerID] = (used or 0) + (pendingCount * objective)
                     end
                 end
-                count = count + pendingCount
+                count = count + (pendingCount or 0)
             end
         end
     end
@@ -371,23 +371,45 @@ end
 ------------------------------------------------------------
 
 function addon:ValidateCustomCondition(condition)
-    -- {{t1 = 5, t2 = 2, t3 = 3}, {t1 = 5}}
-    if condition == "" then return {} end
-    local func, err = loadstring("return "..condition)
+    -- return {{t1 = 10, t2 = 2, t3 = 3}, {t1 = 5}}
+
+    if condition == "" then
+        -- Clearing custom condition; return blank table to prevent errors in GetObjectiveCount
+        return {}
+    elseif not strfind(condition, "return") then
+        -- Invalid format, missing return
+        return false, L.InvalidCustomConditionReturn
+    end
+
+    local func, err = loadstring(condition)
+    -- Syntax error
+    if err then
+        return false, L.invalidSyntax(err)
+    end
+
     local tbl = func()
-    if err or type(tbl) ~= "table" then return end
+    -- Return isn't a table
+    if type(tbl) ~= "table" then
+        return false, L.InvalidCustomConditionReturn
+    end
 
     for _, trackerGroup in pairs(tbl) do
         if type(trackerGroup) ~= "table" then
-            return
+            -- trackerGroup is not a table
+            return false, L.InvalidCustomConditionTable
         else
-            for trackerID, trackerCount in pairs(trackerGroup) do
+            for trackerID, objective in pairs(trackerGroup) do
                 local validKey = tonumber(strmatch(trackerID, "^t(%d+)$"))
-                if not validKey or type(trackerCount) ~= "number" then
-                    return
+                if not validKey then
+                    -- trackerID is not properly formatted
+                    return false, L.InvalidCustomConditionID
+                elseif type(objective) ~= "number" or not objective or objective < 1 then
+                    -- objective is not a number
+                    return false, L.InvalidCustomConditionObjective
                 end
             end
         end
     end
+
     return tbl
 end
