@@ -1,9 +1,9 @@
 local addonName = ...
 local L = LibStub("AceLocale-3.0"):NewLocale("FarmingBar", "enUS", true)
-
---*------------------------------------------------------------------------
+local utils = LibStub("LibAddonUtils-1.0")
 
 local format, gsub, strlower, strupper = string.format, string.gsub, string.lower, string.upper
+local sexteal = utils.ChatColors["SEXTEAL"]
 
 --*------------------------------------------------------------------------
 --*Errors------------------------------------------------------------------
@@ -37,9 +37,9 @@ L["Hints"] = true
 -- Modules\ObjectiveBuilder.lua
 L.FilterAutoItemsHint = [[Check this option to hide automatically created item objectives (prepended by "item:").]]
 L.NewObjectiveHint = "You can drop an item on this button to quickly add it as an objective."
-L.ObjectiveContextMenuHint = "Right-click this button to open a context menu to rename, duplicate, or delete this objective.\nDrag this button onto a bar to track it."
-L.RemoveExcludeHint = "Shift+right-click this objective to remove it from the list."
-L.TrackerContextMenuHint = "Right-click this button to delete or move this tracker."
+L.ObjectiveContextMenuHint = format("%sRight-click|r this button to open a context menu to rename, duplicate, or delete this objective.\n%sDrag|r this button onto a bar to track it.", sexteal, sexteal)
+L.RemoveExcludeHint = format("%sShift+right-click|r this objective to remove it from the list.", sexteal)
+L.TrackerContextMenuHint = format("%sRight-click|r this button to delete or move this tracker.", sexteal)
 
 ------------------------------------------------------------
 
@@ -50,12 +50,12 @@ local function GetCommandString(commandInfo)
     local button = gsub(commandInfo.button, "Button", "")
     button = mods == "" and button or format("+%s", strlower(button))
 
-    return format("%s%s-click", mods, button)
+    return utils.ColorFontString(format("%s%s-click", mods, button), "SEXTEAL")
 end
 
 L.ButtonHints = function(command, commandInfo)
     local commands = {
-        useItem = format("%s use the display item or run the display macrotext.", GetCommandString(commandInfo)),
+        useItem = format("%s to use the display item or run the display macrotext.", GetCommandString(commandInfo)),
         moveObjective = format("%s to move this objective.", GetCommandString(commandInfo)),
         clearObjective = format("%s to clear this objective.", GetCommandString(commandInfo)),
         includeBank = format("%s to toggle bank inclusion.", GetCommandString(commandInfo)),

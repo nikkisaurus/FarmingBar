@@ -59,7 +59,7 @@ function addon:GetButtonTooltip(widget, tooltip)
         GameTooltip_AddBlankLinesToTooltip(tooltip, 1)
     end
 
-    tooltip:AddLine(objectiveTitle)
+    tooltip:AddLine(objectiveTitle, 0, 1, 0, 1)
 
     if objectiveInfo.displayRef.trackerType and objectiveInfo.displayRef.trackerID then
         if  objectiveInfo.displayRef.trackerType == "MACROTEXT" then
