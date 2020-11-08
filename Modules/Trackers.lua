@@ -199,14 +199,6 @@ end
 
 ------------------------------------------------------------
 
-function addon:IsTrackerComplete(objectiveTitle, tracker)
-    local trackerInfo = self:GetTrackerInfo(objectiveTitle, tracker)
-
-    return floor(addon:GetTrackerCount(trackerInfo) / trackerInfo.objective) or 0
-end
-
-------------------------------------------------------------
-
 function addon:SetTrackerDBInfo(objectiveTitle, tracker, key, value)
     local keys = {strsplit(".", key)}
     local path = FarmingBar.db.global.objectives[objectiveTitle].trackers[tracker]

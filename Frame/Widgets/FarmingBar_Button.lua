@@ -113,6 +113,7 @@ end
 local function Control_OnEvent(self, event, ...)
     local widget = self.obj
     local barID = widget:GetUserData("barID")
+    if not barID then return end
     local barDB = addon.bars[barID]:GetUserData("barDB")
     local buttonID = widget:GetUserData("buttonID")
     local objectiveTitle = widget:GetUserData("objectiveTitle")

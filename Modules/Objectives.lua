@@ -284,25 +284,45 @@ function addon:GetObjectiveCount(objectiveTitle)
         end
         count = count + pendingCount
     elseif objectiveInfo.trackerCondition == "CUSTOM" then
-        local customCondition = objectiveInfo.customCondition
+        -- Custom conditions should be a table with nested tables inside
+        -- Each nested table is an objectiveGroup which will be evaluated like an objective with an ALL condition
+        -- The first nested tables will use item counts before following tables; this means the order matters!
+        -- E.g. if you want to make as many of your least material required, put that first and then any remaining mats can go toward the following table
+        -- Nested tables should be key value pairs where key is in the format t%d, where %d is the tracker number, and value is the required count
+        -- Objective saved in trackerInfo will not be used in custom conditions
+        local customCondition = addon:ValidateCustomCondition(objectiveInfo.customCondition)
 
         if customCondition and customCondition ~= "" then
-            while(strfind(customCondition, "%%complete")) do
-                local pattern = "%%complete%((%d+)%)"
-                local tracker = tonumber(strmatch(customCondition, pattern))
+            local countsUsed = {}
+            for key, objectiveGroup in pairs(customCondition) do
+                local pendingCount
+                for trackerID, objective in pairs(objectiveGroup) do
+                    trackerID = tonumber(strmatch(trackerID, "^t(%d+)$"))
+                    local trackerInfo = objectiveInfo.trackers[trackerID]
+                    if trackerInfo then
+                        local info = {}
+                        for k, v in pairs(trackerInfo) do
+                            info[k] = k ~= "objective" and v or objective
+                        end
+                        local trackerCount = addon:GetTrackerCount(info)
+                        local used = countsUsed[trackerID]
 
-                customCondition = gsub(customCondition, "%%complete%("..tracker.."%)", tracker and tostring(addon:IsTrackerComplete(objectiveTitle, tracker)))
+                        if used then
+                            trackerCount = ((trackerCount * objective) - used) / objective
+                            trackerCount = trackerCount > 0 and trackerCount or 0
+                        end
+
+                        if not pendingCount then
+                            pendingCount = trackerCount
+                        else
+                            pendingCount = min(pendingCount, trackerCount)
+                        end
+
+                        countsUsed[trackerID] = (used or 0) + (pendingCount * objective)
+                    end
+                end
+                count = count + pendingCount
             end
-
-            while(strfind(customCondition, "%%count")) do
-                local pattern = "%%count%((%d+)%)"
-                local tracker = tonumber(strmatch(customCondition, pattern))
-                local trackerInfo = self:GetTrackerInfo(objectiveTitle, tracker)
-
-                customCondition = gsub(customCondition, "%%count%("..tracker.."%)", tracker and addon:GetTrackerCount(trackerInfo))
-            end
-
-            count = loadstring(customCondition)() or 0
         end
     end
 
@@ -351,7 +371,23 @@ end
 ------------------------------------------------------------
 
 function addon:ValidateCustomCondition(condition)
-    local func, err = loadstring(gsub(condition, "%%", ""))
-    err = err or not strfind(condition, "return")
-    return not err or condition == ""
+    -- {{t1 = 5, t2 = 2, t3 = 3}, {t1 = 5}}
+    if condition == "" then return {} end
+    local func, err = loadstring("return "..condition)
+    local tbl = func()
+    if err or type(tbl) ~= "table" then return end
+
+    for _, trackerGroup in pairs(tbl) do
+        if type(trackerGroup) ~= "table" then
+            return
+        else
+            for trackerID, trackerCount in pairs(trackerGroup) do
+                local validKey = tonumber(strmatch(trackerID, "^t(%d+)$"))
+                if not validKey or type(trackerCount) ~= "number" then
+                    return
+                end
+            end
+        end
+    end
+    return tbl
 end

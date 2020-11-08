@@ -458,7 +458,7 @@ local methods = {
         if objectiveInfo.trackerCondition == "CUSTOM" then
             local customCondition = AceGUI:Create("MultiLineEditBox")
             customCondition:SetFullWidth(true)
-            customCondition:SetLabel(L["Custom Function"])
+            customCondition:SetLabel(L["Custom Condition"])
             customCondition:SetText(objectiveInfo.customCondition)
             tabContent:AddChild(customCondition, tabContent.children[2])
             self:SetUserData("customCondition", customCondition)
