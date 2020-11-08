@@ -312,6 +312,7 @@ local methods = {
 
 local function Constructor()
     local frame = CreateFrame("Frame", Type..AceGUI:GetNextWidgetNum(Type), UIParent)
+	frame:Hide()
     frame:SetClampedToScreen(true)
 
     frame:RegisterEvent("PLAYER_REGEN_ENABLED")

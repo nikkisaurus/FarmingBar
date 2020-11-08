@@ -47,6 +47,7 @@ local methods = {
 
 local function Constructor()
     local frame = CreateFrame("EditBox", nil, UIParent, "SearchBoxTemplate")
+	frame:Hide()
     frame:SetHeight(19)
     frame:SetAutoFocus(false)
     frame:SetMaxLetters(256)

@@ -124,6 +124,7 @@ local methods = {
 
 local function Constructor()
     local frame = CreateFrame("Button", nil, frame)
+	frame:Hide()
 
     frame:SetNormalTexture(130871)
     frame:GetNormalTexture():SetVertexColor(1, 1, 1, .05)

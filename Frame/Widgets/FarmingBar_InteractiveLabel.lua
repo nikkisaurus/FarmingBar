@@ -322,6 +322,7 @@ local methods = {
 
 local function Constructor()
     local frame = CreateFrame("Button", nil, UIParent)
+	frame:Hide()
     frame:SetScript("OnClick", frame_OnClick)
     frame:SetScript("OnEnter", frame_OnEnter)
     frame:SetScript("OnLeave", frame_OnLeave)

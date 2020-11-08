@@ -291,6 +291,7 @@ local methods = {
 
 local function Constructor()
     local frame = CreateFrame("Button", nil, UIParent)
+	frame:Hide()
     frame:RegisterForDrag("LeftButton")
     frame:RegisterForClicks("LeftButtonUp", "RightButtonUp")
     frame:SetScript("OnClick", frame_OnClick)

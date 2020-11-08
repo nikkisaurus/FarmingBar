@@ -50,6 +50,7 @@ local methods = {
 
 local function Constructor()
     local frame = CreateFrame("Frame", nil, UIParent)
+	frame:Hide()
     frame:SetFrameStrata("FULLSCREEN")
     frame:SetSize(300, 50)
 

@@ -568,6 +568,7 @@ local methods = {
 
 local function Constructor()
     local frame = CreateFrame("Button", Type.. AceGUI:GetNextWidgetNum(Type), UIParent, "SecureActionButtonTemplate, SecureHandlerDragTemplate")
+	frame:Hide()
     frame:RegisterForClicks("AnyUp")
     frame:RegisterForDrag("LeftButton", "RightButton")
 	frame:SetScript("OnDragStart", Control_OnDragStart)

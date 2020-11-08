@@ -14,6 +14,9 @@ local CreateFrame, UIParent = CreateFrame, UIParent
 
 --*------------------------------------------------------------------------
 
+-- Based on AceGUI EditBox v28
+-- Allows callback for OnEscapePressed
+-- Modifies _G.AceGUIEditBoxInsertLink to enable replacing editbox contents with link instead of inserting
 local Type = "FarmingBar_EditBox"
 local Version = 1
 
@@ -263,6 +266,7 @@ local methods = {
 
 local function Constructor()
 	local frame = CreateFrame("Frame", nil, UIParent)
+	frame:Hide()
 
 	local editbox = CreateFrame("EditBox", Type..AceGUI:GetNextWidgetNum(Type), frame, "InputBoxTemplate")
 	editbox:SetAutoFocus(false)

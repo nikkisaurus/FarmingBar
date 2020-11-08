@@ -43,115 +43,9 @@ local trackerConditionListSort = {"ANY", "ALL", "CUSTOM"}
 
 --*------------------------------------------------------------------------
 
-local function displayRefMacrotext_OnEnterPressed(self)
-    addon:SetObjectiveDBInfo("displayRef.trackerID", self:GetText())
-end
-
-------------------------------------------------------------
-
-local function displayRefMacrotext_OnEscapePressed(self)
-    local objectiveTitle, objectiveInfo = addon:GetSelectedObjectiveInfo()
-    self:SetText(objectiveInfo.displayRef.trackerID)
-end
-
-------------------------------------------------------------
-
-local function displayRefTrackerID_OnEnterPressed(self)
-    local objectiveTitle, objectiveInfo = addon:GetSelectedObjectiveInfo()
-    local trackerID = self:GetText()
-    local validTrackerID, trackerType = addon:ValidateObjectiveData(objectiveInfo.displayRef.trackerType, trackerID)
-
-    if validTrackerID then
-        addon:SetObjectiveDBInfo("displayRef.trackerID", trackerType == "ITEM" and validTrackerID or tonumber(trackerID))
-
-        self:SetText(objectiveInfo.displayRef.trackerID)
-        self:ClearFocus()
-    else
-        addon:ReportError(L.InvalidTrackerID(trackerType, trackerID))
-
-        self:SetText("")
-        self:SetFocus()
-    end
-end
-
-------------------------------------------------------------
-
-local function displayRefTrackerID_OnEscapePressed(self)
-    local objectiveTitle, objectiveInfo = addon:GetSelectedObjectiveInfo()
-    self:SetText(objectiveInfo.displayRef.trackerID)
-end
-
---*------------------------------------------------------------------------
-
-local function LoadDisplayIcon()
-    local objectiveTitle, objectiveInfo = ObjectiveBuilder:GetSelectedObjectiveInfo()
-    local tabContent = ObjectiveBuilder:GetUserData("mainContent")
-
-    if not objectiveInfo.autoIcon then
-        local displayIcon = AceGUI:Create("EditBox")
-        displayIcon:SetRelativeWidth(1/2)
-        displayIcon:SetText(objectiveInfo.icon)
-        ObjectiveBuilder:SetUserData("displayIcon", displayIcon)
-        tabContent:AddChild(displayIcon, tabContent.children[2])
-
-        displayIcon:SetCallback("OnEnterPressed", displayIcon_OnEnterPressed)
-
-        ------------------------------------------------------------
-
-        local chooseButton = AceGUI:Create("Button")
-        chooseButton:SetRelativeWidth(1/2)
-        chooseButton:SetText(L["Choose"])
-        ObjectiveBuilder:SetUserData("chooseButton", chooseButton)
-        tabContent:AddChild(chooseButton, tabContent.children[3])
-
-        -- chooseButton:SetCallback("OnClick", function() self.IconSelector:Show() end) -- TODO: Icon selector frame
-    elseif ObjectiveBuilder:GetUserData("displayIcon") and ObjectiveBuilder:GetUserData("chooseButton") then
-        ObjectiveBuilder:ReleaseChild("displayIcon")
-        ObjectiveBuilder:ReleaseChild("chooseButton")
-
-        tabContent:DoLayout()
-    end
-end
-
-------------------------------------------------------------
-
-local function LoadDisplayRefEditbox()
-    local objectiveTitle, objectiveInfo = addon:GetSelectedObjectiveInfo()
-    local tabContent = ObjectiveBuilder:GetUserData("mainContent")
-
-    ObjectiveBuilder:ReleaseChild("displayRefMacrotext")
-    ObjectiveBuilder:ReleaseChild("displayRefTrackerID")
-
-    local editbox
-    if objectiveInfo.displayRef.trackerType == "MACROTEXT" then
-        editbox = AceGUI:Create("MultiLineEditBox")
-        editbox:SetLabel(L["Macrotext"])
-        ObjectiveBuilder:SetUserData("displayRefMacrotext", editbox)
-        editbox:SetCallback("OnEnterPressed", displayRefMacrotext_OnEnterPressed)
-        editbox:SetCallback("OnEscapePressed", displayRefMacrotext_OnEscapePressed)
-    elseif objectiveInfo.displayRef.trackerType and objectiveInfo.displayRef.trackerType ~= "NONE" then
-        editbox = AceGUI:Create("FarmingBar_EditBox")
-        editbox:SetLink(true)
-        editbox:SetLabel(addon:GetTrackerTypeLabel(objectiveInfo.displayRef.trackerType))
-        ObjectiveBuilder:SetUserData("displayRefTrackerID", editbox)
-        editbox:SetCallback("OnEnterPressed", displayRefTrackerID_OnEnterPressed)
-        editbox:SetCallback("OnEscapePressed", displayRefTrackerID_OnEscapePressed)
-    end
-
-    if editbox then
-        editbox:SetFullWidth(true)
-        editbox:SetText(objectiveInfo.displayRef.trackerID or "")
-        tabContent:AddChild(editbox)
-
-        tabContent:DoLayout()
-    end
-end
-
---*------------------------------------------------------------------------
-
 local function autoIcon_OnValueChanged(self)
     addon:SetObjectiveDBInfo("autoIcon", self:GetValue())
-    LoadDisplayIcon()
+    ObjectiveBuilder:LoadDisplayIcon()
 end
 
 ------------------------------------------------------------
@@ -194,10 +88,50 @@ end
 
 ------------------------------------------------------------
 
+local function displayRefMacrotext_OnEnterPressed(self)
+    addon:SetObjectiveDBInfo("displayRef.trackerID", self:GetText())
+end
+
+------------------------------------------------------------
+
+local function displayRefMacrotext_OnEscapePressed(self)
+    local objectiveTitle, objectiveInfo = addon:GetSelectedObjectiveInfo()
+    self:SetText(objectiveInfo.displayRef.trackerID)
+end
+
+------------------------------------------------------------
+
+local function displayRefTrackerID_OnEnterPressed(self)
+    local objectiveTitle, objectiveInfo = addon:GetSelectedObjectiveInfo()
+    local trackerID = self:GetText()
+    local validTrackerID, trackerType = addon:ValidateObjectiveData(objectiveInfo.displayRef.trackerType, trackerID)
+
+    if validTrackerID then
+        addon:SetObjectiveDBInfo("displayRef.trackerID", trackerType == "ITEM" and validTrackerID or tonumber(trackerID))
+
+        self:SetText(objectiveInfo.displayRef.trackerID)
+        self:ClearFocus()
+    else
+        addon:ReportError(L.InvalidTrackerID(trackerType, trackerID))
+
+        self:SetText("")
+        self:SetFocus()
+    end
+end
+
+------------------------------------------------------------
+
+local function displayRefTrackerID_OnEscapePressed(self)
+    local objectiveTitle, objectiveInfo = addon:GetSelectedObjectiveInfo()
+    self:SetText(objectiveInfo.displayRef.trackerID)
+end
+
+------------------------------------------------------------
+
 local function displayRefTrackerType_OnValueChanged(self, _, selected)
     addon:SetObjectiveDBInfo("displayRef.trackerType", selected ~= "NONE" and selected or false)
     -- addon:SetObjectiveDBInfo("displayRef.trackerID", false) --! have to add checks if we do this
-    LoadDisplayRefEditbox()
+    ObjectiveBuilder:LoadDisplayRefEditbox()
 end
 
 ------------------------------------------------------------
@@ -420,6 +354,8 @@ local methods = {
         self:GetUserData("mainPanel"):ReleaseChildren()
     end,
 
+    ------------------------------------------------------------
+
     GetSelectedObjective = function(self)
         return self:GetUserData("selectedObjective")
 
@@ -472,6 +408,79 @@ local methods = {
 
     Load = function(self)
         self:Show()
+    end,
+
+    ------------------------------------------------------------
+
+    LoadDisplayIcon = function(self)
+        local objectiveTitle, objectiveInfo = self:GetSelectedObjectiveInfo()
+        local tabContent = self:GetUserData("mainContent")
+
+        if not objectiveInfo.autoIcon then
+            local displayIcon = AceGUI:Create("EditBox")
+            displayIcon:SetRelativeWidth(1/2)
+            displayIcon:SetText(objectiveInfo.icon)
+            self:SetUserData("displayIcon", displayIcon)
+            tabContent:AddChild(displayIcon, tabContent.children[2])
+
+            displayIcon:SetCallback("OnEnterPressed", displayIcon_OnEnterPressed)
+
+            ------------------------------------------------------------
+
+            local chooseButton = AceGUI:Create("Button")
+            chooseButton:SetRelativeWidth(1/2)
+            chooseButton:SetText(L["Choose"])
+            self:SetUserData("chooseButton", chooseButton)
+            tabContent:AddChild(chooseButton, tabContent.children[3])
+
+            -- chooseButton:SetCallback("OnClick", function() self.IconSelector:Show() end) -- TODO: Icon selector frame
+        elseif self:GetUserData("displayIcon") and self:GetUserData("chooseButton") then
+            self:ReleaseChild("displayIcon")
+            self:ReleaseChild("chooseButton")
+
+            tabContent:DoLayout()
+        end
+    end,
+
+    ------------------------------------------------------------
+
+    LoadDisplayRefEditbox = function(self)
+        local objectiveTitle, objectiveInfo = addon:GetSelectedObjectiveInfo()
+        local tabContent = self:GetUserData("mainContent")
+
+        self:ReleaseChild("displayRefMacrotext")
+        self:ReleaseChild("displayRefTrackerID")
+
+        ------------------------------------------------------------
+
+        local editbox
+
+        if objectiveInfo.displayRef.trackerType == "MACROTEXT" then
+            editbox = AceGUI:Create("MultiLineEditBox")
+            editbox:SetLabel(L["Macrotext"])
+            self:SetUserData("displayRefMacrotext", editbox)
+
+            editbox:SetCallback("OnEnterPressed", displayRefMacrotext_OnEnterPressed)
+            editbox:SetCallback("OnEscapePressed", displayRefMacrotext_OnEscapePressed)
+        elseif objectiveInfo.displayRef.trackerType and objectiveInfo.displayRef.trackerType ~= "NONE" then
+            editbox = AceGUI:Create("FarmingBar_EditBox")
+            editbox:SetLabel(addon:GetTrackerTypeLabel(objectiveInfo.displayRef.trackerType))
+            editbox:SetLink(true)
+            self:SetUserData("displayRefTrackerID", editbox)
+
+            editbox:SetCallback("OnEnterPressed", displayRefTrackerID_OnEnterPressed)
+            editbox:SetCallback("OnEscapePressed", displayRefTrackerID_OnEscapePressed)
+        end
+
+        ------------------------------------------------------------
+
+        if editbox then
+            editbox:SetFullWidth(true)
+            editbox:SetText(objectiveInfo.displayRef.trackerID or "")
+            tabContent:AddChild(editbox)
+
+            tabContent:DoLayout()
+        end
     end,
 
     ------------------------------------------------------------
@@ -821,7 +830,7 @@ function addon:ObjectiveBuilder_LoadObjectiveTab(tabContent)
 
     autoIcon:SetCallback("OnValueChanged", autoIcon_OnValueChanged)
 
-    LoadDisplayIcon()
+    ObjectiveBuilder:LoadDisplayIcon()
 
     ------------------------------------------------------------
 
@@ -849,7 +858,7 @@ function addon:ObjectiveBuilder_LoadObjectiveTab(tabContent)
 
     displayRefTrackerType:SetCallback("OnValueChanged", displayRefTrackerType_OnValueChanged)
 
-    LoadDisplayRefEditbox()
+    ObjectiveBuilder:LoadDisplayRefEditbox()
 end
 
 ------------------------------------------------------------
