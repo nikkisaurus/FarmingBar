@@ -406,8 +406,23 @@ local methods = {
 
     ------------------------------------------------------------
 
-    Load = function(self)
+    Load = function(self, objectiveTitle)
         self:Show()
+
+        ------------------------------------------------------------
+
+        for _, button in pairs(self:GetUserData("objectiveList").children) do
+            button:SetSelected(false)
+        end
+
+        ------------------------------------------------------------
+
+        if objectiveTitle then
+            self:SelectObjective(objectiveTitle)
+            self:GetObjectiveButton(objectiveTitle):SetSelected(true)
+        else
+            self:ClearSelectedObjective()
+        end
     end,
 
     ------------------------------------------------------------
