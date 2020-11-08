@@ -68,6 +68,21 @@ local function frame_OnClick(self, buttonClicked, ...)
     widget:Fire("OnClick", buttonClicked, ...)
 end
 
+------------------------------------------------------------
+
+local function frame_OnEnter(self)
+    GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT", 0, 0)
+    addon:GetTrackerButtonTooltip(self.obj, GameTooltip)
+    GameTooltip:Show()
+end
+
+------------------------------------------------------------
+
+local function frame_OnLeave(self)
+    GameTooltip:ClearLines()
+    GameTooltip:Hide()
+end
+
 --*------------------------------------------------------------------------
 
 local methods = {
@@ -189,8 +204,8 @@ local function Constructor()
     frame:RegisterForClicks("LeftButtonUp", "RightButtonUp")
     frame:SetScript("OnClick", frame_OnClick)
     -- frame:SetScript("OnDragStart", frame_OnDragStart)
-	-- frame:SetScript("OnEnter", frame_OnEnter)
-	-- frame:SetScript("OnLeave", frame_OnLeave)
+	frame:SetScript("OnEnter", frame_OnEnter)
+	frame:SetScript("OnLeave", frame_OnLeave)
 	-- frame:SetScript("OnReceiveDrag", frame_OnReceiveDrag)
 
     ------------------------------------------------------------

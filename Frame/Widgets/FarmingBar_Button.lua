@@ -106,6 +106,9 @@ local function Control_OnEnter(self)
     if addon.DragFrame:IsVisible() then
         self.obj:SetUserData("dragTitle", addon.DragFrame:GetObjective())
     end
+    GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT", 0, 0)
+    addon:GetButtonTooltip(self.obj, GameTooltip)
+    GameTooltip:Show()
 end
 
 ------------------------------------------------------------
@@ -214,6 +217,8 @@ end
 
 local function Control_OnLeave(self)
     self.obj:SetUserData("dragTitle")
+    GameTooltip:ClearLines()
+    GameTooltip:Hide()
 end
 
 ------------------------------------------------------------

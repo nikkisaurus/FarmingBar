@@ -91,7 +91,6 @@ L["more"] = true
 L["New Objective"] = true
 L["New Tracker"] = true
 L["None"] = true
-L["NONE"] = true
 L["Objective"] = true
 L["Objective Builder"] = true
 L["Rename"] = true
