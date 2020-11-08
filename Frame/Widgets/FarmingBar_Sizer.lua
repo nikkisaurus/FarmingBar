@@ -94,7 +94,7 @@ local methods = {
 
     ------------------------------------------------------------
 
-    SetWidget = function(self, widget, resizePoint)
+    SetWidget = function(self, widget, resizePoint, defaultSize)
         self:SetUserData("widget", widget)
 
         widget:SetUserData("resizePoint", resizePoint)
@@ -103,7 +103,7 @@ local methods = {
 
         -- Prevent overwriting the defaultSize after resizing
         if not widget:GetUserData("defaultSize") then
-            widget:SetUserData("defaultSize", {widget.frame:GetWidth(), widget.frame:GetHeight()})
+            widget:SetUserData("defaultSize", defaultSize or {widget.frame:GetWidth(), widget.frame:GetHeight()})
         end
     end,
 

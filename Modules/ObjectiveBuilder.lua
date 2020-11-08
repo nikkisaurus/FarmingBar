@@ -136,42 +136,33 @@ end
 
 ------------------------------------------------------------
 
---!
-local function excludeListLabel_OnClick(self, buttonClicked, key)
+local function excludeListLabel_OnClick(self, buttonClicked)
     if IsShiftKeyDown() and buttonClicked == "RightButton" then
-        tremove(select(4, addon:GetSelectedObjectiveInfo()).exclude, key)
-        self:LoadExcludeList()
+        local _, _, _, trackerInfo = ObjectiveBuilder:GetSelectedObjectiveInfo()
+
+        for key, objectiveTitle in pairs(trackerInfo.exclude) do
+            if objectiveTitle == self:GetText() then
+                tremove(trackerInfo.exclude, key)
+            end
+        end
+
+        ObjectiveBuilder:ReleaseChild(self)
+        ObjectiveBuilder:GetUserData("excludeList"):DoLayout()
+        ObjectiveBuilder:UpdateExcludeObjectivesDropdown()
     end
 end
 
 ------------------------------------------------------------
 
-local function excludeObjectives_OnEnterPressed(self)
-    local objective = self:GetText()
-    local validObjective = addon:ObjectiveExists(objective)
+local function excludeObjectives_OnValueChanged(self)
+    local objective = self:GetValue()
+    local objectiveTitle, _, _, trackerInfo = addon:GetSelectedObjectiveInfo()
 
-    if validObjective then
-        local objectiveTitle, _, _, trackerInfo = addon:GetSelectedObjectiveInfo()
-        local excluded = trackerInfo.exclude
+    tinsert(trackerInfo.exclude, objective)
+    addon:AddExcludeLabel(objective)
+    ObjectiveBuilder:GetUserData("excludeList"):DoLayout()
 
-        --! Should I not move this below the error reporting and rehighlight on err?
-        self:SetText()
-
-        if strupper(objectiveTitle) == strupper(objective) then
-            addon:ReportError(L.InvalidTrackerExclusion)
-            return
-        elseif addon:ObjectiveIsExcluded(excluded, objective) then
-            addon:ReportError(L.ObjectiveIsExcluded)
-            return
-        end
-
-        tinsert(excluded, validObjective)
-
-        addon.ObjectiveBuilder:LoadExcludeList()
-    else
-        addon:ReportError(L.InvalidObjectiveTitle)
-        self:HighlightText()
-    end
+    ObjectiveBuilder:UpdateExcludeObjectivesDropdown()
 end
 
 ------------------------------------------------------------
@@ -207,6 +198,20 @@ end
 
 local function help_OnClick(self)
     print("COWSHIT")
+end
+
+------------------------------------------------------------
+
+local function includeAllChars_OnValueChanged(self)
+    local objectiveTitle, _, tracker = ObjectiveBuilder:GetSelectedObjectiveInfo()
+    addon:SetTrackerDBInfo(objectiveTitle, tracker, "includeAllChars", self:GetValue())end
+
+------------------------------------------------------------
+
+local function includeBank_OnValueChanged(self)
+    local objectiveTitle, _, tracker = ObjectiveBuilder:GetSelectedObjectiveInfo()
+    addon:SetTrackerDBInfo(objectiveTitle, tracker, "includeBank", self:GetValue())
+    addon:UpdateButtons(objectiveTitle)
 end
 
 ------------------------------------------------------------
@@ -338,6 +343,37 @@ local methods = {
         self:SetUserData("selectedTracker")
 
         self:GetUserData("mainPanel"):ReleaseChildren()
+    end,
+
+    ------------------------------------------------------------
+
+    ClearSelectedTracker = function(self)
+        local objectiveTitle, objectiveInfo, tracker, trackerInfo = self:GetSelectedObjectiveInfo()
+        if not trackerInfo then return end
+        self:GetTrackerButton(trackerInfo):SetSelected(false)
+
+        self:SetUserData("selectedTracker")
+
+        self:GetUserData("trackerPanel"):ReleaseChildren()
+        self:GetUserData("trackerPanel"):DoLayout()
+    end,
+
+    ------------------------------------------------------------
+
+    GetObjectiveList = function(self)
+        local selectedObjectiveTitle, _, _, trackerInfo = self:GetSelectedObjectiveInfo()
+
+        local list = {}
+        local sort = {}
+
+        for objectiveTitle, _ in addon.pairs(FarmingBar.db.global.objectives, function(a, b) return strupper(a) < strupper(b) end) do
+            if objectiveTitle ~= selectedObjectiveTitle and not addon:ObjectiveIsExcluded(trackerInfo.exclude, objectiveTitle) then
+                list[objectiveTitle] = objectiveTitle
+                tinsert(sort, objectiveTitle)
+            end
+        end
+
+        return list, sort
     end,
 
     ------------------------------------------------------------
@@ -510,22 +546,14 @@ local methods = {
 
     LoadExcludeList = function(self)
         local _, _, _, trackerInfo = addon:GetSelectedObjectiveInfo()
-        local excludeList = addon.ObjectiveBuilder.excludeList
+        local excludeList = ObjectiveBuilder:GetUserData("excludeList")
 
         excludeList:ReleaseChildren()
 
         ------------------------------------------------------------
 
-        for key, objectiveTitle in pairs(trackerInfo.exclude) do
-            local label = AceGUI:Create("FarmingBar_InteractiveLabel")
-            label:SetFullWidth(true)
-            label:SetText(objectiveTitle)
-            label:SetIcon(addon:GetObjectiveIcon(objectiveTitle), nil, 13, 13)
-            excludeList:AddChild(label)
-
-            label:SetCallback("OnClick", function(_, _, buttonClicked) excludeListLabel_OnClick(self, buttonClicked, key) end)
-
-            label:SetTooltip(addon.GetExcludeListLabelTooltip)
+        for key, objectiveTitle in addon.pairs(trackerInfo.exclude) do
+            addon:AddExcludeLabel(objectiveTitle)
         end
     end,
 
@@ -541,27 +569,14 @@ local methods = {
 
     ------------------------------------------------------------
 
-    LoadTrackers = function(self, trackerInfo)
-        local _, objectiveInfo, _, selectedTrackerInfo = self:GetSelectedObjectiveInfo()
-        local trackerList = ObjectiveBuilder:GetUserData("trackerList")
+    LoadTrackers = function(self)
+        local _, objectiveInfo, selectedTracker = self:GetSelectedObjectiveInfo()
 
-        trackerList:ReleaseChildren()
-
-        ------------------------------------------------------------
-
-        for tracker, trackerInfo in pairs(objectiveInfo.trackers) do
-            local button = AceGUI:Create("FarmingBar_TrackerButton")
-            button:SetFullWidth(true)
-            button:SetTracker(trackerInfo)
-            trackerList:AddChild(button)
-        end
-
-        ------------------------------------------------------------
-
-        local selectedTracker = trackerInfo or selectedTrackerInfo
-
-        if selectedTracker then
-            self:GetTrackerButton(selectedTracker):Select()
+        for tracker, trackerInfo in addon.pairs(objectiveInfo.trackers) do
+            local button = addon:AddTrackerButton(tracker, trackerInfo)
+            if tracker == selectedTracker then
+                button:Select()
+            end
         end
     end,
 
@@ -570,7 +585,6 @@ local methods = {
     RefreshObjectives = function(self, objectiveTitle)
         local objectiveList = self:GetUserData("objectiveList")
 
-        local deletedKeys
         for key, button in pairs(objectiveList.children) do
             local objectiveTitle = button:GetObjective()
 
@@ -593,29 +607,10 @@ local methods = {
                 button:SetUserData("filtered", true)
                 button:SetSelected(false)
 
-                if not objectiveExists then
-                    -- Objective was deleted
-                    button:Release()
-
-                    -- Store keys to delete from the children table after we're done looping
-                    deletedKeys = deletedKeys or {}
-                    tinsert(deletedKeys, key)
-
-                    -- If deleted objective was the selected objective, clear the selection
-                    if self:GetSelectedObjective() == objectiveTitle then
-                        self:ClearSelectedObjective()
-                    end
-                elseif autoFiltered and self:GetSelectedObjective() == objectiveTitle then
+                if autoFiltered and self:GetSelectedObjective() == objectiveTitle then
                     -- If an auto item is selected and then filtered, clear the selection
                     self:ClearSelectedObjective()
                 end
-            end
-        end
-
-        -- Remove released widgets from children table
-        if type(deletedKeys) == "table" then
-            for k, v in addon.pairs(deletedKeys, function(a, b) return b < a end) do
-                tremove(objectiveList.children, v)
             end
         end
 
@@ -628,8 +623,8 @@ local methods = {
         -- Releasing widgets doesn't remove them from the parent container's children table, so we need to do it manually
         -- Remove the userdata reference to prevent error about already having been released
 
-        widget = ObjectiveBuilder:GetUserData(widget)
-        if not widget then return end
+        widget = ObjectiveBuilder:GetUserData(widget) or widget
+        if not widget.parent then return end
         local children = widget.parent.children
 
         for key, child in pairs(children) do
@@ -645,6 +640,7 @@ local methods = {
 
     SelectObjective = function(self, objectiveTitle)
         local mainPanel = self:GetUserData("mainPanel")
+        self:ClearSelectedObjective()
         self:SetUserData("selectedObjective", objectiveTitle)
 
         mainPanel:ReleaseChildren()
@@ -673,14 +669,18 @@ local methods = {
 
     ------------------------------------------------------------
 
-    UpdateTrackerButton = function(self)
-        local _, _, tracker, trackerInfo = addon:GetSelectedObjectiveInfo()
+    SelectTracker = function(self, tracker)
+        self:SetUserData("selectedTracker", tracker)
+        addon:ObjectiveBuilder_LoadTrackerInfo()
+    end,
 
-        addon:GetTrackerDataTable(trackerInfo.trackerType, trackerInfo.trackerID, function(data)
-            local button = addon.ObjectiveBuilder.trackerList.status.children[tracker].button
-            button:SetText(data.name)
-            button:SetIcon(data.icon)
-        end)
+    ------------------------------------------------------------
+
+    UpdateExcludeObjectivesDropdown = function(self)
+        local excludeObjectives = self:GetUserData("excludeObjectives")
+        excludeObjectives:SetList(self:GetObjectiveList())
+        excludeObjectives:SetDisabled(addon.tcount(excludeObjectives.list) == 0)
+        excludeObjectives:SetValue()
     end,
 }
 
@@ -691,6 +691,7 @@ function addon:Initialize_ObjectiveBuilder()
     ObjectiveBuilder:SetTitle("Farming Bar "..L["Objective Builder"])
     ObjectiveBuilder:SetLayout("FB30_TopSidebarGroup")
     ObjectiveBuilder:SetUserData("selectedTabs", {})
+    ObjectiveBuilder:SetUserData("sidebarDenom", 4)
     addon.ObjectiveBuilder = ObjectiveBuilder
 
     for method, func in pairs(methods) do
@@ -895,6 +896,35 @@ function addon:ObjectiveBuilder_LoadObjectiveTab(tabContent)
     ObjectiveBuilder:LoadDisplayRefEditbox()
 end
 
+--*------------------------------------------------------------------------
+
+function addon:AddExcludeLabel(objectiveTitle)
+    local label = AceGUI:Create("FarmingBar_InteractiveLabel")
+    label:SetFullWidth(true)
+    label:SetText(objectiveTitle)
+    label:SetIcon(self:GetObjectiveIcon(objectiveTitle), nil, 13, 13)
+    label:SetTooltip(self.GetExcludeListLabelTooltip)
+    ObjectiveBuilder:GetUserData("excludeList"):AddChild(label)
+
+    label:SetCallback("OnClick", function(self, _, buttonClicked) excludeListLabel_OnClick(self, buttonClicked) end)
+
+    return label
+end
+------------------------------------------------------------
+
+function addon:AddTrackerButton(tracker, trackerInfo)
+    local trackerList = ObjectiveBuilder:GetUserData("trackerList")
+    local _, objectiveInfo = ObjectiveBuilder:GetSelectedObjectiveInfo()
+
+    local button = AceGUI:Create("FarmingBar_TrackerButton")
+    button:SetFullWidth(true)
+    button:SetTracker(tracker, trackerInfo)
+    trackerList:AddChild(button)
+    trackerList:DoLayout()
+
+    return button
+end
+
 ------------------------------------------------------------
 
 function addon:ObjectiveBuilder_LoadTrackersTab(tabContent)
@@ -925,7 +955,7 @@ function addon:ObjectiveBuilder_LoadTrackersTab(tabContent)
 
     --@retail@
     local trackerType = AceGUI:Create("Dropdown")
-    trackerType:SetFullWidth(1)
+    trackerType:SetFullWidth(true)
     trackerType:SetLabel(L["Type"])
     trackerType:SetList(
         {
@@ -992,16 +1022,24 @@ function addon:ObjectiveBuilder_LoadTrackersTab(tabContent)
 
     ------------------------------------------------------------
 
-    local trackerPanel = AceGUI:Create("FarmingBar_InlineGroup")
-    trackerPanel:SetLayout("Flow")
-    trackerContent:AddChild(trackerPanel)
+    local trackerPanelContainer = AceGUI:Create("FarmingBar_InlineGroup")
+    trackerPanelContainer:SetLayout("Fill")
+    trackerContent:AddChild(trackerPanelContainer)
+
+    ------------------------------------------------------------
+
+    local trackerPanel = AceGUI:Create("ScrollFrame")
+    trackerPanel:SetLayout("FB30_List")
+    trackerPanel:SetUserData("childPadding", 5)
+    trackerPanelContainer:AddChild(trackerPanel)
+    ObjectiveBuilder:SetUserData("trackerPanel", trackerPanel)
 
     ------------------------------------------------------------
 
     local trackerContentSizer = AceGUI:Create("FarmingBar_Sizer")
     trackerContentSizer:SetFullWidth(true)
     trackerContentSizer:SetHeight(5)
-    trackerContentSizer:SetWidget(trackerContent, "BOTTOM")
+    trackerContentSizer:SetWidget(trackerContent, "BOTTOM", {200, 200})
     tabContent:AddChild(trackerContentSizer)
 
     trackerContentSizer:SetCallback("OnMouseUp", function(self) trackerContentSizer_OnMouseUp(self, trackerContent, tabContent) end)
@@ -1013,44 +1051,22 @@ end
 
 --*------------------------------------------------------------------------
 
-function addon:ObjectiveBuilder_LoadTrackerInfo(tracker)
-    local ObjectiveBuilder = self.ObjectiveBuilder
-    local objectiveTitle, _, _, trackerInfo = self:GetSelectedObjectiveInfo()
-    local tabContent = ObjectiveBuilder.trackerList.status.content
+function addon:ObjectiveBuilder_LoadTrackerInfo()
+    local objectiveTitle, _, _, trackerInfo = ObjectiveBuilder:GetSelectedObjectiveInfo()
+    local trackerButton = ObjectiveBuilder:GetTrackerButton(trackerInfo)
+    local tabContent = ObjectiveBuilder:GetUserData("trackerPanel")
 
     tabContent:ReleaseChildren()
 
     if not objectiveTitle or not trackerInfo then return end
 
-    -- ------------------------------------------------------------
-
-    -- --@retail@
-    -- local trackerType = AceGUI:Create("Dropdown")
-    -- trackerType:SetFullWidth(1)
-    -- trackerType:SetLabel(L["Type"])
-    -- trackerType:SetList(
-    --     {
-    --         ITEM = L["Item"],
-    --         CURRENCY = L["Currency"],
-    --     },
-    --     {"ITEM", "CURRENCY"}
-    -- )
-    -- trackerType:SetValue(trackerInfo.trackerType)
-    -- tabContent:AddChild(trackerType)
-
-    -- trackerType:SetCallback("OnValueChanged", function(self, _, selected) trackerType_OnValueChanged(self, selected) end)
-    -- --@end-retail@
-
     ------------------------------------------------------------
 
-    -- local trackerID = AceGUI:Create("EditBox")
-    -- trackerID:SetFullWidth(true)
-    -- trackerID:SetLabel(self:GetTrackerTypeLabel(trackerInfo.trackerType))
-    -- trackerID:SetText(trackerInfo.trackerID or "")
-    -- tabContent:AddChild(trackerID)
-    -- ObjectiveBuilder.trackerList.status.trackerID = trackerID
-
-    -- trackerID:SetCallback("OnEnterPressed", trackerID_OnEnterPressed)
+    local title = AceGUI:Create("FarmingBar_InteractiveLabel")
+    title:SetFontObject(GameFontNormalLarge)
+    title:SetText(trackerButton:GetUserData("trackerName"))
+    title:SetIcon(trackerButton:GetUserData("trackerIcon"), nil, 20, 20)
+    tabContent:AddChild(title)
 
     ------------------------------------------------------------
 
@@ -1061,7 +1077,7 @@ function addon:ObjectiveBuilder_LoadTrackerInfo(tracker)
     tabContent:AddChild(trackerObjective)
 
     trackerObjective:SetCallback("OnEnterPressed", trackerObjective_OnEnterPressed)
-    trackerObjective:SetCallback("OnTextChanged", function(self) NumericEditBox_OnTextChanged(self) end)
+    trackerObjective:SetCallback("OnTextChanged", NumericEditBox_OnTextChanged)
 
     ------------------------------------------------------------
 
@@ -1071,12 +1087,7 @@ function addon:ObjectiveBuilder_LoadTrackerInfo(tracker)
     includeBank:SetValue(trackerInfo.includeBank)
     tabContent:AddChild(includeBank)
 
-    includeBank:SetCallback("OnValueChanged", function(self)
-        local ObjectiveBuilder = addon.ObjectiveBuilder
-        local objectiveTitle = ObjectiveBuilder:GetSelectedObjective()
-        addon:SetTrackerDBInfo(objectiveTitle, ObjectiveBuilder:GetSelectedTracker(), "includeBank", self:GetValue())
-        addon:UpdateButtons(objectiveTitle)
-    end) --! move to local
+    includeBank:SetCallback("OnValueChanged", includeBank_OnValueChanged)
 
     ------------------------------------------------------------
 
@@ -1097,16 +1108,19 @@ function addon:ObjectiveBuilder_LoadTrackerInfo(tracker)
     end
     tabContent:AddChild(includeAllChars)
 
-    includeAllChars:SetCallback("OnValueChanged", function(self) addon:SetTrackerDBInfo(addon.ObjectiveBuilder:GetSelectedObjective(), addon.ObjectiveBuilder:GetSelectedTracker(), "includeAllChars", self:GetValue()) end)
+    includeAllChars:SetCallback("OnValueChanged", includeAllChars_OnValueChanged)
 
     ------------------------------------------------------------
 
-    local excludeObjectives = AceGUI:Create("EditBox")
+    local excludeObjectives = AceGUI:Create("Dropdown")
     excludeObjectives:SetFullWidth(true)
     excludeObjectives:SetLabel(L["Exclude Objective"])
     tabContent:AddChild(excludeObjectives)
+    ObjectiveBuilder:SetUserData("excludeObjectives", excludeObjectives)
 
-    excludeObjectives:SetCallback("OnEnterPressed", excludeObjectives_OnEnterPressed)
+    excludeObjectives:SetCallback("OnValueChanged", excludeObjectives_OnValueChanged)
+
+    ObjectiveBuilder:UpdateExcludeObjectivesDropdown()
 
     ------------------------------------------------------------
 
@@ -1120,8 +1134,11 @@ function addon:ObjectiveBuilder_LoadTrackerInfo(tracker)
 
     local excludeList = AceGUI:Create("ScrollFrame")
     excludeList:SetLayout("FB30_List")
+    excludeList:SetUserData("sortFunc", function(a, b)
+        return strupper(a:GetText()) < strupper(b:GetText())
+    end)
     excludeListContainer:AddChild(excludeList)
-    ObjectiveBuilder.excludeList = excludeList
+    ObjectiveBuilder:SetUserData("excludeList", excludeList)
 
     ------------------------------------------------------------
 

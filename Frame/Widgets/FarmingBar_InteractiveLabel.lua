@@ -85,6 +85,7 @@ local methods = {
         self:SetIconColor(1, 1, 1, 1)
         self:SetIcon()
         self:SetText("")
+        self:SetFontObject(GameFontHighlight)
     end,
 
     ------------------------------------------------------------
@@ -351,6 +352,7 @@ local methods = {
 local function Constructor()
     local frame = CreateFrame("Button", nil, UIParent)
 	frame:Hide()
+    frame:RegisterForClicks("AnyUp")
     frame:SetScript("OnClick", frame_OnClick)
     frame:SetScript("OnEnter", frame_OnEnter)
     frame:SetScript("OnLeave", frame_OnLeave)

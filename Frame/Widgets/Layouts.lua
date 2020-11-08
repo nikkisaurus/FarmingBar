@@ -68,7 +68,7 @@ AceGUI:RegisterLayout("FB30_SidebarGroup", function(content, children)
 
             if i == 1 then
                 frame:SetPoint("TOPLEFT", content, "TOPLEFT", 0, 0)
-                frame:SetPoint("BOTTOMRIGHT", content, "BOTTOMLEFT", contentWidth / 3, 0)
+                frame:SetPoint("BOTTOMRIGHT", content, "BOTTOMLEFT", contentWidth / (content.obj:GetUserData("sidebarDenom") or 3), 0)
             elseif i == 2 then
                 frame:SetPoint("TOPLEFT", children[1].frame, "TOPRIGHT", 0, 0)
                 frame:SetPoint("BOTTOMRIGHT", content, "BOTTOMRIGHT", 0, 0)
@@ -106,7 +106,7 @@ AceGUI:RegisterLayout("FB30_TopSidebarGroup", function(content, children)
                 frame:SetPoint("TOPRIGHT")
             elseif i == 2 then
                 frame:SetPoint("TOPLEFT", children[1].frame, "BOTTOMLEFT")
-                frame:SetPoint("BOTTOMRIGHT", content, "BOTTOMLEFT", contentWidth / 3, 0)
+                frame:SetPoint("BOTTOMRIGHT", content, "BOTTOMLEFT", contentWidth / (content.obj:GetUserData("sidebarDenom") or 3), 0)
             elseif i == 3 then
                 frame:SetPoint("TOPLEFT", children[2].frame, "TOPRIGHT")
                 frame:SetPoint("BOTTOMRIGHT")

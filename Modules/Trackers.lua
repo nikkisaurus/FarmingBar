@@ -43,33 +43,57 @@ function addon:CreateTracker(tracker)
     end
 
     tinsert(FarmingBar.db.global.objectives[objectiveTitle].trackers, defaultTracker)
+    local newTracker = #FarmingBar.db.global.objectives[objectiveTitle].trackers
 
     ------------------------------------------------------------
 
-    ObjectiveBuilder:LoadTrackers(tracker)
+    local trackerList = ObjectiveBuilder:GetUserData("trackerList")
+    local button = addon:AddTrackerButton(newTracker, defaultTracker)
+
+    for _, button in pairs(trackerList.children) do
+        button:SetSelected(false)
+    end
+
+    ObjectiveBuilder:SelectTracker(newTracker)
+    button:SetSelected(true)
+    trackerList.scrollbar:SetValue(1000)
+
+    ------------------------------------------------------------
+
+    self:UpdateButtons(objectiveTitle)
 end
 
 ------------------------------------------------------------
 
 function addon:DeleteTracker()
     local ObjectiveBuilder = self.ObjectiveBuilder
-    local objectiveTitle = ObjectiveBuilder:GetSelectedObjectiveInfo()
     local trackerList = ObjectiveBuilder:GetUserData("trackerList")
-    local trackersTable = FarmingBar.db.global.objectives[objectiveTitle].trackers
+    local objectiveTitle, objectiveInfo = ObjectiveBuilder:GetSelectedObjectiveInfo()
 
     ------------------------------------------------------------
 
+    local releaseKeys = {}
     for key, button in pairs(trackerList.children) do
         if button:GetUserData("selected") then
+            if ObjectiveBuilder:GetSelectedTracker() == key then
+                ObjectiveBuilder:ClearSelectedTracker()
+            end
+
             FarmingBar.db.global.objectives[objectiveTitle].trackers[key] = nil
+            tinsert(releaseKeys, key)
         end
+    end
+
+    -- Release buttons after the initial loop, backwards, to ensure all buttons are properly released
+    for _, key in addon.pairs(releaseKeys, function(a, b) return b < a end) do
+        ObjectiveBuilder:ReleaseChild(trackerList.children[key])
     end
 
     ------------------------------------------------------------
 
     -- Reindex trackers table so trackerList buttons aren't messed up
     local trackers = {}
-    for _, trackerInfo in pairs(trackersTable) do
+    for _, trackerInfo in pairs(objectiveInfo.trackers) do
         tinsert(trackers, trackerInfo)
     end
 
@@ -77,9 +101,15 @@ function addon:DeleteTracker()
 
     ------------------------------------------------------------
 
-    ObjectiveBuilder:LoadTrackers()
+    -- Update tracker button keys
+    for key, button in pairs(trackerList.children) do
+        button:SetUserData("trackerKey", key)
+    end
+
+    ------------------------------------------------------------
+
     trackerList:DoLayout()
-    -- self:ObjectiveBuilder_LoadTrackerInfo() --! Not sure if I can delete this or not
+    self:UpdateButtons(objectiveTitle)
 end
 
 ------------------------------------------------------------

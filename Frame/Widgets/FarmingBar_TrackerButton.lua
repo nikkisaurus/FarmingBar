@@ -49,7 +49,10 @@ local function frame_OnClick(self, buttonClicked, ...)
     if first and target then
         local offset = (first < target) and 1 or -1
         for i = first + offset, target - offset, offset do
-            buttons[i]:SetSelected(true, true)
+            local button = buttons[i]
+            if not button:GetUserData("filtered") then
+                button:SetSelected(true, true)
+            end
         end
     end
 
@@ -59,7 +62,7 @@ local function frame_OnClick(self, buttonClicked, ...)
         widget:ShowMenu()
     else
         PlaySound(852)
-        print(widget:GetUserData("trackerName"))
+        ObjectiveBuilder:SelectTracker(widget:GetTrackerKey())
     end
 
     widget:Fire("OnClick", buttonClicked, ...)
@@ -77,6 +80,12 @@ local methods = {
         self.icon:SetTexture(134400)
 
         self:SetSelected(false)
+    end,
+
+    ------------------------------------------------------------
+
+    GetTrackerKey = function(self)
+        return self:GetUserData("trackerKey")
     end,
 
     ------------------------------------------------------------
@@ -103,7 +112,8 @@ local methods = {
 
     ------------------------------------------------------------
 
-    SetTracker = function(self, trackerInfo)
+    SetTracker = function(self, tracker, trackerInfo)
+        self:SetUserData("trackerKey", tracker)
         self:SetUserData("trackerType", trackerInfo.trackerType)
         self:SetUserData("trackerID", trackerInfo.trackerID)
 

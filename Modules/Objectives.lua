@@ -43,6 +43,7 @@ function addon:CreateObjective(objectiveTitle, objectiveInfo, overwrite, supress
     if not supressSelect then
         ObjectiveBuilder:ClearSelectedObjective()
         ObjectiveBuilder:SelectObjective(newObjectiveTitle)
+        button:SetSelected(true)
     end
 
     ------------------------------------------------------------
@@ -92,23 +93,33 @@ function addon:DeleteObjective(objectiveTitle)
     local objectiveList = ObjectiveBuilder:GetUserData("objectiveList")
 
     if not objectiveTitle then
-        for _, button in pairs(objectiveList.children) do
+        local releaseKeys = {}
+        for key, button in pairs(objectiveList.children) do
             if button:GetUserData("selected") and not button:GetUserData("filtered") then
                 local objectiveTitle = button:GetObjective()
+
                 FarmingBar.db.global.objectives[objectiveTitle] = nil
-                button:SetSelected(false)
+                tinsert(releaseKeys, key)
+
                 if ObjectiveBuilder:GetSelectedObjective() == objectiveTitle then
                     ObjectiveBuilder:ClearSelectedObjective()
                 end
+
                 self:UpdateExclusions(objectiveTitle)
                 self:ClearDeletedObjectives(objectiveTitle)
             end
+        end
+
+        -- Release buttons after the initial loop, backwards, to ensure all buttons are properly released
+        for _, key in addon.pairs(releaseKeys, function(a, b) return b < a end) do
+            ObjectiveBuilder:ReleaseChild(objectiveList.children[key])
         end
     else
         FarmingBar.db.global.objectives[objectiveTitle] = nil
         if ObjectiveBuilder:GetSelectedObjective() == objectiveTitle then
             ObjectiveBuilder:ClearSelectedObjective()
         end
+        ObjectiveBuilder:ReleaseChild(ObjectiveBuilder:GetObjectiveButton(objectiveTitle))
         self:UpdateExclusions(objectiveTitle)
         self:ClearDeletedObjectives(objectiveTitle)
     end
