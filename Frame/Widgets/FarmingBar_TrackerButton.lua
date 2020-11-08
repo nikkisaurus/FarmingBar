@@ -195,7 +195,7 @@ local function Constructor()
 	frame:Hide()
     frame:RegisterForClicks("LeftButtonUp", "RightButtonUp")
     frame:SetScript("OnClick", frame_OnClick)
-	frame:SetScript("OnEnter", frame_OnEnter)
+	frame:SetScript("OnLeave", frame_OnLeave)
 
     ------------------------------------------------------------
 
