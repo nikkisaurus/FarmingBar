@@ -2,11 +2,14 @@ local addonName, addon = ...
 local FarmingBar = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
 local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 
-local pairs = pairs
-local type = type
-local strfind, tonumber = string.find, tonumber
+local loadstring, select, type = loadstring, select, type
+local min = math.min
+local format, strfind, strmatch, strsplit, strupper, tonumber = string.format, string.find, string.match, strsplit, string.upper, tonumber
+local pairs, tinsert = pairs, table.insert
 
 local GetCursorInfo, ClearCursor = GetCursorInfo, ClearCursor
+local GetItemIconByID, GetCurrencyInfo = C_Item.GetItemIconByID, C_CurrencyInfo.GetCurrencyInfo
+local StaticPopup_Show = StaticPopup_Show
 
 --*------------------------------------------------------------------------
 
@@ -22,7 +25,7 @@ function addon:CreateObjective(objectiveTitle, objectiveInfo, overwrite, supress
     if newObjective and not overwrite then
         local i = 2
         while not newObjectiveTitle do
-            local title = string.format("%s %d", objectiveTitle or defaultTitle, i)
+            local title = format("%s %d", objectiveTitle or defaultTitle, i)
             if not addon:GetObjectiveInfo(title) then
                 newObjectiveTitle = title
             else
@@ -59,7 +62,7 @@ function addon:CreateObjectiveFromCursor()
 
     if cursorType == "item" then
         local defaultInfo = self:GetDefaultObjective()
-        defaultInfo.icon = C_Item.GetItemIconByID(cursorID)
+        defaultInfo.icon = GetItemIconByID(cursorID)
         defaultInfo.displayRef.trackerType = "ITEM"
         defaultInfo.displayRef.trackerID = cursorID
 
@@ -184,9 +187,9 @@ function addon:GetObjectiveIcon(objectiveTitle)
         local trackerType, trackerID = lookupTable and lookupTable.trackerType, lookupTable and lookupTable.trackerID
 
         if trackerType == "ITEM" then
-            icon = C_Item.GetItemIconByID(tonumber(trackerID) or 0)
+            icon = GetItemIconByID(tonumber(trackerID) or 0)
         elseif trackerType == "CURRENCY" then
-            local currency = C_CurrencyInfo.GetCurrencyInfo(tonumber(trackerID) or 0)
+            local currency = GetCurrencyInfo(tonumber(trackerID) or 0)
             icon = currency and currency.iconFileID
         end
     else
@@ -354,11 +357,8 @@ function addon:SetObjectiveDBInfo(key, value, objectiveTitle)
 
     ------------------------------------------------------------
 
-    addon:UpdateButtons(title)
-
-    -- if not objectiveTitle then
-        self.ObjectiveBuilder:RefreshObjectives()
-    -- end
+    self:UpdateButtons(title)
+    self.ObjectiveBuilder:RefreshObjectives()
 end
 
 ------------------------------------------------------------

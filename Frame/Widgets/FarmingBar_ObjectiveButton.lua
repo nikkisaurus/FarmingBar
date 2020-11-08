@@ -49,6 +49,7 @@ end
 
 local function EditBox_OnEscapePressed(self)
     objectiveList:GetUserData("renaming")[self.obj:GetUserData("objectiveTitle")] = false
+    ObjectiveBuilder:RefreshObjectives()
 
     self:Hide()
     FocusRenamingEditBox()

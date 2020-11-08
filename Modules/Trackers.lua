@@ -3,9 +3,12 @@ local FarmingBar = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
 local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 local AceGUI = LibStub("AceGUI-3.0", true)
 
-local strupper, tonumber = string.upper, tonumber
-local floor, min = math.floor, math.min
-local wipe = table.wipe
+local select, type = select, type
+local floor, min, max = math.floor, math.min, math.max
+local strsplit, strupper, tonumber = strsplit, string.upper, tonumber
+local pairs, tinsert, tremove, wipe = pairs, table.insert, table.remove, table.wipe
+
+local GetItemCount, GetCurrencyInfo, GetCurrencyInfoFromLink, GetCurrencyIDFromLink = GetItemCount, C_CurrencyInfo.GetCurrencyInfo, C_CurrencyInfo.GetCurrencyInfoFromLink, C_CurrencyInfo.GetCurrencyIDFromLink
 
 --*------------------------------------------------------------------------
 
@@ -144,7 +147,7 @@ function addon:GetTrackerCount(trackerInfo)
     if trackerInfo.trackerType == "ITEM" then
         count = GetItemCount(trackerInfo.trackerID, trackerInfo.includeBank)
     elseif trackerInfo.trackerType == "CURRENCY" and trackerInfo.trackerID ~= "" then
-        count = C_CurrencyInfo.GetCurrencyInfo(trackerInfo.trackerID) and C_CurrencyInfo.GetCurrencyInfo(trackerInfo.trackerID).quantity
+        count = GetCurrencyInfo(trackerInfo.trackerID) and GetCurrencyInfo(trackerInfo.trackerID).quantity
     end
 
     if not count then
@@ -170,7 +173,7 @@ function addon:GetTrackerCount(trackerInfo)
         end
     end
 
-    count = math.floor(count / trackerInfo.objective)
+    count = floor(count / trackerInfo.objective)
 
     return count > 0 and count or 0
 end
@@ -194,7 +197,7 @@ function addon:GetTrackerDataTable(...)
             end
         end, ...)
     elseif dataType == "CURRENCY" then
-        local currency = C_CurrencyInfo.GetCurrencyInfo(tonumber(dataID) or 0)
+        local currency = GetCurrencyInfo(tonumber(dataID) or 0)
         local data = {name = currency and currency.name or L["Invalid Tracker"], icon = currency and currency.iconFileID or 134400, label = addon:GetTrackerTypeLabel(dataType), trackerType = dataType, trackerID = dataID}
 
         if callback then
@@ -313,9 +316,9 @@ function addon:ValidateObjectiveData(trackerType, trackerID)
     if trackerType == "ITEM" then
         return (GetItemInfoInstant(trackerID or 0)), "ITEM"
     elseif trackerType == "CURRENCY" then
-        local isLink = C_CurrencyInfo.GetCurrencyInfoFromLink(trackerID)
-        trackerID = isLink and C_CurrencyInfo.GetCurrencyIDFromLink(trackerID) or tonumber(trackerID) or 0
-        local currency = C_CurrencyInfo.GetCurrencyInfo(trackerID)
+        local isLink = GetCurrencyInfoFromLink(trackerID)
+        trackerID = isLink and GetCurrencyIDFromLink(trackerID) or tonumber(trackerID) or 0
+        local currency = GetCurrencyInfo(trackerID)
 
         return currency and trackerID, "CURRENCY"
     elseif trackerID == "" then
