@@ -360,6 +360,7 @@ local methods = {
         self.frame:UnregisterEvent("CURRENCY_DISPLAY_UPDATE")
 
         self:UpdateLayers()
+        addon:UpdateButtons()
     end,
 
     ------------------------------------------------------------

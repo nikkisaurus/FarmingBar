@@ -37,9 +37,9 @@ local function EditBox_OnEnterPressed(self)
 
     widget:SetObjective(newObjectiveTitle)
 
-    ObjectiveBuilder:RefreshObjectives()
     ObjectiveBuilder:SelectObjective(newObjectiveTitle)
     objectiveList:GetUserData("renaming")[oldObjectiveTitle] = false
+    ObjectiveBuilder:RefreshObjectives()
 
     self:Hide()
     FocusRenamingEditBox()

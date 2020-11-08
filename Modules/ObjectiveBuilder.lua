@@ -68,6 +68,7 @@ end
 
 local function displayIcon_OnEnterPressed(self)
     addon:SetObjectiveDBInfo("icon", self:GetText())
+    ObjectiveBuilder:RefreshObjectives()
 end
 
 ------------------------------------------------------------
@@ -160,6 +161,7 @@ local function excludeListLabel_OnClick(self, buttonClicked)
         ObjectiveBuilder:ReleaseChild(self)
         ObjectiveBuilder:GetUserData("excludeList"):DoLayout()
         ObjectiveBuilder:UpdateExcludeObjectivesDropdown()
+        addon:UpdateButtons()
     end
 end
 
@@ -171,9 +173,10 @@ local function excludeObjectives_OnValueChanged(self)
 
     tinsert(trackerInfo.exclude, objective)
     addon:AddExcludeLabel(objective)
-    ObjectiveBuilder:GetUserData("excludeList"):DoLayout()
 
     ObjectiveBuilder:UpdateExcludeObjectivesDropdown()
+    ObjectiveBuilder:GetUserData("excludeList"):DoLayout()
+    addon:UpdateButtons()
 end
 
 ------------------------------------------------------------
@@ -697,6 +700,7 @@ local methods = {
         excludeObjectives:SetList(self:GetObjectiveList())
         excludeObjectives:SetDisabled(addon.tcount(excludeObjectives.list) == 0)
         excludeObjectives:SetValue()
+        self:GetUserData("mainContent"):DoLayout()
     end,
 }
 

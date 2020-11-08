@@ -64,6 +64,7 @@ function addon:CreateTracker(tracker)
     ------------------------------------------------------------
 
     self:UpdateButtons(objectiveTitle)
+    ObjectiveBuilder:RefreshObjectives()
 end
 
 ------------------------------------------------------------
@@ -258,6 +259,7 @@ function addon:MoveTracker(currentKey, direction)
 
     -- Refresh counts
     addon:UpdateButtons(objectiveTitle)
+    ObjectiveBuilder:RefreshObjectives()
 end
 
 ------------------------------------------------------------
