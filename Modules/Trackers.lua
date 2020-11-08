@@ -9,7 +9,7 @@ local wipe = table.wipe
 
 --*------------------------------------------------------------------------
 
-function addon:CreateTracker(fromCursor)
+function addon:CreateTracker(tracker)
     local ObjectiveBuilder = self.ObjectiveBuilder
     local objectiveTitle, objectiveInfo = ObjectiveBuilder:GetSelectedObjectiveInfo()
 
@@ -17,16 +17,27 @@ function addon:CreateTracker(fromCursor)
 
     local defaultTracker = self:GetDefaultTracker()
 
-    if fromCursor then
-        -- Create tracker from cursor
-        local cursorType, cursorID = GetCursorInfo()
-        ClearCursor()
-
-        if cursorType == "item" and not self:TrackerExists(cursorID) then
-            defaultTracker.trackerType = "ITEM"
-            defaultTracker.trackerID = cursorID
+    if tracker then
+        local trackerType, trackerID
+        if type(tracker) == "table" then
+            trackerType = tracker.trackerType
+            trackerID = tracker.trackerID
         else
-            addon:ReportError(L.TrackerIDExists(cursorID))
+            -- Create tracker from cursor
+            local cursorType, cursorID = GetCursorInfo()
+            ClearCursor()
+
+            if cursorType == "item" then
+                trackerType = "ITEM"
+                trackerID = cursorID
+            end
+        end
+
+        if not self:TrackerExists(trackerID) then
+            defaultTracker.trackerType = trackerType
+            defaultTracker.trackerID = trackerID
+        else
+            addon:ReportError(L.TrackerIDExists(trackerID))
             return
         end
     end
@@ -35,7 +46,7 @@ function addon:CreateTracker(fromCursor)
 
     ------------------------------------------------------------
 
-    ObjectiveBuilder:LoadTrackers(trackerInfo)
+    ObjectiveBuilder:LoadTrackers(tracker)
 end
 
 ------------------------------------------------------------
@@ -149,7 +160,7 @@ end
 
 function addon:GetTrackerTypeLabel(trackerType)
     --@retail@
-    return trackerType == "ITEM" and L["Item ID/Name/Link"] or L["Currency ID"]
+    return trackerType == "ITEM" and L["Item ID/Name/Link"] or L["Currency ID/Link"]
     --@end-retail@
     --[===[@non-retail@
     return L["Item ID/Name/Link"]
@@ -220,8 +231,11 @@ function addon:ValidateObjectiveData(trackerType, trackerID)
     if trackerType == "ITEM" then
         return (GetItemInfoInstant(trackerID or 0)), "ITEM"
     elseif trackerType == "CURRENCY" then
-        local currency = C_CurrencyInfo.GetCurrencyInfo(tonumber(trackerID) or 0)
-        return currency and currency.name, "CURRENCY"
+        local isLink = C_CurrencyInfo.GetCurrencyInfoFromLink(trackerID)
+        trackerID = isLink and C_CurrencyInfo.GetCurrencyIDFromLink(trackerID) or tonumber(trackerID) or 0
+        local currency = C_CurrencyInfo.GetCurrencyInfo(trackerID)
+
+        return currency and trackerID, "CURRENCY"
     elseif trackerID == "" then
         return true, "NONE"
     end

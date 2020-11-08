@@ -79,13 +79,6 @@ end
 
 ------------------------------------------------------------
 
-function addon:GetNewTrackerButtonTooltip(widget, tooltip)
-    tooltip:AddLine(string.format("%s:", L["Hint"]))
-    tooltip:AddLine(L.NewTrackerHint, unpack(addon.tooltip_description))
-end
-
-------------------------------------------------------------
-
 function addon:GetTrackerButtonTooltip(widget, tooltip)
     local _, _, tracker, trackerInfo = addon:GetSelectedObjectiveInfo()
     if not trackerInfo then return end

@@ -17,6 +17,7 @@ local CreateFrame, UIParent = CreateFrame, UIParent
 -- Based on AceGUI EditBox v28
 -- Allows callback for OnEscapePressed
 -- Modifies _G.AceGUIEditBoxInsertLink to enable replacing editbox contents with link instead of inserting
+-- Hides button when focus is lost
 local Type = "FarmingBar_EditBox"
 local Version = 1
 
@@ -103,6 +104,12 @@ end
 
 local function EditBox_OnFocusGained(frame)
 	AceGUI:SetFocus(frame.obj)
+end
+
+------------------------------------------------------------
+
+local function EditBox_OnFocusLost(frame)
+	HideButton(frame.obj)
 end
 
 ------------------------------------------------------------
@@ -285,6 +292,7 @@ local function Constructor()
 	editbox:SetScript("OnReceiveDrag", EditBox_OnReceiveDrag)
 	editbox:SetScript("OnMouseDown", EditBox_OnReceiveDrag)
 	editbox:SetScript("OnEditFocusGained", EditBox_OnFocusGained)
+	editbox:SetScript("OnEditFocusLost", EditBox_OnFocusLost)
 
     ------------------------------------------------------------
 

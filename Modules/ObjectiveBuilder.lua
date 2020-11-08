@@ -107,14 +107,14 @@ local function displayRefTrackerID_OnEnterPressed(self)
     local validTrackerID, trackerType = addon:ValidateObjectiveData(objectiveInfo.displayRef.trackerType, trackerID)
 
     if validTrackerID then
-        addon:SetObjectiveDBInfo("displayRef.trackerID", trackerType == "ITEM" and validTrackerID or tonumber(trackerID))
+        addon:SetObjectiveDBInfo("displayRef.trackerID", validTrackerID)
 
-        self:SetText(objectiveInfo.displayRef.trackerID)
+        self:SetText(validTrackerID)
         self:ClearFocus()
     else
         addon:ReportError(L.InvalidTrackerID(trackerType, trackerID))
 
-        self:SetText("")
+        self:SetText()
         self:SetFocus()
     end
 end
@@ -237,6 +237,42 @@ end
 
 ------------------------------------------------------------
 
+local function newTrackerButton_OnClick(self)
+    local objectiveTitle = ObjectiveBuilder:GetSelectedObjective()
+    local trackerType = ObjectiveBuilder:GetUserData("trackerType"):GetValue()
+    local editbox = ObjectiveBuilder:GetUserData("trackerID")
+    local trackerID = editbox:GetText()
+    if not trackerID or trackerID == "" then return end
+
+    ------------------------------------------------------------
+
+    local validTrackerID = addon:ValidateObjectiveData(trackerType, trackerID)
+
+    if validTrackerID or trackerID == "" then
+        local trackerIDExists = addon:TrackerExists(validTrackerID)
+
+        if trackerIDExists then
+            editbox:SetText()
+
+            if validTrackerID ~= trackerID then
+                addon:ReportError(L.TrackerIDExists(trackerID))
+
+                editbox:SetFocus()
+            end
+        else
+            editbox:SetText()
+            addon:CreateTracker({trackerType = trackerType, trackerID = validTrackerID})
+        end
+    else
+        addon:ReportError(L.InvalidTrackerID(trackerType, trackerID))
+
+        editbox:HighlightText()
+        editbox:SetFocus()
+    end
+end
+
+------------------------------------------------------------
+
 local function NumericEditBox_OnTextChanged(self)
     self:SetText(string.gsub(self:GetText(), "[%s%c%p%a]", ""))
     self.editbox:SetCursorPosition(strlen(self:GetText()))
@@ -266,54 +302,8 @@ end
 
 --!
 local function trackerID_OnEnterPressed(self)
-    local objectiveTitle, _, tracker, trackerInfo = addon:GetSelectedObjectiveInfo()
-
-    ------------------------------------------------------------
-
-    if not self:GetText() or self:GetText() == "" then
-        -- Clear trackerID
-        addon:SetTrackerDBInfo(objectiveTitle, tracker, "trackerID", "")
-
-        self:ClearFocus()
-
-        -- ObjectiveBuilder:UpdateTrackerButton(tracker) --!
-        RefreshObjectiveBuilder()
-        return
-    end
-
-    ------------------------------------------------------------
-
-    local validTrackerID = addon:ValidateObjectiveData(trackerInfo.trackerType, self:GetText())
-
-    if validTrackerID or self:GetText() == "" then
-        local newTrackerID = trackerInfo.trackerType == "ITEM" and validTrackerID or tonumber(self:GetText())
-        local trackerIDExists = addon:TrackerExists(newTrackerID)
-
-        if trackerIDExists then
-            self:SetText(trackerInfo.trackerID)
-
-            if newTrackerID ~= trackerInfo.trackerID then
-                addon:ReportError(L.TrackerIDExists(self:GetText()))
-
-                self:HighlightText()
-                self:SetFocus()
-            end
-        else
-            addon:SetTrackerDBInfo(objectiveTitle, tracker, "trackerID", newTrackerID)
-
-            self:SetText(trackerInfo.trackerID)
-            self:ClearFocus()
-
-            -- ObjectiveBuilder:UpdateTrackerButton(tracker) --!
-            RefreshObjectiveBuilder()
-        end
-    else
-        addon:ReportError(L.InvalidTrackerID(trackerInfo.trackerType, self:GetText()))
-
-        self:SetText(trackerInfo.trackerID)
-        self:HighlightText()
-        self:SetFocus()
-    end
+    self:ClearFocus()
+    ObjectiveBuilder:GetUserData("newTrackerButton"):Fire("OnClick")
 end
 
 ------------------------------------------------------------
@@ -331,19 +321,8 @@ end
 
 ------------------------------------------------------------
 
-local function trackerType_OnValueChanged(self, selected)
-    local objectiveTitle, _, tracker = addon:GetSelectedObjectiveInfo()
-
-    addon:SetTrackerDBInfo(objectiveTitle, tracker, "trackerType", selected)
-
-    RefreshObjectiveBuilder()
-end
-
---*------------------------------------------------------------------------
-
-local function TrackerButton_OnClick(tracker)
-    ObjectiveBuilder:SetUserData("selectedTracker", tracker)
-    addon:ObjectiveBuilder_LoadTrackerInfo(tracker)
+local function trackerType_OnValueChanged(self, _, selected)
+    ObjectiveBuilder:GetUserData("trackerID"):SetLabel(addon:GetTrackerTypeLabel(selected))
 end
 
 --*------------------------------------------------------------------------
@@ -937,25 +916,56 @@ function addon:ObjectiveBuilder_LoadTrackersTab(tabContent)
 
     ------------------------------------------------------------
 
-    local newTrackerButton = AceGUI:Create("FarmingBar_InteractiveLabel")
-    newTrackerButton:SetText(L["New Tracker"])
-    newTrackerButton:SetTextHighlight(1, .82, 0, 1)
-    newTrackerButton:SetWordWrap(false)
-    newTrackerButton:SetIcon(514607, nil, 13, 13)
-    tabContent:AddChild(newTrackerButton)
-
-    newTrackerButton:SetCallback("OnClick", function() addon:CreateTracker() end)
-    newTrackerButton:SetCallback("OnReceiveDrag", function() addon:CreateTracker(true) end)
-    if FarmingBar.db.global.hints.ObjectiveBuilder then
-        newTrackerButton:SetTooltip(addon.GetNewTrackerButtonTooltip)
-    end
+    local newTracker = AceGUI:Create("Heading")
+    newTracker:SetFullWidth(true)
+    newTracker:SetText(L["New Tracker"])
+    tabContent:AddChild(newTracker)
 
     ------------------------------------------------------------
 
-    local spacer = AceGUI:Create("Label")
-    spacer:SetFullWidth(true)
-    spacer:SetText("")
-    tabContent:AddChild(spacer)
+    --@retail@
+    local trackerType = AceGUI:Create("Dropdown")
+    trackerType:SetFullWidth(1)
+    trackerType:SetLabel(L["Type"])
+    trackerType:SetList(
+        {
+            ITEM = L["Item"],
+            CURRENCY = L["Currency"],
+        },
+        {"ITEM", "CURRENCY"}
+    )
+    trackerType:SetValue("ITEM")
+    tabContent:AddChild(trackerType)
+    ObjectiveBuilder:SetUserData("trackerType", trackerType)
+
+    trackerType:SetCallback("OnValueChanged", trackerType_OnValueChanged)
+    --@end-retail@
+
+    ------------------------------------------------------------
+
+    local trackerID = AceGUI:Create("FarmingBar_EditBox")
+    trackerID:SetFullWidth(true)
+    trackerID:SetLabel(self:GetTrackerTypeLabel(trackerType:GetValue()))
+    tabContent:AddChild(trackerID)
+    ObjectiveBuilder:SetUserData("trackerID", trackerID)
+
+    trackerID:SetCallback("OnEnterPressed", trackerID_OnEnterPressed)
+
+    ------------------------------------------------------------
+
+    local newTrackerButton = AceGUI:Create("Button")
+    newTrackerButton:SetText(L["Add"])
+    tabContent:AddChild(newTrackerButton)
+    ObjectiveBuilder:SetUserData("newTrackerButton", newTrackerButton)
+
+    newTrackerButton:SetCallback("OnClick", newTrackerButton_OnClick)
+
+    ------------------------------------------------------------
+
+    local trackers = AceGUI:Create("Heading")
+    trackers:SetFullWidth(true)
+    trackers:SetText(L["Trackers"])
+    tabContent:AddChild(trackers)
 
     ------------------------------------------------------------
 
@@ -1012,35 +1022,35 @@ function addon:ObjectiveBuilder_LoadTrackerInfo(tracker)
 
     if not objectiveTitle or not trackerInfo then return end
 
+    -- ------------------------------------------------------------
+
+    -- --@retail@
+    -- local trackerType = AceGUI:Create("Dropdown")
+    -- trackerType:SetFullWidth(1)
+    -- trackerType:SetLabel(L["Type"])
+    -- trackerType:SetList(
+    --     {
+    --         ITEM = L["Item"],
+    --         CURRENCY = L["Currency"],
+    --     },
+    --     {"ITEM", "CURRENCY"}
+    -- )
+    -- trackerType:SetValue(trackerInfo.trackerType)
+    -- tabContent:AddChild(trackerType)
+
+    -- trackerType:SetCallback("OnValueChanged", function(self, _, selected) trackerType_OnValueChanged(self, selected) end)
+    -- --@end-retail@
+
     ------------------------------------------------------------
 
-    --@retail@
-    local trackerType = AceGUI:Create("Dropdown")
-    trackerType:SetFullWidth(1)
-    trackerType:SetLabel(L["Type"])
-    trackerType:SetList(
-        {
-            ITEM = L["Item"],
-            CURRENCY = L["Currency"],
-        },
-        {"ITEM", "CURRENCY"}
-    )
-    trackerType:SetValue(trackerInfo.trackerType)
-    tabContent:AddChild(trackerType)
+    -- local trackerID = AceGUI:Create("EditBox")
+    -- trackerID:SetFullWidth(true)
+    -- trackerID:SetLabel(self:GetTrackerTypeLabel(trackerInfo.trackerType))
+    -- trackerID:SetText(trackerInfo.trackerID or "")
+    -- tabContent:AddChild(trackerID)
+    -- ObjectiveBuilder.trackerList.status.trackerID = trackerID
 
-    trackerType:SetCallback("OnValueChanged", function(self, _, selected) trackerType_OnValueChanged(self, selected) end)
-    --@end-retail@
-
-    ------------------------------------------------------------
-
-    local trackerID = AceGUI:Create("EditBox")
-    trackerID:SetFullWidth(true)
-    trackerID:SetLabel(self:GetTrackerTypeLabel(trackerInfo.trackerType))
-    trackerID:SetText(trackerInfo.trackerID or "")
-    tabContent:AddChild(trackerID)
-    ObjectiveBuilder.trackerList.status.trackerID = trackerID
-
-    trackerID:SetCallback("OnEnterPressed", trackerID_OnEnterPressed)
+    -- trackerID:SetCallback("OnEnterPressed", trackerID_OnEnterPressed)
 
     ------------------------------------------------------------
 

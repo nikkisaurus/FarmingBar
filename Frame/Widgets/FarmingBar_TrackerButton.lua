@@ -82,7 +82,6 @@ local methods = {
     ------------------------------------------------------------
 
     Select = function(self)
-        print("COW")
         self.frame:Click()
     end,
 
