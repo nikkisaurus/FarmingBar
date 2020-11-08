@@ -7,6 +7,8 @@ local CreateFrame, UIParent = CreateFrame, UIParent
 
 --*------------------------------------------------------------------------
 
+-- Similar to AceGUI InlineGroup
+-- No title
 local Type = "FarmingBar_InlineGroup"
 local Version = 1
 

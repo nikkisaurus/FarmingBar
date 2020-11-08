@@ -7,6 +7,8 @@ local CreateFrame, UIParent = CreateFrame, UIParent
 
 --*------------------------------------------------------------------------
 
+-- Similar to AceGUI Window
+-- Can be hidden on escape
 local Type = "FarmingBar_Frame"
 local Version = 1
 

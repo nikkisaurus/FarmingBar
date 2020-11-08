@@ -205,6 +205,12 @@ end
 
 ------------------------------------------------------------
 
+local function help_OnClick(self)
+    print("COWSHIT")
+end
+
+------------------------------------------------------------
+
 local function mainTabGroup_OnGroupSelected(self, _, selected)
     local objectiveTitle = addon:GetSelectedObjectiveInfo()
     if objectiveTitle then
@@ -760,6 +766,16 @@ function addon:Initialize_ObjectiveBuilder()
     filterAutoItems:SetCallback("OnLeave", filterAutoItems_OnLeave)
     filterAutoItems:SetCallback("OnValueChanged", filterAutoItems_OnValueChanged)
 
+    ------------------------------------------------------------
+
+    local help = AceGUI:Create("FarmingBar_InteractiveLabel")
+    help:SetIcon(616343, nil, 25, 25)
+    help:SetOffsetH(-7)
+    help:SetText(L["Help"])
+    topPanel:AddChild(help)
+
+    help:SetCallback("OnClick", help_OnClick)
+
     -- ------------------------------------------------------------
 
     local sidebar = AceGUI:Create("FarmingBar_InlineGroup")
@@ -881,6 +897,7 @@ function addon:ObjectiveBuilder_LoadObjectiveTab(tabContent)
 
     local displayRefHelp = AceGUI:Create("FarmingBar_InteractiveLabel")
     displayRefHelp:SetIcon(616343, nil, 25, 25)
+    displayRefHelp:SetAutoWidth(false)
     tabContent:AddChild(displayRefHelp)
 
     displayRefHelp:SetCallback("OnClick", displayRefHelp_OnClick)

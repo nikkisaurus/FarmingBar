@@ -73,6 +73,7 @@ L["Excluded"] = true
 L["Export"] = true
 L["FALSE"] = true
 L["Filter Auto Items"] = true
+L["Help"] = true
 L["Hint"] = true
 L["Import Objective"] = true
 L["Include All Characters"] = true
