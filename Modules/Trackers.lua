@@ -124,7 +124,7 @@ function addon:GetMaxTrackerObjective(objectiveTitle)
                 if not objective then
                     objective = buttonObjective
                 else
-                    objective = max(objective, buttonObjective)
+                    objective = max(objective or 0, buttonObjective)
                     objectiveButton = objective == buttonObjective and button or objectiveButton
                 end
             end
