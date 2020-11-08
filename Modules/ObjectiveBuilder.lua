@@ -246,6 +246,7 @@ end
 
 local function trackerCondition_OnValueChanged(_, _, selected)
     addon:SetObjectiveDBInfo("trackerCondition", selected)
+    ObjectiveBuilder:LoadCustomCondition()
 end
 
 ------------------------------------------------------------
@@ -427,16 +428,41 @@ local methods = {
 
     ------------------------------------------------------------
 
+    LoadCustomCondition = function(self)
+        local objectiveTitle, objectiveInfo = self:GetSelectedObjectiveInfo()
+        local tabContent = self:GetUserData("mainContent")
+
+        self:ReleaseChild("customCondition")
+
+        if objectiveInfo.trackerCondition == "CUSTOM" then
+            local customCondition = AceGUI:Create("MultiLineEditBox")
+            customCondition:SetFullWidth(true)
+            customCondition:SetLabel(L["Custom Function"])
+            customCondition:SetText(objectiveInfo.customCondition)
+            tabContent:AddChild(customCondition, tabContent.children[2])
+            self:SetUserData("customCondition", customCondition)
+
+            customCondition:SetCallback("OnEnterPressed", customCondition_OnEnterPressed)
+        end
+
+        tabContent:DoLayout()
+    end,
+
+    ------------------------------------------------------------
+
     LoadDisplayIcon = function(self)
         local objectiveTitle, objectiveInfo = self:GetSelectedObjectiveInfo()
         local tabContent = self:GetUserData("mainContent")
+
+        self:ReleaseChild("displayIcon")
+        self:ReleaseChild("chooseButton")
 
         if not objectiveInfo.autoIcon then
             local displayIcon = AceGUI:Create("EditBox")
             displayIcon:SetRelativeWidth(1/2)
             displayIcon:SetText(objectiveInfo.icon)
-            self:SetUserData("displayIcon", displayIcon)
             tabContent:AddChild(displayIcon, tabContent.children[2])
+            self:SetUserData("displayIcon", displayIcon)
 
             displayIcon:SetCallback("OnEnterPressed", displayIcon_OnEnterPressed)
 
@@ -445,16 +471,13 @@ local methods = {
             local chooseButton = AceGUI:Create("Button")
             chooseButton:SetRelativeWidth(1/2)
             chooseButton:SetText(L["Choose"])
-            self:SetUserData("chooseButton", chooseButton)
             tabContent:AddChild(chooseButton, tabContent.children[3])
+            self:SetUserData("chooseButton", chooseButton)
 
             -- chooseButton:SetCallback("OnClick", function() self.IconSelector:Show() end) -- TODO: Icon selector frame
-        elseif self:GetUserData("displayIcon") and self:GetUserData("chooseButton") then
-            self:ReleaseChild("displayIcon")
-            self:ReleaseChild("chooseButton")
-
-            tabContent:DoLayout()
         end
+
+        tabContent:DoLayout()
     end,
 
     ------------------------------------------------------------
@@ -493,9 +516,9 @@ local methods = {
             editbox:SetFullWidth(true)
             editbox:SetText(objectiveInfo.displayRef.trackerID or "")
             tabContent:AddChild(editbox)
-
-            tabContent:DoLayout()
         end
+
+        tabContent:DoLayout()
     end,
 
     ------------------------------------------------------------
@@ -893,17 +916,7 @@ function addon:ObjectiveBuilder_LoadTrackersTab(tabContent)
 
     trackerCondition:SetCallback("OnValueChanged", trackerCondition_OnValueChanged)
 
-    ------------------------------------------------------------
-
-    if objectiveInfo.trackerCondition == "CUSTOM" then
-        local customCondition = AceGUI:Create("MultiLineEditBox")
-        customCondition:SetFullWidth(true)
-        customCondition:SetLabel(L["Custom Function"])
-        customCondition:SetText(objectiveInfo.customCondition)
-        tabContent:AddChild(customCondition)
-
-        customCondition:SetCallback("OnEnterPressed", customCondition_OnEnterPressed)
-    end
+    ObjectiveBuilder:LoadCustomCondition()
 
     ------------------------------------------------------------
 
