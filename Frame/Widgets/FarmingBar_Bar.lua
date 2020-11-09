@@ -264,6 +264,9 @@ local methods = {
             removeButton:Enable()
         elseif numVisibleButtons == addon.maxButtons - 1 then
             addButton:Enable()
+        else
+            addButton:Enable()
+            removeButton:Enable()
         end
     end,
 
