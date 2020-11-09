@@ -16,6 +16,12 @@ local StaticPopup_Show = StaticPopup_Show
 function addon:CreateObjective(objectiveTitle, objectiveInfo, overwrite, supressSelect)
     local ObjectiveBuilder = self.ObjectiveBuilder
     local defaultInfo = self:GetDefaultObjective()
+    if objectiveInfo then
+        -- If we don't do it this way, the table ref to the duplicated objective will remain and changes will happen to both
+        for k, v in pairs(objectiveInfo) do
+            defaultInfo[k] = v
+        end
+    end
 
     ------------------------------------------------------------
 
@@ -36,7 +42,7 @@ function addon:CreateObjective(objectiveTitle, objectiveInfo, overwrite, supress
     end
 
     newObjectiveTitle = newObjectiveTitle or objectiveTitle or defaultTitle
-    FarmingBar.db.global.objectives[newObjectiveTitle] = objectiveInfo or defaultInfo
+    FarmingBar.db.global.objectives[newObjectiveTitle] = defaultInfo
 
     ------------------------------------------------------------
 
