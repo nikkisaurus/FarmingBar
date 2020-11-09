@@ -226,18 +226,40 @@ function addon:Initialize_DB()
     ------------------------------------------------------------
 
     -- Convert/save old DB before initializing DB
-    if not FarmingBarDB.global.version or FarmingBarDB.global.version < 3 then
-        defaults.backup = FarmingBarDB
+    local backup = {}
+    local version2 = FarmingBarDB and not FarmingBarDB.global.version or FarmingBarDB.global.version < 3 -- version 2 coming new to version 3
+    local version3 = FarmingBarDB and FarmingBarDB.global.version3 -- user reverted from version 3 to version 2
+
+    if version2 then
+        for k, v in pairs(FarmingBarDB) do
+            backup[k] = v
+        end
+        wipe(FarmingBarDB)
+    end
+
+    if version3 then
+        for k, v in pairs(FarmingBarDB.version3) do
+            backup[k] = v
+        end
+        wipe(FarmingBarDB)
     end
 
     ------------------------------------------------------------
 
     FarmingBar.db = LibStub("AceDB-3.0"):New("FarmingBarDB", defaults, true)
 
+    ------------------------------------------------------------
+
     -- Have to keep track of version manually since it will otherwise get wiped out from AceDB
     -- Check for previous versions first and convert before changing the version.
     -- This should only be done once database is finalized.
     FarmingBar.db.global.version = 3
+    if version2 then
+        FarmingBarDB.global.version2 = backup
+    end
+    if version3 then
+        FarmingBar.db:ResetDB(backup)
+    end
 end
 
 --*------------------------------------------------------------------------
