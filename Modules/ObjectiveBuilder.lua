@@ -464,6 +464,10 @@ local methods = {
         else
             self:ClearSelectedObjective()
         end
+
+        ------------------------------------------------------------
+
+        ObjectiveBuilder:RefreshObjectives()
     end,
 
     ------------------------------------------------------------
@@ -734,8 +738,8 @@ function addon:Initialize_ObjectiveBuilder()
     newObjective:SetUserData("tooltip", "GetNewObjectiveButtonTooltip")
     topPanel:AddChild(newObjective)
 
-    newObjective:SetCallback("OnClick", function() addon:CreateObjective() end)
-    newObjective:SetCallback("OnReceiveDrag", function() addon:CreateObjectiveFromCursor() end)
+    newObjective:SetCallback("OnClick", function() if GetCursorInfo() then self:CreateObjectiveFromCursor() else self:CreateObjective() end end)
+    newObjective:SetCallback("OnReceiveDrag", function() self:CreateObjectiveFromCursor() end)
     newObjective:SetCallback("OnEnter", newObjective_OnEnter)
     newObjective:SetCallback("OnLeave", Tooltip_OnLeave)
 

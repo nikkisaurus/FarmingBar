@@ -68,9 +68,9 @@ function addon:Initialize_DB()
 
                 objectives = {
                     overwriteQuickObjectives = {
-                        enabled = false,
-                        prompt = false,
-                        useExisting = false,
+                        enabled = false, -- when enabled, overwrites every time; if disabled, creates a new objective every time
+                        prompt = false, -- always prompt to overwrite or use existing
+                        useExisting = false, -- when enabled, never overwrite; when disabled, overwrite
                     },
                 },
 

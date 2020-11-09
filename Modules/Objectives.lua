@@ -21,6 +21,7 @@ function addon:CreateObjective(objectiveTitle, objectiveInfo, overwrite, supress
 
     local defaultTitle, newObjectiveTitle = L["New"]
     local newObjective = addon:GetObjectiveInfo(objectiveTitle or defaultTitle)
+    local isNew = not newObjective
 
     if newObjective and not overwrite then
         local i = 2
@@ -39,15 +40,19 @@ function addon:CreateObjective(objectiveTitle, objectiveInfo, overwrite, supress
 
     ------------------------------------------------------------
 
-    local button = addon:AddObjectiveButton(newObjectiveTitle)
-    if not overwrite and ObjectiveBuilder:IsVisible() then
-        button:RenameObjective()
+    if not overwrite or isNew then
+        local button = addon:AddObjectiveButton(newObjectiveTitle)
+        if ObjectiveBuilder:IsVisible() then
+            button:RenameObjective()
+            if not supressSelect then
+                ObjectiveBuilder:ClearSelectedObjective()
+                ObjectiveBuilder:SelectObjective(newObjectiveTitle)
+                button:SetSelected(true)
+            end
+        end
     end
-    if not supressSelect then
-        ObjectiveBuilder:ClearSelectedObjective()
-        ObjectiveBuilder:SelectObjective(newObjectiveTitle)
-        button:SetSelected(true)
-    end
+
+    self:UpdateButtons()
 
     ------------------------------------------------------------
 
