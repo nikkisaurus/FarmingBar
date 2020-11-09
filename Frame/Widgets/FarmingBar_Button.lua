@@ -107,14 +107,14 @@ end
 
 local function frame_OnDragStart(self, buttonClicked, ...)
     local widget = self.obj
+    if not widget:GetObjectiveTitle() then return end
+
     local keybinds = FarmingBar.db.global.keybinds.dragButton
-
-    widget:SetUserData("isDragging", true)
-
     if buttonClicked == keybinds.button then
         local mod = GetModifiers()
 
         if mod == keybinds.modifier then
+            widget:SetUserData("isDragging", true)
             local objectiveTitle = widget:GetUserData("objectiveTitle")
             local objective = widget:GetUserData("objective")
             addon.moveButton = {widget, objectiveTitle, objective}
@@ -128,15 +128,6 @@ end
 
 local function frame_OnDragStop(self)
     self.obj:SetUserData("isDragging")
-end
-
-------------------------------------------------------------
-
-local function frame_OnEnter(self)
-    if addon.DragFrame:IsVisible() then
-        self.obj:SetUserData("dragTitle", addon.DragFrame:GetObjective())
-    end
-    -- Tooltip is taken care of with tooltipScanner
 end
 
 ------------------------------------------------------------
@@ -244,7 +235,6 @@ end
 ------------------------------------------------------------
 
 local function frame_OnLeave(self)
-    self.obj:SetUserData("dragTitle")
     GameTooltip:ClearLines()
     GameTooltip:Hide()
 end
@@ -253,19 +243,23 @@ end
 
 local function frame_OnReceiveDrag(self)
     local widget = self.obj
-    local objectiveTitle = widget:GetUserData("dragTitle")
+    local objectiveTitle = addon.DragFrame:GetObjective()
 
     if objectiveTitle then
         if addon.moveButton then
-            widget:SwapButtons(addon.moveButton)
+            if addon.moveButton[1] == self.obj then
+                addon.moveButton = nil
+            else
+                widget:SwapButtons(addon.moveButton)
+            end
         else
             widget:SetObjectiveID(objectiveTitle)
         end
-
-        widget:SetUserData("dragTitle")
     elseif not objectiveTitle then
         objectiveTitle = addon:CreateObjectiveFromCursor()
-        widget:SetObjectiveID(objectiveTitle)
+        if objectiveTitle then
+            widget:SetObjectiveID(objectiveTitle)
+        end
     end
 
     addon.DragFrame:Clear()
@@ -473,7 +467,7 @@ local methods = {
     ------------------------------------------------------------
 
     SetObjectiveID = function(self, objectiveTitle, objective)
-        if not objectiveTitle then
+        if not objectiveTitle and not addon.moveButton then
             self:ClearObjective()
             return
         end
@@ -604,7 +598,6 @@ local function Constructor()
     frame:RegisterForDrag("LeftButton", "RightButton")
 	frame:SetScript("OnDragStart", frame_OnDragStart)
 	frame:SetScript("OnDragStop", frame_OnDragStop)
-	frame:SetScript("OnEnter", frame_OnEnter)
 	frame:SetScript("OnEvent", frame_OnEvent)
 	frame:SetScript("OnLeave", frame_OnLeave)
 	frame:SetScript("OnReceiveDrag", frame_OnReceiveDrag)

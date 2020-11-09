@@ -114,6 +114,7 @@ function addon:DeleteTracker()
 
     trackerList:DoLayout()
     self:UpdateButtons(objectiveTitle)
+    ObjectiveBuilder:RefreshObjectives()
 end
 
 ------------------------------------------------------------

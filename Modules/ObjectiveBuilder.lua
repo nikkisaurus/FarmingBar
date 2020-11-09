@@ -199,7 +199,7 @@ end
 ------------------------------------------------------------
 
 local function help_OnClick(self)
-    print("COWSHIT")
+    print("Open to help documentation")
 end
 
 ------------------------------------------------------------
