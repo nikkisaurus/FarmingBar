@@ -260,7 +260,7 @@ end
 
 function addon:GetObjectiveCount(button, objectiveTitle)
     local objectiveInfo = self:GetObjectiveInfo(objectiveTitle)
-    if not objectiveInfo then return end
+    if not objectiveInfo then return 0 end
 
     if #objectiveInfo.trackers == 0 then return 0 end
 
