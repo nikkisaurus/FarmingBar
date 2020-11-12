@@ -50,6 +50,7 @@ function addon:RemoveBar(barID)
     -- Release all bars from the removed one and on
     for i = barID, #FarmingBar.db.char.bars do
         self.bars[i]:Release()
+        self.bars[i] = nil
     end
 
     -- Remove from the database

@@ -169,9 +169,9 @@ end
 
 local function excludeObjectives_OnValueChanged(self)
     local objective = self:GetValue()
-    local objectiveTitle, _, _, trackerInfo = addon:GetSelectedObjectiveInfo()
+    local objectiveTitle, _, tracker, trackerInfo = addon:GetSelectedObjectiveInfo()
 
-    tinsert(trackerInfo.exclude, objective)
+    tinsert(FarmingBar.db.global.objectives[objectiveTitle].trackers[tracker].exclude, objective)
     addon:AddExcludeLabel(objective)
 
     ObjectiveBuilder:UpdateExcludeObjectivesDropdown()
