@@ -251,7 +251,8 @@ end
 ------------------------------------------------------------
 
 function addon:IsObjectiveBankIncluded(objectiveTitle)
-    return self:IsObjectiveAutoItem(objectiveTitle) and self:GetTrackerInfo(objectiveTitle, 1).includeBank
+    local trackerInfo = self:GetTrackerInfo(objectiveTitle, 1)
+    return self:IsObjectiveAutoItem(objectiveTitle) and trackerInfo and trackerInfo.includeBank
 end
 
 ------------------------------------------------------------
