@@ -1,4 +1,7 @@
 # Farming Bar
+## Version 2.1.2
+- Implement database backup and restore for users switching from version 3.0 back to the stable database
+
 ## Version 2.1.1
 - Bug fixes
   -  -- Fixed incorrect error message localization for invalid currency

@@ -217,7 +217,105 @@ function addon:OnInitialize()
         },
     }
 
+    ------------------------------------------------------------
+
+    -- If coming back from version 3, save data to backup and wipe FarmingBarDB to prevent lua errors from changed k/v
+    -- Don't wipe the whole DB as it'll wipe profiles and profileKeys
+    local backup, version2 = {}
+    if FarmingBarDB then
+        version2 = FarmingBarDB.global and FarmingBarDB.global.version2
+        if version2 then
+            for k, v in pairs(version2) do
+                backup[k] = v
+            end
+            FarmingBarDB.char = nil
+            FarmingBarDB.global = nil
+            FarmingBarDB.profile = nil
+        end
+    end
+
+    ------------------------------------------------------------
+
     self.db = LibStub("AceDB-3.0"):New(addonName .. "DB", defaults, true)
+
+    ------------------------------------------------------------
+
+    -- Save the backup to the database, so we can still access multiple characters' saved data
+    -- We'll delete as we go below
+    if version2 then
+        self.db.global.version2_2 = backup
+    end
+
+    local version2_2 = self.db.global.version2_2
+    if version2_2 then
+        -- Copy profiles and delete; no use for this after the first time
+        if version2_2.profiles then
+            for k, v in pairs(version2_2.profiles) do
+                self.db.profiles[k] = v
+            end
+            self.db.global.version2_2.profiles = nil
+        end
+
+        -- Copy global and delete; no use for this after the first time
+        if version2_2.global then
+            for k, v in pairs(version2_2.global) do
+                self.db.global[k] = v
+            end
+            self.db.global.version2_2.global = nil
+        end
+        if version2_2.profile then
+            for k, v in pairs(version2_2.profile) do
+                self.db.profile[k] = v
+            end
+            self.db.global.version2_2.profile = nil
+        end
+
+        ------------------------------------------------------------
+
+        -- If there's a saved char db for the current toon, copy and delete
+        local realmKey = GetRealmName()
+        local charKey = UnitName("player").." - "..realmKey
+        if version2_2.char then
+            local char = version2_2.char[charKey]
+            if char then
+                -- Set the data
+                self.db.char.numBars = char.numBars
+                for k, v in pairs(char.bars) do
+                    tinsert(self.db.char.bars, v)
+                end
+
+                -- Remove from the backup
+                self.db.global.version2_2.char[charKey] = nil
+                if U.tcount(version2_2.char) == 0 then
+                    self.db.global.version2_2.char = nil
+                end
+
+                -- Calling this ensures the new bars have the correct metatables set
+                self:OnInitialize()
+                return
+            end
+        end
+
+        -- If we have backup profileKeys for this character, change the profile to the correct profile and remove
+        if version2_2.profileKeys and version2_2.profileKeys[charKey] then
+            self.db:SetProfile(version2_2.profileKeys[charKey])
+
+            version2_2.profileKeys[charKey] = nil
+            if U.tcount(version2_2.profileKeys) == 0 then
+                self.db.global.version2_2.profileKeys = nil
+            end
+        end
+
+        ------------------------------------------------------------
+
+        -- If there are no more items in the backup, remove the backup
+        if U.tcount(version2_2) == 0 then
+            self.db.global.version2_2 = nil
+        end
+    end
+
+    ------------------------------------------------------------
+
     for i = 1, self.db.char.numBars do
         self.db.char.bars[i].enabled = true
     end
