@@ -21,7 +21,6 @@ function addon:Initialize_Bars()
 
     if #bars == 0 and FarmingBar.db.char.enabled then
         self:CreateBar()
-        self:LoadBar(1)
     else
         for barID, _ in pairs(bars) do
             self:LoadBar(barID)
@@ -33,6 +32,7 @@ end
 
 function addon:CreateBar()
     tinsert(FarmingBar.db.char.bars, addon:GetDefaultBar())
+    self:LoadBar(#FarmingBar.db.char.bars)
 end
 
 ------------------------------------------------------------
@@ -42,4 +42,21 @@ function addon:LoadBar(barID)
     bar:SetBarDB(barID)
     local barDB = bar:GetUserData("barDB")
     self.bars[barID] = bar
+end
+
+------------------------------------------------------------
+
+function addon:RemoveBar(barID)
+    -- Release all bars from the removed one and on
+    for i = barID, #FarmingBar.db.char.bars do
+        self.bars[i]:Release()
+    end
+
+    -- Remove from the database
+    tremove(FarmingBar.db.char.bars, barID)
+
+    -- Reload the remaining bars that were reindexed
+    for i = barID, #FarmingBar.db.char.bars do
+        self:LoadBar(i)
+    end
 end

@@ -79,8 +79,18 @@ end
 --*------------------------------------------------------------------------
 
 function FarmingBar:SlashCommandFunc(input)
-    if strupper(input) == "BUILD" then
+    local cmd, arg, arg2 = strsplit(" ", strupper(input))
+    if cmd == "BUILD" then
         addon.ObjectiveBuilder:Load()
+    elseif cmd == "BAR" then
+        if arg == "ADD" then
+            addon:CreateBar()
+        elseif arg == "REMOVE" then
+            local arg2 = tonumber(arg2)
+            if addon.bars[arg2] then
+                addon:RemoveBar(arg2)
+            end
+        end
     end
 end
 

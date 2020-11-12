@@ -118,7 +118,7 @@ local methods = {
 
     OnRelease = function(self)
         for _, button in pairs(self:GetUserData("buttons")) do
-            button:ClearAllPoints()
+            button:Release()
         end
     end,
 
@@ -186,6 +186,8 @@ local methods = {
             local objectiveInfo = FarmingBar.db.char.bars[self:GetUserData("barID")].objectives[button:GetUserData("buttonID")]
             if objectiveInfo then
                 button:SetObjectiveID(objectiveInfo.objectiveTitle, objectiveInfo.objective)
+            else
+                button:SetObjectiveID()
             end
         end
     end,
