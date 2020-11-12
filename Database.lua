@@ -230,23 +230,8 @@ function addon:Initialize_DB()
     if FarmingBarDB then
         version2 = FarmingBarDB.global and not FarmingBarDB.global.version or FarmingBarDB.global.version < 3 -- version 2 coming new to version 3
         if version2 then
-            if FarmingBarDB.char then
-                backup.char = {}
-                for k, v in pairs(FarmingBarDB.char) do
-                    backup.char[k] = v
-                end
-            end
-            if FarmingBarDB.global then
-                backup.global = {}
-                for k, v in pairs(FarmingBarDB.global) do
-                    backup.global[k] = v
-                end
-            end
-            if FarmingBarDB.profile then
-                backup.profile = {}
-                for k, v in pairs(FarmingBarDB.profile) do
-                    backup.profile[k] = v
-                end
+            for k, v in pairs(FarmingBarDB) do
+                backup[k] = v
             end
             wipe(FarmingBarDB)
         end
