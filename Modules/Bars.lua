@@ -38,6 +38,7 @@ end
 ------------------------------------------------------------
 
 function addon:LoadBar(barID)
+    FarmingBar.db.char.enabled = true
     local bar = AceGUI:Create("FarmingBar_Bar")
     bar:SetBarDB(barID)
     local barDB = bar:GetUserData("barDB")
@@ -59,5 +60,9 @@ function addon:RemoveBar(barID)
     -- Reload the remaining bars that were reindexed
     for i = barID, #FarmingBar.db.char.bars do
         self:LoadBar(i)
+    end
+
+    if barID == 1 then
+        FarmingBar.db.char.enabled = false
     end
 end

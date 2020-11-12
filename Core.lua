@@ -91,6 +91,8 @@ function FarmingBar:SlashCommandFunc(input)
                 addon:RemoveBar(arg2)
             end
         end
+    else
+        self:Print([[Currently available commands: "build", "bar add", "bar remove barID"]])
     end
 end
 
