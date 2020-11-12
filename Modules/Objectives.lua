@@ -278,15 +278,15 @@ function addon:GetObjectiveCount(button, objectiveTitle)
     local count = 0
     if objectiveInfo.trackerCondition == "ANY" then
         for _, trackerInfo in pairs(objectiveInfo.trackers) do
-            count = count + addon:GetTrackerCount(trackerInfo)
+            count = count + addon:GetTrackerCount(objectiveTitle, trackerInfo)
         end
     elseif objectiveInfo.trackerCondition == "ALL" then
         local pendingCount
         for _, trackerInfo in pairs(objectiveInfo.trackers) do
             if not pendingCount then
-                pendingCount = addon:GetTrackerCount(trackerInfo)
+                pendingCount = addon:GetTrackerCount(objectiveTitle, trackerInfo)
             else
-                pendingCount = min(pendingCount, addon:GetTrackerCount(trackerInfo))
+                pendingCount = min(pendingCount, addon:GetTrackerCount(objectiveTitle, trackerInfo))
             end
         end
         count = count + pendingCount
@@ -311,7 +311,7 @@ function addon:GetObjectiveCount(button, objectiveTitle)
                         for k, v in pairs(trackerInfo) do
                             info[k] = k ~= "objective" and v or objective
                         end
-                        local trackerCount = addon:GetTrackerCount(info)
+                        local trackerCount = addon:GetTrackerCount(objectiveTitle, info)
                         local used = countsUsed[trackerID]
 
                         if used then

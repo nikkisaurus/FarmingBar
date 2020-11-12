@@ -94,7 +94,7 @@ function addon:GetButtonTooltip(widget, tooltip)
             break
         else
             self:GetTrackerDataTable(trackerInfo.trackerType, trackerInfo.trackerID, function(data)
-                local trackerCount = self:GetTrackerCount(trackerInfo)
+                local trackerCount = self:GetTrackerCount(objectiveTitle, trackerInfo)
 
                 local trackerRawCount
                 if trackerInfo.trackerType == "ITEM" then
