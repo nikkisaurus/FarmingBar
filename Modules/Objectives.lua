@@ -58,6 +58,13 @@ function addon:CreateObjective(objectiveTitle, objectiveInfo, overwrite, supress
         end
     end
 
+    if ObjectiveBuilder:IsVisible() then
+        ObjectiveBuilder:RefreshObjectives()
+        if newObjectiveTitle == ObjectiveBuilder:GetSelectedObjective() then
+            ObjectiveBuilder:SelectObjective(newObjectiveTitle)
+        end
+    end
+
     self:UpdateButtons()
 
     ------------------------------------------------------------
