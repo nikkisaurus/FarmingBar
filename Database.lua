@@ -226,25 +226,29 @@ function addon:Initialize_DB()
     ------------------------------------------------------------
 
     -- Convert/save old DB before initializing DB
-    -- local backup = {}
-    -- if FarmingBarDB then
-    --     local version2 = FarmingBarDB and not FarmingBarDB.global.version or FarmingBarDB.global.version < 3 -- version 2 coming new to version 3
-    --     local version3 = FarmingBarDB and FarmingBarDB.global.version3 -- user reverted from version 3 to version 2
-
-    --     if version2 then
-    --         for k, v in pairs(FarmingBarDB) do
-    --             backup[k] = v
-    --         end
-    --         wipe(FarmingBarDB)
-    --     end
-
-    --     if version3 then
-    --         for k, v in pairs(FarmingBarDB.version3) do
-    --             backup[k] = v
-    --         end
-    --         wipe(FarmingBarDB)
-    --     end
-    -- end
+    local backup = {}
+    local version2 = FarmingBarDB and not FarmingBarDB.global.version or FarmingBarDB.global.version < 3 -- version 2 coming new to version 3
+    if version2 then
+        if FarmingBarDB.char then
+            backup.char = {}
+            for k, v in pairs(FarmingBarDB.char) do
+                backup.char[k] = v
+            end
+        end
+        if FarmingBarDB.global then
+            backup.global = {}
+            for k, v in pairs(FarmingBarDB.global) do
+                backup.global[k] = v
+            end
+        end
+        if FarmingBarDB.profile then
+            backup.profile = {}
+            for k, v in pairs(FarmingBarDB.profile) do
+                backup.profile[k] = v
+            end
+        end
+        wipe(FarmingBarDB)
+    end
 
     ------------------------------------------------------------
 
@@ -256,12 +260,9 @@ function addon:Initialize_DB()
     -- Check for previous versions first and convert before changing the version.
     -- This should only be done once database is finalized.
     FarmingBar.db.global.version = 3
-    -- if version2 then
-    --     FarmingBarDB.global.version2 = backup
-    -- end
-    -- if version3 then
-    --     FarmingBar.db:ResetDB(backup)
-    -- end
+    if version2 then
+        FarmingBarDB.global.version2 = backup
+    end
 end
 
 --*------------------------------------------------------------------------
