@@ -75,7 +75,7 @@ local methods = {
 --*------------------------------------------------------------------------
 
 local function Constructor()
-    local frame = CreateFrame("Frame", Type..AceGUI:GetNextWidgetNum(Type), UIParent, "BackdropTemplate, BaseBasicFrameTemplate")
+    local frame = CreateFrame("Frame", Type..AceGUI:GetNextWidgetNum(Type), UIParent, (BackdropTemplateMixin and "BackdropTemplate, " or "").."BaseBasicFrameTemplate")
     tinsert(UISpecialFrames, frame:GetName())
 
     frame:SetFrameStrata("HIGH")

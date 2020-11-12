@@ -13,14 +13,21 @@ local ObjectiveBuilder = addon.ObjectiveBuilder
 
 local displayRefTrackerTypeList =  {
     ITEM = L["Item"],
+    --@retail@
     CURRENCY = L["Currency"],
+    --@end-retail@
     MACROTEXT = L["Macrotext"],
     NONE = L["None"],
 }
 
 ------------------------------------------------------------
 
+--@retail@
 local displayRefTrackerTypeListSort = {"ITEM", "CURRENCY", "MACROTEXT", "NONE"}
+--@end-retail@
+--[===[@non-retail@
+local displayRefTrackerTypeListSort = {"ITEM", "MACROTEXT", "NONE"}
+--@end-non-retail@]===]
 
 ------------------------------------------------------------
 
@@ -80,7 +87,7 @@ local function displayRefHelp_OnClick(self)
         --@end-retail@
         --[===[@non-retail@
         -- Removing the currency reference from Classic here to make the localization page cleanier/easier to translate.
-        displayRefHelpLabel:SetText(gsub(L.DisplayReferenceDescription, L.DisplayReferenceDescription_Gsub, ""))
+        self:SetText(gsub(L.DisplayReferenceDescription, L.DisplayReferenceDescription_Gsub, ""))
         --@end-non-retail@]===]
     else
         self:SetText()
@@ -256,7 +263,7 @@ end
 
 local function newTrackerButton_OnClick(self)
     local objectiveTitle = ObjectiveBuilder:GetSelectedObjective()
-    local trackerType = ObjectiveBuilder:GetUserData("trackerType"):GetValue()
+    local trackerType = ObjectiveBuilder:GetUserData("trackerType") and ObjectiveBuilder:GetUserData("trackerType"):GetValue() or "ITEM"
     local editbox = ObjectiveBuilder:GetUserData("trackerID")
     local trackerID = editbox:GetText()
     if not trackerID or trackerID == "" then return end
@@ -835,23 +842,17 @@ function addon:Initialize_ObjectiveBuilder()
     if FarmingBar.db.global.debug.ObjectiveBuilder then
         C_Timer.After(1, function()
             ObjectiveBuilder:Load()
-
-            -- for key, objective in pairs(addon.ObjectiveBuilder.children) do
-            --     objective.button.frame:Click()
-            --     if FarmingBar.db.global.debug.ObjectiveBuilderTrackers then
-            --         addon.ObjectiveBuilder.mainContent:SelectTab("trackersTab")
-
-            --         if key == #addon.ObjectiveBuilder.children then
-            --             for _, tracker in pairs(ObjectiveBuilder.trackerList.status.children) do
-            --                 tracker.button.frame:Click()
-            --                 break
-            --             end
-            --         end
-            --     elseif FarmingBar.db.global.debug.ObjectiveBuilderCondition then
-            --         addon.ObjectiveBuilder.mainContent:SelectTab("conditionTab")
-            --     end
-            --     break
-            -- end
+            for key, button in pairs(objectiveList.children) do
+                button:Select()
+                if FarmingBar.db.global.debug.ObjectiveBuilderTrackers then
+                    ObjectiveBuilder:GetUserData("mainTabGroup"):SelectTab("trackersTab")
+                    local trackerList = ObjectiveBuilder:GetUserData("trackerList")
+                    if trackerList.children[1] then
+                        trackerList.children[1]:Select()
+                    end
+                end
+                break
+            end
         end)
     end
     ------------------------------------------------------------
@@ -1001,7 +1002,7 @@ function addon:ObjectiveBuilder_LoadTrackersTab(tabContent)
 
     local trackerID = AceGUI:Create("FarmingBar_EditBox")
     trackerID:SetFullWidth(true)
-    trackerID:SetLabel(self:GetTrackerTypeLabel(trackerType:GetValue()))
+    trackerID:SetLabel(self:GetTrackerTypeLabel(trackerType and trackerType:GetValue() or "ITEM"))
     tabContent:AddChild(trackerID)
     ObjectiveBuilder:SetUserData("trackerID", trackerID)
 

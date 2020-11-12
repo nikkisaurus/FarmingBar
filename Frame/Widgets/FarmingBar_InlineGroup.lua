@@ -55,7 +55,7 @@ local methods = {
 --*------------------------------------------------------------------------
 
 local function Constructor()
-	local frame = CreateFrame("Frame", nil, UIParent, "BackdropTemplate")
+	local frame = CreateFrame("Frame", nil, UIParent, BackdropTemplateMixin and "BackdropTemplate")
 	frame:Hide()
     addon:SetPanelBackdrop(frame)
 

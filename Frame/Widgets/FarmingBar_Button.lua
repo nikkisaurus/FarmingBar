@@ -351,7 +351,9 @@ local methods = {
 
         self.frame:UnregisterEvent("BAG_UPDATE")
         self.frame:UnregisterEvent("BAG_UPDATE_COOLDOWN")
+        --@retail@
         self.frame:UnregisterEvent("CURRENCY_DISPLAY_UPDATE")
+        --@end-retail@
 
         self:UpdateLayers()
         addon:UpdateButtons()
@@ -478,7 +480,9 @@ local methods = {
 
         self.frame:RegisterEvent("BAG_UPDATE")
         self.frame:RegisterEvent("BAG_UPDATE_COOLDOWN")
+        --@retail@
         self.frame:RegisterEvent("CURRENCY_DISPLAY_UPDATE")
+        --@end-retail@
 
         self:UpdateLayers()
     end,

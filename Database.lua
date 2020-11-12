@@ -175,7 +175,6 @@ function addon:Initialize_DB()
                 barDB = false,
                 ObjectiveBuilder = false,
                 ObjectiveBuilderTrackers = false,
-                ObjectiveBuilderCondition = false,
             },
 
             ------------------------------------------------------------
@@ -227,27 +226,30 @@ function addon:Initialize_DB()
 
     -- Convert/save old DB before initializing DB
     local backup = {}
-    local version2 = FarmingBarDB and not FarmingBarDB.global.version or FarmingBarDB.global.version < 3 -- version 2 coming new to version 3
-    if version2 then
-        if FarmingBarDB.char then
-            backup.char = {}
-            for k, v in pairs(FarmingBarDB.char) do
-                backup.char[k] = v
+    local version2
+    if FarmingBarDB then
+        version2 = FarmingBarDB.global and not FarmingBarDB.global.version or FarmingBarDB.global.version < 3 -- version 2 coming new to version 3
+        if version2 then
+            if FarmingBarDB.char then
+                backup.char = {}
+                for k, v in pairs(FarmingBarDB.char) do
+                    backup.char[k] = v
+                end
             end
-        end
-        if FarmingBarDB.global then
-            backup.global = {}
-            for k, v in pairs(FarmingBarDB.global) do
-                backup.global[k] = v
+            if FarmingBarDB.global then
+                backup.global = {}
+                for k, v in pairs(FarmingBarDB.global) do
+                    backup.global[k] = v
+                end
             end
-        end
-        if FarmingBarDB.profile then
-            backup.profile = {}
-            for k, v in pairs(FarmingBarDB.profile) do
-                backup.profile[k] = v
+            if FarmingBarDB.profile then
+                backup.profile = {}
+                for k, v in pairs(FarmingBarDB.profile) do
+                    backup.profile[k] = v
+                end
             end
+            wipe(FarmingBarDB)
         end
-        wipe(FarmingBarDB)
     end
 
     ------------------------------------------------------------

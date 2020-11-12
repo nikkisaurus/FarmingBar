@@ -309,7 +309,7 @@ local function Constructor()
 
     frame:SetScript("OnEvent", frame_OnEvent)
 
-    local backdrop = CreateFrame("Frame", nil, frame, "BackdropTemplate")
+    local backdrop = CreateFrame("Frame", nil, frame, BackdropTemplateMixin and "BackdropTemplate")
     backdrop:EnableMouse(true)
 
     local anchor = CreateFrame("Button", "$parentAnchor", frame)

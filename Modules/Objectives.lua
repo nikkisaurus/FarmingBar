@@ -8,7 +8,7 @@ local format, strfind, strmatch, strsplit, strupper, tonumber = string.format, s
 local pairs, tinsert = pairs, table.insert
 
 local GetCursorInfo, ClearCursor = GetCursorInfo, ClearCursor
-local GetItemIconByID, GetCurrencyInfo = C_Item.GetItemIconByID, C_CurrencyInfo.GetCurrencyInfo
+local GetItemIconByID, GetCurrencyInfo = C_Item.GetItemIconByID, C_CurrencyInfo and C_CurrencyInfo.GetCurrencyInfo
 local StaticPopup_Show = StaticPopup_Show
 
 --*------------------------------------------------------------------------
@@ -185,7 +185,7 @@ function addon:DuplicateSelectedObjectives()
         local objectiveTitle = button:GetObjective()
         if button:GetUserData("selected") then
             button:SetSelected(false)
-            pendingSelect = self:CreateObjective(objectiveTitle, self:GetObjectiveInfo(objectiveTitle), _, true)
+            pendingSelect = self:CreateObjective(objectiveTitle, self:GetObjectiveInfo(objectiveTitle), nil, true)
         end
     end
 

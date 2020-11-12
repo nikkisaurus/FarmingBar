@@ -68,7 +68,9 @@ function addon:Initialize_DragFrame()
     DragFrame:SetFrameStrata("FULLSCREEN_DIALOG")
     addon.DragFrame = DragFrame
 
+    --@retail@
     DragFrame:RegisterEvent("GLOBAL_MOUSE_DOWN")
+    --@end-retail@
 
     DragFrame:SetScript("OnUpdate", DragFrame_OnUpdate)
     DragFrame:SetScript("OnEvent", DragFrame_OnEvent)
