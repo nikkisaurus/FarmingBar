@@ -4,6 +4,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 
 local pairs = pairs
+local strfind = string.find
 local CreateFrame, UIParent = CreateFrame, UIParent
 local ObjectiveBuilder, objectiveList
 
@@ -179,6 +180,7 @@ local methods = {
     ------------------------------------------------------------
 
     RenameObjective = function(self)
+        if strfind(self:GetObjective(), "^item:") then return end
         self.editbox:Show()
     end,
 
