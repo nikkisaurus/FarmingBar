@@ -4,34 +4,39 @@ local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 
 local pairs = pairs
+-- local strfind = string.find
 local CreateFrame, UIParent = CreateFrame, UIParent
-local ObjectiveBuilder, trackerList
+local Config, barList
 
 --*------------------------------------------------------------------------
 
-local Type = "FarmingBar_TrackerButton"
+local Type = "FarmingBar_BarButton"
 local Version = 1
 
---*------------------------------------------------------------------------
+-- --*------------------------------------------------------------------------
 
 local function frame_OnClick(self, buttonClicked, ...)
     local widget = self.obj
+    local barID = widget:GetBarID()
     local selected = widget:GetUserData("selected")
 
     ------------------------------------------------------------
 
-    local buttons = trackerList.children
+    local buttons = barList.children
     local first, target
+
+    -- Deselect "All Bars" button; never allow it to be selected with other buttons
+    buttons[1]:SetSelected(false, true)
 
     if IsShiftKeyDown() then
         for key, button in pairs(buttons) do
-            if button == trackerList:GetUserData("lastSelected") then
+            if button == barList:GetUserData("lastSelected") then
                 first = key
             elseif button == widget then
                 target = key
             end
         end
-    elseif not IsControlKeyDown() then
+    elseif not IsControlKeyDown() or barID == 0 then
         if selected and buttonClicked == "RightButton" then
             widget:ShowMenu()
             return
@@ -44,25 +49,29 @@ local function frame_OnClick(self, buttonClicked, ...)
 
     ------------------------------------------------------------
 
-    widget:SetSelected(true)
 
     if first and target then
+        if barID ~= 0 then
+            widget:SetSelected(true)
+        end
         local offset = (first < target) and 1 or -1
         for i = first + offset, target - offset, offset do
-            local button = buttons[i]
-            if not button:GetUserData("filtered") then
-                button:SetSelected(true, true)
-            end
+            buttons[i]:SetSelected(true, true)
         end
+    else
+        widget:SetSelected(true)
     end
 
     ------------------------------------------------------------
 
     if buttonClicked == "RightButton" then
         widget:ShowMenu()
+    elseif barID == 0 then
+        PlaySound(852)
+        addon:Config_LoadAllBars()
     else
         PlaySound(852)
-        ObjectiveBuilder:SelectTracker(widget:GetTrackerKey())
+        addon:Config_LoadBar(barID)
     end
 
     widget:Fire("OnClick", buttonClicked, ...)
@@ -70,30 +79,35 @@ end
 
 ------------------------------------------------------------
 
-local function frame_OnLeave(self)
-    GameTooltip:ClearLines()
-    GameTooltip:Hide()
-end
+-- local function frame_OnLeave(self)
+--     GameTooltip:ClearLines()
+--     GameTooltip:Hide()
+-- end
 
 --*------------------------------------------------------------------------
 
 local methods = {
     OnAcquire = function(self)
-        ObjectiveBuilder = addon.ObjectiveBuilder
-        trackerList = ObjectiveBuilder:GetUserData("trackerList")
-        self:SetUserData("tooltip", "GetTrackerButtonTooltip")
+        Config = addon.Config
+        barList = Config:GetUserData("barList")
+        -- self:SetUserData("tooltip", "GetObjectiveButtonTooltip")
 
         self:SetHeight(25)
         self.text:SetText("")
-        self.icon:SetTexture(134400)
 
         self:SetSelected(false)
     end,
 
     ------------------------------------------------------------
 
-    GetTrackerKey = function(self)
-        return self:GetUserData("trackerKey")
+    GetBarID = function(self)
+        return self:GetUserData("barID")
+    end,
+
+    ------------------------------------------------------------
+
+    GetBarTitle = function(self)
+        return self:GetUserData("barTitle")
     end,
 
     ------------------------------------------------------------
@@ -104,11 +118,20 @@ local methods = {
 
     ------------------------------------------------------------
 
+    SetBarID = function(self, barID)
+        local barTitle = addon:GetBarTitle(barID)
+        self:SetUserData("barID", barID)
+        self:SetUserData("barTitle", barTitle)
+        self.text:SetText(barTitle)
+    end,
+
+    ------------------------------------------------------------
+
     SetSelected = function(self, selected, supressLastSelected)
         self:SetUserData("selected", selected)
 
         if not supressLastSelected then
-            trackerList:SetUserData("lastSelected", self)
+            barList:SetUserData("lastSelected", self)
         end
 
         if selected then
@@ -120,26 +143,10 @@ local methods = {
 
     ------------------------------------------------------------
 
-    SetTracker = function(self, tracker, trackerInfo)
-        self:SetUserData("trackerKey", tracker)
-        self:SetUserData("trackerType", trackerInfo.trackerType)
-        self:SetUserData("trackerID", trackerInfo.trackerID)
-
-        addon:GetTrackerDataTable(trackerInfo.trackerType, trackerInfo.trackerID, function(data)
-            self:SetUserData("trackerName", data.name)
-            self:SetUserData("trackerIcon", data.icon)
-
-            self.text:SetText(data.name)
-            self.icon:SetTexture(data.icon)
-        end)
-    end,
-
-    ------------------------------------------------------------
-
     ShowMenu = function(self)
         local numSelectedButtons = 0
 
-        for _, button in pairs(trackerList.children) do
+        for _, button in pairs(barList.children) do
             if button:GetUserData("selected") then
                 numSelectedButtons = numSelectedButtons + 1
             end
@@ -148,37 +155,28 @@ local methods = {
         ------------------------------------------------------------
 
         local menu = {
+            {notCheckable = true, notClickable = true, text = ""},
+
             {
-                text = numSelectedButtons > 1 and L["Delete Selected"] or L["Delete"],
                 notCheckable = true,
-                func = function() addon:DeleteTracker() end,
-            },
-
-            {text = "", notCheckable = true, notClickable = true},
-
-            {
                 text = L["Close"],
-                notCheckable = true,
-            },
+            }
+
         }
 
         ------------------------------------------------------------
 
-        if numSelectedButtons == 1 then
-            tinsert(menu, 1, {text = "", notCheckable = true, notClickable = true})
-
+        if self:GetBarID() == 0 then
             tinsert(menu, 1, {
                 notCheckable = true,
-                disabled = self:GetTrackerKey() == #self.parent.children,
-                text = L["Move Down"],
-                func = function() addon:MoveTracker(self:GetTrackerKey(), 1) end,
+                text = L["Remove All"],
+                func = function() StaticPopup_Show("FARMINGBAR_CONFIRM_REMOVE_ALL_BARS") end,
             })
-
+        else
             tinsert(menu, 1, {
                 notCheckable = true,
-                disabled = self:GetTrackerKey() == 1,
-                text = L["Move Up"],
-                func = function() addon:MoveTracker(self:GetTrackerKey(), -1) end,
+                text = numSelectedButtons > 1 and L["Remove Selected"] or L["Remove"],
+                func = function() addon:RemoveSelectedBars() end,
             })
         end
 
@@ -193,9 +191,10 @@ local methods = {
 local function Constructor()
     local frame = CreateFrame("Button", nil, UIParent)
 	frame:Hide()
+    frame:RegisterForDrag("LeftButton")
     frame:RegisterForClicks("LeftButtonUp", "RightButtonUp")
     frame:SetScript("OnClick", frame_OnClick)
-	frame:SetScript("OnLeave", frame_OnLeave)
+	-- frame:SetScript("OnLeave", frame_OnLeave)
 
     ------------------------------------------------------------
 
@@ -206,19 +205,12 @@ local function Constructor()
 
     frame:SetHighlightTexture(130783)
     frame:GetHighlightTexture():SetVertexColor(1, 1, 1, .15)
-
-    ------------------------------------------------------------
-
-    local icon = frame:CreateTexture(nil, "ARTWORK")
-    icon:SetSize(20, 20)
-    icon:SetPoint("LEFT", 0, 0)
-
     ------------------------------------------------------------
 
     local text = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     text:SetJustifyH("LEFT")
     text:SetWordWrap(false)
-    text:SetPoint("TOPLEFT", icon, "TOPRIGHT", 5, -2)
+    text:SetPoint("LEFT", 0, 0)
     text:SetPoint("RIGHT")
 
     ------------------------------------------------------------
@@ -226,7 +218,6 @@ local function Constructor()
     local widget = {
 		type  = Type,
         frame = frame,
-        icon = icon,
         text = text,
     }
 

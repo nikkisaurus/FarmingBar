@@ -162,9 +162,6 @@ function addon:DeleteSelectedObjectives()
 
     if numSelectedButtons > 1 then
         local dialog = StaticPopup_Show("FARMINGBAR_CONFIRM_DELETE_MULTIPLE_OBJECTIVES", numSelectedButtons)
-        if dialog then
-            dialog.data = selected
-        end
     else
         local objectiveTitle = selectedButton:GetUserData("objectiveTitle")
         local dialog = StaticPopup_Show("FARMINGBAR_CONFIRM_DELETE_OBJECTIVE", objectiveTitle)

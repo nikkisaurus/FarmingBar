@@ -653,14 +653,14 @@ local methods = {
         -- Releasing widgets doesn't remove them from the parent container's children table, so we need to do it manually
         -- Remove the userdata reference to prevent error about already having been released
 
-        widget = ObjectiveBuilder:GetUserData(widget) or widget
+        widget = self:GetUserData(widget) or widget
         if not widget.parent then return end
         local children = widget.parent.children
 
         for key, child in pairs(children) do
             if widget == child then
                 child:Release()
-                ObjectiveBuilder:SetUserData(widget)
+                self:SetUserData(widget)
                 tremove(children, key)
             end
         end
@@ -910,7 +910,7 @@ function addon:ObjectiveBuilder_LoadObjectiveTab(tabContent)
     ------------------------------------------------------------
 
     local displayRefTrackerType = AceGUI:Create("Dropdown")
-    displayRefTrackerType:SetFullWidth(0.9)
+    displayRefTrackerType:SetFullWidth(true)
     displayRefTrackerType:SetLabel(L["Type"])
     displayRefTrackerType:SetList(displayRefTrackerTypeList, displayRefTrackerTypeListSort)
     displayRefTrackerType:SetValue(objectiveInfo.displayRef.trackerType or "NONE")

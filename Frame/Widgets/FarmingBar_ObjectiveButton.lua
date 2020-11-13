@@ -241,7 +241,7 @@ local methods = {
 
             {
                 notCheckable = true,
-                text = numSelectedButtons > 1 and L["Delete All"] or L["Delete"],
+                text = numSelectedButtons > 1 and L["Delete Selected"] or L["Delete"],
                 func = function() addon:DeleteSelectedObjectives() end,
             },
 

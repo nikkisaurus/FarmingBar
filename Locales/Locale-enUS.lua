@@ -95,7 +95,7 @@ L["Currency"] = true
 L["Custom"] = true
 L["Custom Condition"] = true
 L["Delete"] = true
-L["Delete All"] = true
+L["Delete Selected"] = true
 L["Display Ref"] = true
 L["Display Reference"] = true
 L["Duplicate"] = true
@@ -159,4 +159,14 @@ L["Move Up"] = true
 
 -- Options\Config.lua
 L["Add Bar"] = true
+L["Bar"] = true
 L["Config"] = true
+L["Remove Bar"] = true
+
+------------------------------------------------------------
+
+-- Frame\Widgets\FarmingBar_BarButton.lua
+L["All Bars"] = true
+L["Remove"] = true
+L["Remove All"] = true
+L["Remove Selected"] = true

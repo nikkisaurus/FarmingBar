@@ -92,8 +92,10 @@ function FarmingBar:SlashCommandFunc(input)
                 addon:RemoveBar(arg2)
             end
         end
+    elseif cmd == "CONFIG" then
+        addon.Config:Load()
     else
-        self:Print([[Currently available commands: "build", "bar add", "bar remove barID"]])
+        self:Print([[Currently available commands: "build", "bar add", "bar remove barID", "config"]])
     end
 end
 
