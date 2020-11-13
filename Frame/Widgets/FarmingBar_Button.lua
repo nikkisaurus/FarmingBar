@@ -15,22 +15,6 @@ local Version = 1
 
 --*------------------------------------------------------------------------
 
-local function GetModifiers()
-    local mod = ""
-    if IsShiftKeyDown() then
-        mod = "shift"
-    end
-    if IsControlKeyDown() then
-        mod = "ctrl"..(mod ~= "" and "-" or "")..mod
-    end
-    if IsAltKeyDown() then
-        mod = "alt"..(mod ~= "" and "-" or "")..mod
-    end
-    return mod
-end
-
---*------------------------------------------------------------------------
-
 local postClickMethods = {
     clearObjective = function(self, ...)
         self.obj:ClearObjective()
@@ -111,7 +95,7 @@ local function frame_OnDragStart(self, buttonClicked, ...)
 
     local keybinds = FarmingBar.db.global.keybinds.dragButton
     if buttonClicked == keybinds.button then
-        local mod = GetModifiers()
+        local mod = addon:GetModifiers()
 
         if mod == keybinds.modifier then
             widget:SetUserData("isDragging", true)
@@ -295,7 +279,7 @@ local function frame_PostClick(self, buttonClicked, ...)
 
     for keybind, keybindInfo in pairs(keybinds) do
         if buttonClicked == keybindInfo.button then
-            local mod = GetModifiers()
+            local mod = addon:GetModifiers()
 
             if mod == keybindInfo.modifier then
                 local func = postClickMethods[keybind]

@@ -10,6 +10,13 @@ local CreateFrame, UIParent = CreateFrame, UIParent
 
 local Type = "FarmingBar_Bar"
 local Version = 1
+--*------------------------------------------------------------------------
+
+local postClickMethods = {
+    openSettings = function(self, ...)
+        addon.Config:Load(self.obj:GetUserData("barID"))
+    end,
+}
 
 --*------------------------------------------------------------------------
 
@@ -49,6 +56,49 @@ local function frame_OnEvent(self, event)
         self.obj:SetQuickButtonStates()
     end
 end
+
+------------------------------------------------------------
+
+local function anchor_PostClick(self, buttonClicked, ...)
+    -- local widget = self.obj
+    -- if widget:GetUserData("isDragging") then return end
+    -- local cursorType, cursorID = GetCursorInfo()
+
+    -- if cursorType == "item" and not IsModifierKeyDown() and buttonClicked == "LeftButton" then
+    --     local objectiveTitle = addon:CreateObjectiveFromCursor()
+    --     widget:SetObjectiveID(objectiveTitle)
+    --     ClearCursor()
+    --     return
+    -- elseif addon.DragFrame:IsVisible() then
+    --     if addon.moveButton then
+    --         widget:SwapButtons(addon.moveButton)
+    --     else
+    --         widget:SetObjectiveID(addon.DragFrame:GetObjective())
+    --     end
+    --     addon.DragFrame:Clear()
+    --     return
+    -- end
+
+    -- ClearCursor()
+
+    ------------------------------------------------------------
+
+    local keybinds = FarmingBar.db.global.keybinds.bar
+
+    for keybind, keybindInfo in pairs(keybinds) do
+        if buttonClicked == keybindInfo.button then
+            local mod = addon:GetModifiers()
+
+            if mod == keybindInfo.modifier then
+                local func = postClickMethods[keybind]
+                if func then
+                    func(self, keybindInfo, buttonClicked, ...)
+                end
+            end
+        end
+    end
+end
+
 
 ------------------------------------------------------------
 
@@ -115,6 +165,8 @@ local methods = {
     OnAcquire = function(self)
         self:SetUserData("buttons", {})
     end,
+
+    ------------------------------------------------------------
 
     OnRelease = function(self)
         for _, button in pairs(self:GetUserData("buttons")) do
@@ -322,6 +374,7 @@ local function Constructor()
 
     anchor:SetScript("OnDragStart", frame_OnDragStart)
     anchor:SetScript("OnDragStop", frame_OnDragStop)
+    anchor:SetScript("PostClick", anchor_PostClick)
 
     local FloatingBG = anchor:CreateTexture("$parentFloatingBG", "BACKGROUND")
     FloatingBG:SetAllPoints(anchor)

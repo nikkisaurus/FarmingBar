@@ -99,7 +99,15 @@ function addon:Initialize_DB()
 
             keybinds = {
                 bar = {
+                    -- openHelp = {
+                    --     button = "",
+                    --     modifier = "",
+                    -- },
 
+                    openSettings = {
+                        button = "RightButton",
+                        modifier = "shift",
+                    },
                 },
 
                 button = {

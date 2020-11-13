@@ -66,6 +66,7 @@ function FarmingBar:OnEnable()
     addon:Initialize_ObjectiveBuilder()
     addon:Initialize_Masque()
     addon:Initialize_Bars()
+    addon:InitializeConfig()
     addon:ClearDeletedObjectives()
     -- TODO: addon:Initialize_Options()
 end

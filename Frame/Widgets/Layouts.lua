@@ -8,6 +8,22 @@ local pairs, sort, wipe = pairs, table.sort, table.wipe
 
 --*------------------------------------------------------------------------
 
+function addon:GetModifiers()
+    local mod = ""
+    if IsShiftKeyDown() then
+        mod = "shift"
+    end
+    if IsControlKeyDown() then
+        mod = "ctrl"..(mod ~= "" and "-" or "")..mod
+    end
+    if IsAltKeyDown() then
+        mod = "alt"..(mod ~= "" and "-" or "")..mod
+    end
+    return mod
+end
+
+--*------------------------------------------------------------------------
+
 -- Adds padding between list items, allows the last item to fill the remaining height of the frame, and allows sorting children
 AceGUI:RegisterLayout("FB30_List", function(content, children)
     local padding = (content.obj and content.obj:GetUserData("childPadding")) or (content.widget and content.widget:GetUserData("childPadding")) or 5

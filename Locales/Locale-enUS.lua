@@ -154,3 +154,9 @@ L["Item ID/Name/Link"] = true
 -- Frame\Widgets\FarmingBar_TrackerButton.lua
 L["Move Down"] = true
 L["Move Up"] = true
+
+------------------------------------------------------------
+
+-- Options\Config.lua
+L["Add Bar"] = true
+L["Config"] = true

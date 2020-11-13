@@ -60,3 +60,4 @@ Modules\ObjectiveBuilder.lua
 # Options
 Options\Commands.lua
 Options\Options.lua
+Options\Config.lua
