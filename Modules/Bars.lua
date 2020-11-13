@@ -80,7 +80,19 @@ end
 ------------------------------------------------------------
 
 function addon:RemoveBar(barID)
+    local Config = self.Config
     local bars = FarmingBar.db.char.bars
+
+    ------------------------------------------------------------
+
+    -- Check if bar is currently selected in Config
+    -- Select "All Bars" if it is
+    local selectedBarID = Config:GetSelectedBar()
+    if barID == selectedBarID then
+        Config:ClearSelectedBar()
+    end
+
+    ------------------------------------------------------------
 
     -- Release all bars from the removed one and on
     for i = barID, #bars do
@@ -102,7 +114,7 @@ function addon:RemoveBar(barID)
 
     ------------------------------------------------------------
 
-    addon.Config:RefreshBars()
+    Config:RefreshBars()
 end
 
 ------------------------------------------------------------

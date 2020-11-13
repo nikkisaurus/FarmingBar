@@ -67,6 +67,13 @@ end
 --*------------------------------------------------------------------------
 
 local methods = {
+    ClearSelectedBar = function(self)
+        self:GetUserData("mainPanel"):ReleaseChildren()
+        self:SetUserData("selectedBar")
+    end,
+
+    ------------------------------------------------------------
+
     GetBarButton = function(self, barID)
         for _, button in pairs(self:GetUserData("barList").children) do
             if button:GetBarID() == barID then
@@ -141,8 +148,9 @@ local methods = {
         end
 
         local barID = self:GetSelectedBar()
-        if barID then
-            self:GetUserData("title"):SetText(barList.children[barID + 1]:GetBarTitle())
+        local title = self:GetUserData("title")
+        if barID and title then
+            title:SetText(barList.children[barID + 1]:GetBarTitle())
         end
 
         ------------------------------------------------------------
@@ -280,7 +288,7 @@ function addon:Config_LoadBarTab(tabContent)
         tabContent:AddChild(addBar)
 
         addBar:SetCallback("OnClick", function() self:CreateBar() end)
-    else
+    elseif barDB then
         local title = AceGUI:Create("EditBox")
         title:SetFullWidth(true)
         title:SetText(barDB.title)
