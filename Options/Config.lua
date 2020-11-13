@@ -9,6 +9,13 @@ local Config = addon.Config
 
 --*------------------------------------------------------------------------
 
+local mainTabGroupTabs = {
+    {text = L["Bar"], value = "barTab"},
+    {text = L["Button"], value = "buttonTab"}
+}
+
+--*------------------------------------------------------------------------
+
 local function GetBarList()
     local list = {}
     for k, v in pairs(addon.bars) do
@@ -20,16 +27,72 @@ end
 
 --*------------------------------------------------------------------------
 
+local function mainTabGroup_OnGroupSelected(self, _, selected)
+    local barID = Config:GetSelectedBar()
+    if barID then
+        Config:GetUserData("selectedTabs")[barID] = selected
+    end
+
+    ------------------------------------------------------------
+
+    self:ReleaseChildren()
+
+    local mainContent = AceGUI:Create("ScrollFrame")
+    mainContent:SetLayout("Flow")
+    Config:SetUserData("mainContent", mainContent)
+    self:AddChild(mainContent)
+
+    ------------------------------------------------------------
+
+    if selected == "barTab" then
+        addon:Config_LoadBarTab(mainContent)
+    elseif selected == "buttonTab" then
+        addon:Config_LoadButtonTab(mainContent)
+    end
+end
+
+------------------------------------------------------------
+
 local function removeBar_OnValueChanged(self, _, selected)
     -- print(selected)
+end
+
+------------------------------------------------------------
+
+local function title_OnEnterPressed(self)
+    addon:SetBarDBInfo("title", self:GetText(), Config:GetSelectedBar())
+    self:ClearFocus()
 end
 
 --*------------------------------------------------------------------------
 
 local methods = {
+    GetBarButton = function(self, barID)
+        for _, button in pairs(self:GetUserData("barList").children) do
+            if button:GetBarID() == barID then
+                return button
+            end
+        end
+    end,
+
+    ------------------------------------------------------------
+
+    GetSelectedBar = function(self)
+        return self:GetUserData("selectedBar")
+    end,
+
+    ------------------------------------------------------------
+
+    GetSelectedTab = function(self, barID)
+        return self:GetUserData("selectedTabs")[barID]
+    end,
+
+    ------------------------------------------------------------
+
     Load = function(self, barID)
-        Config.frame:Show()
-        Config:RefreshBars()
+        self.frame:Show()
+        self:GetBarButton(barID or 0):Select()
+        self:RefreshBars()
     end,
 
     ------------------------------------------------------------
@@ -70,6 +133,20 @@ local methods = {
 
         ------------------------------------------------------------
 
+        for key, button in pairs(buttons) do
+            local barTitle = addon:GetBarTitle(key)
+            if button:GetBarTitle() ~= barTitle then
+                button:UpdateBarTitle()
+            end
+        end
+
+        local barID = self:GetSelectedBar()
+        if barID then
+            self:GetUserData("title"):SetText(barList.children[barID + 1]:GetBarTitle())
+        end
+
+        ------------------------------------------------------------
+
         barList:DoLayout()
     end,
 
@@ -92,6 +169,38 @@ local methods = {
         end
     end,
 
+    ------------------------------------------------------------
+
+    SelectBar = function(self, barID)
+        local barList = self:GetUserData("barList")
+        local mainPanel = self:GetUserData("mainPanel")
+        self:SetUserData("selectedBar", barID)
+
+        mainPanel:ReleaseChildren()
+
+        if barID then
+            local title = AceGUI:Create("FarmingBar_InteractiveLabel")
+            title:SetFullWidth(true)
+            title:SetFontObject(GameFontNormalLarge)
+            title:SetText(barList.children[barID + 1]:GetBarTitle())
+            title:SetJustifyH("LEFT")
+            mainPanel:AddChild(title)
+            self:SetUserData("title", title)
+
+            ------------------------------------------------------------
+
+            local mainTabGroup = AceGUI:Create("TabGroup")
+            mainTabGroup:SetFullWidth(true)
+            mainTabGroup:SetFullHeight(true)
+            mainTabGroup:SetLayout("Fill")
+            mainTabGroup:SetTabs(mainTabGroupTabs)
+            mainPanel:AddChild(mainTabGroup)
+            self:SetUserData("mainTabGroup", mainTabGroup)
+
+            mainTabGroup:SetCallback("OnGroupSelected", mainTabGroup_OnGroupSelected)
+            mainTabGroup:SelectTab(self:GetSelectedTab(barID) or "barTab")
+        end
+    end,
 }
 
 --*------------------------------------------------------------------------
@@ -124,19 +233,24 @@ function addon:InitializeConfig()
     ------------------------------------------------------------
 
     local mainPanel = AceGUI:Create("FarmingBar_InlineGroup")
-    mainPanel:SetLayout("Fill")
+    mainPanel:SetLayout("Flow")
     Config:AddChild(mainPanel)
-
-    ------------------------------------------------------------
-
-    local mainContent = AceGUI:Create("ScrollFrame")
-    mainContent:SetLayout("FB30_List")
-    mainContent:SetUserData("childPadding", 10)
-    mainPanel:AddChild(mainContent)
+    Config:SetUserData("mainPanel", mainPanel)
 
     ------------------------------------------------------------
 
     Config:LoadBars()
+
+    ------------------------------------------------------------
+    --Debug-----------------------------------------------------
+    ------------------------------------------------------------
+    if FarmingBar.db.global.debug.Config then
+        C_Timer.After(1, function()
+            Config:Load()
+        end)
+    end
+    ------------------------------------------------------------
+    ------------------------------------------------------------
 end
 
 --*------------------------------------------------------------------------
@@ -155,34 +269,242 @@ end
 
 --*------------------------------------------------------------------------
 
-function addon:Config_LoadAllBars()
-    -- print("all")
+function addon:Config_LoadBarTab(tabContent)
+    local barID = Config:GetSelectedBar()
+    local barDB = barID > 0 and FarmingBar.db.char.bars[barID]
+
+    if barID == 0 then
+        local addBar = AceGUI:Create("Button")
+        addBar:SetFullWidth(true)
+        addBar:SetText(L["Add Bar"])
+        tabContent:AddChild(addBar)
+
+        addBar:SetCallback("OnClick", function() self:CreateBar() end)
+    else
+        local title = AceGUI:Create("EditBox")
+        title:SetFullWidth(true)
+        title:SetText(barDB.title)
+        title:SetLabel(L["Title"])
+        tabContent:AddChild(title)
+
+        title:SetCallback("OnEnterPressed", title_OnEnterPressed)
+
+        --*------------------------------------------------------------------------
+
+        local alertsGroup = AceGUI:Create("InlineGroup")
+        alertsGroup:SetFullWidth(true)
+        alertsGroup:SetTitle(L["Alerts"])
+        alertsGroup:SetLayout("Flow")
+        tabContent:AddChild(alertsGroup)
+
+        ------------------------------------------------------------
+
+        local muteAll = AceGUI:Create("CheckBox")
+        muteAll:SetRelativeWidth(1/3)
+        muteAll:SetValue(barDB.alerts.muteAll)
+        muteAll:SetLabel(L["Mute All"])
+        alertsGroup:AddChild(muteAll)
+
+        muteAll:SetCallback("OnValueChanged", function(self)
+            addon:SetBarDBInfo("alerts.muteAll", self:GetValue(), Config:GetSelectedBar())
+        end)
+
+        ------------------------------------------------------------
+
+        local barProgress = AceGUI:Create("CheckBox")
+        barProgress:SetRelativeWidth(1/3)
+        barProgress:SetValue(barDB.alerts.barProgress)
+        barProgress:SetLabel(L["Bar Progress"])
+        barProgress:SetDisabled(true) -- ! temporary until implemented
+        alertsGroup:AddChild(barProgress)
+
+        barProgress:SetCallback("OnValueChanged", function(self)
+            addon:SetBarDBInfo("alerts.barProgress", self:GetValue(), Config:GetSelectedBar())
+        end)
+
+        ------------------------------------------------------------
+
+        local completedObjectives = AceGUI:Create("CheckBox")
+        completedObjectives:SetRelativeWidth(1/3)
+        completedObjectives:SetValue(barDB.alerts.completedObjectives)
+        completedObjectives:SetLabel(L["Completed Objectives"])
+        completedObjectives:SetDisabled(true) -- ! temporary until implemented
+        alertsGroup:AddChild(completedObjectives)
+
+        completedObjectives:SetCallback("OnValueChanged", function(self)
+            addon:SetBarDBInfo("alerts.completedObjectives", self:GetValue(), Config:GetSelectedBar())
+        end)
+
+        --*------------------------------------------------------------------------
+
+        local visibilityGroup = AceGUI:Create("InlineGroup")
+        visibilityGroup:SetFullWidth(true)
+        visibilityGroup:SetTitle(L["Visibility"])
+        visibilityGroup:SetLayout("Flow")
+        tabContent:AddChild(visibilityGroup)
+
+        ------------------------------------------------------------
+
+        local hidden = AceGUI:Create("CheckBox")
+        hidden:SetRelativeWidth(1/2)
+        hidden:SetValue(barDB.hidden)
+        hidden:SetLabel(L["Hidden"])
+        visibilityGroup:AddChild(hidden)
+
+        hidden:SetCallback("OnValueChanged", function(self)
+            addon:SetBarDBInfo("hidden", self:GetValue(), Config:GetSelectedBar())
+        end)
+
+        ------------------------------------------------------------
+
+        local showEmpty = AceGUI:Create("CheckBox")
+        showEmpty:SetRelativeWidth(1/2)
+        showEmpty:SetValue(barDB.showEmpty)
+        showEmpty:SetLabel(L["Show Empty Buttons"])
+        showEmpty:SetDisabled(true) -- ! temporary until implemented
+        visibilityGroup:AddChild(showEmpty)
+
+        showEmpty:SetCallback("OnValueChanged", function(self)
+            addon:SetBarDBInfo("showEmpty", self:GetValue(), Config:GetSelectedBar())
+        end) -- !
+
+        ------------------------------------------------------------
+
+        local mouseover = AceGUI:Create("CheckBox")
+        mouseover:SetRelativeWidth(1/2)
+        mouseover:SetValue(barDB.mouseover)
+        mouseover:SetLabel(L["Show on Mouseover"])
+        mouseover:SetDisabled(true) -- ! temporary until implemented
+        visibilityGroup:AddChild(mouseover)
+
+        mouseover:SetCallback("OnValueChanged", function(self)
+            addon:SetBarDBInfo("mouseover", self:GetValue(), Config:GetSelectedBar())
+        end) -- !
+
+        ------------------------------------------------------------
+
+        local anchorMouseover = AceGUI:Create("CheckBox")
+        anchorMouseover:SetRelativeWidth(1/2)
+        anchorMouseover:SetValue(barDB.anchorMouseover)
+        anchorMouseover:SetLabel(L["Show on Anchor Mouseover"])
+        anchorMouseover:SetDisabled(true) -- ! temporary until implemented
+        visibilityGroup:AddChild(anchorMouseover)
+
+        anchorMouseover:SetCallback("OnValueChanged", function(self)
+            addon:SetBarDBInfo("anchorMouseover", self:GetValue(), Config:GetSelectedBar())
+        end) -- !
+
+        --*------------------------------------------------------------------------
+
+        local pointGroup = AceGUI:Create("InlineGroup")
+        pointGroup:SetFullWidth(true)
+        pointGroup:SetTitle(L["Point"])
+        pointGroup:SetLayout("Flow")
+        tabContent:AddChild(pointGroup)
+
+        ------------------------------------------------------------
+
+        local growDirection = AceGUI:Create("Dropdown")
+        growDirection:SetRelativeWidth(1/2)
+        growDirection:SetLabel(L["Growth Direction"])
+        growDirection:SetList({RIGHT = L["Right"], LEFT = L["Left"], UP = L["Up"], DOWN = L["Down"]}, {"RIGHT", "LEFT", "UP", "DOWN"})
+        growDirection:SetValue(barDB.grow[1])
+        pointGroup:AddChild(growDirection)
+
+        growDirection:SetCallback("OnValueChanged", function(self, _, selected)
+            local barID = Config:GetSelectedBar()
+            FarmingBar.db.char.bars[barID].grow[1] = selected
+            addon.bars[barID]:DoLayout()
+            Config:RefreshBars()
+        end)
+
+        ------------------------------------------------------------
+
+        local growType = AceGUI:Create("Dropdown")
+        growType:SetRelativeWidth(1/2)
+        growType:SetLabel(L["Growth Type"])
+        growType:SetList({NORMAL = L["Normal"], REVERSE = L["Reverse"]}, {"NORMAL", "REVERSE"})
+        growType:SetValue(barDB.grow[2])
+        pointGroup:AddChild(growType)
+
+        growType:SetCallback("OnValueChanged", function(self, _, selected)
+            local barID = Config:GetSelectedBar()
+            FarmingBar.db.char.bars[barID].grow[2] = selected
+            addon.bars[barID]:DoLayout()
+            Config:RefreshBars()
+        end)
+
+        ------------------------------------------------------------
+
+        local movable = AceGUI:Create("CheckBox")
+        movable:SetRelativeWidth(1/2)
+        movable:SetValue(barDB.movable)
+        movable:SetLabel(L["Movable"])
+        pointGroup:AddChild(movable)
+
+        movable:SetCallback("OnValueChanged", function(self)
+            addon:SetBarDBInfo("movable", self:GetValue(), Config:GetSelectedBar())
+        end)
+
+        --*------------------------------------------------------------------------
+
+        local templateGroup = AceGUI:Create("InlineGroup")
+        templateGroup:SetFullWidth(true)
+        templateGroup:SetTitle(L["Template"])
+        templateGroup:SetLayout("Flow")
+        tabContent:AddChild(templateGroup)
+
+        ------------------------------------------------------------
+
+        local saveAsTemplate = AceGUI:Create("EditBox")
+        saveAsTemplate:SetFullWidth(true)
+        saveAsTemplate:SetLabel(L["Save as Template"])
+        saveAsTemplate:SetDisabled(true) -- ! temporary until implemented
+        templateGroup:AddChild(saveAsTemplate)
+
+        saveAsTemplate:SetCallback("OnEnterPressed", function(self)
+            print("Save as template", self:GetText())
+            self:ClearFocus()
+            self:SetText()
+        end)
+
+        ------------------------------------------------------------
+
+        local loadTemplate = AceGUI:Create("Dropdown")
+        loadTemplate:SetRelativeWidth(1/2)
+        loadTemplate:SetLabel(L["Load Template"])
+        -- builtInTemplate:SetList({NORMAL = L["Normal"], REVERSE = L["Reverse"]}, {"NORMAL", "REVERSE"})
+        loadTemplate:SetDisabled(true) -- ! temporary until implemented
+        templateGroup:AddChild(loadTemplate)
+        Config:SetUserData("loadTemplate", loadTemplate)
+
+        loadTemplate:SetCallback("OnValueChanged", function(self, _, selected)
+        end)
+
+        ------------------------------------------------------------
+
+        local loadUserTemplate = AceGUI:Create("Dropdown")
+        loadUserTemplate:SetRelativeWidth(1/2)
+        loadUserTemplate:SetLabel(L["Load User Template"])
+        -- builtInTemplate:SetList({NORMAL = L["Normal"], REVERSE = L["Reverse"]}, {"NORMAL", "REVERSE"})
+        loadUserTemplate:SetDisabled(true) -- ! temporary until implemented
+        templateGroup:AddChild(loadUserTemplate)
+        Config:SetUserData("loadUserTemplate", loadUserTemplate)
+
+        loadUserTemplate:SetCallback("OnValueChanged", function(self, _, selected)
+        end)
+
+        --*------------------------------------------------------------------------
+
+        local fontGroup = AceGUI:Create("InlineGroup")
+        fontGroup:SetFullWidth(true)
+        fontGroup:SetTitle(L["Font"])
+        fontGroup:SetLayout("Flow")
+        tabContent:AddChild(fontGroup)
+    end
 end
 
 ------------------------------------------------------------
 
-function addon:Config_LoadBar(barID)
-    -- print(barID)
+function addon:Config_LoadButtonTab(tabContent)
 end
-
-
-    -- ------------------------------------------------------------
-
-    -- local addBar = AceGUI:Create("Button")
-    -- addBar:SetText(L["Add Bar"])
-    -- -- addBar:SetTextHighlight(1, .82, 0, 1)
-    -- -- addBar:SetWordWrap(false)
-    -- -- addBar:SetIcon(514607, nil, 13, 13)
-    -- topPanel:AddChild(addBar)
-
-    -- addBar:SetCallback("OnClick", function() self:CreateBar() end)
-
-    -- ------------------------------------------------------------
-
-    -- local removeBar = AceGUI:Create("Dropdown")
-    -- removeBar:SetWidth(200)
-    -- removeBar:SetLabel(L["Remove Bar"])
-    -- removeBar:SetList(GetBarList())
-    -- topPanel:AddChild(removeBar)
-
-    -- removeBar:SetCallback("OnValueChanged", removeBar_OnValueChanged)

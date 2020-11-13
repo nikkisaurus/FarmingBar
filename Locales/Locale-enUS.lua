@@ -166,7 +166,33 @@ L["Remove Bar"] = true
 ------------------------------------------------------------
 
 -- Frame\Widgets\FarmingBar_BarButton.lua
+L["Alerts"] = true
 L["All Bars"] = true
+L["Bar Progress"] = true
+L["Button"] = true
+L["Completed Objectives"] = true
+L["Down"] = true
+L["Font"] = true
+L["Growth Direction"] = true
+L["Growth Type"] = true
+L["Hidden"] = true
+L["Left"] = true
+L["Load Template"] = true
+L["Load User Template"] = true
+L["Movable"] = true
+L["Mute All"] = true
+L["Normal"] = true
+L["Point"] = true
 L["Remove"] = true
 L["Remove All"] = true
 L["Remove Selected"] = true
+L["Reverse"] = true
+L["Right"] = true
+L["Save as Template"] = true
+L["Show Empty Buttons"] = true
+L["Show on Anchor Mouseover"] = true
+L["Show on Mouseover"] = true
+L["Template"] = true
+L["Title"] = true
+L["Up"] = true
+L["Visibility"] = true

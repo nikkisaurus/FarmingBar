@@ -33,12 +33,14 @@ end
 ------------------------------------------------------------
 
 local function frame_OnDragStart(self)
+    if not self.obj.frame:IsMovable() then return end
     self.obj.frame:StartMoving()
 end
 
 ------------------------------------------------------------
 
 local function frame_OnDragStop(self)
+    if not self.obj.frame:IsMovable() then return end
     local widget = self.obj
     local barDB = widget:GetUserData("barDB")
 
@@ -206,6 +208,7 @@ local methods = {
         local anchor, relativeAnchor, xOffset, yOffset = GetAnchorPoints(barDB.grow[1])
 
         for key, button in pairs(buttons) do
+            button:ClearAllPoints()
             button:SetSize(self.frame:GetWidth(), self.frame:GetHeight())
 
             if key == 1 then
@@ -281,10 +284,17 @@ local methods = {
     ------------------------------------------------------------
 
     SetHidden = function(self, hidden)
+        local buttons = self:GetUserData("buttons")
         if hidden then
             self.frame:Hide()
+            for _, button in pairs(buttons) do
+                button.frame:Hide()
+            end
         else
             self.frame:Show()
+            for _, button in pairs(buttons) do
+                button.frame:Show()
+            end
         end
     end,
 

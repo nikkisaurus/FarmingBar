@@ -56,6 +56,7 @@ Modules\DragFrame.lua
 Modules\Objectives.lua
 Modules\Trackers.lua
 Modules\ObjectiveBuilder.lua
+Modules\Templates.lua
 
 # Options
 Options\Commands.lua

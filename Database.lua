@@ -183,6 +183,7 @@ function addon:Initialize_DB()
                 barDB = false,
                 ObjectiveBuilder = false,
                 ObjectiveBuilderTrackers = false,
+                Config = true,
             },
 
             ------------------------------------------------------------
@@ -199,7 +200,7 @@ function addon:Initialize_DB()
 
         profile = {
             style = {
-                skin = "FarmingBar_Minimal",
+                skin = "FarmingBar_Default",
                 font = {
                     face = "Friz Quadrata TT",
                     outline = "OUTLINE",

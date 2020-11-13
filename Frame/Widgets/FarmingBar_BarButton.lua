@@ -66,12 +66,9 @@ local function frame_OnClick(self, buttonClicked, ...)
 
     if buttonClicked == "RightButton" then
         widget:ShowMenu()
-    elseif barID == 0 then
-        PlaySound(852)
-        addon:Config_LoadAllBars()
     else
         PlaySound(852)
-        addon:Config_LoadBar(barID)
+        Config:SelectBar(barID)
     end
 
     widget:Fire("OnClick", buttonClicked, ...)
@@ -119,10 +116,8 @@ local methods = {
     ------------------------------------------------------------
 
     SetBarID = function(self, barID)
-        local barTitle = addon:GetBarTitle(barID)
         self:SetUserData("barID", barID)
-        self:SetUserData("barTitle", barTitle)
-        self.text:SetText(barTitle)
+        self:UpdateBarTitle()
     end,
 
     ------------------------------------------------------------
@@ -183,6 +178,14 @@ local methods = {
         ------------------------------------------------------------
 
         EasyMenu(menu, addon.MenuFrame, self.frame, 0, 0, "MENU")
+    end,
+
+    ------------------------------------------------------------
+
+    UpdateBarTitle = function(self)
+        local barTitle = addon:GetBarTitle(self:GetBarID())
+        self:SetUserData("barTitle", barTitle)
+        self.text:SetText(barTitle)
     end,
 }
 

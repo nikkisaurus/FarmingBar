@@ -143,3 +143,23 @@ function addon:RemoveSelectedBars(confirmed)
         end
     end
 end
+
+------------------------------------------------------------
+
+function addon:SetBarDBInfo(key, value, barID)
+    local keys = {strsplit(".", key)}
+    local path = FarmingBar.db.char.bars[barID]
+
+    for k, key in pairs(keys) do
+        if k < #keys then
+            path = path[key]
+        end
+    end
+
+    path[keys[#keys]] = value
+
+    ------------------------------------------------------------
+
+    self.Config:RefreshBars()
+    self.bars[barID]:DoLayout()
+end

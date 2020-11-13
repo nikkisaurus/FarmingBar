@@ -162,7 +162,7 @@ local methods = {
             end
         else
             text:ClearAllPoints()
-            text:SetJustifyH("MIDDLE")
+            text:SetJustifyH(self:GetUserData("justifyH") or "MIDDLE")
 
             if text:GetHeight() > frame:GetHeight() and vResize then
                 self:SetHeight(text:GetHeight() + ((padding + vTextOffset) * 2))
@@ -271,7 +271,8 @@ local methods = {
     ------------------------------------------------------------
 
     SetJustifyH = function(self, justify)
-        self.text:SetJustifyH(justify)
+        self:SetUserData("justifyH", justify)
+        self:AnchorTextures()
     end,
 
     ------------------------------------------------------------
