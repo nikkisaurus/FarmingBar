@@ -255,6 +255,10 @@ function addon:InitializeConfig()
     if FarmingBar.db.global.debug.Config then
         C_Timer.After(1, function()
             Config:Load()
+            local barButtons = barList.children
+            if #barButtons > 1 then
+                barButtons[2]:Select()
+            end
         end)
     end
     ------------------------------------------------------------
@@ -509,7 +513,35 @@ function addon:Config_LoadBarTab(tabContent)
         fontGroup:SetTitle(L["Font"])
         fontGroup:SetLayout("Flow")
         tabContent:AddChild(fontGroup)
+
+        ------------------------------------------------------------
+
+        local fontFace = AceGUI:Create("LSM30_Font")
+        fontFace:SetRelativeWidth(1/2)
+        fontFace:SetLabel(L["Font Face"])
+        fontFace:SetList(AceGUIWidgetLSMlists.font)
+        fontFace:SetValue(barDB.font.face or FarmingBar.db.profile.style.font.face)
+        fontGroup:AddChild(fontFace)
+
+        ------------------------------------------------------------
+
+        local fontOutline = AceGUI:Create("Dropdown")
+        fontOutline:SetRelativeWidth(1/2)
+        fontOutline:SetLabel(L["Font Outline"])
+        fontOutline:SetList({MONOCHROME = L["Monochrome"], OUTLINE = L["Outline"], THICKOUTLINE = L["Thickoutline"], NONE = L["None"]}, {"MONOCHROME", "OUTLINE", "THICKOUTLINE", "NONE"})
+        fontOutline:SetValue(barDB.font.outline or FarmingBar.db.profile.style.font.outline)
+        fontGroup:AddChild(fontOutline)
+
+        ------------------------------------------------------------
+
+        local fontSize = AceGUI:Create("Slider")
+        fontSize:SetLabel(L["Font Size"])
+        fontSize:SetSliderValues(self.minFontSize, self.maxFontSize, 1)
+        fontSize:SetValue(barDB.font.size or FarmingBar.db.profile.style.font.size)
+        fontGroup:AddChild(fontSize)
     end
+
+    tabContent:DoLayout()
 end
 
 ------------------------------------------------------------

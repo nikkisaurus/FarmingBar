@@ -291,6 +291,24 @@ function addon:GetDefaultBar()
         button = {
             size = 35, --bar.buttonSize
             padding = 2, --bar.buttonPadding
+            fontStrings = {
+                count = {
+                    anchor = "BOTTOM",
+                    xOffset = 1,
+                    yOffset = 6,
+                },
+                objective = {
+                    anchor = "TOPLEFT",
+                    xOffset = 6,
+                    yOffset = -4,
+                },
+            },
+        },
+
+        font = {
+            face = false,
+            outline = false,
+            size = false,
         },
 
         objectives = {},
