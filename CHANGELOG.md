@@ -10,9 +10,9 @@
   - -- Any (Mixed Items or single tracker objective)
   - -- Custom
 - Custom tracker conditions must return a table containing nested tables of tracker objectives: `return {{t1 = 10, t2 = 2, t3 = 3}, {t1 = 5}}`
-  - Keys must be formatted "t%d" where "%d" is the tracker number
-  - Values are tracker objectives
-  - Tracker groups will be counted toward the objective in the order initialized in the condition
+  - -- Keys must be formatted "t%d" where "%d" is the tracker number
+  - -- Values are tracker objectives
+  - -- Tracker groups will be counted toward the objective in the order initialized in the condition
 - Objective Settings:
   - -- Title
   - -- Icon (or auto)
