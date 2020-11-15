@@ -783,6 +783,7 @@ function addon:Initialize_ObjectiveBuilder()
     help:SetIcon(616343, nil, 25, 25)
     help:SetOffsetH(-7)
     help:SetText(L["Help"])
+    help:SetDisabled(true) -- ! temporary until implemented
     topPanel:AddChild(help)
 
     help:SetCallback("OnClick", help_OnClick)
@@ -1133,6 +1134,7 @@ function addon:ObjectiveBuilder_LoadTrackerInfo()
         end
         includeAllChars:SetDescription(line)
     end
+    includeAllChars:SetDisabled(true) -- ! temporary until implemented
     tabContent:AddChild(includeAllChars)
 
     includeAllChars:SetCallback("OnValueChanged", includeAllChars_OnValueChanged)

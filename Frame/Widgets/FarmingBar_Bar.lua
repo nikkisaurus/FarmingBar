@@ -191,6 +191,30 @@ local methods = {
 
     ------------------------------------------------------------
 
+    AnchorButtons = function(self)
+        local barDB = self:GetUserData("barDB")
+        local buttons = self:GetUserData("buttons")
+
+        local anchor, relativeAnchor, xOffset, yOffset = GetAnchorPoints(barDB.grow[1])
+
+        for key, button in pairs(buttons) do
+            button:ClearAllPoints()
+
+            if key == 1 then
+                button:SetPoint(anchor, self.frame, relativeAnchor, xOffset * barDB.button.padding, yOffset * barDB.button.padding)
+            else
+                if fmod(key, barDB.buttonWrap) == 1 or barDB.buttonWrap == 1 then
+                    local anchor, relativeAnchor, xOffset, yOffset = GetRelativeAnchorPoints(barDB.grow)
+                    button:SetPoint(anchor, buttons[key - barDB.buttonWrap].frame, relativeAnchor, xOffset * barDB.button.padding, yOffset * barDB.button.padding)
+                else
+                    button:SetPoint(anchor, buttons[key - 1].frame, relativeAnchor, xOffset * barDB.button.padding, yOffset * barDB.button.padding)
+                end
+            end
+        end
+    end,
+
+    ------------------------------------------------------------
+
     ApplySkin = function(self)
         local skin = FarmingBar.db.profile.style.skin
         addon:SkinBar(self, skin)
@@ -203,26 +227,7 @@ local methods = {
 
     DoLayout = function(self)
         local barDB = self:GetUserData("barDB")
-        local buttons = self:GetUserData("buttons")
-
-        local anchor, relativeAnchor, xOffset, yOffset = GetAnchorPoints(barDB.grow[1])
-
-        for key, button in pairs(buttons) do
-            button:ClearAllPoints()
-            button:SetSize(self.frame:GetWidth(), self.frame:GetHeight())
-
-            if key == 1 then
-                button:SetPoint(anchor, self.frame, relativeAnchor, xOffset * barDB.button.padding, yOffset * barDB.button.padding)
-            else
-                if fmod(key, barDB.buttonWrap) == 1 then
-                    local anchor, relativeAnchor, xOffset, yOffset = GetRelativeAnchorPoints(barDB.grow)
-                    button:SetPoint(anchor, buttons[key - barDB.buttonWrap].frame, relativeAnchor, xOffset * barDB.button.padding, yOffset * barDB.button.padding)
-                else
-                    button:SetPoint(anchor, buttons[key - 1].frame, relativeAnchor, xOffset * barDB.button.padding, yOffset * barDB.button.padding)
-                end
-            end
-        end
-
+        self:AnchorButtons()
         self:SetAlpha(barDB.alpha)
         self:SetHidden(barDB.hidden)
         self:SetMovable(barDB.movable)
@@ -366,6 +371,11 @@ local methods = {
 
         self.barID:SetFont([[Fonts\FRIZQT__.TTF]], fontSize, "NORMAL")
         self.barID:SetPoint("BOTTOM", 0, paddingSize * 1.5)
+
+        local buttons = self:GetUserData("buttons")
+        for _, button in pairs(buttons) do
+            button:SetSize(self.frame:GetWidth(), self.frame:GetHeight())
+        end
     end,
 }
 

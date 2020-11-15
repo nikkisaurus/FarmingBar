@@ -283,6 +283,7 @@ end
 
 function addon:Config_LoadBarTab(tabContent)
     local barID = Config:GetSelectedBar()
+    local bar = barID > 0 and self.bars[barID]
     local barDB = barID > 0 and FarmingBar.db.char.bars[barID]
 
     if barID == 0 then
@@ -365,6 +366,7 @@ function addon:Config_LoadBarTab(tabContent)
 
         hidden:SetCallback("OnValueChanged", function(self)
             addon:SetBarDBInfo("hidden", self:GetValue(), Config:GetSelectedBar())
+            bar:SetHidden(barDB.hidden)
         end)
 
         ------------------------------------------------------------
@@ -424,10 +426,8 @@ function addon:Config_LoadBarTab(tabContent)
         pointGroup:AddChild(growDirection)
 
         growDirection:SetCallback("OnValueChanged", function(self, _, selected)
-            local barID = Config:GetSelectedBar()
-            FarmingBar.db.char.bars[barID].grow[1] = selected
-            addon.bars[barID]:DoLayout()
-            Config:RefreshBars()
+            FarmingBar.db.char.bars[Config:GetSelectedBar()].grow[1] = selected
+            bar:AnchorButtons()
         end)
 
         ------------------------------------------------------------
@@ -440,10 +440,8 @@ function addon:Config_LoadBarTab(tabContent)
         pointGroup:AddChild(growType)
 
         growType:SetCallback("OnValueChanged", function(self, _, selected)
-            local barID = Config:GetSelectedBar()
-            FarmingBar.db.char.bars[barID].grow[2] = selected
-            addon.bars[barID]:DoLayout()
-            Config:RefreshBars()
+            FarmingBar.db.char.bars[Config:GetSelectedBar()].grow[2] = selected
+            bar:AnchorButtons()
         end)
 
         ------------------------------------------------------------
@@ -456,6 +454,7 @@ function addon:Config_LoadBarTab(tabContent)
 
         movable:SetCallback("OnValueChanged", function(self)
             addon:SetBarDBInfo("movable", self:GetValue(), Config:GetSelectedBar())
+            bar:SetMovable(barDB.movable)
         end)
 
         --*------------------------------------------------------------------------
@@ -520,6 +519,7 @@ function addon:Config_LoadBarTab(tabContent)
 
         scale:SetCallback("OnValueChanged", function(self, ...)
             addon:SetBarDBInfo("scale", self:GetValue(), Config:GetSelectedBar())
+            bar:SetScale(barDB.scale)
         end)
 
         ------------------------------------------------------------
@@ -533,6 +533,7 @@ function addon:Config_LoadBarTab(tabContent)
 
         alpha:SetCallback("OnValueChanged", function(self)
             addon:SetBarDBInfo("alpha", self:GetValue(), Config:GetSelectedBar())
+            bar:SetAlpha(barDB.alpha)
         end)
 
         --*------------------------------------------------------------------------
@@ -591,6 +592,7 @@ end
 
 function addon:Config_LoadButtonTab(tabContent)
     local barID = Config:GetSelectedBar()
+    local bar = barID > 0 and self.bars[barID]
     local barDB = barID > 0 and FarmingBar.db.char.bars[barID]
 
     if barID == 0 then
@@ -650,6 +652,7 @@ function addon:Config_LoadButtonTab(tabContent)
 
         numVisibleButtons:SetCallback("OnValueChanged", function(self)
             addon:SetBarDBInfo("numVisibleButtons", self:GetValue(), Config:GetSelectedBar()) --! needs fixed to update buttons as added/removed
+            bar:AnchorButtons()
         end)
 
         ------------------------------------------------------------
@@ -663,6 +666,7 @@ function addon:Config_LoadButtonTab(tabContent)
 
         buttonWrap:SetCallback("OnValueChanged", function(self)
             addon:SetBarDBInfo("buttonWrap", self:GetValue(), Config:GetSelectedBar()) --! needs fixed for when 1 button per
+            bar:AnchorButtons()
         end)
 
         --*------------------------------------------------------------------------
@@ -684,6 +688,7 @@ function addon:Config_LoadButtonTab(tabContent)
 
         size:SetCallback("OnValueChanged", function(self)
             addon:SetBarDBInfo("button.size", self:GetValue(), Config:GetSelectedBar())
+            bar:SetSize(barDB.button.size)
         end)
 
         ------------------------------------------------------------
@@ -697,6 +702,8 @@ function addon:Config_LoadButtonTab(tabContent)
 
         padding:SetCallback("OnValueChanged", function(self)
             addon:SetBarDBInfo("button.padding", self:GetValue(), Config:GetSelectedBar())
+            bar:SetSize(barDB.button.size)
+            bar:AnchorButtons()
         end)
 
         ------------------------------------------------------------

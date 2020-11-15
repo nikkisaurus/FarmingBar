@@ -173,5 +173,4 @@ function addon:SetBarDBInfo(key, value, barID)
     ------------------------------------------------------------
 
     self.Config:RefreshBars()
-    self.bars[barID]:DoLayout()
 end
