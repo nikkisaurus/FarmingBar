@@ -8,7 +8,7 @@ local tinsert, pairs, wipe = table.insert, pairs, table.wipe
 --*------------------------------------------------------------------------
 
 function addon:Initialize_Bars()
-    local bars = FarmingBar.db.char.bars
+    local bars = FarmingBar.db.profile.bars
 
     ------------------------------------------------------------
     --Debug-----------------------------------------------------
@@ -19,7 +19,7 @@ function addon:Initialize_Bars()
     ------------------------------------------------------------
     ------------------------------------------------------------
 
-    if #bars == 0 and FarmingBar.db.char.enabled then
+    if #bars == 0 and FarmingBar.db.profile.enabled then
         self:CreateBar()
     else
         for barID, _ in pairs(bars) do
@@ -31,8 +31,8 @@ end
 --*------------------------------------------------------------------------
 
 function addon:CreateBar()
-    tinsert(FarmingBar.db.char.bars, addon:GetDefaultBar())
-    self:LoadBar(#FarmingBar.db.char.bars)
+    tinsert(FarmingBar.db.profile.bars, addon:GetDefaultBar())
+    self:LoadBar(#FarmingBar.db.profile.bars)
 end
 
 ------------------------------------------------------------
@@ -40,7 +40,7 @@ end
 function addon:GetBarTitle(barID)
     if barID == 0 then return L["All Bars"] end
 
-    local barDB = FarmingBar.db.char.bars[barID]
+    local barDB = FarmingBar.db.profile.bars[barID]
     if not barDB then return end
 
     local title = L["Bar"].." "..barID..(barDB.title ~= "" and (" ("..barDB.title..")") or "")
@@ -50,7 +50,7 @@ end
 ------------------------------------------------------------
 
 function addon:LoadBar(barID)
-    FarmingBar.db.char.enabled = true
+    FarmingBar.db.profile.enabled = true
 
     ------------------------------------------------------------
 
@@ -81,7 +81,7 @@ end
 
 function addon:RemoveBar(barID)
     local Config = self.Config
-    local bars = FarmingBar.db.char.bars
+    local bars = FarmingBar.db.profile.bars
 
     ------------------------------------------------------------
 
@@ -101,15 +101,15 @@ function addon:RemoveBar(barID)
     end
 
     -- Remove from the database
-    tremove(FarmingBar.db.char.bars, barID)
+    tremove(FarmingBar.db.profile.bars, barID)
 
     -- Reload the remaining bars that were reindexed
     for i = barID, #bars do
         self:LoadBar(i)
     end
 
-    if addon.tcount(FarmingBar.db.char.bars) == 0 then
-        FarmingBar.db.char.enabled = false
+    if addon.tcount(FarmingBar.db.profile.bars) == 0 then
+        FarmingBar.db.profile.enabled = false
     end
 
     ------------------------------------------------------------
@@ -160,7 +160,7 @@ end
 
 function addon:SetBarDBInfo(key, value, barID)
     local keys = {strsplit(".", key)}
-    local path = FarmingBar.db.char.bars[barID]
+    local path = FarmingBar.db.profile.bars[barID]
 
     for k, key in pairs(keys) do
         if k < #keys then

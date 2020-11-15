@@ -284,7 +284,7 @@ end
 function addon:Config_LoadBarTab(tabContent)
     local barID = Config:GetSelectedBar()
     local bar = barID > 0 and self.bars[barID]
-    local barDB = barID > 0 and FarmingBar.db.char.bars[barID]
+    local barDB = barID > 0 and FarmingBar.db.profile.bars[barID]
 
     if barID == 0 then
         local addBar = AceGUI:Create("Button")
@@ -426,7 +426,7 @@ function addon:Config_LoadBarTab(tabContent)
         pointGroup:AddChild(growDirection)
 
         growDirection:SetCallback("OnValueChanged", function(self, _, selected)
-            FarmingBar.db.char.bars[Config:GetSelectedBar()].grow[1] = selected
+            FarmingBar.db.profile.bars[Config:GetSelectedBar()].grow[1] = selected
             bar:AnchorButtons()
         end)
 
@@ -440,7 +440,7 @@ function addon:Config_LoadBarTab(tabContent)
         pointGroup:AddChild(growType)
 
         growType:SetCallback("OnValueChanged", function(self, _, selected)
-            FarmingBar.db.char.bars[Config:GetSelectedBar()].grow[2] = selected
+            FarmingBar.db.profile.bars[Config:GetSelectedBar()].grow[2] = selected
             bar:AnchorButtons()
         end)
 
@@ -593,7 +593,7 @@ end
 function addon:Config_LoadButtonTab(tabContent)
     local barID = Config:GetSelectedBar()
     local bar = barID > 0 and self.bars[barID]
-    local barDB = barID > 0 and FarmingBar.db.char.bars[barID]
+    local barDB = barID > 0 and FarmingBar.db.profile.bars[barID]
 
     if barID == 0 then
     elseif barID then

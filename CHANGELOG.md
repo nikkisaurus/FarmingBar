@@ -1,5 +1,8 @@
 # Farming Bar
 ## Version 3.0
+### 3.0-alpha2
+- Convert saved bars from character to profile specific
+
 ### 3.0-alpha1
 - Complete addon rewrite
 - Limited commands and bar customizations (alpha only)

@@ -5,8 +5,11 @@ local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 function addon:Initialize_DB()
     local defaults = {
         char = {
-            enabled = true, --enables bar creation for new users/characters; disable when user deletes all bars
-            bars = {},
+            objectives = {
+                ["**"] = {},
+            },
+            -- enabled = true, --enables bar creation for new users/characters; disable when user deletes all bars
+            -- bars = {},
         },
 
         global = {
@@ -218,6 +221,8 @@ function addon:Initialize_DB()
         },
 
         profile = {
+            enabled = true, --enables bar creation for new users/characters; disable when user deletes all bars
+            bars = {},
             style = {
                 skin = "FarmingBar_Default",
                 font = {
@@ -265,6 +270,7 @@ function addon:Initialize_DB()
         end
     end
 
+
     ------------------------------------------------------------
 
     FarmingBar.db = LibStub("AceDB-3.0"):New("FarmingBarDB", defaults, true)
@@ -275,8 +281,31 @@ function addon:Initialize_DB()
     -- Check for previous versions first and convert before changing the version.
     -- This should only be done once database is finalized.
     FarmingBar.db.global.version = 3
+
+    ------------------------------------------------------------
+
     if version2 then
         FarmingBarDB.global.version2 = backup
+    end
+
+    ------------------------------------------------------------
+
+    -- alpha1 -> alpha2 only
+    -- Moving bars from character to profile specific
+    local charKey = UnitName("player").." - "..GetRealmName()
+    if FarmingBar.db.char.enabled then
+        FarmingBar.db.profile.enabled = FarmingBar.db.char.enabled
+        FarmingBar.db.char.enabled = nil
+    end
+
+    if FarmingBar.db.char.bars then
+        for i = 1, #FarmingBar.db.char.bars do
+            local objectives = FarmingBar.db.char.bars[i].objectives
+            FarmingBar.db.char.bars[i].objectives = nil
+            tinsert(FarmingBar.db.profile.bars, FarmingBar.db.char.bars[i])
+            FarmingBar.db.char.objectives[i] = objectives
+        end
+        FarmingBar.db.char.bars = nil
     end
 end
 
@@ -329,8 +358,6 @@ function addon:GetDefaultBar()
             outline = false,
             size = false,
         },
-
-        objectives = {},
     }
 
     return bar

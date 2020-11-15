@@ -185,7 +185,7 @@ local methods = {
 
         ------------------------------------------------------------
 
-        local barDB = FarmingBar.db.char.bars[barID]
+        local barDB = FarmingBar.db.profile.bars[barID]
         self:SetUserData("barDB", barDB)
 
         ------------------------------------------------------------
