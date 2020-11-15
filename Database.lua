@@ -186,7 +186,7 @@ function addon:Initialize_DB()
             ------------------------------------------------------------
 
             hints = {
-                enableModifier = true, --global.tooltips.enableMod
+                enableModifier = false, --global.tooltips.enableMod
                 modifier = "Alt", --global.tooltips.mod
 
                 bars = true, --global.tooltips.barTips

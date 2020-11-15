@@ -366,7 +366,7 @@ function addon:Config_LoadBarTab(tabContent)
 
         hidden:SetCallback("OnValueChanged", function(self)
             addon:SetBarDBInfo("hidden", self:GetValue(), Config:GetSelectedBar())
-            bar:SetHidden(barDB.hidden)
+            bar:SetHidden()
         end)
 
         ------------------------------------------------------------
@@ -454,7 +454,7 @@ function addon:Config_LoadBarTab(tabContent)
 
         movable:SetCallback("OnValueChanged", function(self)
             addon:SetBarDBInfo("movable", self:GetValue(), Config:GetSelectedBar())
-            bar:SetMovable(barDB.movable)
+            bar:SetMovable()
         end)
 
         --*------------------------------------------------------------------------
@@ -519,7 +519,7 @@ function addon:Config_LoadBarTab(tabContent)
 
         scale:SetCallback("OnValueChanged", function(self, ...)
             addon:SetBarDBInfo("scale", self:GetValue(), Config:GetSelectedBar())
-            bar:SetScale(barDB.scale)
+            bar:SetScale()
         end)
 
         ------------------------------------------------------------
@@ -533,7 +533,7 @@ function addon:Config_LoadBarTab(tabContent)
 
         alpha:SetCallback("OnValueChanged", function(self)
             addon:SetBarDBInfo("alpha", self:GetValue(), Config:GetSelectedBar())
-            bar:SetAlpha(barDB.alpha)
+            bar:SetAlpha()
         end)
 
         --*------------------------------------------------------------------------
@@ -688,7 +688,7 @@ function addon:Config_LoadButtonTab(tabContent)
 
         size:SetCallback("OnValueChanged", function(self)
             addon:SetBarDBInfo("button.size", self:GetValue(), Config:GetSelectedBar())
-            bar:SetSize(barDB.button.size)
+            bar:SetSize()
         end)
 
         ------------------------------------------------------------
@@ -702,7 +702,7 @@ function addon:Config_LoadButtonTab(tabContent)
 
         padding:SetCallback("OnValueChanged", function(self)
             addon:SetBarDBInfo("button.padding", self:GetValue(), Config:GetSelectedBar())
-            bar:SetSize(barDB.button.size)
+            bar:SetSize()
             bar:AnchorButtons()
         end)
 

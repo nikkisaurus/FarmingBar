@@ -81,7 +81,12 @@ L.ButtonHints = function(command, commandInfo)
     return commands[command] or ""
 end
 
+L["Progress"] = true
 L["Show Hints"] = true
+
+L.ToggleMovable = function(barTitle, movable)
+    return format("%s %s.", barTitle, movable and "unlocked" or "locked")
+end
 
 --*------------------------------------------------------------------------
 --*Strings-----------------------------------------------------------------

@@ -18,7 +18,12 @@ local postClickMethods = {
     end,
 
     toggleMovable = function(self, ...)
-        print("toggle movable")
+        local widget = self.obj
+        local barID = widget:GetBarID()
+
+        addon:SetBarDBInfo("movable", "_TOGGLE_", barID)
+        widget:SetMovable()
+        FarmingBar:Print(L.ToggleMovable(addon:GetBarTitle(barID), widget:GetUserData("barDB").movable))
     end,
 
     openSettings = function(self, ...)

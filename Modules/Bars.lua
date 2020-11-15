@@ -168,6 +168,14 @@ function addon:SetBarDBInfo(key, value, barID)
         end
     end
 
+    if value == "_TOGGLE_" then
+        if path[keys[#keys]] then
+            value = false
+        else
+            value = true
+        end
+    end
+
     path[keys[#keys]] = value
 
     ------------------------------------------------------------
