@@ -32,14 +32,14 @@ end
 
 ------------------------------------------------------------
 
-local function frame_OnDragStart(self)
+local function anchor_OnDragStart(self)
     if not self.obj.frame:IsMovable() then return end
     self.obj.frame:StartMoving()
 end
 
 ------------------------------------------------------------
 
-local function frame_OnDragStop(self)
+local function anchor_OnDragStop(self)
     if not self.obj.frame:IsMovable() then return end
     local widget = self.obj
     local barDB = widget:GetUserData("barDB")
@@ -50,38 +50,8 @@ end
 
 ------------------------------------------------------------
 
-local function frame_OnEvent(self, event)
-    if event == "PLAYER_REGEN_DISABLED" then
-        self.obj.addButton:Disable()
-        self.obj.removeButton:Disable()
-    elseif event == "PLAYER_REGEN_ENABLED" then
-        self.obj:SetQuickButtonStates()
-    end
-end
-
-------------------------------------------------------------
-
 local function anchor_PostClick(self, buttonClicked, ...)
-    -- local widget = self.obj
-    -- if widget:GetUserData("isDragging") then return end
-    -- local cursorType, cursorID = GetCursorInfo()
-
-    -- if cursorType == "item" and not IsModifierKeyDown() and buttonClicked == "LeftButton" then
-    --     local objectiveTitle = addon:CreateObjectiveFromCursor()
-    --     widget:SetObjectiveID(objectiveTitle)
-    --     ClearCursor()
-    --     return
-    -- elseif addon.DragFrame:IsVisible() then
-    --     if addon.moveButton then
-    --         widget:SwapButtons(addon.moveButton)
-    --     else
-    --         widget:SetObjectiveID(addon.DragFrame:GetObjective())
-    --     end
-    --     addon.DragFrame:Clear()
-    --     return
-    -- end
-
-    -- ClearCursor()
+    ClearCursor()
 
     ------------------------------------------------------------
 
@@ -101,6 +71,24 @@ local function anchor_PostClick(self, buttonClicked, ...)
     end
 end
 
+------------------------------------------------------------
+
+local function frame_OnEvent(self, event)
+    if event == "PLAYER_REGEN_DISABLED" then
+        self.obj.addButton:Disable()
+        self.obj.removeButton:Disable()
+    elseif event == "PLAYER_REGEN_ENABLED" then
+        self.obj:SetQuickButtonStates()
+    end
+end
+
+------------------------------------------------------------
+
+local function frame_OnLeave(self)
+    GameTooltip:ClearLines()
+    GameTooltip:Hide()
+end
+
 
 ------------------------------------------------------------
 
@@ -118,6 +106,7 @@ end
 
 local methods = {
     OnAcquire = function(self)
+        self:SetUserData("tooltip", "GetBarTooltip")
         self:SetUserData("buttons", {})
     end,
 
@@ -314,6 +303,7 @@ local function Constructor()
     frame:RegisterEvent("PLAYER_REGEN_DISABLED")
 
     frame:SetScript("OnEvent", frame_OnEvent)
+    frame:SetScript("OnLeave", frame_OnLeave)
 
     local backdrop = CreateFrame("Frame", nil, frame, BackdropTemplateMixin and "BackdropTemplate")
     backdrop:EnableMouse(true)
@@ -326,8 +316,8 @@ local function Constructor()
     anchor:SetMovable(true)
     anchor:RegisterForDrag("LeftButton")
 
-    anchor:SetScript("OnDragStart", frame_OnDragStart)
-    anchor:SetScript("OnDragStop", frame_OnDragStop)
+    anchor:SetScript("OnDragStart", anchor_OnDragStart)
+    anchor:SetScript("OnDragStop", anchor_OnDragStop)
     anchor:SetScript("PostClick", anchor_PostClick)
 
     local FloatingBG = anchor:CreateTexture("$parentFloatingBG", "BACKGROUND")
