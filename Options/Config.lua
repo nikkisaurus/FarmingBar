@@ -521,7 +521,13 @@ function addon:Config_LoadBarTab(tabContent)
         fontFace:SetLabel(L["Font Face"])
         fontFace:SetList(AceGUIWidgetLSMlists.font)
         fontFace:SetValue(barDB.font.face or FarmingBar.db.profile.style.font.face)
+        fontFace:SetDisabled(true) -- ! temporary until implemented
         fontGroup:AddChild(fontFace)
+
+        fontFace:SetCallback("OnValueChanged", function(self, _, selected)
+            addon:SetBarDBInfo("font.face", selected, Config:GetSelectedBar())
+            self:SetValue(selected)
+        end)
 
         ------------------------------------------------------------
 
@@ -530,7 +536,13 @@ function addon:Config_LoadBarTab(tabContent)
         fontOutline:SetLabel(L["Font Outline"])
         fontOutline:SetList({MONOCHROME = L["Monochrome"], OUTLINE = L["Outline"], THICKOUTLINE = L["Thickoutline"], NONE = L["None"]}, {"MONOCHROME", "OUTLINE", "THICKOUTLINE", "NONE"})
         fontOutline:SetValue(barDB.font.outline or FarmingBar.db.profile.style.font.outline)
+        fontOutline:SetDisabled(true) -- ! temporary until implemented
         fontGroup:AddChild(fontOutline)
+
+        fontOutline:SetCallback("OnValueChanged", function(self, _, selected)
+            addon:SetBarDBInfo("font.outline", selected, Config:GetSelectedBar())
+        end)
+
 
         ------------------------------------------------------------
 
@@ -538,7 +550,12 @@ function addon:Config_LoadBarTab(tabContent)
         fontSize:SetLabel(L["Font Size"])
         fontSize:SetSliderValues(self.minFontSize, self.maxFontSize, 1)
         fontSize:SetValue(barDB.font.size or FarmingBar.db.profile.style.font.size)
+        fontSize:SetDisabled(true) -- ! temporary until implemented
         fontGroup:AddChild(fontSize)
+
+        fontSize:SetCallback("OnValueChanged", function(self)
+            addon:SetBarDBInfo("font.size", self:GetValue(), Config:GetSelectedBar())
+        end)
     end
 
     tabContent:DoLayout()
