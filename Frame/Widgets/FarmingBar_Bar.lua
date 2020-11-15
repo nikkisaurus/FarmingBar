@@ -3,7 +3,7 @@ local FarmingBar = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
 local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 
-local fmod = math.fmod
+local abs, fmod = math.abs, math.fmod
 local CreateFrame, UIParent = CreateFrame, UIParent
 
 --*------------------------------------------------------------------------
@@ -179,6 +179,7 @@ local methods = {
     ------------------------------------------------------------
 
     AddButton = function(self, buttonID)
+        local barDB = self:GetUserData("barDB")
         local buttons = self:GetUserData("buttons")
         local button = AceGUI:Create("FarmingBar_Button")
         tinsert(buttons, button)
@@ -186,7 +187,37 @@ local methods = {
         button:SetUserData("barID", self:GetUserData("barID"))
         button:SetUserData("buttonID", buttonID)
 
-        self:DoLayout()
+        ------------------------------------------------------------
+
+        local anchor, relativeAnchor, xOffset, yOffset = GetAnchorPoints(barDB.grow[1])
+        button:ClearAllPoints()
+
+        if #buttons == 1 then
+            button:SetPoint(anchor, self.frame, relativeAnchor, xOffset * barDB.button.padding, yOffset * barDB.button.padding)
+        else
+            if fmod(#buttons, barDB.buttonWrap) == 1 or barDB.buttonWrap == 1 then
+                local anchor, relativeAnchor, xOffset, yOffset = GetRelativeAnchorPoints(barDB.grow)
+                button:SetPoint(anchor, buttons[#buttons - barDB.buttonWrap].frame, relativeAnchor, xOffset * barDB.button.padding, yOffset * barDB.button.padding)
+            else
+                button:SetPoint(anchor, buttons[#buttons - 1].frame, relativeAnchor, xOffset * barDB.button.padding, yOffset * barDB.button.padding)
+            end
+        end
+
+        ------------------------------------------------------------
+
+        -- self:AnchorButtons()
+        button.frame:SetAlpha(barDB.alpha)
+        if barDB.hidden then
+            button.frame:Hide()
+        else
+            button.frame:Show()
+        end
+
+        ------------------------------------------------------------
+
+        button.frame:SetScale(barDB.scale)
+        button:SetSize(self.frame:GetWidth(), self.frame:GetHeight())
+        self:SetQuickButtonStates()
     end,
 
     ------------------------------------------------------------
@@ -261,7 +292,7 @@ local methods = {
         buttons[#buttons]:Release()
         tremove(buttons)
 
-        self:DoLayout()
+        self:SetQuickButtonStates()
     end,
 
     ------------------------------------------------------------
@@ -375,6 +406,23 @@ local methods = {
         local buttons = self:GetUserData("buttons")
         for _, button in pairs(buttons) do
             button:SetSize(self.frame:GetWidth(), self.frame:GetHeight())
+        end
+    end,
+
+    ------------------------------------------------------------
+
+    UpdateVisibleButtons = function(self)
+        local buttons = self:GetUserData("buttons")
+        local difference = self:GetUserData("barDB").numVisibleButtons - #buttons
+
+        if difference > 0 then
+            for i = 1, difference do
+                self:AddButton()
+            end
+        elseif difference < 0 then
+            for i = 1, abs(difference) do
+                self:RemoveButton()
+            end
         end
     end,
 }

@@ -652,7 +652,7 @@ function addon:Config_LoadButtonTab(tabContent)
 
         numVisibleButtons:SetCallback("OnValueChanged", function(self)
             addon:SetBarDBInfo("numVisibleButtons", self:GetValue(), Config:GetSelectedBar()) --! needs fixed to update buttons as added/removed
-            bar:AnchorButtons()
+            bar:UpdateVisibleButtons()
         end)
 
         ------------------------------------------------------------

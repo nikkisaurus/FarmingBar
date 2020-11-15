@@ -183,8 +183,8 @@ function addon:Initialize_DB()
                 barDB = false,
                 ObjectiveBuilder = false,
                 ObjectiveBuilderTrackers = false,
-                Config = true,
-                ConfigButtons = true,
+                Config = false,
+                ConfigButtons = false,
             },
 
             ------------------------------------------------------------
