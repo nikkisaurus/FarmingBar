@@ -13,8 +13,20 @@ local Version = 1
 --*------------------------------------------------------------------------
 
 local postClickMethods = {
-    openSettings = function(self, ...)
+    configBar = function(self, ...)
         addon.Config:Load(self.obj:GetUserData("barID"))
+    end,
+
+    toggleMovable = function(self, ...)
+        print("toggle movable")
+    end,
+
+    openSettings = function(self, ...)
+        print("Open settings")
+    end,
+
+    openHelp = function(self, ...)
+        print("Open help")
     end,
 }
 
@@ -84,14 +96,6 @@ end
 
 ------------------------------------------------------------
 
-local function frame_OnLeave(self)
-    GameTooltip:ClearLines()
-    GameTooltip:Hide()
-end
-
-
-------------------------------------------------------------
-
 local function removeButton_OnClick(self)
     local widget = self.obj
     local barDB = widget:GetUserData("barDB")
@@ -139,6 +143,12 @@ local methods = {
 
     ApplySkin = function(self)
         addon:SkinBar(self, FarmingBar.db.profile.style.skin)
+    end,
+
+    ------------------------------------------------------------
+
+    GetBarID = function(self)
+        return self:GetUserData("barID")
     end,
 
     ------------------------------------------------------------
@@ -303,7 +313,6 @@ local function Constructor()
     frame:RegisterEvent("PLAYER_REGEN_DISABLED")
 
     frame:SetScript("OnEvent", frame_OnEvent)
-    frame:SetScript("OnLeave", frame_OnLeave)
 
     local backdrop = CreateFrame("Frame", nil, frame, BackdropTemplateMixin and "BackdropTemplate")
     backdrop:EnableMouse(true)

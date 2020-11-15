@@ -10,27 +10,43 @@ local GetItemCount, GetCurrencyInfo = GetItemCount, C_CurrencyInfo and C_Currenc
 
 --*------------------------------------------------------------------------
 
-local commandSort = {
+local barCommandSort = {
+    moveBar = 1,
+    configBar = 2,
+    toggleMovable = 3,
+    openSettings = 4,
+    openHelp = 5,
+}
+
+local buttonCommandSort = {
     useItem = 1,
     clearObjective = 2,
     moveObjective = 3,
-    includeBank = 4,
-    showObjectiveEditBox = 5,
-    showObjectiveBuilder = 6,
+    dragObjective = 4,
+    includeBank = 5,
+    showObjectiveEditBox = 6,
+    showObjectiveBuilder = 7,
 }
 
 --*------------------------------------------------------------------------
 
 local tooltipScanner = CreateFrame("Frame")
+
+local showTooltip
 tooltipScanner:SetScript("OnUpdate", function(self)
     local frame = GetMouseFocus()
     local widget = frame and frame.obj
     local tooltip = widget and widget.GetUserData and widget:GetUserData("tooltip")
     if tooltip and addon[tooltip] then
+        showTooltip = true
         GameTooltip:ClearLines()
         GameTooltip:SetOwner(frame, "ANCHOR_BOTTOMRIGHT", 0, 0)
         addon[tooltip](addon, widget, GameTooltip)
         GameTooltip:Show()
+    elseif showTooltip then
+        showTooltip = false
+        GameTooltip:ClearLines()
+        GameTooltip:Hide()
     end
 end)
 
@@ -47,7 +63,30 @@ end
 --*------------------------------------------------------------------------
 
 function addon:GetBarTooltip(widget, tooltip)
+    local barDB = widget:GetUserData("barDB")
 
+    tooltip:AddLine(self:GetBarTitle(widget:GetBarID()), 0, 1, 0, 1)
+
+    GameTooltip_AddBlankLinesToTooltip(tooltip, 1)
+
+    tooltip:AddDoubleLine(L["Growth Direction"], L[strsub(barDB.grow[1], 1, 1)..strlower(strsub(barDB.grow[1], 2))], unpack(self.tooltip_keyvalue))
+    tooltip:AddDoubleLine(L["Growth Type"], L[strsub(barDB.grow[2], 1, 1)..strlower(strsub(barDB.grow[2], 2))], unpack(self.tooltip_keyvalue))
+    tooltip:AddDoubleLine(L["Number of Buttons"], barDB.numVisibleButtons.."/"..self.maxButtons, unpack(self.tooltip_keyvalue))
+    tooltip:AddDoubleLine(L["Alpha"], self.round(barDB.alpha * 100, 2).."%", unpack(self.tooltip_keyvalue))
+    tooltip:AddDoubleLine(L["Scale"], self.round(barDB.scale * 100, 2).."%", unpack(self.tooltip_keyvalue))
+    tooltip:AddDoubleLine(L["Movable"], barDB.movable and L["TRUE"] or L["FALSE"], unpack(self.tooltip_keyvalue))
+
+    if FarmingBar.db.global.hints.buttons then
+        GameTooltip_AddBlankLinesToTooltip(GameTooltip, 1)
+        if self:IsTooltipMod() then
+            GameTooltip:AddLine(format("%s:", L["Hints"]))
+            for k, v in self.pairs(FarmingBar.db.global.keybinds.bar, function(a, b) return barCommandSort[a] < barCommandSort[b] end) do
+                GameTooltip:AddLine(L.BarHints(k, v), unpack(self.tooltip_description))
+            end
+        else
+            tooltip:AddDoubleLine(L["Show Hints"], FarmingBar.db.global.hints.modifier, unpack(self.tooltip_keyvalue))
+        end
+    end
 end
 
 ------------------------------------------------------------
@@ -127,11 +166,17 @@ function addon:GetButtonTooltip(widget, tooltip)
 
     tooltip:AddDoubleLine("Button ID", widget:GetButtonID(), unpack(self.tooltip_keyvalue))
 
-    if FarmingBar.db.global.hints.buttons and self:IsTooltipMod() then
+    if FarmingBar.db.global.hints.buttons then
         GameTooltip_AddBlankLinesToTooltip(GameTooltip, 1)
-        GameTooltip:AddLine(format("%s:", L["Hints"]))
-        for k, v in self.pairs(FarmingBar.db.global.keybinds.button, function(a, b) return commandSort[a] < commandSort[b] end) do
-            GameTooltip:AddLine(L.ButtonHints(k, v), unpack(self.tooltip_description))
+        if self:IsTooltipMod() then
+            GameTooltip:AddLine(format("%s:", L["Hints"]))
+            for k, v in self.pairs(FarmingBar.db.global.keybinds.button, function(a, b) return buttonCommandSort[a] < buttonCommandSort[b] end) do
+                if objectiveInfo or v.showOnEmpty then
+                    GameTooltip:AddLine(L.ButtonHints(k, v), unpack(self.tooltip_description))
+                end
+            end
+        else
+            tooltip:AddDoubleLine(L["Show Hints"], FarmingBar.db.global.hints.modifier, unpack(self.tooltip_keyvalue))
         end
     end
 end
@@ -139,18 +184,26 @@ end
 ------------------------------------------------------------
 
 function addon:GetExcludeListLabelTooltip(widget, tooltip)
-    if FarmingBar.db.global.hints.ObjectiveBuilder and self:IsTooltipMod() then
-        tooltip:AddLine(format("%s:", L["Hint"]))
-        tooltip:AddLine(L.RemoveExcludeHint, unpack(self.tooltip_description))
+    if FarmingBar.db.global.hints.ObjectiveBuilder then
+        if self:IsTooltipMod() then
+            tooltip:AddLine(format("%s:", L["Hint"]))
+            tooltip:AddLine(L.RemoveExcludeHint, unpack(self.tooltip_description))
+        else
+            tooltip:AddDoubleLine(L["Show Hints"], FarmingBar.db.global.hints.modifier, unpack(self.tooltip_keyvalue))
+        end
     end
 end
 
 ------------------------------------------------------------
 
 function addon:GetFilterAutoItemsTooltip(widget, tooltip)
-    if FarmingBar.db.global.hints.ObjectiveBuilder and self:IsTooltipMod() then
-        GameTooltip:AddLine(format("%s:", L["Hint"]))
-        GameTooltip:AddLine(L.FilterAutoItemsHint, unpack(self.tooltip_description))
+    if FarmingBar.db.global.hints.ObjectiveBuilder then
+        if self:IsTooltipMod() then
+            GameTooltip:AddLine(format("%s:", L["Hint"]))
+            GameTooltip:AddLine(L.FilterAutoItemsHint, unpack(self.tooltip_description))
+        else
+            tooltip:AddDoubleLine(L["Show Hints"], FarmingBar.db.global.hints.modifier, unpack(self.tooltip_keyvalue))
+        end
     end
 end
 
@@ -198,19 +251,27 @@ function addon:GetObjectiveButtonTooltip(widget, tooltip)
 
     ------------------------------------------------------------
 
-    if FarmingBar.db.global.hints.ObjectiveBuilder and self:IsTooltipMod()  then
+    if FarmingBar.db.global.hints.ObjectiveBuilder then
         GameTooltip_AddBlankLinesToTooltip(tooltip, 1)
-        tooltip:AddLine(format("%s:", L["Hint"]))
-        tooltip:AddLine(L.ObjectiveContextMenuHint, unpack(self.tooltip_description))
+        if self:IsTooltipMod() then
+            tooltip:AddLine(format("%s:", L["Hint"]))
+            tooltip:AddLine(L.ObjectiveContextMenuHint, unpack(self.tooltip_description))
+        else
+            tooltip:AddDoubleLine(L["Show Hints"], FarmingBar.db.global.hints.modifier, unpack(self.tooltip_keyvalue))
+        end
     end
 end
 
 ------------------------------------------------------------
 
 function addon:GetNewObjectiveButtonTooltip(widget, tooltip)
-    if FarmingBar.db.global.hints.ObjectiveBuilder and self:IsTooltipMod() then
-        tooltip:AddLine(format("%s:", L["Hint"]))
-        tooltip:AddLine(L.NewObjectiveHint, unpack(self.tooltip_description))
+    if FarmingBar.db.global.hints.ObjectiveBuilder then
+        if self:IsTooltipMod() then
+            tooltip:AddLine(format("%s:", L["Hint"]))
+            tooltip:AddLine(L.NewObjectiveHint, unpack(self.tooltip_description))
+        else
+            tooltip:AddDoubleLine(L["Show Hints"], FarmingBar.db.global.hints.modifier, unpack(self.tooltip_keyvalue))
+        end
     end
 end
 
@@ -247,9 +308,13 @@ function addon:GetTrackerButtonTooltip(widget, tooltip)
 
     ------------------------------------------------------------
 
-    if FarmingBar.db.global.hints.ObjectiveBuilder and self:IsTooltipMod() then
+    if FarmingBar.db.global.hints.ObjectiveBuilder then
         GameTooltip_AddBlankLinesToTooltip(tooltip, 1)
-        tooltip:AddLine(format("%s:", L["Hint"]))
-        tooltip:AddLine(L.TrackerContextMenuHint, unpack(self.tooltip_description))
+        if self:IsTooltipMod() then
+            tooltip:AddLine(format("%s:", L["Hint"]))
+            tooltip:AddLine(L.TrackerContextMenuHint, unpack(self.tooltip_description))
+        else
+            tooltip:AddDoubleLine(L["Show Hints"], FarmingBar.db.global.hints.modifier, unpack(self.tooltip_keyvalue))
+        end
     end
 end

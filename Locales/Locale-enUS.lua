@@ -49,14 +49,29 @@ local function GetCommandString(commandInfo)
     local mods = strupper(strsub(commandInfo.modifier, 1, 1))..strlower(strsub(commandInfo.modifier, 2))
     local button = gsub(commandInfo.button, "Button", "")
     button = mods == "" and button or format("+%s", strlower(button))
+    local clickType = commandInfo.type and "drag" or "click"
 
-    return utils.ColorFontString(format("%s%s-click", mods, button), "SEXTEAL")
+    return utils.ColorFontString(format("%s%s-%s", mods, button, clickType), "SEXTEAL")
+end
+
+L.BarHints = function(command, commandInfo)
+    commandInfo = commandInfo or {button = "", modifier = ""}
+    local commands = {
+        moveBar =  format("%s to move this bar.", GetCommandString(commandInfo)),
+        configBar = format("%s to configure this bar.", GetCommandString(commandInfo)),
+        toggleMovable = format("%s to lock or unlock this bar.", GetCommandString(commandInfo)),
+        openHelp = format("%s to open the help documentation.", GetCommandString(commandInfo)),
+        openSettings = format("%s to configure addon settings.", GetCommandString(commandInfo)),
+    }
+
+    return commands[command] or ""
 end
 
 L.ButtonHints = function(command, commandInfo)
     local commands = {
         useItem = format("%s to use the display item or run the display macrotext.", GetCommandString(commandInfo)),
         moveObjective = format("%s to move this objective.", GetCommandString(commandInfo)),
+        dragObjective =  format("%s to move this objective.", GetCommandString(commandInfo)),
         clearObjective = format("%s to clear this objective.", GetCommandString(commandInfo)),
         includeBank = format("%s to toggle bank inclusion.", GetCommandString(commandInfo)),
         showObjectiveBuilder = format("%s to show the Objective Builder.", GetCommandString(commandInfo)),
@@ -65,6 +80,8 @@ L.ButtonHints = function(command, commandInfo)
 
     return commands[command] or ""
 end
+
+L["Show Hints"] = true
 
 --*------------------------------------------------------------------------
 --*Strings-----------------------------------------------------------------

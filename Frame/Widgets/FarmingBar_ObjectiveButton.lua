@@ -142,13 +142,6 @@ local function frame_OnDragStart(self)
     addon.DragFrame:Load(self.obj:GetUserData("objectiveTitle"))
 end
 
-------------------------------------------------------------
-
-local function frame_OnLeave(self)
-    GameTooltip:ClearLines()
-    GameTooltip:Hide()
-end
-
 --*------------------------------------------------------------------------
 
 local methods = {
@@ -286,7 +279,6 @@ local function Constructor()
     frame:RegisterForClicks("LeftButtonUp", "RightButtonUp")
     frame:SetScript("OnClick", frame_OnClick)
     frame:SetScript("OnDragStart", frame_OnDragStart)
-	frame:SetScript("OnLeave", frame_OnLeave)
 
     ------------------------------------------------------------
 

@@ -93,7 +93,7 @@ local function frame_OnDragStart(self, buttonClicked, ...)
     local widget = self.obj
     if not widget:GetObjectiveTitle() then return end
 
-    local keybinds = FarmingBar.db.global.keybinds.dragButton
+    local keybinds = FarmingBar.db.global.keybinds.button.dragObjective
     if buttonClicked == keybinds.button then
         local mod = addon:GetModifiers()
 
@@ -214,13 +214,6 @@ local function frame_OnEvent(self, event, ...)
             widget.Cooldown:Hide()
         end
     end
-end
-
-------------------------------------------------------------
-
-local function frame_OnLeave(self)
-    GameTooltip:ClearLines()
-    GameTooltip:Hide()
 end
 
 ------------------------------------------------------------
@@ -659,7 +652,6 @@ local function Constructor()
 	frame:SetScript("OnDragStart", frame_OnDragStart)
 	frame:SetScript("OnDragStop", frame_OnDragStop)
 	frame:SetScript("OnEvent", frame_OnEvent)
-	frame:SetScript("OnLeave", frame_OnLeave)
 	frame:SetScript("OnReceiveDrag", frame_OnReceiveDrag)
     frame:SetScript("PostClick", frame_PostClick)
 

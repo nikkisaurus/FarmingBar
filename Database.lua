@@ -99,14 +99,30 @@ function addon:Initialize_DB()
 
             keybinds = {
                 bar = {
-                    -- openHelp = {
-                    --     button = "",
-                    --     modifier = "",
-                    -- },
+                    moveBar = {
+                        type = "drag",
+                        button = "LeftButton",
+                        modifier = "",
+                    },
 
-                    openSettings = {
+                    configBar = {
                         button = "RightButton",
                         modifier = "shift",
+                    },
+
+                    toggleMovable = {
+                        button = "LeftButton",
+                        modifier = "shift",
+                    },
+
+                    openSettings = {
+                        button = "LeftButton",
+                        modifier = "ctrl",
+                    },
+
+                    openHelp = {
+                        button = "RightButton",
+                        modifier = "",
                     },
                 },
 
@@ -126,7 +142,14 @@ function addon:Initialize_DB()
                         modifier = "",
                     },
 
+                    dragObjective = {
+                        type = "drag",
+                        button = "LeftButton",
+                        modifier = "shift",
+                    },
+
                     showObjectiveBuilder = {
+                        showOnEmpty = true,
                         button = "RightButton",
                         modifier = "ctrl",
                     },
@@ -140,11 +163,6 @@ function addon:Initialize_DB()
                         button = "RightButton",
                         modifier = "",
                     },
-                },
-
-                dragButton = {
-                    button = "LeftButton",
-                    modifier = "shift",
                 },
             },
 
@@ -168,7 +186,7 @@ function addon:Initialize_DB()
             ------------------------------------------------------------
 
             hints = {
-                enableModifier = false, --global.tooltips.enableMod
+                enableModifier = true, --global.tooltips.enableMod
                 modifier = "Alt", --global.tooltips.mod
 
                 bars = true, --global.tooltips.barTips

@@ -68,13 +68,6 @@ local function frame_OnClick(self, buttonClicked, ...)
     widget:Fire("OnClick", buttonClicked, ...)
 end
 
-------------------------------------------------------------
-
-local function frame_OnLeave(self)
-    GameTooltip:ClearLines()
-    GameTooltip:Hide()
-end
-
 --*------------------------------------------------------------------------
 
 local methods = {
@@ -195,7 +188,6 @@ local function Constructor()
 	frame:Hide()
     frame:RegisterForClicks("LeftButtonUp", "RightButtonUp")
     frame:SetScript("OnClick", frame_OnClick)
-	frame:SetScript("OnLeave", frame_OnLeave)
 
     ------------------------------------------------------------
 
