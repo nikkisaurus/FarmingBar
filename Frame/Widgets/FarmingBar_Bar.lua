@@ -226,9 +226,9 @@ local methods = {
         self:SetAlpha(barDB.alpha)
         self:SetHidden(barDB.hidden)
         self:SetMovable(barDB.movable)
-        self:SetPoint(unpack(barDB.point))
         self:SetScale(barDB.scale)
         self:SetSize(barDB.button.size)
+        self:SetPoint(unpack(barDB.point))
         self:SetQuickButtonStates()
         self:ApplySkin()
         self:LoadObjectives()
@@ -263,6 +263,11 @@ local methods = {
 
     SetAlpha = function(self, alpha)
         self.frame:SetAlpha(alpha)
+
+        local buttons = self:GetUserData("buttons")
+        for _, button in pairs(buttons) do
+            button.frame:SetAlpha(alpha)
+        end
     end,
 
     ------------------------------------------------------------
@@ -338,6 +343,11 @@ local methods = {
 
     SetScale = function(self, scale)
         self.frame:SetScale(scale)
+
+        local buttons = self:GetUserData("buttons")
+        for _, button in pairs(buttons) do
+            button.frame:SetScale(scale)
+        end
     end,
 
     ------------------------------------------------------------

@@ -206,7 +206,7 @@ local methods = {
             self:SetUserData("mainTabGroup", mainTabGroup)
 
             mainTabGroup:SetCallback("OnGroupSelected", mainTabGroup_OnGroupSelected)
-            mainTabGroup:SelectTab(self:GetSelectedTab(barID) or "barTab")
+            mainTabGroup:SelectTab(self:GetSelectedTab(barID) or (FarmingBar.db.global.debug.ConfigButtons and "buttonTab" or "barTab"))
         end
     end,
 }
@@ -460,6 +460,83 @@ function addon:Config_LoadBarTab(tabContent)
 
         --*------------------------------------------------------------------------
 
+        local styleGroup = AceGUI:Create("InlineGroup")
+        styleGroup:SetFullWidth(true)
+        styleGroup:SetTitle(L["Style"])
+        styleGroup:SetLayout("Flow")
+        tabContent:AddChild(styleGroup)
+
+        ------------------------------------------------------------
+
+        local fontFace = AceGUI:Create("LSM30_Font")
+        fontFace:SetRelativeWidth(1/2)
+        fontFace:SetLabel(L["Font Face"])
+        fontFace:SetList(AceGUIWidgetLSMlists.font)
+        fontFace:SetValue(barDB.font.face or FarmingBar.db.profile.style.font.face)
+        fontFace:SetDisabled(true) -- ! temporary until implemented
+        styleGroup:AddChild(fontFace)
+
+        fontFace:SetCallback("OnValueChanged", function(self, _, selected)
+            addon:SetBarDBInfo("font.face", selected, Config:GetSelectedBar())
+            self:SetValue(selected)
+        end)
+
+        ------------------------------------------------------------
+
+        local fontOutline = AceGUI:Create("Dropdown")
+        fontOutline:SetRelativeWidth(1/2)
+        fontOutline:SetLabel(L["Font Outline"])
+        fontOutline:SetList({MONOCHROME = L["Monochrome"], OUTLINE = L["Outline"], THICKOUTLINE = L["Thickoutline"], NONE = L["None"]}, {"MONOCHROME", "OUTLINE", "THICKOUTLINE", "NONE"})
+        fontOutline:SetValue(barDB.font.outline or FarmingBar.db.profile.style.font.outline)
+        fontOutline:SetDisabled(true) -- ! temporary until implemented
+        styleGroup:AddChild(fontOutline)
+
+        fontOutline:SetCallback("OnValueChanged", function(self, _, selected)
+            addon:SetBarDBInfo("font.outline", selected, Config:GetSelectedBar())
+        end)
+
+        ------------------------------------------------------------
+
+        local fontSize = AceGUI:Create("Slider")
+        fontSize:SetRelativeWidth(1/3)
+        fontSize:SetLabel(L["Font Size"])
+        fontSize:SetSliderValues(self.minFontSize, self.maxFontSize, 1)
+        fontSize:SetValue(barDB.font.size or FarmingBar.db.profile.style.font.size)
+        fontSize:SetDisabled(true) -- ! temporary until implemented
+        styleGroup:AddChild(fontSize)
+
+        fontSize:SetCallback("OnValueChanged", function(self)
+            addon:SetBarDBInfo("font.size", self:GetValue(), Config:GetSelectedBar())
+        end)
+
+        ------------------------------------------------------------
+
+        local scale = AceGUI:Create("Slider")
+        scale:SetRelativeWidth(1/3)
+        scale:SetLabel(L["Scale"])
+        scale:SetSliderValues(self.minScale, self.maxScale)
+        scale:SetValue(barDB.scale)
+        styleGroup:AddChild(scale)
+
+        scale:SetCallback("OnValueChanged", function(self, ...)
+            addon:SetBarDBInfo("scale", self:GetValue(), Config:GetSelectedBar())
+        end)
+
+        ------------------------------------------------------------
+
+        local alpha = AceGUI:Create("Slider")
+        alpha:SetRelativeWidth(1/3)
+        alpha:SetLabel(L["Alpha"])
+        alpha:SetSliderValues(0, 1)
+        alpha:SetValue(barDB.alpha)
+        styleGroup:AddChild(alpha)
+
+        alpha:SetCallback("OnValueChanged", function(self)
+            addon:SetBarDBInfo("alpha", self:GetValue(), Config:GetSelectedBar())
+        end)
+
+        --*------------------------------------------------------------------------
+
         local templateGroup = AceGUI:Create("InlineGroup")
         templateGroup:SetFullWidth(true)
         templateGroup:SetTitle(L["Template"])
@@ -485,7 +562,7 @@ function addon:Config_LoadBarTab(tabContent)
         local loadTemplate = AceGUI:Create("Dropdown")
         loadTemplate:SetRelativeWidth(1/2)
         loadTemplate:SetLabel(L["Load Template"])
-        -- builtInTemplate:SetList({NORMAL = L["Normal"], REVERSE = L["Reverse"]}, {"NORMAL", "REVERSE"})
+        -- loadTemplate:SetList({}, {})
         loadTemplate:SetDisabled(true) -- ! temporary until implemented
         templateGroup:AddChild(loadTemplate)
         Config:SetUserData("loadTemplate", loadTemplate)
@@ -498,63 +575,12 @@ function addon:Config_LoadBarTab(tabContent)
         local loadUserTemplate = AceGUI:Create("Dropdown")
         loadUserTemplate:SetRelativeWidth(1/2)
         loadUserTemplate:SetLabel(L["Load User Template"])
-        -- builtInTemplate:SetList({NORMAL = L["Normal"], REVERSE = L["Reverse"]}, {"NORMAL", "REVERSE"})
+        -- loadUserTemplate:SetList({}, {})
         loadUserTemplate:SetDisabled(true) -- ! temporary until implemented
         templateGroup:AddChild(loadUserTemplate)
         Config:SetUserData("loadUserTemplate", loadUserTemplate)
 
         loadUserTemplate:SetCallback("OnValueChanged", function(self, _, selected)
-        end)
-
-        --*------------------------------------------------------------------------
-
-        local fontGroup = AceGUI:Create("InlineGroup")
-        fontGroup:SetFullWidth(true)
-        fontGroup:SetTitle(L["Font"])
-        fontGroup:SetLayout("Flow")
-        tabContent:AddChild(fontGroup)
-
-        ------------------------------------------------------------
-
-        local fontFace = AceGUI:Create("LSM30_Font")
-        fontFace:SetRelativeWidth(1/2)
-        fontFace:SetLabel(L["Font Face"])
-        fontFace:SetList(AceGUIWidgetLSMlists.font)
-        fontFace:SetValue(barDB.font.face or FarmingBar.db.profile.style.font.face)
-        fontFace:SetDisabled(true) -- ! temporary until implemented
-        fontGroup:AddChild(fontFace)
-
-        fontFace:SetCallback("OnValueChanged", function(self, _, selected)
-            addon:SetBarDBInfo("font.face", selected, Config:GetSelectedBar())
-            self:SetValue(selected)
-        end)
-
-        ------------------------------------------------------------
-
-        local fontOutline = AceGUI:Create("Dropdown")
-        fontOutline:SetRelativeWidth(1/2)
-        fontOutline:SetLabel(L["Font Outline"])
-        fontOutline:SetList({MONOCHROME = L["Monochrome"], OUTLINE = L["Outline"], THICKOUTLINE = L["Thickoutline"], NONE = L["None"]}, {"MONOCHROME", "OUTLINE", "THICKOUTLINE", "NONE"})
-        fontOutline:SetValue(barDB.font.outline or FarmingBar.db.profile.style.font.outline)
-        fontOutline:SetDisabled(true) -- ! temporary until implemented
-        fontGroup:AddChild(fontOutline)
-
-        fontOutline:SetCallback("OnValueChanged", function(self, _, selected)
-            addon:SetBarDBInfo("font.outline", selected, Config:GetSelectedBar())
-        end)
-
-
-        ------------------------------------------------------------
-
-        local fontSize = AceGUI:Create("Slider")
-        fontSize:SetLabel(L["Font Size"])
-        fontSize:SetSliderValues(self.minFontSize, self.maxFontSize, 1)
-        fontSize:SetValue(barDB.font.size or FarmingBar.db.profile.style.font.size)
-        fontSize:SetDisabled(true) -- ! temporary until implemented
-        fontGroup:AddChild(fontSize)
-
-        fontSize:SetCallback("OnValueChanged", function(self)
-            addon:SetBarDBInfo("font.size", self:GetValue(), Config:GetSelectedBar())
         end)
     end
 
@@ -564,4 +590,239 @@ end
 ------------------------------------------------------------
 
 function addon:Config_LoadButtonTab(tabContent)
+    local barID = Config:GetSelectedBar()
+    local barDB = barID > 0 and FarmingBar.db.char.bars[barID]
+
+    if barID == 0 then
+    elseif barID then
+        local operationsGroup = AceGUI:Create("InlineGroup")
+        operationsGroup:SetFullWidth(true)
+        operationsGroup:SetTitle(L["Operations"])
+        operationsGroup:SetLayout("Flow")
+        tabContent:AddChild(operationsGroup)
+
+        ------------------------------------------------------------
+
+        local clearButtons = AceGUI:Create("Button")
+        clearButtons:SetRelativeWidth(1/3)
+        clearButtons:SetText(L["Clear Buttons"])
+        clearButtons:SetDisabled(true) -- ! temporary until implemented
+        operationsGroup:AddChild(clearButtons)
+
+        clearButtons:SetCallback("OnClick", function() print("Clear buttons") end)
+
+        ------------------------------------------------------------
+
+        local reindexButtons = AceGUI:Create("Button")
+        reindexButtons:SetRelativeWidth(1/3)
+        reindexButtons:SetText(L["Reindex Buttons"])
+        reindexButtons:SetDisabled(true) -- ! temporary until implemented
+        operationsGroup:AddChild(reindexButtons)
+
+        reindexButtons:SetCallback("OnClick", function() print("Reindex buttons") end)
+
+        ------------------------------------------------------------
+
+        local sizeBarToButtons = AceGUI:Create("Button")
+        sizeBarToButtons:SetRelativeWidth(1/3)
+        sizeBarToButtons:SetText(L["Size Bar to Buttons"])
+        sizeBarToButtons:SetDisabled(true) -- ! temporary until implemented
+        operationsGroup:AddChild(sizeBarToButtons)
+
+        sizeBarToButtons:SetCallback("OnClick", function() print("Size bar to buttons") end)
+
+        --*------------------------------------------------------------------------
+
+        local buttonGroup = AceGUI:Create("InlineGroup")
+        buttonGroup:SetFullWidth(true)
+        buttonGroup:SetTitle(L["Buttons"])
+        buttonGroup:SetLayout("Flow")
+        tabContent:AddChild(buttonGroup)
+
+        ------------------------------------------------------------
+
+        local numVisibleButtons = AceGUI:Create("Slider")
+        numVisibleButtons:SetRelativeWidth(1/2)
+        numVisibleButtons:SetLabel(L["Number of Buttons"])
+        numVisibleButtons:SetSliderValues(0, self.maxButtons, 1)
+        numVisibleButtons:SetValue(barDB.numVisibleButtons)
+        buttonGroup:AddChild(numVisibleButtons)
+
+        numVisibleButtons:SetCallback("OnValueChanged", function(self)
+            addon:SetBarDBInfo("numVisibleButtons", self:GetValue(), Config:GetSelectedBar()) --! needs fixed to update buttons as added/removed
+        end)
+
+        ------------------------------------------------------------
+
+        local buttonWrap = AceGUI:Create("Slider")
+        buttonWrap:SetRelativeWidth(1/2)
+        buttonWrap:SetLabel(L["Buttons Per Wrap"])
+        buttonWrap:SetSliderValues(1, self.maxButtons, 1)
+        buttonWrap:SetValue(barDB.buttonWrap)
+        buttonGroup:AddChild(buttonWrap)
+
+        buttonWrap:SetCallback("OnValueChanged", function(self)
+            addon:SetBarDBInfo("buttonWrap", self:GetValue(), Config:GetSelectedBar()) --! needs fixed for when 1 button per
+        end)
+
+        --*------------------------------------------------------------------------
+
+        local styleGroup = AceGUI:Create("InlineGroup")
+        styleGroup:SetFullWidth(true)
+        styleGroup:SetTitle(L["Style"])
+        styleGroup:SetLayout("Flow")
+        tabContent:AddChild(styleGroup)
+
+        ------------------------------------------------------------
+
+        local size = AceGUI:Create("Slider")
+        size:SetRelativeWidth(1/2)
+        size:SetLabel(L["Size"])
+        size:SetSliderValues(self.minButtonSize, self.maxButtonSize, 1)
+        size:SetValue(barDB.button.size)
+        styleGroup:AddChild(size)
+
+        size:SetCallback("OnValueChanged", function(self)
+            addon:SetBarDBInfo("button.size", self:GetValue(), Config:GetSelectedBar())
+        end)
+
+        ------------------------------------------------------------
+
+        local padding = AceGUI:Create("Slider")
+        padding:SetRelativeWidth(1/2)
+        padding:SetLabel(L["Padding"])
+        padding:SetSliderValues(self.minButtonPadding, self.maxButtonPadding, 1)
+        padding:SetValue(barDB.button.padding)
+        styleGroup:AddChild(padding)
+
+        padding:SetCallback("OnValueChanged", function(self)
+            addon:SetBarDBInfo("button.padding", self:GetValue(), Config:GetSelectedBar())
+        end)
+
+        ------------------------------------------------------------
+
+        local countText = AceGUI:Create("Heading")
+        countText:SetFullWidth(true)
+        countText:SetText(L["Count Text"])
+        styleGroup:AddChild(countText)
+
+        ------------------------------------------------------------
+
+        local countAnchor = AceGUI:Create("Dropdown")
+        countAnchor:SetFullWidth(true)
+        countAnchor:SetLabel(L["Anchor"])
+        countAnchor:SetList(
+            {
+                TOPLEFT = L["Topleft"],
+                TOP = L["Top"],
+                TOPRIGHT = L["Topright"],
+                LEFT = L["Left"],
+                CENTER = L["Center"],
+                RIGHT = L["Right"],
+                BOTTOMLEFT = L["Bottomleft"],
+                BOTTOM = L["Bottom"],
+                BOTTOMRIGHT = L["Bottomright"],
+            },
+            {"TOPLEFT", "TOP", "TOPRIGHT", "LEFT", "CENTER", "RIGHT", "BOTTOMLEFT", "BOTTOM", "BOTTOMRIGHT"}
+        )
+        countAnchor:SetValue(barDB.button.fontStrings.count.anchor)
+        countAnchor:SetDisabled(true) -- ! temporary until implemented
+        styleGroup:AddChild(countAnchor)
+
+        countAnchor:SetCallback("OnValueChanged", function(self, _, selected)
+            addon:SetBarDBInfo("button.fontStrings.count.anchor", selected, Config:GetSelectedBar())
+        end)
+
+        ------------------------------------------------------------
+
+        local countXOffset = AceGUI:Create("Slider")
+        countXOffset:SetRelativeWidth(1/2)
+        countXOffset:SetLabel(L["X Offset"])
+        countXOffset:SetSliderValues(-self.OffsetX, self.OffsetX, 1)
+        countXOffset:SetValue(barDB.button.fontStrings.count.xOffset)
+        countXOffset:SetDisabled(true) -- ! temporary until implemented
+        styleGroup:AddChild(countXOffset)
+
+        countXOffset:SetCallback("OnValueChanged", function(self)
+            addon:SetBarDBInfo("button.fontStrings.count.xOffset", self:GetValue(), Config:GetSelectedBar())
+        end)
+
+        ------------------------------------------------------------
+
+        local countYOffset = AceGUI:Create("Slider")
+        countYOffset:SetRelativeWidth(1/2)
+        countYOffset:SetLabel(L["Y Offset"])
+        countYOffset:SetSliderValues(-self.OffsetY, self.OffsetY, 1)
+        countYOffset:SetValue(barDB.button.fontStrings.count.yOffset)
+        countYOffset:SetDisabled(true) -- ! temporary until implemented
+        styleGroup:AddChild(countYOffset)
+
+        countYOffset:SetCallback("OnValueChanged", function(self)
+            addon:SetBarDBInfo("button.fontStrings.count.yOffset", self:GetValue(), Config:GetSelectedBar())
+        end)
+
+        ------------------------------------------------------------
+
+        local objectiveText = AceGUI:Create("Heading")
+        objectiveText:SetFullWidth(true)
+        objectiveText:SetText(L["Objective Text"])
+        styleGroup:AddChild(objectiveText)
+
+        ------------------------------------------------------------
+
+        local objectiveAnchor = AceGUI:Create("Dropdown")
+        objectiveAnchor:SetFullWidth(true)
+        objectiveAnchor:SetLabel(L["Anchor"])
+        objectiveAnchor:SetList(
+            {
+                TOPLEFT = L["Topleft"],
+                TOP = L["Top"],
+                TOPRIGHT = L["Topright"],
+                LEFT = L["Left"],
+                CENTER = L["Center"],
+                RIGHT = L["Right"],
+                BOTTOMLEFT = L["Bottomleft"],
+                BOTTOM = L["Bottom"],
+                BOTTOMRIGHT = L["Bottomright"],
+            },
+            {"TOPLEFT", "TOP", "TOPRIGHT", "LEFT", "CENTER", "RIGHT", "BOTTOMLEFT", "BOTTOM", "BOTTOMRIGHT"}
+        )
+        objectiveAnchor:SetValue(barDB.button.fontStrings.objective.anchor)
+        objectiveAnchor:SetDisabled(true) -- ! temporary until implemented
+        styleGroup:AddChild(objectiveAnchor)
+
+        objectiveAnchor:SetCallback("OnValueChanged", function(self, _, selected)
+            addon:SetBarDBInfo("button.fontStrings.objective.anchor", selected, Config:GetSelectedBar())
+        end)
+
+        ------------------------------------------------------------
+
+        local objectiveXOffset = AceGUI:Create("Slider")
+        objectiveXOffset:SetRelativeWidth(1/2)
+        objectiveXOffset:SetLabel(L["X Offset"])
+        objectiveXOffset:SetSliderValues(-self.OffsetX, self.OffsetX, 1)
+        objectiveXOffset:SetValue(barDB.button.fontStrings.objective.xOffset)
+        objectiveXOffset:SetDisabled(true) -- ! temporary until implemented
+        styleGroup:AddChild(objectiveXOffset)
+
+        objectiveXOffset:SetCallback("OnValueChanged", function(self)
+            addon:SetBarDBInfo("button.fontStrings.objective.xOffset", self:GetValue(), Config:GetSelectedBar())
+        end)
+
+        ------------------------------------------------------------
+
+        local objectiveYOffset = AceGUI:Create("Slider")
+        objectiveYOffset:SetRelativeWidth(1/2)
+        objectiveYOffset:SetLabel(L["Y Offset"])
+        objectiveYOffset:SetSliderValues(-self.OffsetY, self.OffsetY, 1)
+        objectiveYOffset:SetValue(barDB.button.fontStrings.objective.yOffset)
+        objectiveYOffset:SetDisabled(true) -- ! temporary until implemented
+        styleGroup:AddChild(objectiveYOffset)
+
+        objectiveYOffset:SetCallback("OnValueChanged", function(self)
+            addon:SetBarDBInfo("button.fontStrings.objective.yOffset", self:GetValue(), Config:GetSelectedBar())
+        end)
+    end
+
+    tabContent:DoLayout()
 end

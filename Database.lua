@@ -184,6 +184,7 @@ function addon:Initialize_DB()
                 ObjectiveBuilder = false,
                 ObjectiveBuilderTrackers = false,
                 Config = true,
+                ConfigButtons = true,
             },
 
             ------------------------------------------------------------
