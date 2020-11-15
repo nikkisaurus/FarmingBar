@@ -247,11 +247,7 @@ local methods = {
     ------------------------------------------------------------
 
     ApplySkin = function(self)
-        local skin = FarmingBar.db.profile.style.skin
-        addon:SkinBar(self, skin)
-        for _, button in pairs(self:GetUserData("buttons")) do
-            addon:SkinButton(button, skin)
-        end
+        addon:SkinBar(self, FarmingBar.db.profile.style.skin)
     end,
 
     ------------------------------------------------------------

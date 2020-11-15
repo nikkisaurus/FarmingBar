@@ -549,6 +549,7 @@ local methods = {
         self:UpdateBorder()
         self:UpdateCooldown()
         self:SetAttribute()
+        addon:SkinButton(self, FarmingBar.db.profile.style.skin)
     end,
 
     ------------------------------------------------------------
