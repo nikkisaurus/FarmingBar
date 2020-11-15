@@ -1,4 +1,28 @@
 # Farming Bar
+## Version 3.0
+### 3.0-alpha1
+- Complete addon rewrite
+- Limited commands and bar customizations (alpha only)
+- New objective structure
+- All objectives are available globally
+- There are no longer different types of objectives; tracker conditions control how objectives are counted
+  - -- All (Shopping List or single tracker objective)
+  - -- Any (Mixed Items or single tracker objective)
+  - -- Custom
+- Custom tracker conditions must return a table containing nested tables of tracker objectives: `return {{t1 = 10, t2 = 2, t3 = 3}, {t1 = 5}}`
+  - Keys must be formatted "t%d" where "%d" is the tracker number
+  - Values are tracker objectives
+  - Tracker groups will be counted toward the objective in the order initialized in the condition
+- Objective Settings:
+  - -- Title
+  - -- Icon (or auto)
+  - -- Display Reference (item/currency/macrotext to control auto icon and on use action)
+  - -- Tracker condition
+- Tracker Settings:
+  - -- Objective
+  - -- Include Bank
+  - -- Exclude Objective (excludes count of tracker required for another objective)
+
 ## Version 2.1
 - Compatible with Shadowlands 9.0 beta
 - You can now mute alerts for individual bars
