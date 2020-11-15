@@ -79,6 +79,7 @@ local function Constructor()
     tinsert(UISpecialFrames, frame:GetName())
 
     frame:SetFrameStrata("HIGH")
+    frame:SetToplevel(true)
     frame:SetMovable(true)
     frame:SetResizable(true)
     frame:SetPoint("CENTER")
