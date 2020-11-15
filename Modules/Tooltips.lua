@@ -69,6 +69,10 @@ function addon:GetBarTooltip(widget, tooltip)
 
     GameTooltip_AddBlankLinesToTooltip(tooltip, 1)
 
+    -- local progressCount, progressTotal = bar:GetProgress()
+    local progressCount, progressTotal = 0, 0 --!
+
+    tooltip:AddDoubleLine(L["Progress"], barDB.trackProgress and string.format("%s/%s", progressCount, progressTotal) or L["FALSE"], unpack(self.tooltip_keyvalue))
     tooltip:AddDoubleLine(L["Growth Direction"], L[strsub(barDB.grow[1], 1, 1)..strlower(strsub(barDB.grow[1], 2))], unpack(self.tooltip_keyvalue))
     tooltip:AddDoubleLine(L["Growth Type"], L[strsub(barDB.grow[2], 1, 1)..strlower(strsub(barDB.grow[2], 2))], unpack(self.tooltip_keyvalue))
     tooltip:AddDoubleLine(L["Number of Buttons"], barDB.numVisibleButtons.."/"..self.maxButtons, unpack(self.tooltip_keyvalue))
