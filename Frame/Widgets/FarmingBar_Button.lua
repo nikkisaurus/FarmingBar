@@ -121,6 +121,7 @@ local function frame_OnEvent(self, event, ...)
     local barID = widget:GetUserData("barID")
     if not barID then return end
     local barDB = addon.bars[barID]:GetUserData("barDB")
+    local alerts = FarmingBar.db.char.bars[barID].alerts
     local buttonID = widget:GetUserData("buttonID")
     local objectiveTitle = widget:GetUserData("objectiveTitle")
     local objectiveInfo = addon:GetObjectiveInfo(objectiveTitle)
@@ -132,9 +133,9 @@ local function frame_OnEvent(self, event, ...)
         local alert, soundID, barAlert
 
         if newCount ~= oldCount then
-            if not barDB.alerts.muteAll then
+            if not alerts.muteAll then
                 if objective then
-                    if barDB.alerts.completedObjectives or (not barDB.alerts.completedObjectives and ((oldCount < objective) or (newCount < oldCount and newCount < objective))) then
+                    if alerts.completedObjectives or (not alerts.completedObjectives and ((oldCount < objective) or (newCount < oldCount and newCount < objective))) then
                         alert = FarmingBar.db.global.settings.alerts.button.format.withObjective
 
                         if oldCount < objective and newCount >= objective then
@@ -350,7 +351,7 @@ local methods = {
     ClearObjective = function(self)
         self:SetUserData("objectiveTitle")
         self:SetUserData("objective")
-        FarmingBar.db.char.objectives[self:GetUserData("barID")][self:GetUserData("buttonID")] = nil
+        FarmingBar.db.char.bars[self:GetUserData("barID")].objectives[self:GetUserData("buttonID")] = nil
 
         self.frame:UnregisterEvent("BAG_UPDATE")
         self.frame:UnregisterEvent("BAG_UPDATE_COOLDOWN")
@@ -448,7 +449,7 @@ local methods = {
         self:SetSize(bar.frame:GetWidth(), bar.frame:GetHeight())
         self:SetHidden()
 
-        local objectiveInfo = FarmingBar.db.char.objectives[bar:GetUserData("barID")][buttonID]
+        local objectiveInfo = FarmingBar.db.char.bars[bar:GetUserData("barID")].objectives[buttonID]
         if objectiveInfo then
             self:SetObjectiveID(objectiveInfo.objectiveTitle, objectiveInfo.objective)
         else
@@ -503,7 +504,7 @@ local methods = {
     SetObjective = function(self, objective)
         objective = tonumber(objective)
         self:SetUserData("objective", objective)
-        FarmingBar.db.char.objectives[self:GetUserData("barID")][self:GetUserData("buttonID")].objective = objective
+        FarmingBar.db.char.bars[self:GetUserData("barID")].objectives[self:GetUserData("buttonID")].objective = objective
         self:UpdateObjective()
         addon:UpdateButtons()
     end,
@@ -518,7 +519,7 @@ local methods = {
 
         self:SetUserData("objectiveTitle", objectiveTitle)
         self:SetUserData("objective", objective)
-        FarmingBar.db.char.objectives[self:GetUserData("barID")][self:GetUserData("buttonID")] = {objectiveTitle = objectiveTitle, objective = objective}
+        FarmingBar.db.char.bars[self:GetUserData("barID")].objectives[self:GetUserData("buttonID")] = {objectiveTitle = objectiveTitle, objective = objective}
 
         self.frame:RegisterEvent("BAG_UPDATE")
         self.frame:RegisterEvent("BAG_UPDATE_COOLDOWN")

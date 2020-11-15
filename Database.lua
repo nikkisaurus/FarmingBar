@@ -5,15 +5,24 @@ local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 function addon:Initialize_DB()
     local defaults = {
         char = {
-            objectives = {
-                ["**"] = {},
+            bars = {
+                ["**"] = { -- barID
+                    title = "",
+
+                    alerts = {
+                        barProgress = false, --bar.trackProgress
+                        completedObjectives = true, --bar.trackCompletedObjectives
+                        muteAll = false, --bar.muteAlerts
+                    },
+
+                    objectives = {}, -- buttonID = {}
+                },
             },
-            -- enabled = true, --enables bar creation for new users/characters; disable when user deletes all bars
-            -- bars = {},
         },
 
         global = {
             enabled = true,
+            resetAlphaDB = 1,
 
             ------------------------------------------------------------
 
@@ -273,7 +282,7 @@ function addon:Initialize_DB()
 
     ------------------------------------------------------------
 
-    FarmingBar.db = LibStub("AceDB-3.0"):New("FarmingBarDB", defaults, true)
+    FarmingBar.db = LibStub("AceDB-3.0"):New("FarmingBarDB", defaults)
 
     ------------------------------------------------------------
 
@@ -298,14 +307,12 @@ function addon:Initialize_DB()
         FarmingBar.db.char.enabled = nil
     end
 
-    if FarmingBar.db.char.bars then
-        for i = 1, #FarmingBar.db.char.bars do
-            local objectives = FarmingBar.db.char.bars[i].objectives
-            FarmingBar.db.char.bars[i].objectives = nil
-            tinsert(FarmingBar.db.profile.bars, FarmingBar.db.char.bars[i])
-            FarmingBar.db.char.objectives[i] = objectives
+    if FarmingBar.db.global.resetAlphaDB then
+        for k, v in pairs(FarmingBar.db.char.bars) do
+            tremove(FarmingBar.db.char.bars, k)
         end
-        FarmingBar.db.char.bars = nil
+        FarmingBar.db.global.resetAlphaDB = false
+        StaticPopup_Show("FARMINGBAR_V30_ALPHA2_BARRESET")
     end
 end
 
@@ -313,8 +320,6 @@ end
 
 function addon:GetDefaultBar()
     local bar = {
-        title = "",
-
         movable = true,
 
         hidden = false,
@@ -329,12 +334,6 @@ function addon:GetDefaultBar()
         buttonWrap = 12,
         grow = {"RIGHT", "NORMAL"}, -- [1] = "RIGHT", "LEFT", "UP", "DOWN"; [2] = "NORMAL", "REVERSE"
         point = {"TOP"},
-
-        alerts = {
-            barProgress = false, --bar.trackProgress
-            completedObjectives = true, --bar.trackCompletedObjectives
-            muteAll = false, --bar.muteAlerts
-        },
 
         button = {
             size = 35, --bar.buttonSize
@@ -351,12 +350,6 @@ function addon:GetDefaultBar()
                     yOffset = -4,
                 },
             },
-        },
-
-        font = {
-            face = false,
-            outline = false,
-            size = false,
         },
     }
 

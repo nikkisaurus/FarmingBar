@@ -93,3 +93,14 @@ StaticPopupDialogs["FARMINGBAR_CONFIRM_REMOVE_MULTIPLE_BARS"] = {
     hideOnEscape = true,
     preferredIndex = 3
 }
+
+--*------------------------------------------------------------------------
+
+StaticPopupDialogs["FARMINGBAR_V30_ALPHA2_BARRESET"] = {
+    text = "Farming Bar (v3.0-alpha2): General bar settings have been changed from character to profile specific. Alerts, bar titles, and objectives remain character specific. Your bars have been reset. Objectives have not been altered and can be added back to your bars from the Objective Builder.",
+    button1 = OKAY,
+    timeout = 0,
+    whileDead = true,
+    hideOnEscape = true,
+    preferredIndex = 3
+}

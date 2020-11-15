@@ -40,7 +40,7 @@ end
 function addon:GetBarTitle(barID)
     if barID == 0 then return L["All Bars"] end
 
-    local barDB = FarmingBar.db.profile.bars[barID]
+    local barDB = FarmingBar.db.char.bars[barID]
     if not barDB then return end
 
     local title = L["Bar"].." "..barID..(barDB.title ~= "" and (" ("..barDB.title..")") or "")
@@ -158,9 +158,9 @@ end
 
 ------------------------------------------------------------
 
-function addon:SetBarDBInfo(key, value, barID)
+function addon:SetBarDBInfo(key, value, barID, isCharDB)
     local keys = {strsplit(".", key)}
-    local path = FarmingBar.db.profile.bars[barID]
+    local path = FarmingBar.db[isCharDB and "char" or "profile"].bars[barID]
 
     for k, key in pairs(keys) do
         if k < #keys then

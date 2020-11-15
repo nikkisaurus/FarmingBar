@@ -60,7 +60,7 @@ end
 ------------------------------------------------------------
 
 local function title_OnEnterPressed(self)
-    addon:SetBarDBInfo("title", self:GetText(), Config:GetSelectedBar())
+    addon:SetBarDBInfo("title", self:GetText(), Config:GetSelectedBar(), true)
     self:ClearFocus()
 end
 
@@ -285,6 +285,7 @@ function addon:Config_LoadBarTab(tabContent)
     local barID = Config:GetSelectedBar()
     local bar = barID > 0 and self.bars[barID]
     local barDB = barID > 0 and FarmingBar.db.profile.bars[barID]
+    local charDB = barID > 0 and FarmingBar.db.char.bars[barID]
 
     if barID == 0 then
         local addBar = AceGUI:Create("Button")
@@ -293,10 +294,10 @@ function addon:Config_LoadBarTab(tabContent)
         tabContent:AddChild(addBar)
 
         addBar:SetCallback("OnClick", function() self:CreateBar() end)
-    elseif barDB then
+    elseif barDB and charDB then
         local title = AceGUI:Create("EditBox")
         title:SetFullWidth(true)
-        title:SetText(barDB.title)
+        title:SetText(charDB.title)
         title:SetLabel(L["Title"])
         tabContent:AddChild(title)
 
@@ -314,38 +315,38 @@ function addon:Config_LoadBarTab(tabContent)
 
         local muteAll = AceGUI:Create("CheckBox")
         muteAll:SetRelativeWidth(1/3)
-        muteAll:SetValue(barDB.alerts.muteAll)
+        muteAll:SetValue(charDB.alerts.muteAll)
         muteAll:SetLabel(L["Mute All"])
         alertsGroup:AddChild(muteAll)
 
         muteAll:SetCallback("OnValueChanged", function(self)
-            addon:SetBarDBInfo("alerts.muteAll", self:GetValue(), Config:GetSelectedBar())
+            addon:SetBarDBInfo("alerts.muteAll", self:GetValue(), Config:GetSelectedBar(), true)
         end)
 
         ------------------------------------------------------------
 
         local barProgress = AceGUI:Create("CheckBox")
         barProgress:SetRelativeWidth(1/3)
-        barProgress:SetValue(barDB.alerts.barProgress)
+        barProgress:SetValue(charDB.alerts.barProgress)
         barProgress:SetLabel(L["Bar Progress"])
         barProgress:SetDisabled(true) -- ! temporary until implemented
         alertsGroup:AddChild(barProgress)
 
         barProgress:SetCallback("OnValueChanged", function(self)
-            addon:SetBarDBInfo("alerts.barProgress", self:GetValue(), Config:GetSelectedBar())
+            addon:SetBarDBInfo("alerts.barProgress", self:GetValue(), Config:GetSelectedBar(), true)
         end)
 
         ------------------------------------------------------------
 
         local completedObjectives = AceGUI:Create("CheckBox")
         completedObjectives:SetRelativeWidth(1/3)
-        completedObjectives:SetValue(barDB.alerts.completedObjectives)
+        completedObjectives:SetValue(charDB.alerts.completedObjectives)
         completedObjectives:SetLabel(L["Completed Objectives"])
         completedObjectives:SetDisabled(true) -- ! temporary until implemented
         alertsGroup:AddChild(completedObjectives)
 
         completedObjectives:SetCallback("OnValueChanged", function(self)
-            addon:SetBarDBInfo("alerts.completedObjectives", self:GetValue(), Config:GetSelectedBar())
+            addon:SetBarDBInfo("alerts.completedObjectives", self:GetValue(), Config:GetSelectedBar(), true)
         end)
 
         --*------------------------------------------------------------------------
@@ -467,51 +468,8 @@ function addon:Config_LoadBarTab(tabContent)
 
         ------------------------------------------------------------
 
-        local fontFace = AceGUI:Create("LSM30_Font")
-        fontFace:SetRelativeWidth(1/2)
-        fontFace:SetLabel(L["Font Face"])
-        fontFace:SetList(AceGUIWidgetLSMlists.font)
-        fontFace:SetValue(barDB.font.face or FarmingBar.db.profile.style.font.face)
-        fontFace:SetDisabled(true) -- ! temporary until implemented
-        styleGroup:AddChild(fontFace)
-
-        fontFace:SetCallback("OnValueChanged", function(self, _, selected)
-            addon:SetBarDBInfo("font.face", selected, Config:GetSelectedBar())
-            self:SetValue(selected)
-        end)
-
-        ------------------------------------------------------------
-
-        local fontOutline = AceGUI:Create("Dropdown")
-        fontOutline:SetRelativeWidth(1/2)
-        fontOutline:SetLabel(L["Font Outline"])
-        fontOutline:SetList({MONOCHROME = L["Monochrome"], OUTLINE = L["Outline"], THICKOUTLINE = L["Thickoutline"], NONE = L["None"]}, {"MONOCHROME", "OUTLINE", "THICKOUTLINE", "NONE"})
-        fontOutline:SetValue(barDB.font.outline or FarmingBar.db.profile.style.font.outline)
-        fontOutline:SetDisabled(true) -- ! temporary until implemented
-        styleGroup:AddChild(fontOutline)
-
-        fontOutline:SetCallback("OnValueChanged", function(self, _, selected)
-            addon:SetBarDBInfo("font.outline", selected, Config:GetSelectedBar())
-        end)
-
-        ------------------------------------------------------------
-
-        local fontSize = AceGUI:Create("Slider")
-        fontSize:SetRelativeWidth(1/3)
-        fontSize:SetLabel(L["Font Size"])
-        fontSize:SetSliderValues(self.minFontSize, self.maxFontSize, 1)
-        fontSize:SetValue(barDB.font.size or FarmingBar.db.profile.style.font.size)
-        fontSize:SetDisabled(true) -- ! temporary until implemented
-        styleGroup:AddChild(fontSize)
-
-        fontSize:SetCallback("OnValueChanged", function(self)
-            addon:SetBarDBInfo("font.size", self:GetValue(), Config:GetSelectedBar())
-        end)
-
-        ------------------------------------------------------------
-
         local scale = AceGUI:Create("Slider")
-        scale:SetRelativeWidth(1/3)
+        scale:SetRelativeWidth(1/2)
         scale:SetLabel(L["Scale"])
         scale:SetSliderValues(self.minScale, self.maxScale)
         scale:SetValue(barDB.scale)
@@ -525,7 +483,7 @@ function addon:Config_LoadBarTab(tabContent)
         ------------------------------------------------------------
 
         local alpha = AceGUI:Create("Slider")
-        alpha:SetRelativeWidth(1/3)
+        alpha:SetRelativeWidth(1/2)
         alpha:SetLabel(L["Alpha"])
         alpha:SetSliderValues(0, 1)
         alpha:SetValue(barDB.alpha)
