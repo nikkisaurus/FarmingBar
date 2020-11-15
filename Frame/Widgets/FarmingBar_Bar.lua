@@ -116,53 +116,6 @@ end
 
 --*------------------------------------------------------------------------
 
-local anchors = {
-    RIGHT = {
-        anchor = "TOPLEFT",
-        relativeAnchor = "TOPRIGHT",
-        xOffset = 1,
-        yOffset = 0,
-        NORMAL = "DOWN",
-        REVERSE = "UP",
-    },
-    LEFT = {
-        anchor = "TOPRIGHT",
-        relativeAnchor = "TOPLEFT",
-        xOffset = -1,
-        yOffset = 0,
-        NORMAL = "DOWN",
-        REVERSE = "UP",
-    },
-    UP = {
-        anchor = "BOTTOMLEFT",
-        relativeAnchor = "TOPLEFT",
-        xOffset = 0,
-        yOffset = 1,
-        NORMAL = "RIGHT",
-        REVERSE = "LEFT",
-    },
-    DOWN = {
-        anchor = "TOPLEFT",
-        relativeAnchor = "BOTTOMLEFT",
-        xOffset = 0,
-        yOffset = -1,
-        NORMAL = "RIGHT",
-        REVERSE = "LEFT",
-    },
-}
-
-------------------------------------------------------------
-
-local function GetAnchorPoints(grow)
-    return anchors[grow].anchor, anchors[grow].relativeAnchor, anchors[grow].xOffset, anchors[grow].yOffset
-end
-
-local function GetRelativeAnchorPoints(grow)
-    return GetAnchorPoints(anchors[grow[1]][grow[2]])
-end
-
---*------------------------------------------------------------------------
-
 local methods = {
     OnAcquire = function(self)
         self:SetUserData("buttons", {})
@@ -179,68 +132,17 @@ local methods = {
     ------------------------------------------------------------
 
     AddButton = function(self, buttonID)
-        local barDB = self:GetUserData("barDB")
-        local buttons = self:GetUserData("buttons")
         local button = AceGUI:Create("FarmingBar_Button")
-        tinsert(buttons, button)
-
-        button:SetUserData("barID", self:GetUserData("barID"))
-        button:SetUserData("buttonID", buttonID)
-
-        ------------------------------------------------------------
-
-        local anchor, relativeAnchor, xOffset, yOffset = GetAnchorPoints(barDB.grow[1])
-        button:ClearAllPoints()
-
-        if #buttons == 1 then
-            button:SetPoint(anchor, self.frame, relativeAnchor, xOffset * barDB.button.padding, yOffset * barDB.button.padding)
-        else
-            if fmod(#buttons, barDB.buttonWrap) == 1 or barDB.buttonWrap == 1 then
-                local anchor, relativeAnchor, xOffset, yOffset = GetRelativeAnchorPoints(barDB.grow)
-                button:SetPoint(anchor, buttons[#buttons - barDB.buttonWrap].frame, relativeAnchor, xOffset * barDB.button.padding, yOffset * barDB.button.padding)
-            else
-                button:SetPoint(anchor, buttons[#buttons - 1].frame, relativeAnchor, xOffset * barDB.button.padding, yOffset * barDB.button.padding)
-            end
-        end
-
-        ------------------------------------------------------------
-
-        -- self:AnchorButtons()
-        button.frame:SetAlpha(barDB.alpha)
-        if barDB.hidden then
-            button.frame:Hide()
-        else
-            button.frame:Show()
-        end
-
-        ------------------------------------------------------------
-
-        button.frame:SetScale(barDB.scale)
-        button:SetSize(self.frame:GetWidth(), self.frame:GetHeight())
+        tinsert(self:GetUserData("buttons"), button)
+        button:SetBar(self, buttonID)
         self:SetQuickButtonStates()
     end,
 
     ------------------------------------------------------------
 
     AnchorButtons = function(self)
-        local barDB = self:GetUserData("barDB")
-        local buttons = self:GetUserData("buttons")
-
-        local anchor, relativeAnchor, xOffset, yOffset = GetAnchorPoints(barDB.grow[1])
-
-        for key, button in pairs(buttons) do
-            button:ClearAllPoints()
-
-            if key == 1 then
-                button:SetPoint(anchor, self.frame, relativeAnchor, xOffset * barDB.button.padding, yOffset * barDB.button.padding)
-            else
-                if fmod(key, barDB.buttonWrap) == 1 or barDB.buttonWrap == 1 then
-                    local anchor, relativeAnchor, xOffset, yOffset = GetRelativeAnchorPoints(barDB.grow)
-                    button:SetPoint(anchor, buttons[key - barDB.buttonWrap].frame, relativeAnchor, xOffset * barDB.button.padding, yOffset * barDB.button.padding)
-                else
-                    button:SetPoint(anchor, buttons[key - 1].frame, relativeAnchor, xOffset * barDB.button.padding, yOffset * barDB.button.padding)
-                end
-            end
+        for _, button in pairs(self:GetUserData("buttons")) do
+            button:Anchor()
         end
     end,
 
@@ -248,35 +150,6 @@ local methods = {
 
     ApplySkin = function(self)
         addon:SkinBar(self, FarmingBar.db.profile.style.skin)
-    end,
-
-    ------------------------------------------------------------
-
-    DoLayout = function(self)
-        local barDB = self:GetUserData("barDB")
-        self:AnchorButtons()
-        self:SetAlpha(barDB.alpha)
-        self:SetHidden(barDB.hidden)
-        self:SetMovable(barDB.movable)
-        self:SetScale(barDB.scale)
-        self:SetSize(barDB.button.size)
-        self:SetPoint(unpack(barDB.point))
-        self:SetQuickButtonStates()
-        self:ApplySkin()
-        self:LoadObjectives()
-    end,
-
-    ------------------------------------------------------------
-
-    LoadObjectives = function(self)
-        for _, button in pairs(self:GetUserData("buttons")) do
-            local objectiveInfo = FarmingBar.db.char.bars[self:GetUserData("barID")].objectives[button:GetUserData("buttonID")]
-            if objectiveInfo then
-                button:SetObjectiveID(objectiveInfo.objectiveTitle, objectiveInfo.objective)
-            else
-                button:SetObjectiveID()
-            end
-        end
     end,
 
     ------------------------------------------------------------
@@ -293,12 +166,10 @@ local methods = {
 
     ------------------------------------------------------------
 
-    SetAlpha = function(self, alpha)
-        self.frame:SetAlpha(alpha)
-
-        local buttons = self:GetUserData("buttons")
-        for _, button in pairs(buttons) do
-            button.frame:SetAlpha(alpha)
+    SetAlpha = function(self)
+        self.frame:SetAlpha(self:GetUserData("barDB").alpha)
+        for _, button in pairs(self:GetUserData("buttons")) do
+            button:SetAlpha()
         end
     end,
 
@@ -308,37 +179,47 @@ local methods = {
         self:SetUserData("barID", barID)
         self.barID:SetText(barID or "")
 
+        ------------------------------------------------------------
+
         local barDB = FarmingBar.db.char.bars[barID]
         self:SetUserData("barDB", barDB)
+
+        ------------------------------------------------------------
 
         for i = 1, barDB.numVisibleButtons do
             self:AddButton(i)
         end
 
-        self:DoLayout()
+        ------------------------------------------------------------
+
+        self:ApplySkin()
+        self:SetAlpha()
+        self:SetHidden()
+        self:SetMovable()
+        self:SetScale()
+        self:SetSize()
+        self:SetPoint(unpack(barDB.point))
+        self:SetQuickButtonStates()
     end,
 
     ------------------------------------------------------------
 
-    SetHidden = function(self, hidden)
-        local buttons = self:GetUserData("buttons")
-        if hidden then
+    SetHidden = function(self)
+        if self:GetUserData("barDB").hidden then
             self.frame:Hide()
-            for _, button in pairs(buttons) do
-                button.frame:Hide()
-            end
         else
             self.frame:Show()
-            for _, button in pairs(buttons) do
-                button.frame:Show()
-            end
+        end
+
+        for _, button in pairs(self:GetUserData("buttons")) do
+            button:SetHidden()
         end
     end,
 
     ------------------------------------------------------------
 
-    SetMovable = function(self, movable)
-        self.frame:SetMovable(movable)
+    SetMovable = function(self)
+        self.frame:SetMovable(self:GetUserData("barDB").movable)
     end,
 
     ------------------------------------------------------------
@@ -373,22 +254,22 @@ local methods = {
 
     ------------------------------------------------------------
 
-    SetScale = function(self, scale)
-        self.frame:SetScale(scale)
-
-        local buttons = self:GetUserData("buttons")
-        for _, button in pairs(buttons) do
-            button.frame:SetScale(scale)
+    SetScale = function(self)
+        self.frame:SetScale(self:GetUserData("barDB").scale)
+        for _, button in pairs(self:GetUserData("buttons")) do
+            button:SetScale()
         end
     end,
 
     ------------------------------------------------------------
 
-    SetSize = function(self, frameSize)
-        self.frame:SetSize(frameSize, frameSize)
+    SetSize = function(self)
+        local frameSize = self:GetUserData("barDB").button.size
         local paddingSize = (3/20 * frameSize)
         local buttonSize = (frameSize - (paddingSize * 3)) / 2
         local fontSize = frameSize / 3
+
+        self.frame:SetSize(frameSize, frameSize)
 
         self.addButton:SetSize(buttonSize, buttonSize)
         self.addButton:SetPoint("TOPLEFT", paddingSize, -paddingSize)
@@ -399,9 +280,8 @@ local methods = {
         self.barID:SetFont([[Fonts\FRIZQT__.TTF]], fontSize, "NORMAL")
         self.barID:SetPoint("BOTTOM", 0, paddingSize * 1.5)
 
-        local buttons = self:GetUserData("buttons")
-        for _, button in pairs(buttons) do
-            button:SetSize(self.frame:GetWidth(), self.frame:GetHeight())
+        for _, button in pairs(self:GetUserData("buttons")) do
+            button:SetSize(frameSize, frameSize)
         end
     end,
 
@@ -413,7 +293,7 @@ local methods = {
 
         if difference > 0 then
             for i = 1, difference do
-                self:AddButton()
+                self:AddButton(#buttons + 1)
             end
         elseif difference < 0 then
             for i = 1, abs(difference) do

@@ -5,7 +5,7 @@ local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 local LSM = LibStub("LibSharedMedia-3.0")
 
 local _G = _G
-local floor = math.floor
+local fmod, floor = math.fmod, math.floor
 local format, tonumber = string.format, tonumber
 
 --*------------------------------------------------------------------------
@@ -323,7 +323,33 @@ local methods = {
 
         self.objectiveEditBox:Hide()
         self.quickAddEditBox:Hide()
+
+        addon:SkinButton(self, FarmingBar.db.profile.style.skin)
         self:UpdateLayers()
+    end,
+
+    ------------------------------------------------------------
+
+    Anchor = function(self)
+        local barDB = self:GetUserData("barDB")
+        local buttons = self:GetUserData("buttons")
+        local buttonID = self:GetUserData("buttonID")
+
+        ------------------------------------------------------------
+
+        local anchor, relativeAnchor, xOffset, yOffset = addon:GetAnchorPoints(barDB.grow[1])
+
+        self:ClearAllPoints()
+        if buttonID == 1 then
+            self:SetPoint(anchor, self:GetUserData("bar").frame, relativeAnchor, xOffset * barDB.button.padding, yOffset * barDB.button.padding)
+        else
+            if fmod(buttonID, barDB.buttonWrap) == 1 or barDB.buttonWrap == 1 then
+                local anchor, relativeAnchor, xOffset, yOffset = addon:GetRelativeAnchorPoints(barDB.grow)
+                self:SetPoint(anchor, buttons[buttonID - barDB.buttonWrap].frame, relativeAnchor, xOffset * barDB.button.padding, yOffset * barDB.button.padding)
+            else
+                self:SetPoint(anchor, buttons[buttonID - 1].frame, relativeAnchor, xOffset * barDB.button.padding, yOffset * barDB.button.padding)
+            end
+        end
     end,
 
     ------------------------------------------------------------
@@ -371,6 +397,12 @@ local methods = {
 
     ------------------------------------------------------------
 
+    SetAlpha = function(self)
+        self.frame:SetAlpha(self:GetUserData("barDB").alpha)
+    end,
+
+    ------------------------------------------------------------
+
     SetAttribute = function(self)
         local info = FarmingBar.db.global.keybinds.button.useItem
         local buttonType = (info.modifier ~= "" and (info.modifier.."-") or "").."type"..(info.button == "RightButton" and 2 or 1)
@@ -410,6 +442,29 @@ local methods = {
 
     ------------------------------------------------------------
 
+    SetBar = function(self, bar, buttonID)
+        self:SetUserData("bar", bar)
+        self:SetUserData("barID", bar:GetUserData("barID"))
+        self:SetUserData("barDB", bar:GetUserData("barDB"))
+        self:SetUserData("buttons", bar:GetUserData("buttons"))
+        self:SetUserData("buttonID", buttonID)
+
+        self:Anchor()
+        self:SetAlpha()
+        self:SetScale()
+        self:SetSize(bar.frame:GetWidth(), bar.frame:GetHeight())
+        self:SetHidden()
+
+        local objectiveInfo = FarmingBar.db.char.bars[bar:GetUserData("barID")].objectives[buttonID]
+        if objectiveInfo then
+            self:SetObjectiveID(objectiveInfo.objectiveTitle, objectiveInfo.objective)
+        else
+            self:ClearObjective()
+        end
+    end,
+
+    ------------------------------------------------------------
+
     SetCount = function(self)
         local objectiveTitle = self:GetUserData("objectiveTitle")
         local objectiveInfo = addon:GetObjectiveInfo(objectiveTitle)
@@ -430,6 +485,16 @@ local methods = {
             self.Count:SetTextColor(1, .82, 0, 1)
         else
             self.Count:SetTextColor(unpack(style.color))
+        end
+    end,
+
+    ------------------------------------------------------------
+
+    SetHidden = function(self)
+        if self:GetUserData("barDB").hidden then
+            self.frame:Hide()
+        else
+            self.frame:Show()
         end
     end,
 
@@ -479,9 +544,16 @@ local methods = {
 
     ------------------------------------------------------------
 
-    SetSize = function(self, ...) --width, height
-        self.frame:SetSize(...)
-        self.Count:SetWidth(self.frame:GetWidth())
+    SetScale = function(self)
+        self.frame:SetScale(self:GetUserData("barDB").scale)
+    end,
+
+    ------------------------------------------------------------
+
+    SetSize = function(self, width, height)
+        self.frame:SetSize(width, height)
+        self.Count:SetWidth(width)
+        self.Objective:SetWidth(width)
     end,
 
     ------------------------------------------------------------
@@ -549,7 +621,6 @@ local methods = {
         self:UpdateBorder()
         self:UpdateCooldown()
         self:SetAttribute()
-        addon:SkinButton(self, FarmingBar.db.profile.style.skin)
     end,
 
     ------------------------------------------------------------
