@@ -15,7 +15,8 @@
 ## OptionalDeps: DataStore, DataStore_Auctions, DataStore_Containers, DataStore_Inventory, DataStore_Mails
 
 ## X-Curse-Project-ID: 351688
-## X-WoWI-ID: 25440
+# Reenable before merging with stable
+# X-WoWI-ID: 25440
 
 # Libraries
 Libs\LibStub\LibStub.lua
