@@ -2,7 +2,8 @@ name: Package and release development builds
 
 on:
   push:
-    branches: [ development ]
+    branches:
+      - development
     tags:
       - "**"
 
