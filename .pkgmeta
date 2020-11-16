@@ -26,7 +26,6 @@ externals:
   Libs/LibAddonUtils: https://github.com/niketa-wow/libaddonutils
 
 embedded-libraries:
-  - larger-macro-icon-selection
   - libaddonutils
 
 ignore:

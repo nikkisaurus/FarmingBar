@@ -4,19 +4,17 @@
 #@non-retail@
 ## Interface: 11304
 #@end-non-retail@
+
 ## Title: FarmingBar
-
 ## Notes: Action bar to display and track objective goals.
-
 ## Version: @project-version@
 ## Author: Nikketa-Hyjal-US
+
 ## SavedVariables: FarmingBarDB
-# SavedVariablesPerCharacter: FarmingBarCharacterDB
 ## OptionalDeps: DataStore, DataStore_Auctions, DataStore_Containers, DataStore_Inventory, DataStore_Mails
 
 ## X-Curse-Project-ID: 351688
-# Reenable before merging with stable
-# X-WoWI-ID: 25440
+## X-WoWI-ID: 25440
 
 # Libraries
 Libs\LibStub\LibStub.lua
