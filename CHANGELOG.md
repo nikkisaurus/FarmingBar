@@ -1,4 +1,7 @@
 # Farming Bar
+## Version 2.1.3
+- ToC update
+
 ## Version 2.1.2
 - Implement database backup and restore for users switching from version 3.0 back to the stable database
 
