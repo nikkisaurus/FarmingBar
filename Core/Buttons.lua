@@ -145,7 +145,7 @@ function FarmingBarButtonTemplateItemIDEditBox_OnEnterPressed(self, ...)
         self:Hide()
         return
     elseif self and self.type == "currency" and not C_CurrencyInfo.GetCurrencyInfo(objectiveID) then
-        print(L.GetErrorMessage("invalidCurrency", self:GetText()))
+        addon:Print(L.GetErrorMessage("invalidCurrency", self:GetText()))
 
         self:SetText("")
         self:ClearFocus()
@@ -153,7 +153,7 @@ function FarmingBarButtonTemplateItemIDEditBox_OnEnterPressed(self, ...)
 
         return
     elseif self and self.type == "item" and not GetItemInfo(objectiveID) then
-        print(L.GetErrorMessage("invalidItemID", objectiveID))
+        addon:Print(L.GetErrorMessage("invalidItemID", objectiveID))
 
         self:SetText("")
         self:ClearFocus()
@@ -315,7 +315,7 @@ function FarmingBarButtonTemplate_OnLoad(self, ...)
 
             -- Play alerts
             if addon.db.global.alerts.chat and alert then
-                addon:Print(addon:ParseAlert(alert, alertInfo))
+                addon:Print(_G[addon.db.global.alerts.chatFrame], addon:ParseAlert(alert, alertInfo))
             end
 
             if addon.db.global.alerts.screen and alert then

@@ -2285,6 +2285,19 @@ function addon:GetSettingsOptions()
                     name = L["Sound"],
                     desc = L._Settings("soundToggleDesc"),
                 },
+                chatFrame = {
+                    order = 4,
+                    type = "select",
+                    name = L["Chat Frame"],
+                    desc = L._Settings("chatFrameSelectDesc"),
+                    values = function()
+                        local values = {}
+                        for i = 1, FCF_GetNumActiveChatFrames() do
+                            values["ChatFrame"..i] = _G["ChatFrame"..i.."Tab"]:GetText()
+                        end
+                        return values
+                    end,
+                },
             },
         },
 
@@ -2377,7 +2390,7 @@ function addon:GetSettingsOptions()
             inline = true,
             name = L["Sounds"],
             get = function(...) return self:GetDBValue("global.sounds", ...) end,
-            set = function(...) print(...); return self:SetDBValue("global.sounds", ...) end,
+            set = function(...) return self:SetDBValue("global.sounds", ...) end,
             args = {
                 barProgress = {
                     order = 1,

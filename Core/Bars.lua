@@ -148,7 +148,7 @@ function FarmingBarBarTemplate_OnLoad(self, ...)
         local barAlertInfo = {id = self.id, desc = barDB.desc, count = progressCount, total = progressTotal}
 
         if addon.db.global.alerts.barChat then
-            addon:Print(addon:ParseBarAlert(barAlert, barAlertInfo))
+            addon:Print(_G[addon.db.global.alerts.chatFrame], addon:ParseBarAlert(barAlert, barAlertInfo))
         end
 
         if addon.db.global.alerts.barScreen then
@@ -532,7 +532,6 @@ end
 
 function FarmingBarBarTemplateButtonIDEditBox_OnEnterPressed(self, ...)
     local buttonID = tonumber(self:GetText()) > addon.maxButtons and addon.maxButtons or tonumber(self:GetText())
-    print(self:GetParent():GetParent())
     addon.ObjectiveBuilder:Load(self:GetParent():GetParent().buttons[buttonID])
 
     self:SetText("")

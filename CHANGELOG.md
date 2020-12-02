@@ -1,4 +1,7 @@
 # Farming Bar
+## Version 2.1.5
+- You can now select which chat frame to output alerts to
+
 ## Version 2.1.4
 - Add Shadowlands templates: CLOTH, ENCHANT, FISHING, HERBS, LOCKBOX, MINING, SKIN
 - Add Lockbox templates for BC, Wrath, Cata, MoP, WoD, Legion, and BFA

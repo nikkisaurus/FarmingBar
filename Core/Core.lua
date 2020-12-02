@@ -147,6 +147,7 @@ function addon:OnInitialize()
                 chat = true,
                 screen = true,
                 sound = true,
+                chatFrame = (DEFAULT_CHAT_FRAME:GetName()),
             },
             alertFormats = {
                 objectivePreview = 200,

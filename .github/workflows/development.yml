@@ -18,12 +18,12 @@ jobs:
       - name: Clone project
         uses: actions/checkout@v1
 
-      - name: Package and release for Retail
-        uses: BigWigsMods/packager@master
-        with:
-          args: -w wowi-id 0
-
       - name: Package and release for Classic
         uses: BigWigsMods/packager@master
         with:
           args: -g 1.13.5 -w 0
+
+      - name: Package and release for Retail
+        uses: BigWigsMods/packager@master
+        with:
+          args: -w wowi-id 0
