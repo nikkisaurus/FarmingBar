@@ -1,4 +1,8 @@
 # Farming Bar
+## Version 2.1.4
+- Add Shadowlands templates: CLOTH, ENCHANT, FISHING, HERBS, LOCKBOX, MINING, SKIN
+- Add Lockbox templates for BC, Wrath, Cata, MoP, WoD, Legion, and BFA
+
 ## Version 2.1.3
 - ToC update
 
