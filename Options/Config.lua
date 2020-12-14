@@ -471,13 +471,14 @@ function addon:Config_LoadBarTab(tabContent)
         local scale = AceGUI:Create("Slider")
         scale:SetRelativeWidth(1/2)
         scale:SetLabel(L["Scale"])
-        scale:SetSliderValues(self.minScale, self.maxScale)
+        scale:SetSliderValues(self.minScale, self.maxScale, .01)
         scale:SetValue(barDB.scale)
         styleGroup:AddChild(scale)
 
         scale:SetCallback("OnValueChanged", function(self, ...)
             addon:SetBarDBInfo("scale", self:GetValue(), Config:GetSelectedBar())
             bar:SetScale()
+            self.editbox:ClearFocus()
         end)
 
         ------------------------------------------------------------
@@ -485,13 +486,14 @@ function addon:Config_LoadBarTab(tabContent)
         local alpha = AceGUI:Create("Slider")
         alpha:SetRelativeWidth(1/2)
         alpha:SetLabel(L["Alpha"])
-        alpha:SetSliderValues(0, 1)
+        alpha:SetSliderValues(0, 1, .01)
         alpha:SetValue(barDB.alpha)
         styleGroup:AddChild(alpha)
 
         alpha:SetCallback("OnValueChanged", function(self)
             addon:SetBarDBInfo("alpha", self:GetValue(), Config:GetSelectedBar())
             bar:SetAlpha()
+            self.editbox:ClearFocus()
         end)
 
         --*------------------------------------------------------------------------
@@ -611,6 +613,7 @@ function addon:Config_LoadButtonTab(tabContent)
         numVisibleButtons:SetCallback("OnValueChanged", function(self)
             addon:SetBarDBInfo("numVisibleButtons", self:GetValue(), Config:GetSelectedBar()) --! needs fixed to update buttons as added/removed
             bar:UpdateVisibleButtons()
+            self.editbox:ClearFocus()
         end)
 
         ------------------------------------------------------------
@@ -625,6 +628,7 @@ function addon:Config_LoadButtonTab(tabContent)
         buttonWrap:SetCallback("OnValueChanged", function(self)
             addon:SetBarDBInfo("buttonWrap", self:GetValue(), Config:GetSelectedBar()) --! needs fixed for when 1 button per
             bar:AnchorButtons()
+            self.editbox:ClearFocus()
         end)
 
         --*------------------------------------------------------------------------
@@ -647,6 +651,7 @@ function addon:Config_LoadButtonTab(tabContent)
         size:SetCallback("OnValueChanged", function(self)
             addon:SetBarDBInfo("button.size", self:GetValue(), Config:GetSelectedBar())
             bar:SetSize()
+            self.editbox:ClearFocus()
         end)
 
         ------------------------------------------------------------
@@ -662,6 +667,7 @@ function addon:Config_LoadButtonTab(tabContent)
             addon:SetBarDBInfo("button.padding", self:GetValue(), Config:GetSelectedBar())
             bar:SetSize()
             bar:AnchorButtons()
+            self.editbox:ClearFocus()
         end)
 
         ------------------------------------------------------------
