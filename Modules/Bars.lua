@@ -86,12 +86,11 @@ end
 function addon:ReindexButtons(barID)
     local bar = self.bars[barID]
     local buttons = bar:GetUserData("buttons")
-
-    ------------------------------------------------------------
-    -- Sort objectives
-
     local objectives = {}
 
+    ------------------------------------------------------------
+
+    -- Sort objectives
     for buttonID, button in pairs(buttons) do
         local objectiveTitle = button:GetObjectiveTitle()
         if objectiveTitle then
@@ -101,15 +100,20 @@ function addon:ReindexButtons(barID)
     end
 
     sort(objectives, function(a, b)
-        return a.objectiveTitle < b.objectiveTitle
+        return a.objectiveTitle == b.objectiveTitle and ((b.objective or 0) < (a.objective or 0)) or (a.objectiveTitle < b.objectiveTitle)
     end)
 
     ------------------------------------------------------------
-    -- Add objectives back to bar
 
+    -- Add objectives back to bar
     for i = 1, #objectives do
         buttons[i]:SetObjectiveID(objectives[i].objectiveTitle, objectives[i].objective)
     end
+
+    ------------------------------------------------------------
+
+    -- Return #objectives for SizeBarToButtons
+    return #objectives
 end
 
 ------------------------------------------------------------
@@ -225,4 +229,12 @@ function addon:SetBarDBInfo(key, value, barID, isCharDB)
     ------------------------------------------------------------
 
     self.Config:RefreshBars()
+end
+
+------------------------------------------------------------
+
+function addon:SizeBarToButtons(barID)
+    local numObjectives = self:ReindexButtons(barID)
+    self:SetBarDBInfo("numVisibleButtons", numObjectives, barID)
+    self.bars[barID]:UpdateVisibleButtons()
 end

@@ -791,10 +791,11 @@ function addon:Config_LoadButtonTab(tabContent)
         local sizeBarToButtons = AceGUI:Create("Button")
         sizeBarToButtons:SetRelativeWidth(1/3)
         sizeBarToButtons:SetText(L["Size Bar to Buttons"])
-        sizeBarToButtons:SetDisabled(true) -- ! temporary until implemented
         operationsGroup:AddChild(sizeBarToButtons)
 
-        sizeBarToButtons:SetCallback("OnClick", function() print("Size bar to buttons") end)
+        sizeBarToButtons:SetCallback("OnClick",function()
+            addon:SizeBarToButtons(barID)
+        end)
     end
 
     tabContent:DoLayout()
