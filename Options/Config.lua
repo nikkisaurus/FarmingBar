@@ -9,6 +9,24 @@ local Config = addon.Config
 
 --*------------------------------------------------------------------------
 
+local anchors = {
+    TOPLEFT = L["Topleft"],
+    TOP = L["Top"],
+    TOPRIGHT = L["Topright"],
+    LEFT = L["Left"],
+    CENTER = L["Center"],
+    RIGHT = L["Right"],
+    BOTTOMLEFT = L["Bottomleft"],
+    BOTTOM = L["Bottom"],
+    BOTTOMRIGHT = L["Bottomright"],
+}
+
+------------------------------------------------------------
+
+local anchorSort = {"TOPLEFT", "TOP", "TOPRIGHT", "LEFT", "CENTER", "RIGHT", "BOTTOMLEFT", "BOTTOM", "BOTTOMRIGHT"}
+
+------------------------------------------------------------
+
 local mainTabGroupTabs = {
     {text = L["Bar"], value = "barTab"},
     {text = L["Button"], value = "buttonTab"}
@@ -26,6 +44,38 @@ local function GetBarList()
 end
 
 --*------------------------------------------------------------------------
+
+local function buttonWrap_OnValueChanged(self)
+    local bar = addon.bars[Config:GetSelectedBar()]
+    addon:SetBarDBInfo("buttonWrap", self:GetValue(), Config:GetSelectedBar()) --! needs fixed for when 1 button per
+    bar:AnchorButtons()
+    self.editbox:ClearFocus()
+end
+
+------------------------------------------------------------
+
+local function countAnchor_OnValueChanged(self, _, selected)
+    addon:SetBarDBInfo("button.fontStrings.count.anchor", selected, Config:GetSelectedBar())
+    addon:UpdateButtons()
+end
+
+------------------------------------------------------------
+
+local function countXOffset_OnValueChanged(self)
+    addon:SetBarDBInfo("button.fontStrings.count.xOffset", self:GetValue(), Config:GetSelectedBar())
+    addon:UpdateButtons()
+    self.editbox:ClearFocus()
+end
+
+------------------------------------------------------------
+
+local function countYOffset_OnValueChanged(self)
+    addon:SetBarDBInfo("button.fontStrings.count.yOffset", self:GetValue(), Config:GetSelectedBar())
+    addon:UpdateButtons()
+    self.editbox:ClearFocus()
+end
+
+------------------------------------------------------------
 
 local function mainTabGroup_OnGroupSelected(self, _, selected)
     local barID = Config:GetSelectedBar()
@@ -53,8 +103,53 @@ end
 
 ------------------------------------------------------------
 
-local function removeBar_OnValueChanged(self, _, selected)
-    -- print(selected)
+local function numVisibleButtons_OnValueChanged(self)
+    local bar = addon.bars[Config:GetSelectedBar()]
+    addon:SetBarDBInfo("numVisibleButtons", self:GetValue(), Config:GetSelectedBar()) --! needs fixed to update buttons as added/removed (I don't remember what this comment was talking about??)
+    bar:UpdateVisibleButtons()
+    self.editbox:ClearFocus()
+end
+
+------------------------------------------------------------
+
+local function objectiveAnchor_OnValueChanged(self, _, selected)
+    addon:SetBarDBInfo("button.fontStrings.objective.anchor", selected, Config:GetSelectedBar())
+    addon:UpdateButtons()
+end
+
+------------------------------------------------------------
+
+local function objectiveXOffset_OnValueChanged(self)
+    addon:SetBarDBInfo("button.fontStrings.objective.xOffset", self:GetValue(), Config:GetSelectedBar())
+    addon:UpdateButtons()
+    self.editbox:ClearFocus()
+end
+
+------------------------------------------------------------
+
+local function objectiveYOffset_OnValueChanged(self)
+    addon:SetBarDBInfo("button.fontStrings.objective.yOffset", self:GetValue(), Config:GetSelectedBar())
+    addon:UpdateButtons()
+    self.editbox:ClearFocus()
+end
+
+------------------------------------------------------------
+
+local function padding_OnValueChanged(self)
+    local bar = addon.bars[Config:GetSelectedBar()]
+    addon:SetBarDBInfo("button.padding", self:GetValue(), Config:GetSelectedBar())
+    bar:SetSize()
+    bar:AnchorButtons()
+    self.editbox:ClearFocus()
+end
+
+------------------------------------------------------------
+
+local function size_OnValueChanged(self)
+    local bar = addon.bars[Config:GetSelectedBar()]
+    addon:SetBarDBInfo("button.size", self:GetValue(), Config:GetSelectedBar())
+    bar:SetSize()
+    self.editbox:ClearFocus()
 end
 
 ------------------------------------------------------------
@@ -572,11 +667,7 @@ function addon:Config_LoadButtonTab(tabContent)
         numVisibleButtons:SetValue(barDB.numVisibleButtons)
         buttonGroup:AddChild(numVisibleButtons)
 
-        numVisibleButtons:SetCallback("OnValueChanged", function(self)
-            addon:SetBarDBInfo("numVisibleButtons", self:GetValue(), Config:GetSelectedBar()) --! needs fixed to update buttons as added/removed
-            bar:UpdateVisibleButtons()
-            self.editbox:ClearFocus()
-        end)
+        numVisibleButtons:SetCallback("OnValueChanged", numVisibleButtons_OnValueChanged)
 
         ------------------------------------------------------------
 
@@ -587,11 +678,7 @@ function addon:Config_LoadButtonTab(tabContent)
         buttonWrap:SetValue(barDB.buttonWrap)
         buttonGroup:AddChild(buttonWrap)
 
-        buttonWrap:SetCallback("OnValueChanged", function(self)
-            addon:SetBarDBInfo("buttonWrap", self:GetValue(), Config:GetSelectedBar()) --! needs fixed for when 1 button per
-            bar:AnchorButtons()
-            self.editbox:ClearFocus()
-        end)
+        buttonWrap:SetCallback("OnValueChanged", buttonWrap_OnValueChanged)
 
         --*------------------------------------------------------------------------
 
@@ -610,11 +697,7 @@ function addon:Config_LoadButtonTab(tabContent)
         size:SetValue(barDB.button.size)
         styleGroup:AddChild(size)
 
-        size:SetCallback("OnValueChanged", function(self)
-            addon:SetBarDBInfo("button.size", self:GetValue(), Config:GetSelectedBar())
-            bar:SetSize()
-            self.editbox:ClearFocus()
-        end)
+        size:SetCallback("OnValueChanged", size_OnValueChanged)
 
         ------------------------------------------------------------
 
@@ -625,12 +708,7 @@ function addon:Config_LoadButtonTab(tabContent)
         padding:SetValue(barDB.button.padding)
         styleGroup:AddChild(padding)
 
-        padding:SetCallback("OnValueChanged", function(self)
-            addon:SetBarDBInfo("button.padding", self:GetValue(), Config:GetSelectedBar())
-            bar:SetSize()
-            bar:AnchorButtons()
-            self.editbox:ClearFocus()
-        end)
+        padding:SetCallback("OnValueChanged", padding_OnValueChanged)
 
         ------------------------------------------------------------
 
@@ -644,27 +722,11 @@ function addon:Config_LoadButtonTab(tabContent)
         local countAnchor = AceGUI:Create("Dropdown")
         countAnchor:SetFullWidth(true)
         countAnchor:SetLabel(L["Anchor"])
-        countAnchor:SetList(
-            {
-                TOPLEFT = L["Topleft"],
-                TOP = L["Top"],
-                TOPRIGHT = L["Topright"],
-                LEFT = L["Left"],
-                CENTER = L["Center"],
-                RIGHT = L["Right"],
-                BOTTOMLEFT = L["Bottomleft"],
-                BOTTOM = L["Bottom"],
-                BOTTOMRIGHT = L["Bottomright"],
-            },
-            {"TOPLEFT", "TOP", "TOPRIGHT", "LEFT", "CENTER", "RIGHT", "BOTTOMLEFT", "BOTTOM", "BOTTOMRIGHT"}
-        )
+        countAnchor:SetList(anchors, anchorSort)
         countAnchor:SetValue(barDB.button.fontStrings.count.anchor)
         styleGroup:AddChild(countAnchor)
 
-        countAnchor:SetCallback("OnValueChanged", function(self, _, selected)
-            addon:SetBarDBInfo("button.fontStrings.count.anchor", selected, Config:GetSelectedBar())
-            addon:UpdateButtons()
-        end)
+        countAnchor:SetCallback("OnValueChanged", countAnchor_OnValueChanged)
 
         ------------------------------------------------------------
 
@@ -675,11 +737,7 @@ function addon:Config_LoadButtonTab(tabContent)
         countXOffset:SetValue(barDB.button.fontStrings.count.xOffset)
         styleGroup:AddChild(countXOffset)
 
-        countXOffset:SetCallback("OnValueChanged", function(self)
-            addon:SetBarDBInfo("button.fontStrings.count.xOffset", self:GetValue(), Config:GetSelectedBar())
-            addon:UpdateButtons()
-            self.editbox:ClearFocus()
-        end)
+        countXOffset:SetCallback("OnValueChanged", countXOffset_OnValueChanged)
 
         ------------------------------------------------------------
 
@@ -690,11 +748,7 @@ function addon:Config_LoadButtonTab(tabContent)
         countYOffset:SetValue(barDB.button.fontStrings.count.yOffset)
         styleGroup:AddChild(countYOffset)
 
-        countYOffset:SetCallback("OnValueChanged", function(self)
-            addon:SetBarDBInfo("button.fontStrings.count.yOffset", self:GetValue(), Config:GetSelectedBar())
-            addon:UpdateButtons()
-            self.editbox:ClearFocus()
-        end)
+        countYOffset:SetCallback("OnValueChanged", countYOffset_OnValueChanged)
 
         ------------------------------------------------------------
 
@@ -708,27 +762,11 @@ function addon:Config_LoadButtonTab(tabContent)
         local objectiveAnchor = AceGUI:Create("Dropdown")
         objectiveAnchor:SetFullWidth(true)
         objectiveAnchor:SetLabel(L["Anchor"])
-        objectiveAnchor:SetList(
-            {
-                TOPLEFT = L["Topleft"],
-                TOP = L["Top"],
-                TOPRIGHT = L["Topright"],
-                LEFT = L["Left"],
-                CENTER = L["Center"],
-                RIGHT = L["Right"],
-                BOTTOMLEFT = L["Bottomleft"],
-                BOTTOM = L["Bottom"],
-                BOTTOMRIGHT = L["Bottomright"],
-            },
-            {"TOPLEFT", "TOP", "TOPRIGHT", "LEFT", "CENTER", "RIGHT", "BOTTOMLEFT", "BOTTOM", "BOTTOMRIGHT"}
-        )
+        objectiveAnchor:SetList(anchors, anchorSort)
         objectiveAnchor:SetValue(barDB.button.fontStrings.objective.anchor)
         styleGroup:AddChild(objectiveAnchor)
 
-        objectiveAnchor:SetCallback("OnValueChanged", function(self, _, selected)
-            addon:SetBarDBInfo("button.fontStrings.objective.anchor", selected, Config:GetSelectedBar())
-            addon:UpdateButtons()
-        end)
+        objectiveAnchor:SetCallback("OnValueChanged", objectiveAnchor_OnValueChanged)
 
         ------------------------------------------------------------
 
@@ -739,11 +777,7 @@ function addon:Config_LoadButtonTab(tabContent)
         objectiveXOffset:SetValue(barDB.button.fontStrings.objective.xOffset)
         styleGroup:AddChild(objectiveXOffset)
 
-        objectiveXOffset:SetCallback("OnValueChanged", function(self)
-            addon:SetBarDBInfo("button.fontStrings.objective.xOffset", self:GetValue(), Config:GetSelectedBar())
-            addon:UpdateButtons()
-            self.editbox:ClearFocus()
-        end)
+        objectiveXOffset:SetCallback("OnValueChanged", objectiveXOffset_OnValueChanged)
 
         ------------------------------------------------------------
 
@@ -754,11 +788,7 @@ function addon:Config_LoadButtonTab(tabContent)
         objectiveYOffset:SetValue(barDB.button.fontStrings.objective.yOffset)
         styleGroup:AddChild(objectiveYOffset)
 
-        objectiveYOffset:SetCallback("OnValueChanged", function(self)
-            addon:SetBarDBInfo("button.fontStrings.objective.yOffset", self:GetValue(), Config:GetSelectedBar())
-            addon:UpdateButtons()
-            self.editbox:ClearFocus()
-        end)
+        objectiveYOffset:SetCallback("OnValueChanged", objectiveYOffset_OnValueChanged)
 
         --*------------------------------------------------------------------------
 
@@ -775,9 +805,7 @@ function addon:Config_LoadButtonTab(tabContent)
         clearButtons:SetText(L["Clear Buttons"])
         operationsGroup:AddChild(clearButtons)
 
-        clearButtons:SetCallback("OnClick", function()
-            addon:ClearBar(barID)
-        end)
+        clearButtons:SetCallback("OnClick", function() addon:ClearBar(barID) end)
 
         ------------------------------------------------------------
 
@@ -786,9 +814,7 @@ function addon:Config_LoadButtonTab(tabContent)
         reindexButtons:SetText(L["Reindex Buttons"])
         operationsGroup:AddChild(reindexButtons)
 
-        reindexButtons:SetCallback("OnClick", function()
-            addon:ReindexButtons(barID)
-        end)
+        reindexButtons:SetCallback("OnClick", function() addon:ReindexButtons(barID) end)
 
         ------------------------------------------------------------
 
@@ -797,9 +823,7 @@ function addon:Config_LoadButtonTab(tabContent)
         sizeBarToButtons:SetText(L["Size Bar to Buttons"])
         operationsGroup:AddChild(sizeBarToButtons)
 
-        sizeBarToButtons:SetCallback("OnClick",function()
-            addon:SizeBarToButtons(barID)
-        end)
+        sizeBarToButtons:SetCallback("OnClick",function() addon:SizeBarToButtons(barID) end)
     end
 
     tabContent:DoLayout()
