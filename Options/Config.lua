@@ -659,11 +659,11 @@ function addon:Config_LoadButtonTab(tabContent)
             {"TOPLEFT", "TOP", "TOPRIGHT", "LEFT", "CENTER", "RIGHT", "BOTTOMLEFT", "BOTTOM", "BOTTOMRIGHT"}
         )
         countAnchor:SetValue(barDB.button.fontStrings.count.anchor)
-        countAnchor:SetDisabled(true) -- ! temporary until implemented
         styleGroup:AddChild(countAnchor)
 
         countAnchor:SetCallback("OnValueChanged", function(self, _, selected)
             addon:SetBarDBInfo("button.fontStrings.count.anchor", selected, Config:GetSelectedBar())
+            addon:UpdateButtons()
         end)
 
         ------------------------------------------------------------
@@ -673,11 +673,12 @@ function addon:Config_LoadButtonTab(tabContent)
         countXOffset:SetLabel(L["X Offset"])
         countXOffset:SetSliderValues(-self.OffsetX, self.OffsetX, 1)
         countXOffset:SetValue(barDB.button.fontStrings.count.xOffset)
-        countXOffset:SetDisabled(true) -- ! temporary until implemented
         styleGroup:AddChild(countXOffset)
 
         countXOffset:SetCallback("OnValueChanged", function(self)
             addon:SetBarDBInfo("button.fontStrings.count.xOffset", self:GetValue(), Config:GetSelectedBar())
+            addon:UpdateButtons()
+            self.editbox:ClearFocus()
         end)
 
         ------------------------------------------------------------
@@ -687,11 +688,12 @@ function addon:Config_LoadButtonTab(tabContent)
         countYOffset:SetLabel(L["Y Offset"])
         countYOffset:SetSliderValues(-self.OffsetY, self.OffsetY, 1)
         countYOffset:SetValue(barDB.button.fontStrings.count.yOffset)
-        countYOffset:SetDisabled(true) -- ! temporary until implemented
         styleGroup:AddChild(countYOffset)
 
         countYOffset:SetCallback("OnValueChanged", function(self)
             addon:SetBarDBInfo("button.fontStrings.count.yOffset", self:GetValue(), Config:GetSelectedBar())
+            addon:UpdateButtons()
+            self.editbox:ClearFocus()
         end)
 
         ------------------------------------------------------------
@@ -721,11 +723,11 @@ function addon:Config_LoadButtonTab(tabContent)
             {"TOPLEFT", "TOP", "TOPRIGHT", "LEFT", "CENTER", "RIGHT", "BOTTOMLEFT", "BOTTOM", "BOTTOMRIGHT"}
         )
         objectiveAnchor:SetValue(barDB.button.fontStrings.objective.anchor)
-        objectiveAnchor:SetDisabled(true) -- ! temporary until implemented
         styleGroup:AddChild(objectiveAnchor)
 
         objectiveAnchor:SetCallback("OnValueChanged", function(self, _, selected)
             addon:SetBarDBInfo("button.fontStrings.objective.anchor", selected, Config:GetSelectedBar())
+            addon:UpdateButtons()
         end)
 
         ------------------------------------------------------------
@@ -735,11 +737,12 @@ function addon:Config_LoadButtonTab(tabContent)
         objectiveXOffset:SetLabel(L["X Offset"])
         objectiveXOffset:SetSliderValues(-self.OffsetX, self.OffsetX, 1)
         objectiveXOffset:SetValue(barDB.button.fontStrings.objective.xOffset)
-        objectiveXOffset:SetDisabled(true) -- ! temporary until implemented
         styleGroup:AddChild(objectiveXOffset)
 
         objectiveXOffset:SetCallback("OnValueChanged", function(self)
             addon:SetBarDBInfo("button.fontStrings.objective.xOffset", self:GetValue(), Config:GetSelectedBar())
+            addon:UpdateButtons()
+            self.editbox:ClearFocus()
         end)
 
         ------------------------------------------------------------
@@ -749,11 +752,12 @@ function addon:Config_LoadButtonTab(tabContent)
         objectiveYOffset:SetLabel(L["Y Offset"])
         objectiveYOffset:SetSliderValues(-self.OffsetY, self.OffsetY, 1)
         objectiveYOffset:SetValue(barDB.button.fontStrings.objective.yOffset)
-        objectiveYOffset:SetDisabled(true) -- ! temporary until implemented
         styleGroup:AddChild(objectiveYOffset)
 
         objectiveYOffset:SetCallback("OnValueChanged", function(self)
             addon:SetBarDBInfo("button.fontStrings.objective.yOffset", self:GetValue(), Config:GetSelectedBar())
+            addon:UpdateButtons()
+            self.editbox:ClearFocus()
         end)
 
         --*------------------------------------------------------------------------

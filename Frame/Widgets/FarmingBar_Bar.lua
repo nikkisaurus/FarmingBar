@@ -334,6 +334,8 @@ local function Constructor()
     anchor:SetScript("OnDragStop", anchor_OnDragStop)
     anchor:SetScript("PostClick", anchor_PostClick)
 
+    anchor:SetFrameStrata("MEDIUM")
+
     local FloatingBG = anchor:CreateTexture("$parentFloatingBG", "BACKGROUND")
     FloatingBG:SetAllPoints(anchor)
 

@@ -341,7 +341,7 @@ function addon:GetDefaultBar()
             fontStrings = {
                 count = {
                     anchor = "BOTTOM",
-                    xOffset = 1,
+                    xOffset = -1,
                     yOffset = 6,
                 },
                 objective = {

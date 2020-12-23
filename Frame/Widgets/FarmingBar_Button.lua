@@ -6,7 +6,7 @@ local LSM = LibStub("LibSharedMedia-3.0")
 
 local _G = _G
 local fmod, floor = math.fmod, math.floor
-local format, tonumber = string.format, tonumber
+local format, strlower, tonumber = string.format, string.lower, tonumber
 
 --*------------------------------------------------------------------------
 
@@ -484,6 +484,19 @@ local methods = {
 
     ------------------------------------------------------------
 
+    SetFontStringAnchor = function(self, fontString)
+        if not self:GetUserData("barDB") then return end
+        local db = self:GetUserData("barDB").button.fontStrings[strlower(fontString)]
+
+        self[fontString]:ClearAllPoints()
+        self[fontString]:SetSize(0, 0)
+
+        self[fontString]:SetPoint(db.anchor, self.frame, db.anchor, db.xOffset, db.yOffset)
+        self[fontString]:SetJustifyH((db.anchor:find("RIGHT") and "RIGHT") or (db.anchor:find("LEFT") and "LEFT") or "CENTER")
+    end,
+
+    ------------------------------------------------------------
+
     SetHidden = function(self)
         if self:GetUserData("barDB").hidden then
             self.frame:Hide()
@@ -609,7 +622,9 @@ local methods = {
 
     UpdateLayers = function(self)
         self:SetIcon()
+        self:SetFontStringAnchor("Count")
         self:SetCount()
+        self:SetFontStringAnchor("Objective")
         self:UpdateObjective()
         self:UpdateAutoCastable()
         self:UpdateBorder()
@@ -679,15 +694,9 @@ local function Constructor()
 
     local Count = frame:CreateFontString(nil, "OVERLAY", nil, 3)
     Count:SetFont([[Fonts\FRIZQT__.TTF]], 12, "OUTLINE")
-    Count:SetPoint("BOTTOMRIGHT", -2, 2)
-    Count:SetPoint("BOTTOMLEFT", 2, 2)
-    Count:SetJustifyH("RIGHT")
 
     local Objective = frame:CreateFontString(nil, "OVERLAY", nil, 3)
     Objective:SetFont([[Fonts\FRIZQT__.TTF]], 12, "OUTLINE")
-    Objective:SetPoint("TOPLEFT", 2, -2)
-    Objective:SetPoint("TOPRIGHT", -2, -2)
-    Objective:SetJustifyH("LEFT")
 
     local Cooldown = CreateFrame("Cooldown", "$parentCooldown", frame, "CooldownFrameTemplate")
     Cooldown:SetAllPoints(frame)

@@ -1,5 +1,8 @@
 # Farming Bar
 ## Version 3.0
+### 3.0-alpha3
+- Reimplement button customizations
+
 ### 3.0-alpha2
 - Convert saved bars from character to profile specific
 
