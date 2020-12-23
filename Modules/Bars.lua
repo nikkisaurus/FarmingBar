@@ -3,7 +3,7 @@ local FarmingBar = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
 local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 
-local tinsert, pairs, wipe = table.insert, pairs, table.wipe
+local sort, tinsert, pairs, wipe = table.sort, table.insert, pairs, table.wipe
 
 --*------------------------------------------------------------------------
 
@@ -37,6 +37,19 @@ end
 
 ------------------------------------------------------------
 
+function addon:ClearBar(barID)
+    local bar = self.bars[barID]
+    local buttons = bar:GetUserData("buttons")
+
+    for _, button in pairs(buttons) do
+        if button:GetObjectiveTitle() then
+            button:ClearObjective()
+        end
+    end
+end
+
+------------------------------------------------------------
+
 function addon:GetBarTitle(barID)
     if barID == 0 then return L["All Bars"] end
 
@@ -65,6 +78,37 @@ function addon:LoadBar(barID)
     local Config = addon.Config
     if Config then
         Config:RefreshBars()
+    end
+end
+
+------------------------------------------------------------
+
+function addon:ReindexButtons(barID)
+    local bar = self.bars[barID]
+    local buttons = bar:GetUserData("buttons")
+
+    ------------------------------------------------------------
+    -- Sort objectives
+
+    local objectives = {}
+
+    for buttonID, button in pairs(buttons) do
+        local objectiveTitle = button:GetObjectiveTitle()
+        if objectiveTitle then
+            tinsert(objectives, FarmingBar.db.char.bars[barID].objectives[buttonID])
+            button:ClearObjective()
+        end
+    end
+
+    sort(objectives, function(a, b)
+        return a.objectiveTitle < b.objectiveTitle
+    end)
+
+    ------------------------------------------------------------
+    -- Add objectives back to bar
+
+    for i = 1, #objectives do
+        buttons[i]:SetObjectiveID(objectives[i].objectiveTitle, objectives[i].objective)
     end
 end
 

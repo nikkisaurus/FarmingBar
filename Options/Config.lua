@@ -557,44 +557,6 @@ function addon:Config_LoadButtonTab(tabContent)
 
     if barID == 0 then
     elseif barID then
-        local operationsGroup = AceGUI:Create("InlineGroup")
-        operationsGroup:SetFullWidth(true)
-        operationsGroup:SetTitle(L["Operations"])
-        operationsGroup:SetLayout("Flow")
-        tabContent:AddChild(operationsGroup)
-
-        ------------------------------------------------------------
-
-        local clearButtons = AceGUI:Create("Button")
-        clearButtons:SetRelativeWidth(1/3)
-        clearButtons:SetText(L["Clear Buttons"])
-        clearButtons:SetDisabled(true) -- ! temporary until implemented
-        operationsGroup:AddChild(clearButtons)
-
-        clearButtons:SetCallback("OnClick", function() print("Clear buttons") end)
-
-        ------------------------------------------------------------
-
-        local reindexButtons = AceGUI:Create("Button")
-        reindexButtons:SetRelativeWidth(1/3)
-        reindexButtons:SetText(L["Reindex Buttons"])
-        reindexButtons:SetDisabled(true) -- ! temporary until implemented
-        operationsGroup:AddChild(reindexButtons)
-
-        reindexButtons:SetCallback("OnClick", function() print("Reindex buttons") end)
-
-        ------------------------------------------------------------
-
-        local sizeBarToButtons = AceGUI:Create("Button")
-        sizeBarToButtons:SetRelativeWidth(1/3)
-        sizeBarToButtons:SetText(L["Size Bar to Buttons"])
-        sizeBarToButtons:SetDisabled(true) -- ! temporary until implemented
-        operationsGroup:AddChild(sizeBarToButtons)
-
-        sizeBarToButtons:SetCallback("OnClick", function() print("Size bar to buttons") end)
-
-        --*------------------------------------------------------------------------
-
         local buttonGroup = AceGUI:Create("InlineGroup")
         buttonGroup:SetFullWidth(true)
         buttonGroup:SetTitle(L["Buttons"])
@@ -793,6 +755,46 @@ function addon:Config_LoadButtonTab(tabContent)
         objectiveYOffset:SetCallback("OnValueChanged", function(self)
             addon:SetBarDBInfo("button.fontStrings.objective.yOffset", self:GetValue(), Config:GetSelectedBar())
         end)
+
+        --*------------------------------------------------------------------------
+
+        local operationsGroup = AceGUI:Create("InlineGroup")
+        operationsGroup:SetFullWidth(true)
+        operationsGroup:SetTitle(L["Operations"])
+        operationsGroup:SetLayout("Flow")
+        tabContent:AddChild(operationsGroup)
+
+        ------------------------------------------------------------
+
+        local clearButtons = AceGUI:Create("Button")
+        clearButtons:SetRelativeWidth(1/3)
+        clearButtons:SetText(L["Clear Buttons"])
+        operationsGroup:AddChild(clearButtons)
+
+        clearButtons:SetCallback("OnClick", function()
+            addon:ClearBar(barID)
+        end)
+
+        ------------------------------------------------------------
+
+        local reindexButtons = AceGUI:Create("Button")
+        reindexButtons:SetRelativeWidth(1/3)
+        reindexButtons:SetText(L["Reindex Buttons"])
+        operationsGroup:AddChild(reindexButtons)
+
+        reindexButtons:SetCallback("OnClick", function()
+            addon:ReindexButtons(barID)
+        end)
+
+        ------------------------------------------------------------
+
+        local sizeBarToButtons = AceGUI:Create("Button")
+        sizeBarToButtons:SetRelativeWidth(1/3)
+        sizeBarToButtons:SetText(L["Size Bar to Buttons"])
+        sizeBarToButtons:SetDisabled(true) -- ! temporary until implemented
+        operationsGroup:AddChild(sizeBarToButtons)
+
+        sizeBarToButtons:SetCallback("OnClick", function() print("Size bar to buttons") end)
     end
 
     tabContent:DoLayout()
