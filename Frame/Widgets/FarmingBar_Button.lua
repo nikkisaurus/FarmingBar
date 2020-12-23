@@ -53,7 +53,9 @@ local postClickMethods = {
     end,
 
     showObjectiveEditBox = function(self, ...)
-        self.obj.objectiveEditBox:Show()
+        if self.obj:GetObjectiveTitle() then
+            self.obj.objectiveEditBox:Show()
+        end
     end,
 }
 
