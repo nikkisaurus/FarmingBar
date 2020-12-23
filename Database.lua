@@ -78,16 +78,6 @@ function addon:Initialize_DB()
 
                 ------------------------------------------------------------
 
-                objectives = {
-                    overwriteQuickObjectives = {
-                        enabled = false, -- when enabled, overwrites every time; if disabled, creates a new objective every time
-                        prompt = true, -- always prompt to overwrite or use existing
-                        useExisting = false, -- when enabled, never overwrite; when disabled, overwrite
-                    },
-                },
-
-                ------------------------------------------------------------
-
                 templates = {
                     preserveData = {
                         enabled = false, -- global.template.includeData
@@ -104,6 +94,11 @@ function addon:Initialize_DB()
                 misc = {
                     autoLootOnUse = false, -- global.autoLootItems
                     filterOBAutoItems = false, -- hides auto added items from ObjectiveBuilder list
+                    overwriteQuickObjectives = {
+                        enabled = false, -- when enabled, overwrites every time; if disabled, creates a new objective every time
+                        prompt = true, -- always prompt to overwrite or use existing
+                        useExisting = false, -- when enabled, never overwrite; when disabled, overwrite
+                    },
                 },
             },
 

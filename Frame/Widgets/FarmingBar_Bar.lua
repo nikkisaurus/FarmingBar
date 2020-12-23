@@ -157,9 +157,6 @@ local methods = {
 
     ApplySkin = function(self)
         addon:SkinBar(self, FarmingBar.db.profile.style.skin)
-        for _, button in pairs(self:GetUserData("buttons")) do
-            button:ApplySkin()
-        end
     end,
 
     ------------------------------------------------------------
@@ -282,10 +279,10 @@ local methods = {
     SetSize = function(self)
         local frameSize = self:GetUserData("barDB").button.size
         local paddingSize = (3/20 * frameSize)
-        local buttonSize = (frameSize - (paddingSize * 3)) / 2
+        local buttonSize = ((frameSize - (paddingSize * 3)) / 2) * .9
         local fontSize = frameSize / 3
 
-        self.frame:SetSize(frameSize, frameSize)
+        self.frame:SetSize(frameSize * .9, frameSize * .9)
 
         self.addButton:SetSize(buttonSize, buttonSize)
         self.addButton:SetPoint("TOPLEFT", paddingSize, -paddingSize)

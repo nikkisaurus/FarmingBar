@@ -146,7 +146,39 @@ function addon:GetSettingsOptions()
             type = "group",
             name = L["Global"],
             args = {
+                alerts = {
+                    order = 1,
+                    type = "group",
+                    name = L["Alerts"],
+                    args = {},
+                },
 
+                ------------------------------------------------------------
+
+                keybinds = {
+                    order = 2,
+                    type = "group",
+                    name = L["Keybinds"],
+                    args = {},
+                },
+
+                ------------------------------------------------------------
+
+                templates = {
+                    order = 3,
+                    type = "group",
+                    name = L["Templates"],
+                    args = {},
+                },
+
+                ------------------------------------------------------------
+
+                misc = {
+                    order = 4,
+                    type = "group",
+                    name = L["Miscellaneous"],
+                    args = {},
+                },
             },
         },
 
@@ -174,51 +206,101 @@ function addon:GetSettingsOptions()
 
                 ------------------------------------------------------------
 
-                style = {
-                    order = 1,
+                skin = {
+                    order = 2,
+                    type = "select",
+                    style = "dropdown",
+                    width = "full",
+                    name = L["Skin"],
+                    desc = L.Options_settings_profile_style_skin,
+                    values = function(info)
+                        local info = {
+                            FarmingBar_Default = "FarmingBar_Default",
+                            FarmingBar_Minimal = "FarmingBar_Minimal",
+                        }
+
+                        for k, _ in pairs(FarmingBar.db.global.skins) do
+                            info[k] = k
+                        end
+
+                        return info
+                    end,
+                    sorting = function(info)
+                        local info = {"FarmingBar_Default", "FarmingBar_Minimal"}
+
+                        for k, _ in self.pairs(FarmingBar.db.global.skins) do
+                            tinsert(info, k)
+                        end
+
+                        return info
+                    end,
+                    get = function(...)
+                        return self:GetDBValue("profile", "style.skin")
+                    end,
+                    set = function(_, value)
+                        self:SetDBValue("profile", "style.skin", value)
+                        self:UpdateBars()
+                    end,
+                },
+
+                ------------------------------------------------------------
+
+                buttonLayers = {
+                    order = 3,
                     type = "group",
                     inline = true,
-                    name = L["Style"],
+                    name = L["Button Layers"],
+                    get = function(info)
+                        return self:GetDBValue("profile", "style.buttonLayers."..info[#info])
+                    end,
+                    set = function(info, value)
+                        self:SetDBValue("profile", "style.buttonLayers."..info[#info], value)
+                        self:UpdateBars()
+                    end,
                     args = {
-                        skin = {
+                        AutoCastable = {
                             order = 1,
-                            type = "select",
-                            style = "dropdown",
-                            width = "full",
-                            name = L["Skin"],
-                            desc = L.Options_settings_profile_style_skin,
-                            values = function(info)
-                                local info = {
-                                    FarmingBar_Default = "FarmingBar_Default",
-                                    FarmingBar_Minimal = "FarmingBar_Minimal",
-                                }
+                            type = "toggle",
+                            name = L["Bank Overlay"],
+                        },
 
-                                for k, _ in pairs(FarmingBar.db.global.skins) do
-                                    info[k] = k
-                                end
+                        ------------------------------------------------------------
 
-                                return info
-                            end,
-                            sorting = function(info)
-                                local info = {"FarmingBar_Default", "FarmingBar_Minimal"}
+                        Border = {
+                            order = 2,
+                            type = "toggle",
+                            name = L["Item Quality"],
+                        },
 
-                                for k, _ in self.pairs(FarmingBar.db.global.skins) do
-                                    tinsert(info, k)
-                                end
+                        ------------------------------------------------------------
 
-                                return info
-                            end,
-                            get = function(...)
-                                return self:GetDBValue("profile", "style.skin")
-                            end,
-                            set = function(_, value)
-                                self:SetDBValue("profile", "style.skin", value)
-                                self:UpdateBarSkins()
-                            end,
+                        Cooldown = {
+                            order = 3,
+                            type = "toggle",
+                            name = L["Cooldown"],
+                        },
+
+                        ------------------------------------------------------------
+
+                        CooldownEdge = {
+                            order = 4,
+                            type = "toggle",
+                            name = L["Cooldown Edge"],
                         },
                     },
                 },
 
+                ------------------------------------------------------------
+
+                fonts = {
+                    order = 4,
+                    type = "group",
+                    inline = true,
+                    name = L["Fonts"],
+                    args = {
+
+                    },
+                },
             },
         },
     }

@@ -91,7 +91,7 @@ function addon:CreateObjectiveFromCursor()
         tinsert(defaultInfo.trackers, tracker)
 
         local objectiveTitle = "item:"..(select(1, GetItemInfo(cursorID)))
-        local overwriteQuickObjectives = FarmingBar.db.global.settings.objectives.overwriteQuickObjectives
+        local overwriteQuickObjectives = FarmingBar.db.global.settings.misc.overwriteQuickObjectives
 
         if addon:GetObjectiveInfo(objectiveTitle) and overwriteQuickObjectives.prompt then
             local dialog = StaticPopup_Show("FARMINGBAR_CONFIRM_OVERWRITE_OBJECTIVE", objectiveTitle)

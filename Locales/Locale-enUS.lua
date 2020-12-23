@@ -188,9 +188,17 @@ L["Remove Bar"] = true
 ------------------------------------------------------------
 
 -- Options\Options.lua
+L["Bank Overlay"] = true
 L["Bars"] = true
+L["Button Layers"] = true
 L["Commands"] = true
+L["Cooldown"] = true
+L["Cooldown Edge"] = true
+L["Fonts"] = true
 L["Global"] = true
+L["Item Quality"] = true
+L["Keybinds"] = true
+L["Miscellaneous"] = true
 L["Modules"] = true
 L["Objectives"] = true
 L["Open"] = true

@@ -359,7 +359,7 @@ local methods = {
 
     ApplySkin = function(self)
         addon:SkinButton(self, FarmingBar.db.profile.style.skin)
-        self:SetIcon()
+        self:UpdateLayers()
     end,
 
     ------------------------------------------------------------
@@ -637,6 +637,7 @@ local methods = {
     ------------------------------------------------------------
 
     UpdateLayers = function(self)
+        addon:SkinButton(self, FarmingBar.db.profile.style.skin)
         self:SetIcon()
         self:SetFontStringAnchor("Count")
         self:SetCount()
