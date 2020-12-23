@@ -20,6 +20,8 @@ local postClickMethods = {
         self.obj:ClearObjective()
     end,
 
+    ------------------------------------------------------------
+
     includeBank = function(self, ...)
         local widget = self.obj
         local objectiveTitle = widget:GetUserData("objectiveTitle")
@@ -31,6 +33,8 @@ local postClickMethods = {
             -- TODO: Alert bar progress if changed
         end
     end,
+
+    ------------------------------------------------------------
 
     moveObjective = function(self, ...)
         local widget = self.obj
@@ -48,9 +52,13 @@ local postClickMethods = {
         end
     end,
 
+    ------------------------------------------------------------
+
     showObjectiveBuilder = function(self, ...)
         addon.ObjectiveBuilder:Load(self.obj:GetUserData("objectiveTitle"))
     end,
+
+    ------------------------------------------------------------
 
     showObjectiveEditBox = function(self, ...)
         if self.obj:GetObjectiveTitle() then
@@ -320,7 +328,6 @@ local methods = {
         self.objectiveEditBox:Hide()
         self.quickAddEditBox:Hide()
 
-        addon:SkinButton(self, FarmingBar.db.profile.style.skin)
         self:UpdateLayers()
     end,
 
@@ -346,6 +353,13 @@ local methods = {
                 self:SetPoint(anchor, buttons[buttonID - 1].frame, relativeAnchor, xOffset * barDB.button.padding, yOffset * barDB.button.padding)
             end
         end
+    end,
+
+    ------------------------------------------------------------
+
+    ApplySkin = function(self)
+        addon:SkinButton(self, FarmingBar.db.profile.style.skin)
+        self:SetIcon()
     end,
 
     ------------------------------------------------------------

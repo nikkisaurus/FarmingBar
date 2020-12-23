@@ -67,6 +67,7 @@ function FarmingBar:OnEnable()
     addon:Initialize_Masque()
     addon:Initialize_Bars()
     addon:InitializeConfig()
+    addon:InitializeOptions()
     addon:ClearDeletedObjectives()
     -- TODO: addon:Initialize_Options()
 end
@@ -95,6 +96,7 @@ function FarmingBar:SlashCommandFunc(input)
     elseif cmd == "CONFIG" then
         addon.Config:Load()
     else
+        LibStub("AceConfigDialog-3.0"):Open(addonName)
         self:Print([[Currently available commands: "build", "bar add", "bar remove barID", "config"]])
     end
 end

@@ -238,3 +238,11 @@ function addon:SizeBarToButtons(barID)
     self:SetBarDBInfo("numVisibleButtons", numObjectives, barID)
     self.bars[barID]:UpdateVisibleButtons()
 end
+
+------------------------------------------------------------
+
+function addon:UpdateBarSkins()
+    for _, bar in pairs(self.bars) do
+        bar:ApplySkin()
+    end
+end

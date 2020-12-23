@@ -2,6 +2,7 @@ local addonName, addon = ...
 local FarmingBar = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
 local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
+local ACD = LibStub("AceConfigDialog-3.0")
 
 local abs, fmod = math.abs, math.fmod
 local CreateFrame, UIParent = CreateFrame, UIParent
@@ -17,6 +18,8 @@ local postClickMethods = {
         addon.Config:Load(self.obj:GetUserData("barID"))
     end,
 
+    ------------------------------------------------------------
+
     toggleMovable = function(self, ...)
         local widget = self.obj
         local barID = widget:GetBarID()
@@ -26,12 +29,18 @@ local postClickMethods = {
         FarmingBar:Print(L.ToggleMovable(addon:GetBarTitle(barID), widget:GetUserData("barDB").movable))
     end,
 
+    ------------------------------------------------------------
+
     openSettings = function(self, ...)
-        print("Open settings")
+        ACD:SelectGroup(addonName, "settings")
+        ACD:Open(addonName)
     end,
 
+    ------------------------------------------------------------
+
     openHelp = function(self, ...)
-        print("Open help")
+        ACD:SelectGroup(addonName, "help")
+        ACD:Open(addonName)
     end,
 }
 
@@ -148,6 +157,9 @@ local methods = {
 
     ApplySkin = function(self)
         addon:SkinBar(self, FarmingBar.db.profile.style.skin)
+        for _, button in pairs(self:GetUserData("buttons")) do
+            button:ApplySkin()
+        end
     end,
 
     ------------------------------------------------------------

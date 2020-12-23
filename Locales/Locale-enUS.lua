@@ -187,6 +187,23 @@ L["Remove Bar"] = true
 
 ------------------------------------------------------------
 
+-- Options\Options.lua
+L["Bars"] = true
+L["Commands"] = true
+L["Global"] = true
+L["Modules"] = true
+L["Objectives"] = true
+L["Open"] = true
+L["Profile"] = true
+L["Settings"] = true
+L["Skin"] = true
+L["Style Editor"] = true
+L["Templates"] = true
+
+L.Options_settings_profile_style_skin = ""
+
+------------------------------------------------------------
+
 -- Frame\Widgets\FarmingBar_BarButton.lua
 L["Alerts"] = true
 L["All Bars"] = true
