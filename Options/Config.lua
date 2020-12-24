@@ -714,7 +714,7 @@ function addon:Config_LoadButtonTab(tabContent)
 
         local countText = AceGUI:Create("Heading")
         countText:SetFullWidth(true)
-        countText:SetText(L["Count Text"])
+        countText:SetText(L["Count Fontstring"])
         styleGroup:AddChild(countText)
 
         ------------------------------------------------------------
@@ -754,7 +754,7 @@ function addon:Config_LoadButtonTab(tabContent)
 
         local objectiveText = AceGUI:Create("Heading")
         objectiveText:SetFullWidth(true)
-        objectiveText:SetText(L["Objective Text"])
+        objectiveText:SetText(L["Objective Fontstring"])
         styleGroup:AddChild(objectiveText)
 
         ------------------------------------------------------------

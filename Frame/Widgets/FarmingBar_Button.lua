@@ -488,19 +488,25 @@ local methods = {
 
         if not objectiveTitle then return end
 
-        if style.colorType == "ITEMQUALITY" and addon:IsObjectiveAutoItem(objectiveTitle) then -- and item
+        if style.style == "ITEMQUALITY" and addon:IsObjectiveAutoItem(objectiveTitle) then -- and item
             local r, g, b = GetItemQualityColor(C_Item.GetItemQualityByID(objectiveInfo.trackers[1].trackerID))
             self.Count:SetTextColor(r, g, b, 1)
-        elseif style.colorType == "INCLUDEBANK" and addon:IsObjectiveBankIncluded(objectiveTitle) then -- and includeBank
+        elseif style.style == "INCLUDEBANK" and addon:IsObjectiveBankIncluded(objectiveTitle) then -- and includeBank
             self.Count:SetTextColor(1, .82, 0, 1)
-        else
+        elseif style.style == "CUSTOM" then
             self.Count:SetTextColor(unpack(style.color))
+        else
+            self.Count:SetTextColor(1, 1, 1, 1)
         end
     end,
 
     ------------------------------------------------------------
 
-    SetFontStringAnchor = function(self, fontString)
+    SetFontStringSettings = function(self, fontString)
+        local fontDB = FarmingBar.db.profile.style.font
+        self.Count:SetFont(LSM:Fetch("font", fontDB.face), fontDB.size, fontDB.outline)
+        self.Objective:SetFont(LSM:Fetch("font", fontDB.face), fontDB.size, fontDB.outline)
+
         if not self:GetUserData("barDB") then return end
         local db = self:GetUserData("barDB").button.fontStrings[strlower(fontString)]
 
@@ -638,10 +644,10 @@ local methods = {
 
     UpdateLayers = function(self)
         addon:SkinButton(self, FarmingBar.db.profile.style.skin)
+        self:SetFontStringSettings("Count")
+        self:SetFontStringSettings("Objective")
         self:SetIcon()
-        self:SetFontStringAnchor("Count")
         self:SetCount()
-        self:SetFontStringAnchor("Objective")
         self:UpdateObjective()
         self:UpdateAutoCastable()
         self:UpdateBorder()
@@ -710,10 +716,8 @@ local function Constructor()
     AutoCastable:SetAllPoints(frame)
 
     local Count = frame:CreateFontString(nil, "OVERLAY", nil, 3)
-    Count:SetFont([[Fonts\FRIZQT__.TTF]], 12, "OUTLINE")
 
     local Objective = frame:CreateFontString(nil, "OVERLAY", nil, 3)
-    Objective:SetFont([[Fonts\FRIZQT__.TTF]], 12, "OUTLINE")
 
     local Cooldown = CreateFrame("Cooldown", "$parentCooldown", frame, "CooldownFrameTemplate")
     Cooldown:SetAllPoints(frame)

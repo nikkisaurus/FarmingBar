@@ -234,12 +234,10 @@ function addon:Initialize_DB()
                     outline = "OUTLINE",
                     size = 11,
                     fontStrings = {
-                        ["**"] = {
-                            colorType = "CUSTOM", -- "CUSTOM", "INCLUDEBANK", "ITEMQUALITY" --profile.style.count.type
+                        count = {
+                            style = "CUSTOM", -- "CUSTOM", "INCLUDEBANK", "ITEMQUALITY" --profile.style.count.type
                             color = {1, 1, 1, 1}, --profile.style.count.color
                         },
-                        count = {},
-                        objective = {},
                     },
                 },
                 buttonLayers = {

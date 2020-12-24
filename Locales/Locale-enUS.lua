@@ -194,21 +194,41 @@ L["Button Layers"] = true
 L["Commands"] = true
 L["Cooldown"] = true
 L["Cooldown Edge"] = true
+L["Face"] = true
 L["Fonts"] = true
 L["Global"] = true
 L["Item Quality"] = true
 L["Keybinds"] = true
 L["Miscellaneous"] = true
 L["Modules"] = true
+L["MONOCHROME"] = true
+L["NONE"] = true
 L["Objectives"] = true
 L["Open"] = true
+L["OUTLINE"] = true
 L["Profile"] = true
 L["Settings"] = true
 L["Skin"] = true
 L["Style Editor"] = true
 L["Templates"] = true
+L["THICKOUTLINE"] = true
+L["CUSTOM"] = true
+L["BANK INCLUSION"] = true
+L["ITEM QUALITY"] = true
 
-L.Options_settings_profile_style_skin = ""
+L.Options_settings_profile_skin = "Sets the skin for bars and buttons."
+
+L.Options_settings_profile_buttonLayers_AutoCastable = "Enables the four-point gold border indicating bank inclusion on buttons."
+L.Options_settings_profile_buttonLayers_Border = "Enables the item quality border on buttons."
+L.Options_settings_profile_buttonLayers_Cooldown = "Enables the item cooldown swipe on buttons."
+L.Options_settings_profile_buttonLayers_CooldownEdge = "Enables the bling on the edge of item cooldown swipes on buttons."
+
+L.Options_settings_profile_fonts_face = "Sets the font face for bar and button fontstrings."
+L.Options_settings_profile_fonts_size = "Sets the font size for bar and button fontstrings."
+L.Options_settings_profile_fonts_outline = "Sets the font outline for bar and button fontstrings."
+
+L.Options_settings_profile_count_style = "Sets the color style for button count fontstrings."
+L.Options_settings_profile_count_color = "Sets the custom color for button count fontstrings."
 
 ------------------------------------------------------------
 
@@ -226,8 +246,9 @@ L["Buttons"] = true
 L["Buttons Per Wrap"] = true
 L["Clear Buttons"] = true
 L["Center"] = true
+L["Color"] = true
 L["Completed Objectives"] = true
-L["Count Text"] = true
+L["Count Fontstring"] = true
 L["Down"] = true
 L["Font Face"] = true
 L["Font Outline"] = true
@@ -244,7 +265,7 @@ L["Mute All"] = true
 L["None"] = true
 L["Normal"] = true
 L["Number of Buttons"] = true
-L["Objective Text"] = true
+L["Objective Fontstring"] = true
 L["Operations"] = true
 L["Outline"] = true
 L["Padding"] = true

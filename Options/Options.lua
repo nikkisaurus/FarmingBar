@@ -2,6 +2,7 @@ local addonName, addon = ...
 local FarmingBar = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
 local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 local ACD = LibStub("AceConfigDialog-3.0")
+local LSM = LibStub("LibSharedMedia-3.0")
 
 --*------------------------------------------------------------------------
 
@@ -189,30 +190,13 @@ function addon:GetSettingsOptions()
             type = "group",
             name = L["Profile"],
             args = {
-                bars = {
-                    order = 1,
-                    type = "group",
-                    inline = true,
-                    name = L["Bars"],
-                    args = {
-                        -- numBars = {
-                        --     order = 1,
-                        --     type = "description",
-                        --     width = "full",
-                        --     name = "Number of bars: ",
-                        -- },
-                    },
-                },
-
-                ------------------------------------------------------------
-
                 skin = {
-                    order = 2,
+                    order = 1,
                     type = "select",
                     style = "dropdown",
                     width = "full",
                     name = L["Skin"],
-                    desc = L.Options_settings_profile_style_skin,
+                    desc = L.Options_settings_profile_skin,
                     values = function(info)
                         local info = {
                             FarmingBar_Default = "FarmingBar_Default",
@@ -246,7 +230,7 @@ function addon:GetSettingsOptions()
                 ------------------------------------------------------------
 
                 buttonLayers = {
-                    order = 3,
+                    order = 2,
                     type = "group",
                     inline = true,
                     name = L["Button Layers"],
@@ -262,6 +246,7 @@ function addon:GetSettingsOptions()
                             order = 1,
                             type = "toggle",
                             name = L["Bank Overlay"],
+                            desc = L.Options_settings_profile_buttonLayers_AutoCastable,
                         },
 
                         ------------------------------------------------------------
@@ -270,6 +255,7 @@ function addon:GetSettingsOptions()
                             order = 2,
                             type = "toggle",
                             name = L["Item Quality"],
+                            desc = L.Options_settings_profile_buttonLayers_Border,
                         },
 
                         ------------------------------------------------------------
@@ -278,6 +264,7 @@ function addon:GetSettingsOptions()
                             order = 3,
                             type = "toggle",
                             name = L["Cooldown"],
+                            desc = L.Options_settings_profile_buttonLayers_Cooldown,
                         },
 
                         ------------------------------------------------------------
@@ -286,6 +273,7 @@ function addon:GetSettingsOptions()
                             order = 4,
                             type = "toggle",
                             name = L["Cooldown Edge"],
+                            desc = L.Options_settings_profile_buttonLayers_CooldownEdge,
                         },
                     },
                 },
@@ -293,12 +281,98 @@ function addon:GetSettingsOptions()
                 ------------------------------------------------------------
 
                 fonts = {
-                    order = 4,
+                    order = 3,
                     type = "group",
                     inline = true,
                     name = L["Fonts"],
+                    get = function(info)
+                        return self:GetDBValue("profile", "style.font."..info[#info])
+                    end,
+                    set = function(info, value)
+                        self:SetDBValue("profile", "style.font."..info[#info], value)
+                        self:UpdateBars()
+                    end,
                     args = {
+                        face = {
+                            order = 1,
+                            type = "select",
+                            name = L["Face"],
+                            desc = L.Options_settings_profile_fonts_face,
+                            dialogControl = "LSM30_Font",
+                            values = AceGUIWidgetLSMlists.font,
+                        },
 
+                        ------------------------------------------------------------
+
+                        outline = {
+                            order = 2,
+                            type = "select",
+                            name = L["Outline"],
+                            desc = L.Options_settings_profile_fonts_size,
+                            values = {
+                                ["MONOCHROME"] = L["MONOCHROME"],
+                                ["OUTLINE"] = L["OUTLINE"],
+                                ["THICKOUTLINE"] = L["THICKOUTLINE"],
+                                ["NONE"] = L["NONE"],
+                            },
+                            sorting = {"MONOCHROME", "OUTLINE", "THICKOUTLINE", "NONE"},
+                        },
+
+                        ------------------------------------------------------------
+
+                        size = {
+                            order = 3,
+                            type = "range",
+                            name = L["Size"],
+                            desc = L.Options_settings_profile_fonts_outline,
+                            min = self.minFontSize,
+                            max = self.maxFontSize,
+                            step = 1,
+                        },
+                    },
+                },
+
+                ------------------------------------------------------------
+
+                count = {
+                    order = 4,
+                    type = "group",
+                    inline = true,
+                    name = L["Count Fontstring"],
+                    args = {
+                        style = {
+                            order = 1,
+                            type = "select",
+                            name = L["Style"],
+                            desc = L.Options_settings_profile_count_style,
+                            values = {
+                                ["CUSTOM"] = L["CUSTOM"],
+                                ["INCLUDEBANK"] = L["BANK INCLUSION"],
+                                ["ITEMQUALITY"] = L["ITEM QUALITY"],
+                            },
+                            sorting = {"CUSTOM", "INCLUDEBANK", "ITEMQUALITY"},
+                            get = function(info)
+                                return self:GetDBValue("profile", "style.font.fontStrings.count.style")
+                            end,
+                            set = function(info, value)
+                                self:SetDBValue("profile", "style.font.fontStrings.count.style", value)
+                                self:UpdateBars()
+                            end,
+                        },
+                        color = {
+                            order = 2,
+                            type = "color",
+                            hasAlpha = true,
+                            name = "  "..L["Color"], -- I don't like how close the label is to the color picker so I've added extra space to the start of the name
+                            desc = L.Options_settings_profile_count_color,
+                            get = function(info)
+                                return unpack(self:GetDBValue("profile", "style.font.fontStrings.count.color"))
+                            end,
+                            set = function(info, ...)
+                                self:SetDBValue("profile", "style.font.fontStrings.count.color", {...})
+                                self:UpdateBars()
+                            end,
+                        },
                     },
                 },
             },
