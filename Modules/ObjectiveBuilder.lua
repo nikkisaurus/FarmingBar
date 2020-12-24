@@ -199,7 +199,7 @@ end
 ------------------------------------------------------------
 
 local function filterAutoItems_OnValueChanged(self, _, value)
-    addon:SetDBValue("global", "settings.misc.filterOBAutoItems", value)
+    addon:SetDBValue("global", "settings.filterOBAutoItems", value)
     ObjectiveBuilder:RefreshObjectives()
 end
 
@@ -621,7 +621,7 @@ local methods = {
             local filter = self:GetUserData("objectiveSearchBox"):GetText()
             local filtered = filter and not strfind(strupper(objectiveTitle), strupper(filter))
 
-            local autoFilterEnabled = addon:GetDBValue("global", "settings.misc.filterOBAutoItems")
+            local autoFilterEnabled = addon:GetDBValue("global", "settings.filterOBAutoItems")
             local autoFiltered = autoFilterEnabled and addon:IsObjectiveAutoItem(objectiveTitle)
 
             local objectiveExists = FarmingBar.db.global.objectives[objectiveTitle]
@@ -767,7 +767,7 @@ function addon:Initialize_ObjectiveBuilder()
     -- TODO: Custom checkbox
     local filterAutoItems = AceGUI:Create("CheckBox")
     filterAutoItems:SetLabel(L["Filter Auto Items"])
-    filterAutoItems:SetValue(FarmingBar.db.global.settings.misc.filterOBAutoItems)
+    filterAutoItems:SetValue(FarmingBar.db.global.settings.filterOBAutoItems)
     filterAutoItems:SetWidth(filterAutoItems.text:GetStringWidth() + filterAutoItems.checkbg:GetWidth())
     filterAutoItems:SetUserData("tooltip", "GetFilterAutoItemsTooltip")
     topPanel:AddChild(filterAutoItems)

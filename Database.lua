@@ -20,6 +20,8 @@ function addon:Initialize_DB()
             },
         },
 
+        ------------------------------------------------------------
+
         global = {
             enabled = true,
             resetAlphaDB = 1,
@@ -78,6 +80,14 @@ function addon:Initialize_DB()
 
                 ------------------------------------------------------------
 
+                overwriteQuickObjectives = {
+                    enabled = false, -- when enabled, overwrites every time; if disabled, creates a new objective every time
+                    prompt = true, -- always prompt to overwrite or use existing
+                    useExisting = false, -- when enabled, never overwrite; when disabled, overwrite
+                },
+
+                ------------------------------------------------------------
+
                 templates = {
                     preserveData = {
                         enabled = false, -- global.template.includeData
@@ -91,15 +101,8 @@ function addon:Initialize_DB()
 
                 ------------------------------------------------------------
 
-                misc = {
-                    autoLootOnUse = false, -- global.autoLootItems
-                    filterOBAutoItems = false, -- hides auto added items from ObjectiveBuilder list
-                    overwriteQuickObjectives = {
-                        enabled = false, -- when enabled, overwrites every time; if disabled, creates a new objective every time
-                        prompt = true, -- always prompt to overwrite or use existing
-                        useExisting = false, -- when enabled, never overwrite; when disabled, overwrite
-                    },
-                },
+                autoLootOnUse = false, -- global.autoLootItems
+                filterOBAutoItems = false, -- hides auto added items from ObjectiveBuilder list
             },
 
             ------------------------------------------------------------
@@ -223,6 +226,8 @@ function addon:Initialize_DB()
                 -- ["**"] = {},
             },
         },
+
+        ------------------------------------------------------------
 
         profile = {
             enabled = true, --enables bar creation for new users/characters; disable when user deletes all bars

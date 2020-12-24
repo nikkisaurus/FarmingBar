@@ -196,6 +196,7 @@ L["Cooldown"] = true
 L["Cooldown Edge"] = true
 L["Face"] = true
 L["Fonts"] = true
+L["General"] = true
 L["Global"] = true
 L["Item Quality"] = true
 L["Keybinds"] = true

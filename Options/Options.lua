@@ -57,10 +57,19 @@ end
 --*------------------------------------------------------------------------
 
 function addon:GetHelpOptions()
-    -- About/Bars (& Buttons), Commands, Alert Formats, Objectives, Templates
     local options = {
-        commands = {
+
+        alerts = {
             order = 1,
+            type = "group",
+            name = L["Alerts"],
+            args = {},
+        },
+
+        ------------------------------------------------------------
+
+        commands = {
+            order = 2,
             type = "group",
             name = L["Commands"],
             args = {},
@@ -69,18 +78,9 @@ function addon:GetHelpOptions()
         ------------------------------------------------------------
 
         objectives = {
-            order = 2,
-            type = "group",
-            name = L["Objectives"],
-            args = {},
-        },
-
-        ------------------------------------------------------------
-
-        alerts = {
             order = 3,
             type = "group",
-            name = L["Alerts"],
+            name = L["Objectives"],
             args = {},
         },
 
@@ -92,6 +92,10 @@ function addon:GetHelpOptions()
             name = L["Templates"],
             args = {},
         },
+
+        ------------------------------------------------------------
+
+        -- MAIN: General about, feedback/support, bars and buttons
     }
 
     return options
@@ -147,8 +151,18 @@ function addon:GetSettingsOptions()
             type = "group",
             name = L["Global"],
             args = {
-                alerts = {
+                general = {
                     order = 1,
+                    type = "group",
+                    name = L["General"],
+                    -- Commands, tooltips, hints, debug
+                    args = {},
+                },
+
+                ------------------------------------------------------------
+
+                alerts = {
+                    order = 2,
                     type = "group",
                     name = L["Alerts"],
                     args = {},
@@ -157,18 +171,9 @@ function addon:GetSettingsOptions()
                 ------------------------------------------------------------
 
                 keybinds = {
-                    order = 2,
-                    type = "group",
-                    name = L["Keybinds"],
-                    args = {},
-                },
-
-                ------------------------------------------------------------
-
-                templates = {
                     order = 3,
                     type = "group",
-                    name = L["Templates"],
+                    name = L["Keybinds"],
                     args = {},
                 },
 
@@ -178,6 +183,7 @@ function addon:GetSettingsOptions()
                     order = 4,
                     type = "group",
                     name = L["Miscellaneous"],
+                    -- settings: overwriteQuickObjectives, templates, autoLootOnUse, filterObAutoItems
                     args = {},
                 },
             },
@@ -229,8 +235,55 @@ function addon:GetSettingsOptions()
 
                 ------------------------------------------------------------
 
-                buttonLayers = {
+                count = {
                     order = 2,
+                    type = "group",
+                    inline = true,
+                    name = L["Count Fontstring"],
+                    args = {
+                        style = {
+                            order = 1,
+                            type = "select",
+                            name = L["Style"],
+                            desc = L.Options_settings_profile_count_style,
+                            values = {
+                                ["CUSTOM"] = L["CUSTOM"],
+                                ["INCLUDEBANK"] = L["BANK INCLUSION"],
+                                ["ITEMQUALITY"] = L["ITEM QUALITY"],
+                            },
+                            sorting = {"CUSTOM", "INCLUDEBANK", "ITEMQUALITY"},
+                            get = function(info)
+                                return self:GetDBValue("profile", "style.font.fontStrings.count.style")
+                            end,
+                            set = function(info, value)
+                                self:SetDBValue("profile", "style.font.fontStrings.count.style", value)
+                                self:UpdateBars()
+                            end,
+                        },
+
+                        ------------------------------------------------------------
+
+                        color = {
+                            order = 2,
+                            type = "color",
+                            hasAlpha = true,
+                            name = "  "..L["Color"], -- I don't like how close the label is to the color picker so I've added extra space to the start of the name
+                            desc = L.Options_settings_profile_count_color,
+                            get = function(info)
+                                return unpack(self:GetDBValue("profile", "style.font.fontStrings.count.color"))
+                            end,
+                            set = function(info, ...)
+                                self:SetDBValue("profile", "style.font.fontStrings.count.color", {...})
+                                self:UpdateBars()
+                            end,
+                        },
+                    },
+                },
+
+                ------------------------------------------------------------
+
+                buttonLayers = {
+                    order = 3,
                     type = "group",
                     inline = true,
                     name = L["Button Layers"],
@@ -281,7 +334,7 @@ function addon:GetSettingsOptions()
                 ------------------------------------------------------------
 
                 fonts = {
-                    order = 3,
+                    order = 4,
                     type = "group",
                     inline = true,
                     name = L["Fonts"],
@@ -328,50 +381,6 @@ function addon:GetSettingsOptions()
                             min = self.minFontSize,
                             max = self.maxFontSize,
                             step = 1,
-                        },
-                    },
-                },
-
-                ------------------------------------------------------------
-
-                count = {
-                    order = 4,
-                    type = "group",
-                    inline = true,
-                    name = L["Count Fontstring"],
-                    args = {
-                        style = {
-                            order = 1,
-                            type = "select",
-                            name = L["Style"],
-                            desc = L.Options_settings_profile_count_style,
-                            values = {
-                                ["CUSTOM"] = L["CUSTOM"],
-                                ["INCLUDEBANK"] = L["BANK INCLUSION"],
-                                ["ITEMQUALITY"] = L["ITEM QUALITY"],
-                            },
-                            sorting = {"CUSTOM", "INCLUDEBANK", "ITEMQUALITY"},
-                            get = function(info)
-                                return self:GetDBValue("profile", "style.font.fontStrings.count.style")
-                            end,
-                            set = function(info, value)
-                                self:SetDBValue("profile", "style.font.fontStrings.count.style", value)
-                                self:UpdateBars()
-                            end,
-                        },
-                        color = {
-                            order = 2,
-                            type = "color",
-                            hasAlpha = true,
-                            name = "  "..L["Color"], -- I don't like how close the label is to the color picker so I've added extra space to the start of the name
-                            desc = L.Options_settings_profile_count_color,
-                            get = function(info)
-                                return unpack(self:GetDBValue("profile", "style.font.fontStrings.count.color"))
-                            end,
-                            set = function(info, ...)
-                                self:SetDBValue("profile", "style.font.fontStrings.count.color", {...})
-                                self:UpdateBars()
-                            end,
                         },
                     },
                 },
