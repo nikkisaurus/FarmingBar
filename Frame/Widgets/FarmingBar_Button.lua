@@ -462,7 +462,7 @@ local methods = {
         self:Anchor()
         self:SetAlpha()
         self:SetScale()
-        self:SetSize(bar.frame:GetWidth(), bar.frame:GetHeight())
+        self:SetSize(bar.frame:GetWidth() / .9, bar.frame:GetHeight() / .9)
         self:SetHidden()
 
         local objectiveInfo = FarmingBar.db.char.bars[bar:GetUserData("barID")].objectives[buttonID]

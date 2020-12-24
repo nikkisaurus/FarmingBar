@@ -3,6 +3,7 @@ local FarmingBar = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
 local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 local ACD = LibStub("AceConfigDialog-3.0")
+local LSM = LibStub("LibSharedMedia-3.0")
 
 local abs, fmod = math.abs, math.fmod
 local CreateFrame, UIParent = CreateFrame, UIParent
@@ -278,7 +279,7 @@ local methods = {
 
     SetSize = function(self)
         local frameSize = self:GetUserData("barDB").button.size
-        local paddingSize = (3/20 * frameSize)
+        local paddingSize = (2/20 * frameSize)
         local buttonSize = ((frameSize - (paddingSize * 3)) / 2) * .9
         local fontSize = frameSize / 3
 
@@ -290,8 +291,10 @@ local methods = {
         self.removeButton:SetSize(buttonSize, buttonSize)
         self.removeButton:SetPoint("TOPRIGHT", -paddingSize, -paddingSize)
 
-        self.barID:SetFont([[Fonts\FRIZQT__.TTF]], fontSize, "NORMAL")
-        self.barID:SetPoint("BOTTOM", 0, paddingSize * 1.5)
+
+        local fontDB = FarmingBar.db.profile.style.font
+        self.barID:SetFont(LSM:Fetch("font", fontDB.face), fontSize, fontDB.outline)
+        self.barID:SetPoint("BOTTOM", 0, paddingSize)
 
         for _, button in pairs(self:GetUserData("buttons")) do
             button:SetSize(frameSize, frameSize)

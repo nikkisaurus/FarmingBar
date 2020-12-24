@@ -12,7 +12,7 @@ local strupper = string.upper
 function FarmingBar:OnInitialize()
     addon.bars = {}
 
-    addon.maxButtons = 100
+    addon.maxButtons = 108
     addon.maxButtonPadding = 20
     addon.maxButtonSize = 60
     addon.maxFontSize = 32
