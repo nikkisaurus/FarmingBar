@@ -108,59 +108,66 @@ function addon:GetButtonTooltip(widget, tooltip)
 
         if objectiveInfo.displayRef.trackerType and objectiveInfo.displayRef.trackerID and (objectiveInfo.displayRef.trackerType == "ITEM" or objectiveInfo.displayRef.trackerType == "CURRENCY") then
             tooltip:SetHyperlink(format("%s:%s", string.lower(objectiveInfo.displayRef.trackerType), objectiveInfo.displayRef.trackerID))
-            GameTooltip_AddBlankLinesToTooltip(tooltip, 1)
+
+            -- Divider
+            GameTooltip_AddBlankLinesToTooltip(GameTooltip, 1)
+            GameTooltip_AddBlankLinesToTooltip(GameTooltip, 1)
+            GameTooltip:AddTexture(389194, {width = 200, height = 10})
         end
 
         tooltip:AddLine(objectiveTitle, 0, 1, 0, 1)
 
-        if objectiveInfo.displayRef.trackerType and objectiveInfo.displayRef.trackerID then
-            if  objectiveInfo.displayRef.trackerType == "MACROTEXT" then
-                tooltip:AddDoubleLine(L["Display Ref"], strsub(objectiveInfo.displayRef.trackerID, 1, 15)..(strlen(objectiveInfo.displayRef.trackerID) > 15 and "..." or ""), unpack(self.tooltip_keyvalue))
+        if not FarmingBar.db.global.tooltips.hideObjectiveInfo then
+            if objectiveInfo.displayRef.trackerType and objectiveInfo.displayRef.trackerID then
+                if  objectiveInfo.displayRef.trackerType == "MACROTEXT" then
+                    tooltip:AddDoubleLine(L["Display Ref"], strsub(objectiveInfo.displayRef.trackerID, 1, 15)..(strlen(objectiveInfo.displayRef.trackerID) > 15 and "..." or ""), unpack(self.tooltip_keyvalue))
+                else
+                    self:GetTrackerDataTable(objectiveInfo.displayRef.trackerType, objectiveInfo.displayRef.trackerID, function(data)
+                        tooltip:AddDoubleLine(L["Display Ref"],  strsub(data.name, 1, 15)..(strlen(data.name) > 15 and "..." or ""), unpack(self.tooltip_keyvalue))
+                    end)
+                end
             else
-                self:GetTrackerDataTable(objectiveInfo.displayRef.trackerType, objectiveInfo.displayRef.trackerID, function(data)
-                    tooltip:AddDoubleLine(L["Display Ref"],  strsub(data.name, 1, 15)..(strlen(data.name) > 15 and "..." or ""), unpack(self.tooltip_keyvalue))
-                end)
+                tooltip:AddDoubleLine(L["Display Ref"], L["None"], unpack(self.tooltip_keyvalue))
             end
-        else
-            tooltip:AddDoubleLine(L["Display Ref"], L["None"], unpack(self.tooltip_keyvalue))
-        end
 
-        tooltip:AddDoubleLine(L["Tracker Condition"], L[strsub(objectiveInfo.trackerCondition, 1, 1)..strlower(strsub(objectiveInfo.trackerCondition, 2))], unpack(self.tooltip_keyvalue))
+            tooltip:AddDoubleLine(L["Tracker Condition"], L[strsub(objectiveInfo.trackerCondition, 1, 1)..strlower(strsub(objectiveInfo.trackerCondition, 2))], unpack(self.tooltip_keyvalue))
 
-        GameTooltip_AddBlankLinesToTooltip(tooltip, 1)
+            GameTooltip_AddBlankLinesToTooltip(tooltip, 1)
 
-        tooltip:AddDoubleLine(L["Count"], self.iformat(count, 1), unpack(self.tooltip_keyvalue))
+            tooltip:AddDoubleLine(L["Count"], self.iformat(count, 1), unpack(self.tooltip_keyvalue))
 
-        tooltip:AddDoubleLine(L["Objective"], objective or L["FALSE"], unpack(self.tooltip_description))
+            tooltip:AddDoubleLine(L["Objective"], objective or L["FALSE"], unpack(self.tooltip_description))
 
-        if objective then
-            tooltip:AddDoubleLine(L["Objective Complete"], count >= objective and floor(count / objective).."x" or L["FALSE"], unpack(self.tooltip_description))
-        end
-
-        GameTooltip_AddBlankLinesToTooltip(tooltip, 1)
-
-        tooltip:AddDoubleLine(L["Trackers"], numTrackers, unpack(self.tooltip_keyvalue))
-
-        for key, trackerInfo in pairs(objectiveInfo.trackers) do
-            if key > 10 then
-                tooltip:AddLine(format("%d %s...", numTrackers - 10, L["more"]), unpack(self.tooltip_description))
-                tooltip:AddTexture(134400)
-                break
-            else
-                self:GetTrackerDataTable(trackerInfo.trackerType, trackerInfo.trackerID, function(data)
-                    local trackerCount = self:GetTrackerCount(objectiveTitle, trackerInfo)
-
-                    local trackerRawCount
-                    if trackerInfo.trackerType == "ITEM" then
-                        trackerRawCount = GetItemCount(trackerInfo.trackerID, trackerInfo.includeBank)
-                    elseif trackerInfo.trackerType == "CURRENCY" and trackerInfo.trackerID ~= "" then
-                        trackerRawCount = GetCurrencyInfo(trackerInfo.trackerID) and GetCurrencyInfo(trackerInfo.trackerID).quantity
-                    end
-
-                    tooltip:AddDoubleLine(data.name, format("%d/%d", trackerCount, trackerRawCount), unpack(self.tooltip_description))
-                    tooltip:AddTexture(data.icon or 134400)
-                end)
+            if objective then
+                tooltip:AddDoubleLine(L["Objective Complete"], count >= objective and floor(count / objective).."x" or L["FALSE"], unpack(self.tooltip_description))
             end
+
+            GameTooltip_AddBlankLinesToTooltip(tooltip, 1)
+
+            tooltip:AddDoubleLine(L["Trackers"], numTrackers, unpack(self.tooltip_keyvalue))
+
+            for key, trackerInfo in pairs(objectiveInfo.trackers) do
+                if key > 10 then
+                    tooltip:AddLine(format("%d %s...", numTrackers - 10, L["more"]), unpack(self.tooltip_description))
+                    tooltip:AddTexture(134400)
+                    break
+                else
+                    self:GetTrackerDataTable(trackerInfo.trackerType, trackerInfo.trackerID, function(data)
+                        local trackerCount = self:GetTrackerCount(objectiveTitle, trackerInfo)
+
+                        local trackerRawCount
+                        if trackerInfo.trackerType == "ITEM" then
+                            trackerRawCount = GetItemCount(trackerInfo.trackerID, trackerInfo.includeBank)
+                        elseif trackerInfo.trackerType == "CURRENCY" and trackerInfo.trackerID ~= "" then
+                            trackerRawCount = GetCurrencyInfo(trackerInfo.trackerID) and GetCurrencyInfo(trackerInfo.trackerID).quantity
+                        end
+
+                        tooltip:AddDoubleLine(data.name, format("%d/%d", trackerCount, trackerRawCount), unpack(self.tooltip_description))
+                        tooltip:AddTexture(data.icon or 134400)
+                    end)
+                end
+            end
+
         end
 
         GameTooltip_AddBlankLinesToTooltip(tooltip, 1)

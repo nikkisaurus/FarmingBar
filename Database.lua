@@ -191,7 +191,7 @@ function addon:Initialize_DB()
             tooltips = {
                 bar = true,
                 button = true,
-                itemsOnly = false,
+                hideObjectiveInfo = false,
             },
 
             ------------------------------------------------------------

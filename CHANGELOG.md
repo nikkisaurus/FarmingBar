@@ -9,6 +9,8 @@
 -  Some general addon settings are now available through the GUI
    -  -- Profile: skin, count style and color, button layers (bank overlay, item quality, cooldown, cooldown edge), font settings
 -  Profile settings are now accessible
+- Max number of buttons has been changed to 108
+- You can now opt to hide objective info in button tooltips
 
 ### 3.0-alpha2
 - Convert saved bars from character to profile specific
