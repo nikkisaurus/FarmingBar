@@ -1,7 +1,14 @@
 # Farming Bar
 ## Version 3.0
 ### 3.0-alpha3
-- Reimplement button customizations
+- Additional bar customizations are now available through the GUI
+  -  -- Bar: title, mute all alerts, hidden, growth direction and type, movability, scale, alpha
+  -  -- Button: number of buttons, buttons per wrap, size, padding, count anchor, objective anchor
+  -  -- Button operations: clear buttons, reindex buttons, size bar to buttons
+  -  -- Bars can be added and removed from the GUI as well as the implemented command.
+-  Some general addon settings are now available through the GUI
+   -  -- Profile: skin, count style and color, button layers (bank overlay, item quality, cooldown, cooldown edge), font settings
+-  Profile settings are now accessible
 
 ### 3.0-alpha2
 - Convert saved bars from character to profile specific

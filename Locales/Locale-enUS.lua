@@ -185,6 +185,9 @@ L["Bar"] = true
 L["Config"] = true
 L["Remove Bar"] = true
 
+L.Config_bar_charSpecific = [["*" denotes character specific database settings]]
+L.Config_bar_mixedSpecific = [["**" denotes mixed character and profile specific database settings]]
+
 ------------------------------------------------------------
 
 -- Options\Options.lua

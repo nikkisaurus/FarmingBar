@@ -393,7 +393,7 @@ function addon:Config_LoadBarTab(tabContent)
         local title = AceGUI:Create("EditBox")
         title:SetFullWidth(true)
         title:SetText(charDB.title)
-        title:SetLabel(L["Title"])
+        title:SetLabel("*"..L["Title"])
         tabContent:AddChild(title)
 
         title:SetCallback("OnEnterPressed", title_OnEnterPressed)
@@ -402,7 +402,7 @@ function addon:Config_LoadBarTab(tabContent)
 
         local alertsGroup = AceGUI:Create("InlineGroup")
         alertsGroup:SetFullWidth(true)
-        alertsGroup:SetTitle(L["Alerts"])
+        alertsGroup:SetTitle("*"..L["Alerts"])
         alertsGroup:SetLayout("Flow")
         tabContent:AddChild(alertsGroup)
 
@@ -595,7 +595,7 @@ function addon:Config_LoadBarTab(tabContent)
 
         local templateGroup = AceGUI:Create("InlineGroup")
         templateGroup:SetFullWidth(true)
-        templateGroup:SetTitle(L["Template"])
+        templateGroup:SetTitle("*"..L["Template"])
         templateGroup:SetLayout("Flow")
         tabContent:AddChild(templateGroup)
 
@@ -638,6 +638,13 @@ function addon:Config_LoadBarTab(tabContent)
 
         loadUserTemplate:SetCallback("OnValueChanged", function(self, _, selected)
         end)
+
+        --*------------------------------------------------------------------------
+
+        local charSpecific = AceGUI:Create("Label")
+        charSpecific:SetFullWidth(true)
+        charSpecific:SetText(L.Config_bar_charSpecific)
+        tabContent:AddChild(charSpecific)
     end
 
     tabContent:DoLayout()
@@ -802,7 +809,7 @@ function addon:Config_LoadButtonTab(tabContent)
 
         local clearButtons = AceGUI:Create("Button")
         clearButtons:SetRelativeWidth(1/3)
-        clearButtons:SetText(L["Clear Buttons"])
+        clearButtons:SetText("*"..L["Clear Buttons"])
         operationsGroup:AddChild(clearButtons)
 
         clearButtons:SetCallback("OnClick", function() addon:ClearBar(barID) end)
@@ -811,7 +818,7 @@ function addon:Config_LoadButtonTab(tabContent)
 
         local reindexButtons = AceGUI:Create("Button")
         reindexButtons:SetRelativeWidth(1/3)
-        reindexButtons:SetText(L["Reindex Buttons"])
+        reindexButtons:SetText("*"..L["Reindex Buttons"])
         operationsGroup:AddChild(reindexButtons)
 
         reindexButtons:SetCallback("OnClick", function() addon:ReindexButtons(barID) end)
@@ -820,10 +827,24 @@ function addon:Config_LoadButtonTab(tabContent)
 
         local sizeBarToButtons = AceGUI:Create("Button")
         sizeBarToButtons:SetRelativeWidth(1/3)
-        sizeBarToButtons:SetText(L["Size Bar to Buttons"])
+        sizeBarToButtons:SetText("**"..L["Size Bar to Buttons"])
         operationsGroup:AddChild(sizeBarToButtons)
 
         sizeBarToButtons:SetCallback("OnClick",function() addon:SizeBarToButtons(barID) end)
+
+        --*------------------------------------------------------------------------
+
+        local charSpecific = AceGUI:Create("Label")
+        charSpecific:SetFullWidth(true)
+        charSpecific:SetText(L.Config_bar_charSpecific)
+        tabContent:AddChild(charSpecific)
+
+        ------------------------------------------------------------
+
+        local mixedSpecific = AceGUI:Create("Label")
+        mixedSpecific:SetFullWidth(true)
+        mixedSpecific:SetText(L.Config_bar_mixedSpecific)
+        tabContent:AddChild(mixedSpecific)
     end
 
     tabContent:DoLayout()
