@@ -63,6 +63,7 @@ end
 --*------------------------------------------------------------------------
 
 function addon:GetBarTooltip(widget, tooltip)
+    if not FarmingBar.db.global.tooltips.bar then return end
     local barDB = widget:GetUserData("barDB")
 
     tooltip:AddLine(self:GetBarTitle(widget:GetBarID()), 0, 1, 0, 1)
@@ -80,7 +81,7 @@ function addon:GetBarTooltip(widget, tooltip)
     tooltip:AddDoubleLine(L["Scale"], self.round(barDB.scale * 100, 2).."%", unpack(self.tooltip_keyvalue))
     tooltip:AddDoubleLine(L["Movable"], barDB.movable and L["TRUE"] or L["FALSE"], unpack(self.tooltip_keyvalue))
 
-    if FarmingBar.db.global.hints.buttons then
+    if FarmingBar.db.global.hints.bars then
         GameTooltip_AddBlankLinesToTooltip(GameTooltip, 1)
         if self:IsTooltipMod() then
             GameTooltip:AddLine(format("%s:", L["Hints"]))
@@ -88,7 +89,7 @@ function addon:GetBarTooltip(widget, tooltip)
                 GameTooltip:AddLine(L.BarHints(k, v), unpack(self.tooltip_description))
             end
         else
-            tooltip:AddDoubleLine(L["Show Hints"], FarmingBar.db.global.hints.modifier, unpack(self.tooltip_keyvalue))
+            tooltip:AddDoubleLine(L["Show Hints"]..":", L[FarmingBar.db.global.hints.modifier], unpack(self.tooltip_keyvalue))
         end
     end
 end
@@ -96,6 +97,7 @@ end
 ------------------------------------------------------------
 
 function addon:GetButtonTooltip(widget, tooltip)
+    if not FarmingBar.db.global.tooltips.button then return end
     local objectiveTitle = widget:GetUserData("objectiveTitle")
     local objectiveInfo = self:GetObjectiveInfo(objectiveTitle)
 
@@ -187,7 +189,7 @@ function addon:GetButtonTooltip(widget, tooltip)
                 end
             end
         else
-            tooltip:AddDoubleLine(L["Show Hints"], FarmingBar.db.global.hints.modifier, unpack(self.tooltip_keyvalue))
+            tooltip:AddDoubleLine(L["Show Hints"]..":", L[FarmingBar.db.global.hints.modifier], unpack(self.tooltip_keyvalue))
         end
     end
 end
@@ -200,7 +202,7 @@ function addon:GetExcludeListLabelTooltip(widget, tooltip)
             tooltip:AddLine(format("%s:", L["Hint"]))
             tooltip:AddLine(L.RemoveExcludeHint, unpack(self.tooltip_description))
         else
-            tooltip:AddDoubleLine(L["Show Hints"], FarmingBar.db.global.hints.modifier, unpack(self.tooltip_keyvalue))
+            tooltip:AddDoubleLine(L["Show Hints"]..":", L[FarmingBar.db.global.hints.modifier], unpack(self.tooltip_keyvalue))
         end
     end
 end
@@ -213,7 +215,7 @@ function addon:GetFilterAutoItemsTooltip(widget, tooltip)
             GameTooltip:AddLine(format("%s:", L["Hint"]))
             GameTooltip:AddLine(L.FilterAutoItemsHint, unpack(self.tooltip_description))
         else
-            tooltip:AddDoubleLine(L["Show Hints"], FarmingBar.db.global.hints.modifier, unpack(self.tooltip_keyvalue))
+            tooltip:AddDoubleLine(L["Show Hints"]..":", L[FarmingBar.db.global.hints.modifier], unpack(self.tooltip_keyvalue))
         end
     end
 end
@@ -268,7 +270,7 @@ function addon:GetObjectiveButtonTooltip(widget, tooltip)
             tooltip:AddLine(format("%s:", L["Hint"]))
             tooltip:AddLine(L.ObjectiveContextMenuHint, unpack(self.tooltip_description))
         else
-            tooltip:AddDoubleLine(L["Show Hints"], FarmingBar.db.global.hints.modifier, unpack(self.tooltip_keyvalue))
+            tooltip:AddDoubleLine(L["Show Hints"]..":", L[FarmingBar.db.global.hints.modifier], unpack(self.tooltip_keyvalue))
         end
     end
 end
@@ -281,7 +283,7 @@ function addon:GetNewObjectiveButtonTooltip(widget, tooltip)
             tooltip:AddLine(format("%s:", L["Hint"]))
             tooltip:AddLine(L.NewObjectiveHint, unpack(self.tooltip_description))
         else
-            tooltip:AddDoubleLine(L["Show Hints"], FarmingBar.db.global.hints.modifier, unpack(self.tooltip_keyvalue))
+            tooltip:AddDoubleLine(L["Show Hints"]..":", L[FarmingBar.db.global.hints.modifier], unpack(self.tooltip_keyvalue))
         end
     end
 end
@@ -325,7 +327,7 @@ function addon:GetTrackerButtonTooltip(widget, tooltip)
             tooltip:AddLine(format("%s:", L["Hint"]))
             tooltip:AddLine(L.TrackerContextMenuHint, unpack(self.tooltip_description))
         else
-            tooltip:AddDoubleLine(L["Show Hints"], FarmingBar.db.global.hints.modifier, unpack(self.tooltip_keyvalue))
+            tooltip:AddDoubleLine(L["Show Hints"]..":", L[FarmingBar.db.global.hints.modifier], unpack(self.tooltip_keyvalue))
         end
     end
 end

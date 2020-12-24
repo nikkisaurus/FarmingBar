@@ -207,13 +207,15 @@ function addon:Initialize_DB()
 
             ------------------------------------------------------------
 
+            debugMode = false, -- ! Set false before releases; enables debug toggles in GUI
             debug = {
-                commands = false,
-                barDB = false,
-                ObjectiveBuilder = false,
-                ObjectiveBuilderTrackers = false,
-                Config = false,
-                ConfigButtons = false,
+                barDB = false, -- resets bar database on reload
+                commands = false, -- enables debug only commands
+                Config = false, -- opens Config frame on reload
+                ConfigButtons = false, -- opens Config frame to buttons tab if Config enabled
+                ObjectiveBuilder = false, -- opens Objective Builder on reload
+                ObjectiveBuilderTrackers = false, -- opens Objective Builder to trackers tab if Objective Builder enabled
+                StyleEditor = false, -- opens Style Editor on reload
             },
 
             ------------------------------------------------------------

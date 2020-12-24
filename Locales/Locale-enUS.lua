@@ -191,19 +191,27 @@ L.Config_bar_mixedSpecific = [["**" denotes mixed character and profile specific
 ------------------------------------------------------------
 
 -- Options\Options.lua
+L["Alt"] = true
 L["Bank Overlay"] = true
+L["Bar Tooltips"] = true
 L["Bars"] = true
 L["Button Layers"] = true
+L["Button Tooltips"] = true
 L["Commands"] = true
+L["Control"] = "Ctrl"
 L["Cooldown"] = true
 L["Cooldown Edge"] = true
+L["Debug"] = true
+L["Enable Modifier"] = true
 L["Face"] = true
 L["Fonts"] = true
 L["General"] = true
 L["Global"] = true
+L["Hide Objective Info"] = true
 L["Item Quality"] = true
 L["Keybinds"] = true
 L["Miscellaneous"] = true
+L["Modifier"] = true
 L["Modules"] = true
 L["MONOCHROME"] = true
 L["NONE"] = true
@@ -212,25 +220,34 @@ L["Open"] = true
 L["OUTLINE"] = true
 L["Profile"] = true
 L["Settings"] = true
+L["Shift"] = true
 L["Skin"] = true
+L["Slash Commands"] = true
 L["Style Editor"] = true
 L["Templates"] = true
+L["Tooltips"] = true
 L["THICKOUTLINE"] = true
 L["CUSTOM"] = true
 L["BANK INCLUSION"] = true
 L["ITEM QUALITY"] = true
 
-L.Options_settings_profile_skin = "Sets the skin for bars and buttons."
+L.Options_settings_global_general_tooltips_bar = "Enables bar tooltips."
+L.Options_settings_global_general_tooltips_button = "Enables button tooltips."
+L.Options_settings_global_general_tooltips_hideObjectiveInfo = "Hides objective information on button tooltips."
+L.Options_settings_global_general_hints_bars = "Displays keybind hints at the bottom of bar tooltips."
+L.Options_settings_global_general_hints_buttons = "Displays keybind hints at the bottom of button tooltips."
+L.Options_settings_global_general_hints_ObjectiveBuilder = "Displays tooltip hints on Objective Builder widgets."
+L.Options_settings_global_general_hints_enableModifier = "Allows tooltip hints to be shown only when a modifier is held down."
+L.Options_settings_global_general_hints_modifier = "Sets the modifier key used to show tooltip hints."
 
+L.Options_settings_profile_skin = "Sets the skin for bars and buttons."
 L.Options_settings_profile_buttonLayers_AutoCastable = "Enables the four-point gold border indicating bank inclusion on buttons."
 L.Options_settings_profile_buttonLayers_Border = "Enables the item quality border on buttons."
 L.Options_settings_profile_buttonLayers_Cooldown = "Enables the item cooldown swipe on buttons."
 L.Options_settings_profile_buttonLayers_CooldownEdge = "Enables the bling on the edge of item cooldown swipes on buttons."
-
 L.Options_settings_profile_fonts_face = "Sets the font face for bar and button fontstrings."
 L.Options_settings_profile_fonts_size = "Sets the font size for bar and button fontstrings."
 L.Options_settings_profile_fonts_outline = "Sets the font outline for bar and button fontstrings."
-
 L.Options_settings_profile_count_style = "Sets the color style for button count fontstrings."
 L.Options_settings_profile_count_color = "Sets the custom color for button count fontstrings."
 

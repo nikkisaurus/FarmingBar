@@ -7,6 +7,7 @@
   -  -- Button operations: clear buttons, reindex buttons, size bar to buttons
   -  -- Bars can be added and removed from the GUI as well as the implemented command.
 -  Some general addon settings are now available through the GUI
+   -  -- Global: tooltips, hints, slash commands aliases
    -  -- Profile: skin, count style and color, button layers (bank overlay, item quality, cooldown, cooldown edge), font settings
 -  Profile settings are now accessible
 - Max number of buttons has been changed to 108

@@ -55,11 +55,7 @@ function FarmingBar:OnInitialize()
     ------------------------------------------------------------
 
     addon:Initialize_DB()
-    for command, enabled in pairs(FarmingBar.db.global.commands) do
-        if enabled then
-            self:RegisterChatCommand(command, "SlashCommandFunc")
-        end
-    end
+    addon:RegisterSlashCommands()
 end
 
 function FarmingBar:OnEnable()
@@ -79,6 +75,18 @@ function FarmingBar:OnDisable()
 end
 
 --*------------------------------------------------------------------------
+
+function addon:RegisterSlashCommands()
+    for command, enabled in pairs(FarmingBar.db.global.commands) do
+        if enabled then
+            FarmingBar:RegisterChatCommand(command, "SlashCommandFunc")
+        else
+            FarmingBar:UnregisterChatCommand(command)
+        end
+    end
+end
+
+------------------------------------------------------------
 
 function FarmingBar:SlashCommandFunc(input)
     local cmd, arg, arg2 = strsplit(" ", strupper(input))

@@ -155,6 +155,7 @@ function addon:GetSettingsOptions()
         global = {
             order = 1,
             type = "group",
+            childGroups = "tab",
             name = L["Global"],
             args = {
                 general = {
@@ -162,7 +163,187 @@ function addon:GetSettingsOptions()
                     type = "group",
                     name = L["General"],
                     -- Commands, tooltips, hints, debug
-                    args = {},
+                    args = {
+                        tooltips = {
+                            order = 1,
+                            type = "group",
+                            inline = true,
+                            name = L["Tooltips"],
+                            get = function(info)
+                                return self:GetDBValue("global", "tooltips."..info[#info])
+                            end,
+                            set = function(info, value)
+                                self:SetDBValue("global", "tooltips."..info[#info], value)
+                            end,
+                            args = {
+                                bar = {
+                                    order = 1,
+                                    type = "toggle",
+                                    name = L["Bar"],
+                                    desc = L.Options_settings_global_general_tooltips_bar,
+                                },
+
+                                ------------------------------------------------------------
+
+                                button = {
+                                    order = 1,
+                                    type = "toggle",
+                                    name = L["Button"],
+                                    desc = L.Options_settings_global_general_tooltips_button,
+                                },
+
+                                ------------------------------------------------------------
+
+                                hideObjectiveInfo = {
+                                    order = 1,
+                                    type = "toggle",
+                                    name = L["Hide Objective Info"],
+                                    desc = L.Options_settings_global_general_tooltips_hideObjectiveInfo,
+                                },
+                            },
+                        },
+
+                        ------------------------------------------------------------
+
+                        hints = {
+                            order = 2,
+                            type = "group",
+                            inline = true,
+                            name = L["Hints"],
+                            get = function(info)
+                                return self:GetDBValue("global", "hints."..info[#info])
+                            end,
+                            set = function(info, value)
+                                self:SetDBValue("global", "hints."..info[#info], value)
+                            end,
+                            args = {
+                                bars = {
+                                    order = 1,
+                                    type = "toggle",
+                                    name = L["Bars"],
+                                    desc = L.Options_settings_global_general_hints_bars,
+                                },
+
+                                ------------------------------------------------------------
+
+                                buttons = {
+                                    order = 2,
+                                    type = "toggle",
+                                    name = L["Buttons"],
+                                    desc = L.Options_settings_global_general_hints_buttons,
+                                },
+
+                                ------------------------------------------------------------
+
+                                ObjectiveBuilder = {
+                                    order = 3,
+                                    type = "toggle",
+                                    name = L["Objective Builder"],
+                                    desc = L.Options_settings_global_general_hints_ObjectiveBuilder,
+                                },
+
+                                ------------------------------------------------------------
+
+                                enableModifier = {
+                                    order = 4,
+                                    type = "toggle",
+                                    name = L["Enable Modifier"],
+                                    desc = L.Options_settings_global_general_hints_enableModifier,
+                                },
+
+                                ------------------------------------------------------------
+
+                                modifier = {
+                                    order = 5,
+                                    type = "select",
+                                    style = "dropdown",
+                                    name = L["Modifier"],
+                                    desc = L.Options_settings_global_general_hints_modifier,
+                                    values = function(info)
+                                        local info = {
+                                            Alt = L["Alt"],
+                                            Control = L["Control"],
+                                            Shift = L["Shift"],
+                                        }
+
+                                        return info
+                                    end,
+                                    sorting = {"Alt", "Control", "Shift"},
+                                },
+                            },
+                        },
+
+                        ------------------------------------------------------------
+
+                        commands = {
+                            order = 3,
+                            type = "group",
+                            inline = true,
+                            name = L["Slash Commands"],
+                            get = function(info)
+                                return self:GetDBValue("global", "commands."..info[#info])
+                            end,
+                            set = function(info, value)
+                                self:SetDBValue("global", "commands."..info[#info], value)
+                                self:RegisterSlashCommands()
+                            end,
+                            args = {
+                                farmingbar = {
+                                    order = 1,
+                                    type = "toggle",
+                                    name = "/farmingbar",
+                                },
+
+                                ------------------------------------------------------------
+
+                                farmbar = {
+                                    order = 2,
+                                    type = "toggle",
+                                    name = "/farmbar",
+                                },
+
+                                ------------------------------------------------------------
+
+                                farm = {
+                                    order = 3,
+                                    type = "toggle",
+                                    name = "/farm",
+                                },
+
+                                ------------------------------------------------------------
+
+                                fbar = {
+                                    order = 4,
+                                    type = "toggle",
+                                    name = "/fbar",
+                                },
+
+                                ------------------------------------------------------------
+
+                                fb = {
+                                    order = 5,
+                                    type = "toggle",
+                                    name = "/fb",
+                                },
+                            },
+                        },
+
+                        ------------------------------------------------------------
+
+                        debug = {
+                            order = 4,
+                            type = "group",
+                            inline = true,
+                            name = L["Debug"],
+                            get = function(info)
+                                return self:GetDBValue("global", "debug."..info[#info])
+                            end,
+                            set = function(info, value)
+                                self:SetDBValue("global", "debug."..info[#info], value)
+                            end,
+                            args = {},
+                        },
+                    },
                 },
 
                 ------------------------------------------------------------
@@ -393,6 +574,17 @@ function addon:GetSettingsOptions()
             },
         },
     }
+
+    for k, v in pairs(FarmingBar.db.global.debug) do
+        options.global.args.general.args.debug.args[k] = {
+            type = "toggle",
+            name = k,
+        }
+    end
+
+    if not FarmingBar.db.global.debugMode then
+         options.global.args.general.args.debug = nil
+    end
 
     return options
 end
