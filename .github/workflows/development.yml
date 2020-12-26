@@ -19,8 +19,8 @@ jobs:
     steps:
       - name: Clone project
         uses: actions/checkout@v1
-        with:
-          ref: development
+        # with:
+        #   ref: development
 
       - name: Package and release for Classic
         uses: BigWigsMods/packager@master
