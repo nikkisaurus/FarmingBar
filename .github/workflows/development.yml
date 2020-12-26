@@ -3,9 +3,8 @@ name: Package and release development builds
 on:
   push:
     tags:
-      - 'v*.*.*'
-      # - 'v*.*.*-*'
-      # - 'v*.*-*'
+      - 'v*.*.*-*'
+      - 'v*.*-*'
   workflow_dispatch:
 
 jobs:
