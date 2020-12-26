@@ -3,9 +3,9 @@ name: Package and release stable builds
 on:
   push:
     tags:
-      - 'v*.*.*'
-      - '!v*.*-*'
       - '!v*.*.*-*'
+      - '!v*.*-*'
+      - 'v*.*.*'
   workflow_dispatch:
 
 jobs:
