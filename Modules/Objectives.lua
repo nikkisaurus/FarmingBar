@@ -94,10 +94,9 @@ function addon:CreateObjectiveFromCursor(widget)
         local overwriteQuickObjectives = FarmingBar.db.global.settings.newQuickObjectives
 
         if addon:GetObjectiveInfo(objectiveTitle) and overwriteQuickObjectives == "PROMPT" then -- PROMPT
-            local dialog = StaticPopup_Show("FARMINGBAR_CONFIRM_OVERWRITE_OBJECTIVE", objectiveTitle)
+            local dialog = StaticPopup_Show("FARMINGBAR_CONFIRM_NEW_QUICK_OBJECTIVE_PROMPT", objectiveTitle)
             if dialog then
-                dialog.data = objectiveTitle
-                dialog.data2 = defaultInfo
+                dialog.data = {widget = widget, objectiveTitle = objectiveTitle, defaultInfo = defaultInfo}
             end
         elseif overwriteQuickObjectives == "OVERWRITE" then -- OVERWRITE
             self:CreateObjective(objectiveTitle, defaultInfo, true)

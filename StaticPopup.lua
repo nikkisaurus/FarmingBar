@@ -36,12 +36,19 @@ StaticPopupDialogs["FARMINGBAR_CONFIRM_DELETE_OBJECTIVE"] = {
 
 ------------------------------------------------------------
 
-StaticPopupDialogs["FARMINGBAR_CONFIRM_OVERWRITE_OBJECTIVE"] = {
-    text = [[The objective "%s" already exists. Do you want to overwrite it?]],
-    button1 = YES,
-    button2 = NO,
-    OnAccept = function(_, objectiveTitle, objectiveInfo)
-        addon:CreateObjective(objectiveTitle, objectiveInfo, true)
+StaticPopupDialogs["FARMINGBAR_CONFIRM_NEW_QUICK_OBJECTIVE_PROMPT"] = {
+    text = [[The objective "%s" already exists. What do you want to do?]],
+    button1 = L["OVERWRITE"],
+    button2 = L["USE EXISTING"],
+    button3 = L["CREATE NEW"],
+    OnAccept = function(_, objectiveInfo) -- button1
+        addon:CreateObjective(objectiveInfo.objectiveTitle, objectiveInfo.defaultInfo, true)
+    end,
+    OnAlt = function(_, objectiveInfo) -- button3
+        local objectiveTitle = addon:CreateObjective(objectiveInfo.objectiveTitle, objectiveInfo.defaultInfo)
+        if objectiveInfo.widget then
+            objectiveInfo.widget:SetObjectiveID(objectiveTitle)
+        end
     end,
     timeout = 0,
     whileDead = true,
