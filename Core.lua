@@ -144,3 +144,20 @@ function addon:IsDataStoreLoaded()
 
     return missing
 end
+
+------------------------------------------------------------
+
+function addon:GetAltoholicCount(itemID, includeBank)
+    if #self:IsDataStoreLoaded() > 0 then return end
+
+    local count = 0
+    for k, character in pairs(DataStore:GetCharacters(GetRealmName(), "Default")) do
+        local bags, bank = DataStore:GetContainerItemCount(character, itemID)
+        local mail = DataStore:GetMailItemCount(character, itemID) or 0
+        local auction = DataStore:GetAuctionHouseItemCount(character, itemID) or 0
+        local inventory = DataStore:GetInventoryItemCount(character, itemID) or 0
+        count = count + bags + (includeBank and bank or 0) + mail + auction + inventory
+    end
+
+    return count
+end

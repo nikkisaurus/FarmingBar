@@ -170,6 +170,7 @@ L["Objective Complete"] = true
 ------------------------------------------------------------
 
 -- Modules\Trackers.lua
+L["Counts For"] = true
 L["Currency ID/Link"] = true
 L["Item ID/Name/Link"] = true
 

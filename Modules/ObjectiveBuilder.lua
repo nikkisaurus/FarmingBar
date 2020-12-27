@@ -1158,7 +1158,6 @@ function addon:ObjectiveBuilder_LoadTrackerInfo()
         end
         includeAllChars:SetDescription(line)
     end
-    includeAllChars:SetDisabled(true) -- ! temporary until implemented
     tabContent:AddChild(includeAllChars)
 
     includeAllChars:SetCallback("OnValueChanged", includeAllChars_OnValueChanged)
