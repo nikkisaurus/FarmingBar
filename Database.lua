@@ -82,7 +82,6 @@ function addon:Initialize_DB()
 
                 autoLootOnUse = false, -- global.autoLootItems
                 filterQuickObjectives = false, -- hides auto added items from ObjectiveBuilder list
-
                 newQuickObjectives = "PROMPT", -- PROMPT, NEW, OVERWRITE, USEEXISTING
                 preserveTemplateData = "DISABLED", -- PROMPT, ENABLED, DISABLED
                 preserveTemplateOrder = "DISABLED", -- PROMPT, ENABLED, DISABLED
@@ -366,6 +365,7 @@ function addon:GetDefaultTracker()
         includeBank = false,
         exclude = {},
         objective = 1,
+        countsFor = 1,
         trackerType = "ITEM",
         trackerID = "",
     }

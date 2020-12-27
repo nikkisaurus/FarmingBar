@@ -57,6 +57,19 @@ end
 
 ------------------------------------------------------------
 
+local function countsFor_OnEnterPressed(self)
+    local objectiveTitle, _, tracker = addon:GetSelectedObjectiveInfo()
+    local text = self:GetText() ~= "" and self:GetText() or 1
+    local countsFor = tonumber(text) > 0 and tonumber(text) or 1
+
+    addon:SetTrackerDBInfo(objectiveTitle, tracker, "countsFor", countsFor)
+
+    self:SetText(countsFor)
+    self:ClearFocus()
+end
+
+------------------------------------------------------------
+
 local function customCondition_OnEnterPressed(self)
     local condition = self:GetText()
     local validCondition, err = addon:ValidateCustomCondition(condition)
@@ -1106,6 +1119,17 @@ function addon:ObjectiveBuilder_LoadTrackerInfo()
 
     trackerObjective:SetCallback("OnEnterPressed", trackerObjective_OnEnterPressed)
     trackerObjective:SetCallback("OnTextChanged", NumericEditBox_OnTextChanged)
+
+    ------------------------------------------------------------
+
+    local countsFor = AceGUI:Create("EditBox")
+    countsFor:SetFullWidth(true)
+    countsFor:SetLabel(L["Counts For"])
+    countsFor:SetText(trackerInfo.countsFor or 1)
+    tabContent:AddChild(countsFor)
+
+    countsFor:SetCallback("OnEnterPressed", countsFor_OnEnterPressed)
+    countsFor:SetCallback("OnTextChanged", NumericEditBox_OnTextChanged)
 
     ------------------------------------------------------------
 

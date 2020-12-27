@@ -192,7 +192,7 @@ function addon:GetTrackerCount(objectiveTitle, trackerInfo)
         end
     end
 
-    count = count > 0 and count or 0
+    count = (count > 0 and count or 0) * (trackerInfo.countsFor or 1)
 
     return objective and min(count, objective) or count
 end
