@@ -148,7 +148,7 @@ function addon:GetTrackerCount(objectiveTitle, trackerInfo)
     local count
 
     if trackerInfo.trackerType == "ITEM" then
-        count = trackerInfo.includeAllChars and self:GetAltoholicCount(trackerInfo.trackerID, trackerInfo.includeBank) or GetItemCount(trackerInfo.trackerID, trackerInfo.includeBank)
+        count = trackerInfo.includeAllChars and self:GetDataStoreCount(trackerInfo.trackerID, trackerInfo.includeBank) or GetItemCount(trackerInfo.trackerID, trackerInfo.includeBank)
     elseif trackerInfo.trackerType == "CURRENCY" and trackerInfo.trackerID ~= "" then
         count = GetCurrencyInfo(trackerInfo.trackerID) and GetCurrencyInfo(trackerInfo.trackerID).quantity
     end

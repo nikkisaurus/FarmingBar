@@ -147,7 +147,7 @@ end
 
 ------------------------------------------------------------
 
-function addon:GetAltoholicCount(itemID, includeBank)
+function addon:GetDataStoreCount(itemID, includeBank)
     if #self:IsDataStoreLoaded() > 0 then return end
 
     local count = 0
