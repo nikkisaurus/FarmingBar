@@ -604,11 +604,10 @@ function addon:Config_LoadBarTab(tabContent)
         local saveAsTemplate = AceGUI:Create("EditBox")
         saveAsTemplate:SetFullWidth(true)
         saveAsTemplate:SetLabel(L["Save as Template"])
-        saveAsTemplate:SetDisabled(true) -- ! temporary until implemented
         templateGroup:AddChild(saveAsTemplate)
 
         saveAsTemplate:SetCallback("OnEnterPressed", function(self)
-            print("Save as template", self:GetText())
+            addon:SaveTemplate(barID, self:GetText())
             self:ClearFocus()
             self:SetText()
         end)
@@ -619,7 +618,7 @@ function addon:Config_LoadBarTab(tabContent)
         loadTemplate:SetRelativeWidth(1/2)
         loadTemplate:SetLabel(L["Load Template"])
         -- loadTemplate:SetList({}, {})
-        loadTemplate:SetDisabled(true) -- ! temporary until implemented
+        -- loadTemplate:SetDisabled(true) -- ! temporary until implemented
         templateGroup:AddChild(loadTemplate)
         Config:SetUserData("loadTemplate", loadTemplate)
 

@@ -74,7 +74,7 @@ end
 
 ------------------------------------------------------------
 
-function addon:CreateObjectiveFromCursor()
+function addon:CreateObjectiveFromCursor(widget)
     local cursorType, cursorID = GetCursorInfo()
     ClearCursor()
 
@@ -93,16 +93,22 @@ function addon:CreateObjectiveFromCursor()
         local objectiveTitle = "item:"..(select(1, GetItemInfo(cursorID)))
         local overwriteQuickObjectives = FarmingBar.db.global.settings.newQuickObjectives
 
-        if addon:GetObjectiveInfo(objectiveTitle) and overwriteQuickObjectives == "PROMPT" then
+        if addon:GetObjectiveInfo(objectiveTitle) and overwriteQuickObjectives == "PROMPT" then -- PROMPT
             local dialog = StaticPopup_Show("FARMINGBAR_CONFIRM_OVERWRITE_OBJECTIVE", objectiveTitle)
             if dialog then
                 dialog.data = objectiveTitle
                 dialog.data2 = defaultInfo
             end
-        elseif overwriteQuickObjectives == "OVERWRITE" then
+        elseif overwriteQuickObjectives == "OVERWRITE" then -- OVERWRITE
             self:CreateObjective(objectiveTitle, defaultInfo, true)
+        elseif overwriteQuickObjectives == "NEW" then -- CREATE NEW
+            objectiveTitle = self:CreateObjective(objectiveTitle, defaultInfo)
+            if widget then
+                widget:SetObjectiveID(objectiveTitle)
+            end
+        elseif not addon:GetObjectiveInfo(objectiveTitle) then
+            self:CreateObjective(objectiveTitle, defaultInfo)
         -- else use existing
-            -- ! !! need to make sure create new works when needed too
         end
 
         return objectiveTitle

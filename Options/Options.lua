@@ -346,7 +346,6 @@ function addon:GetSettingsOptions()
                                     order = 1,
                                     type = "select",
                                     style = "dropdown",
-                                    disabled = true, -- ! temporary until implemented
                                     name = L["New Quick Objectives"],
                                     desc = L.Options_settings_global_misc_newQuickObjectives,
                                     values = function(info)
