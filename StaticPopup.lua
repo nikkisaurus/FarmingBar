@@ -125,24 +125,24 @@ StaticPopupDialogs["FARMINGBAR_INCLUDE_TEMPLATE_DATA"] = {
     button2 = NO,
     button3 = CANCEL,
     OnAccept = function(_, data)
-        -- if addon.db.global.template.saveOrderPrompt then
-        --     local dialog = StaticPopup_Show("FARMINGBAR_SAVE_TEMPLATE_ORDER", data[2])
-        --     if dialog then
-        --         dialog.data = {data[1], data[2], true}
-        --     end
-        -- else
-        --     addon:LoadTemplate("user", data[1], data[2], true, addon.db.global.template.saveOrder)
-        -- end
+        if FarmingBar.db.global.settings.preserveTemplateOrder == "PROMPT" then
+            local dialog = StaticPopup_Show("FARMINGBAR_SAVE_TEMPLATE_ORDER", data[2])
+            if dialog then
+                dialog.data = {data[1], data[2], true}
+            end
+        else
+            addon:LoadTemplate("user", data[1], data[2], true, FarmingBar.db.global.settings.preserveTemplateOrder == "ENABLED")
+        end
     end,
     OnCancel = function(_, data)
-        -- if addon.db.global.template.saveOrderPrompt then
-        --     local dialog = StaticPopup_Show("FARMINGBAR_SAVE_TEMPLATE_ORDER", data[2])
-        --     if dialog then
-        --         dialog.data = {data[1], data[2], false}
-        --     end
-        -- else
-        --     addon:LoadTemplate("user", data[1], data[2], false, addon.db.global.template.saveOrder)
-        -- end
+        if FarmingBar.db.global.settings.preserveTemplateOrder == "PROMPT" then
+            local dialog = StaticPopup_Show("FARMINGBAR_SAVE_TEMPLATE_ORDER", data[2])
+            if dialog then
+                dialog.data = {data[1], data[2], false}
+            end
+        else
+            addon:LoadTemplate("user", data[1], data[2], false, FarmingBar.db.global.settings.preserveTemplateOrder == "ENABLED")
+        end
     end,
     timeout = 0,
     whileDead = true,
@@ -159,10 +159,10 @@ StaticPopupDialogs["FARMINGBAR_SAVE_TEMPLATE_ORDER"] = {
     button2 = NO,
     button3 = CANCEL,
     OnAccept = function(_, data)
-        -- addon:LoadTemplate("user", data[1], data[2], data[3], true)
+        addon:LoadTemplate("user", data[1], data[2], data[3], true)
     end,
     OnCancel = function(_, data)
-        -- addon:LoadTemplate("user", data[1], data[2], data[3])
+        addon:LoadTemplate("user", data[1], data[2], data[3])
     end,
     timeout = 0,
     whileDead = true,

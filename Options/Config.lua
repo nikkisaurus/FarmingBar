@@ -43,6 +43,34 @@ local function GetBarList()
     return list
 end
 
+------------------------------------------------------------
+
+local function GetBuiltInTemplates()
+    local list = {}
+    local sort = {}
+
+    for templateName, _ in addon.pairs(addon.templates) do
+        list[templateName] = templateName
+        tinsert(sort, templateName)
+    end
+
+    return list, sort
+end
+
+------------------------------------------------------------
+
+local function GetUserTemplates()
+    local list = {}
+    local sort = {}
+
+    for templateName, _ in addon.pairs(FarmingBar.db.global.templates) do
+        list[templateName] = templateName
+        tinsert(sort, templateName)
+    end
+
+    return list, sort
+end
+
 --*------------------------------------------------------------------------
 
 local function buttonWrap_OnValueChanged(self)
@@ -610,6 +638,9 @@ function addon:Config_LoadBarTab(tabContent)
             addon:SaveTemplate(barID, self:GetText())
             self:ClearFocus()
             self:SetText()
+            Config:GetUserData("loadUserTemplate"):SetDisabled(false)
+            Config:GetUserData("loadUserTemplate"):SetList(GetUserTemplates())
+            LibStub("AceConfigRegistry-3.0"):NotifyChange(addonName)
         end)
 
         ------------------------------------------------------------
@@ -617,12 +648,13 @@ function addon:Config_LoadBarTab(tabContent)
         local loadTemplate = AceGUI:Create("Dropdown")
         loadTemplate:SetRelativeWidth(1/2)
         loadTemplate:SetLabel(L["Load Template"])
-        -- loadTemplate:SetList({}, {})
-        -- loadTemplate:SetDisabled(true) -- ! temporary until implemented
+        loadTemplate:SetList(GetBuiltInTemplates())
         templateGroup:AddChild(loadTemplate)
         Config:SetUserData("loadTemplate", loadTemplate)
 
         loadTemplate:SetCallback("OnValueChanged", function(self, _, selected)
+            addon:LoadTemplate(nil, barID, selected)
+            self:SetValue()
         end)
 
         ------------------------------------------------------------
@@ -630,12 +662,28 @@ function addon:Config_LoadBarTab(tabContent)
         local loadUserTemplate = AceGUI:Create("Dropdown")
         loadUserTemplate:SetRelativeWidth(1/2)
         loadUserTemplate:SetLabel(L["Load User Template"])
-        -- loadUserTemplate:SetList({}, {})
-        loadUserTemplate:SetDisabled(true) -- ! temporary until implemented
+        loadUserTemplate:SetList(GetUserTemplates())
+        loadUserTemplate:SetDisabled(self.tcount(FarmingBar.db.global.templates) == 0)
         templateGroup:AddChild(loadUserTemplate)
         Config:SetUserData("loadUserTemplate", loadUserTemplate)
 
         loadUserTemplate:SetCallback("OnValueChanged", function(self, _, selected)
+            if FarmingBar.db.global.settings.preserveTemplateData == "PROMPT" then
+                local dialog = StaticPopup_Show("FARMINGBAR_INCLUDE_TEMPLATE_DATA", selected)
+                if dialog then
+                    dialog.data = {barID, selected}
+                end
+            else
+                if FarmingBar.db.global.settings.preserveTemplateOrder == "PROMPT" then
+                    local dialog = StaticPopup_Show("FARMINGBAR_SAVE_TEMPLATE_ORDER", selected)
+                    if dialog then
+                        dialog.data = {barID, selected, FarmingBar.db.global.settings.preserveTemplateData == "ENABLED"}
+                    end
+                else
+                    addon:LoadTemplate("user", barID, selected, FarmingBar.db.global.settings.preserveTemplateData == "ENABLED", FarmingBar.db.global.settings.preserveTemplateOrder == "ENABLED")
+                end
+            end
+            self:SetValue()
         end)
 
         --*------------------------------------------------------------------------

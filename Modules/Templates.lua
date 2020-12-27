@@ -98,7 +98,7 @@ function addon:LoadTemplate(templateType, barID, templateName, withData, saveOrd
     local template, count
 
     if templateType == "user" then
-        -- template = FarmingBar.db.global.templates[strupper(templateName)]
+        template = FarmingBar.db.global.templates[strupper(templateName)]
         -- count = U.tcount(template, nil, "type")
     else
         local db = self.templates[strupper(templateName)]
@@ -118,37 +118,28 @@ function addon:LoadTemplate(templateType, barID, templateName, withData, saveOrd
     -- Clear items off the bar
     addon:ClearBar(barID)
 
-    -- Sort template items
-    -- addon:SortObjectives(template)
-
     -- Add template items to the bar
-    -- local i = 1
-    -- local lastButtonID
-    -- for buttonID, objectiveTable in pairs(template) do
-    --     lastButtonID = lastButtonID and ((tonumber(buttonID) > lastButtonID and objectiveTable.type) and tonumber(buttonID) or lastButtonID) or tonumber(buttonID)
-    --     buttonID = saveOrder and tonumber(buttonID) or i
-    --     if objectiveTable.type == "item" then
-    --         self.bars[barID].buttons[buttonID]:SetObjectiveID(objectiveTable.type, objectiveTable.itemID, nil, withData and objectiveTable)
-    --     elseif objectiveTable.type == "currency" then
-    --         self.bars[barID].buttons[buttonID]:SetObjectiveID(objectiveTable.type, objectiveTable.currencyID, nil, withData and objectiveTable)
-    --     elseif objectiveTable.type == "mixedItems" or objectiveTable.type == "shoppingList" then
-    --         self.bars[barID].buttons[buttonID]:SetObjectiveID(objectiveTable.type, objectiveTable.items, {title = objectiveTable.title, icon = objectiveTable.icon, objective = objectiveTable.objective}, withData and objectiveTable)
-    --     end
-    --     if objectiveTable.type then
-    --         i = i + 1
-    --     end
-    -- end
-
-    -- -- If number of visible bars is less than the items in the template, resize the bar to show all items
-    -- if saveOrder and self.bars[barID].db.visibleButtons < lastButtonID  then
-    --     self.bars[barID].db.visibleButtons = lastButtonID
-    --     self.bars[barID]:UpdateButtons("SetVisible")
-    --     self.bars[barID]:SetBackdrop()
-    -- elseif (self.bars[barID].db.visibleButtons < count) then
-    --     self.bars[barID].db.visibleButtons = count
-    --     self.bars[barID]:UpdateButtons("SetVisible")
-    --     self.bars[barID]:SetBackdrop()
-    -- end
+    local bar = self.bars[barID]
+    local buttons = bar:GetUserData("buttons")
+    if saveOrder then
+        for i = 1, self.maxButtons do
+            local templateInfo = template[tostring(i)]
+            if templateInfo then
+                local numVisibleButtons = bar:GetUserData("barDB").numVisibleButtons
+                if numVisibleButtons < i then
+                    self:SetBarDBInfo("numVisibleButtons", i, barID)
+                    bar:UpdateVisibleButtons()
+                end
+                buttons[i]:SetObjectiveID(templateInfo.objectiveTitle, withData and templateInfo.objective)
+            end
+        end
+    else
+        local i = 1
+        for _, templateInfo in pairs(template) do
+            buttons[i]:SetObjectiveID(templateInfo.objectiveTitle, withData and templateInfo.objective)
+            i = i + 1
+        end
+    end
 end
 
 ------------------------------------------------------------

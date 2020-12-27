@@ -8,6 +8,9 @@
 - You can now craft tradeskill recipes using the /craft slash command (/craft tradeskill recipe name); example:
   - /craft Enchanting Eternal Bounds
   - /use Enchanting Vellum
+- Additional general addon settings are now available through the GUI:
+  - Global: new quick objective settings
+- You may now save and load templates
 
 ### 3.0-alpha3
 - Additional bar customizations are now available through the GUI
