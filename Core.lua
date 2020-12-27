@@ -5,7 +5,7 @@ local LSM = LibStub("LibSharedMedia-3.0")
 LibStub("LibAddonUtils-1.0"):Embed(addon)
 
 local pairs, wipe = pairs, table.wipe
-local strupper = string.upper
+local strjoin, strsplit, gsub, strupper = string.join, string.split, string.gsub, string.upper
 
 --*------------------------------------------------------------------------
 
@@ -83,6 +83,71 @@ function addon:RegisterSlashCommands()
         else
             FarmingBar:UnregisterChatCommand(command)
         end
+    end
+
+    FarmingBar:RegisterChatCommand("craft", "CraftTradeSkill")
+end
+
+------------------------------------------------------------
+
+function addon:CraftRecipe(recipeName)
+   for _, id in pairs(C_TradeSkillUI.GetAllRecipeIDs()) do
+      local recipeInfo = C_TradeSkillUI.GetRecipeInfo(id)
+      if strupper(recipeInfo.name) == recipeName then
+         C_TradeSkillUI.CraftRecipe(recipeInfo.recipeID)
+         return
+      end
+   end
+   self:ReportError(string.format(L.UnknownRecipe, recipeName))
+end
+
+------------------------------------------------------------
+
+local tradeskillIDs = {
+    FIRSTAID = 129								,
+    BLACKSMITHING = 164,
+    LEATHERWORKING = 165,
+    ALCHEMY = 171,
+    HERBALISM = 182,
+    COOKING = 185,
+    MINING = 186,
+    TAILORING = 197,
+    ENGINEERING = 202,
+    ENCHANTING = 333,
+    FISHING = 356,
+    SKINNING = 393,
+    JEWELCRAFTING = 755,
+    INSCRIPTION = 773,
+    ARCHEOLOGY = 794
+}
+
+function FarmingBar:CraftTradeSkill(input)
+    input = strupper(input)
+    local inputTable = {strsplit(" ", input)}
+    local skillID = inputTable[1]
+    tremove(inputTable, 1)
+    local recipeName = strjoin(" ", unpack(inputTable))
+
+    if strfind(input, "^FIRST AID ") then
+        skillID = "FIRSTAID"
+        recipeName = recipeName == "AID" and nil or gsub(recipeName, "^AID ", "")
+    end
+    skillID = tradeskillIDs[strupper(skillID)]
+
+    if not skillID then
+        addon:ReportError("InvalidCraftSkillID")
+        return
+    elseif not recipeName then
+        addon:ReportError("MissingCraftSpellName")
+        return
+    end
+
+    if not C_TradeSkillUI.IsTradeSkillReady() then
+        C_TradeSkillUI.OpenTradeSkill(skillID)
+        addon:CraftRecipe(recipeName)
+        C_TradeSkillUI.CloseTradeSkill()
+    else
+        addon:CraftRecipe(recipeName)
     end
 end
 

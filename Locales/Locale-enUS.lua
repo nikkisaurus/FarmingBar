@@ -25,6 +25,10 @@ L.InvalidObjectiveTitle = "Invalid objective title."
 L.InvalidTrackerExclusion = "Cannot exclude parent objective."
 L.ObjectiveIsExcluded = "Objective is already being excluded."
 
+L.InvalidCraftSkillID = "Invalid tradeskill name."
+L.MissingCraftRecipeName = "Please specify a tradeskill recipe name"
+L.UnknownRecipe = "You do not know the recipe: %s"
+
 L.invalidSyntax = function(err) return "Syntax error: "..err end
 L.InvalidTrackerID = function(trackerType, trackerID) return format("Invalid tracker ID: %s:%s", strupper(trackerType), trackerID) end
 L.TrackerIDExists = function(trackerID) return format("Already tracking %s", trackerID) end
@@ -150,7 +154,12 @@ L["Trackers"] = true
 L["TRUE"] = true
 L["Type"] = true
 
-L.DisplayReferenceDescription = [[Display References allow you to set which item/currency you want to use for automatic objective information. This includes the icon chosen when using "Automatic Icon" and the item associated with a button's "use" attribute. However, when set to a macrotext, the icon will be unaffected.]]
+L.DisplayReferenceDescription = [[Display References allow you to set which item/currency you want to use for automatic objective information. This includes the icon chosen when using "Automatic Icon" and the item associated with a button's "use" attribute. However, when set to a macrotext, the icon will be unaffected.
+
+Farming Bar provides a /craft command that you can use in your macrotexts. Simply use "/craft tradeskill recipe name". For example:
+
+/craft Enchanting Eternal Bounds
+/use Enchanting Vellum]]
 L.DisplayReferenceDescription_Gsub = "/currency"
 
 ------------------------------------------------------------
