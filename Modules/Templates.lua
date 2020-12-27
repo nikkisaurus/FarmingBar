@@ -89,7 +89,7 @@ addon.templates["SL:SKIN"] = {172093,172089,172094,172092,177279,172096,172097}
 
 function addon:DeleteTemplate(templateName)
     FarmingBar.db.global.templates[templateName] = nil
-    addon:Print(string.format(L.TemplateDeleted, templateName))
+    FarmingBar:Print(string.format(L.TemplateDeleted, templateName))
 end
 
 ------------------------------------------------------------
