@@ -330,8 +330,88 @@ function addon:GetSettingsOptions()
 
                         ------------------------------------------------------------
 
-                        debug = {
+                        misc = {
                             order = 4,
+                            type = "group",
+                            inline = true,
+                            get = function(info)
+                                return self:GetDBValue("global", "settings."..info[#info])
+                            end,
+                            set = function(info, value)
+                                self:SetDBValue("global", "settings."..info[#info], value)
+                            end,
+                            name = L["Miscellaneous"],
+                            args = {
+                                newQuickObjectives = {
+                                    order = 1,
+                                    type = "select",
+                                    style = "dropdown",
+                                    disabled = true, -- ! temporary until implemented
+                                    name = L["New Quick Objectives"],
+                                    desc = L.Options_settings_global_misc_newQuickObjectives,
+                                    values = function(info)
+                                        local info = {
+                                            NEW = L["CREATE NEW"],
+                                            OVERWRITE = L["OVERWRITE"],
+                                            USEEXISTING = L["USE EXISTING"],
+                                            PROMPT = L["PROMPT"],
+                                        }
+
+                                        return info
+                                    end,
+                                    sorting = {"NEW", "OVERWRITE", "USEEXISTING", "PROMPT"},
+                                },
+                                preserveTemplateData = {
+                                    order = 2,
+                                    type = "select",
+                                    style = "dropdown",
+                                    disabled = true, -- ! temporary until implemented
+                                    name = L["Preserve Template Data"],
+                                    desc = L.Options_settings_global_misc_preserveTemplateData,
+                                    values = function(info)
+                                        local info = {
+                                            ENABLED = L["ENABLED"],
+                                            DISABLED = L["DISABLED"],
+                                            PROMPT = L["PROMPT"],
+                                        }
+
+                                        return info
+                                    end,
+                                    sorting = {"ENABLED", "DISABLED", "PROMPT"},
+                                },
+                                preserveTemplateOrder = {
+                                    order = 3,
+                                    type = "select",
+                                    style = "dropdown",
+                                    disabled = true, -- ! temporary until implemented
+                                    name = L["Preserve Template Order"],
+                                    desc = L.Options_settings_global_misc_preserveTemplateOrder,
+                                    values = function(info)
+                                        local info = {
+                                            ENABLED = L["ENABLED"],
+                                            DISABLED = L["DISABLED"],
+                                            PROMPT = L["PROMPT"],
+                                        }
+
+                                        return info
+                                    end,
+                                    sorting = {"ENABLED", "DISABLED", "PROMPT"},
+                                },
+                                autoLootOnUse = {
+                                    order = 4,
+                                    type = "toggle",
+                                    width = "full",
+                                    disabled = true, -- ! temporary until implemented
+                                    name = L["Auto loot items on use"],
+                                    desc = L.Options_settings_global_misc_autoLootOnUse,
+                                },
+                            },
+                        },
+
+                        ------------------------------------------------------------
+
+                        debug = {
+                            order = 99,
                             type = "group",
                             inline = true,
                             name = L["Debug"],
@@ -361,16 +441,6 @@ function addon:GetSettingsOptions()
                     order = 3,
                     type = "group",
                     name = L["Keybinds"],
-                    args = {},
-                },
-
-                ------------------------------------------------------------
-
-                misc = {
-                    order = 4,
-                    type = "group",
-                    name = L["Miscellaneous"],
-                    -- settings: overwriteQuickObjectives, templates, autoLootOnUse, filterObAutoItems
                     args = {},
                 },
             },

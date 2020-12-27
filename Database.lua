@@ -80,29 +80,12 @@ function addon:Initialize_DB()
 
                 ------------------------------------------------------------
 
-                overwriteQuickObjectives = {
-                    enabled = false, -- when enabled, overwrites every time; if disabled, creates a new objective every time
-                    prompt = true, -- always prompt to overwrite or use existing
-                    useExisting = false, -- when enabled, never overwrite; when disabled, overwrite
-                },
-
-                ------------------------------------------------------------
-
-                templates = {
-                    preserveData = {
-                        enabled = false, -- global.template.includeData
-                        prompt = false, -- global.template.includeDataPrompt
-                    },
-                    preserveOrder = {
-                        enabled = false, -- global.template.saveOrder
-                        prompt = false, -- global.template.saveOrderPrompt
-                    },
-                },
-
-                ------------------------------------------------------------
-
                 autoLootOnUse = false, -- global.autoLootItems
-                filterOBAutoItems = false, -- hides auto added items from ObjectiveBuilder list
+                filterQuickObjectives = false, -- hides auto added items from ObjectiveBuilder list
+
+                newQuickObjectives = "PROMPT", -- PROMPT, NEW, OVERWRITE, USEEXISTING
+                preserveTemplateData = "DISABLED", -- PROMPT, ENABLED, DISABLED
+                preserveTemplateOrder = "DISABLED", -- PROMPT, ENABLED, DISABLED
             },
 
             ------------------------------------------------------------
