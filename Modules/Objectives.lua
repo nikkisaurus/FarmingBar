@@ -155,18 +155,21 @@ end
 function addon:DeleteSelectedObjectives()
     local selectedButton
     local numSelectedButtons = 0
+    local tracked = 0
     for _, button in pairs(self.ObjectiveBuilder:GetUserData("objectiveList").children) do
         if button:GetUserData("selected") and not button:GetUserData("filtered") then
             numSelectedButtons = numSelectedButtons + 1
             selectedButton = button
+            tracked = tracked + addon:GetNumButtonsContainingObjective(button:GetObjective())
         end
     end
 
     if numSelectedButtons > 1 then
-        local dialog = StaticPopup_Show("FARMINGBAR_CONFIRM_DELETE_MULTIPLE_OBJECTIVES", numSelectedButtons)
+
+        local dialog = StaticPopup_Show("FARMINGBAR_CONFIRM_DELETE_MULTIPLE_OBJECTIVES", numSelectedButtons, tracked)
     else
         local objectiveTitle = selectedButton:GetUserData("objectiveTitle")
-        local dialog = StaticPopup_Show("FARMINGBAR_CONFIRM_DELETE_OBJECTIVE", objectiveTitle)
+        local dialog = StaticPopup_Show("FARMINGBAR_CONFIRM_DELETE_OBJECTIVE", objectiveTitle, self:GetNumButtonsContainingObjective(objectiveTitle))
         if dialog then
             dialog.data = objectiveTitle
         end
@@ -190,6 +193,23 @@ function addon:DuplicateSelectedObjectives()
 
     ObjectiveBuilder:ClearSelectedObjective()
     ObjectiveBuilder:SelectObjective(pendingSelect)
+end
+
+------------------------------------------------------------
+
+function addon:GetNumButtonsContainingObjective(objectiveTitle)
+    local count = 0
+    for _, charDB in pairs(FarmingBarDB.char) do
+        for _, bar in pairs(charDB.bars) do
+            for _, objective in pairs(bar.objectives) do
+                -- print(objective, objectiveTitle)
+                if objective.objectiveTitle == objectiveTitle then
+                    count = count + 1
+                end
+            end
+        end
+    end
+    return count
 end
 
 ------------------------------------------------------------

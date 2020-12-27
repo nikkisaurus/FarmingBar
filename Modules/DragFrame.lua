@@ -17,7 +17,7 @@ local function DragFrame_OnEvent(self, event, buttonClicked, ...)
             self:Clear()
             addon.moveButton = nil
         elseif buttonClicked == "LeftButton" and objectiveTitle and not strfind(GetMouseFocus():GetName(), "^FarmingBar_Button%d") then
-            local dialog = StaticPopup_Show("FARMINGBAR_CONFIRM_DELETE_OBJECTIVE", objectiveTitle)
+            local dialog = StaticPopup_Show("FARMINGBAR_CONFIRM_DELETE_OBJECTIVE", objectiveTitle, addon:GetNumButtonsContainingObjective(objectiveTitle))
             if dialog then
                 dialog.data = objectiveTitle
             end

@@ -231,6 +231,7 @@ function addon:GetObjectiveButtonTooltip(widget, tooltip)
     ------------------------------------------------------------
 
     tooltip:AddLine(objectiveTitle)
+    tooltip:AddDoubleLine(L["Tracked"], addon:GetNumButtonsContainingObjective(objectiveTitle), unpack(self.tooltip_keyvalue))
 
     GameTooltip_AddBlankLinesToTooltip(tooltip, 1)
     if objectiveInfo.displayRef.trackerType and objectiveInfo.displayRef.trackerID then

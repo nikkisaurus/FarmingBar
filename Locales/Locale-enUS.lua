@@ -14,6 +14,8 @@ L["Error"] = true
 ------------------------------------------------------------
 
 -- Modules\ObjectiveBuilder.lua
+L["Tracked"] = true
+
 L.InvalidCustomCondition = "Invalid custom condition:"
 L.InvalidCustomConditionReturn = [[Custom conditions must return a table with nested "trackerGroup" tables.]]
 L.InvalidCustomConditionTable = "Nested trackerGroups must be tables."
