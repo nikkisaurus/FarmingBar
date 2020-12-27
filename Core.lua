@@ -213,6 +213,7 @@ end
 ------------------------------------------------------------
 
 function addon:GetDataStoreCount(itemID, includeBank)
+    if true then return end -- ! Disable until I can reimplement in a different way as not to support DS
     if #self:IsDataStoreLoaded() > 0 then return end
 
     local count = 0

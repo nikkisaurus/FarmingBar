@@ -89,28 +89,31 @@ addon.templates["SL:SKIN"] = {172093,172089,172094,172092,177279,172096,172097}
 
 function addon:DeleteTemplate(templateName)
     FarmingBar.db.global.templates[templateName] = nil
-    -- addon:Print(L.TemplateDeleted(templateName))
+    addon:Print(string.format(L.TemplateDeleted, templateName))
 end
 
 ------------------------------------------------------------
 
 function addon:LoadTemplate(templateType, barID, templateName, withData, saveOrder)
-    local template, count
+    local template
 
     if templateType == "user" then
         template = FarmingBar.db.global.templates[strupper(templateName)]
-        -- count = U.tcount(template, nil, "type")
     else
         local db = self.templates[strupper(templateName)]
         template = {}
-        count = #db
 
         -- This removes invalid itemIDs (from different game versions) but preserves the actual template.
         for buttonID, itemID in pairs(db) do
             if GetItemInfoInstant(itemID) then
-                tinsert(template, {type = "item", itemID = itemID})
+                self:CacheItem(itemID, function(template, itemID)
+                    local name = GetItemInfo(itemID)
+                    local objectiveTitle = "item:"..name
+                    tinsert(template, {objectiveTitle = objectiveTitle, itemID = itemID})
+                end, template, itemID)
+
             else
-                self:Printf("Invalid itemID: %d", itemID)
+                -- self:Printf("Invalid itemID: %d", itemID)
             end
         end
     end
@@ -136,7 +139,17 @@ function addon:LoadTemplate(templateType, barID, templateName, withData, saveOrd
     else
         local i = 1
         for _, templateInfo in pairs(template) do
-            buttons[i]:SetObjectiveID(templateInfo.objectiveTitle, withData and templateInfo.objective)
+            local numVisibleButtons = bar:GetUserData("barDB").numVisibleButtons
+            if numVisibleButtons < i then
+                self:SetBarDBInfo("numVisibleButtons", i, barID)
+                bar:UpdateVisibleButtons()
+            end
+            if not addon:GetObjectiveInfo(templateInfo.objectiveTitle) then
+                objectiveTitle = self:CreateObjectiveFromID(templateInfo.objectiveTitle, templateInfo.itemID, buttons[i])
+                buttons[i]:SetObjectiveID(templateInfo.objectiveTitle, withData and templateInfo.objective)
+            else
+                buttons[i]:SetObjectiveID(templateInfo.objectiveTitle, withData and templateInfo.objective)
+            end
             i = i + 1
         end
     end

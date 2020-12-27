@@ -649,6 +649,7 @@ function addon:Config_LoadBarTab(tabContent)
         loadTemplate:SetRelativeWidth(1/2)
         loadTemplate:SetLabel(L["Load Template"])
         loadTemplate:SetList(GetBuiltInTemplates())
+        loadTemplate:SetDisabled(true) -- ! still need to fix issues with creating new objectives for built in template items
         templateGroup:AddChild(loadTemplate)
         Config:SetUserData("loadTemplate", loadTemplate)
 

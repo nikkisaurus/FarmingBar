@@ -116,6 +116,46 @@ end
 
 ------------------------------------------------------------
 
+function addon:CreateObjectiveFromID(objectiveTitle, itemID, widget)
+    -- TODO: Move some of this dupe code from CreateObjectiveFromCursor to a new func
+    local defaultInfo = self:GetDefaultObjective()
+    defaultInfo.icon = GetItemIconByID(itemID)
+    defaultInfo.displayRef.trackerType = "ITEM"
+    defaultInfo.displayRef.trackerID = itemID
+
+    local tracker = addon:GetDefaultTracker()
+    tracker.trackerType = "ITEM"
+    tracker.trackerID = itemID
+
+    tinsert(defaultInfo.trackers, tracker)
+
+    local overwriteQuickObjectives = FarmingBar.db.global.settings.newQuickObjectives
+
+    if addon:GetObjectiveInfo(objectiveTitle) and overwriteQuickObjectives == "PROMPT" then -- PROMPT
+        local dialog = StaticPopup_Show("FARMINGBAR_CONFIRM_NEW_QUICK_OBJECTIVE_PROMPT", objectiveTitle)
+        if dialog then
+            dialog.data = {widget = widget, objectiveTitle = objectiveTitle, defaultInfo = defaultInfo}
+        end
+    elseif overwriteQuickObjectives == "OVERWRITE" then -- OVERWRITE
+        self:CreateObjective(objectiveTitle, defaultInfo, true)
+    elseif overwriteQuickObjectives == "NEW" then -- CREATE NEW
+        objectiveTitle = self:CreateObjective(objectiveTitle, defaultInfo)
+        if widget then
+            widget:SetObjectiveID(objectiveTitle)
+        end
+    elseif not addon:GetObjectiveInfo(objectiveTitle) then
+        objectiveTitle = self:CreateObjective(objectiveTitle, defaultInfo)
+        if widget then
+            widget:SetObjectiveID(objectiveTitle)
+        end
+    -- else use existing
+    end
+
+    return objectiveTitle
+end
+
+------------------------------------------------------------
+
 function addon:DeleteObjective(objectiveTitle)
     local ObjectiveBuilder = self.ObjectiveBuilder
     local objectiveList = ObjectiveBuilder:GetUserData("objectiveList")

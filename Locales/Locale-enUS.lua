@@ -347,3 +347,8 @@ L["Up"] = true
 L["Visibility"] = true
 L["X Offset"] = true
 L["Y Offset"] = true
+
+------------------------------------------------------------
+
+-- Modules\Templates.lua
+L.TemplateDeleted = [[Template "%s" deleted.]]
