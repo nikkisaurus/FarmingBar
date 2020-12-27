@@ -1,5 +1,9 @@
 # Farming Bar
 ## Version 3.0
+### 3.0-alpha4
+- You can now add a "counts for" value to trackers to specify how many times the objective should be incremented each time the tracker objective is met
+  - For example: if you have an objective to track the number of enchanting dust you have and want to include shards that can be broken down into dust, you can set one tracker for dust (objective 1 and counts for 1) and one tracker for shards (objective 1 and counts for 3); you could even add crystals (objective 1 and counts for 6; 1 crystal = 2 shards)
+
 ### 3.0-alpha3
 - Additional bar customizations are now available through the GUI
   -  -- Bar: title, mute all alerts, hidden, growth direction and type, movability, scale, alpha
