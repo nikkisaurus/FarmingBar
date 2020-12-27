@@ -143,6 +143,7 @@ function FarmingBar:CraftTradeSkill(input)
     end
 
     if not C_TradeSkillUI.IsTradeSkillReady() then
+        -- ! Need to fix error where recipe isn't found when first logging in if tradeskill isn't opened
         C_TradeSkillUI.OpenTradeSkill(skillID)
         addon:CraftRecipe(recipeName)
         C_TradeSkillUI.CloseTradeSkill()
