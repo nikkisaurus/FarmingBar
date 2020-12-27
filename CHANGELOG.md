@@ -8,7 +8,7 @@
   - /craft Enchanting Eternal Bounds
   - /use Enchanting Vellum
 - Additional general addon settings are now available through the GUI:
-  - Global: new quick objective settings
+  - Global: new quick objective settings, preserve template data, preserve template order, delete user templates
 - You may now save and load user templates
 
 ### 3.0-alpha3
