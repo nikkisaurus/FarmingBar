@@ -63,7 +63,6 @@ function addon:GetOptions()
                 order = 6,
                 type = "group",
                 name = L["Help"],
-                childGroups = "tab",
                 args = self:GetHelpOptions(),
             },
         },
