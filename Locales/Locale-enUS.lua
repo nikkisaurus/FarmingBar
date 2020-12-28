@@ -362,3 +362,11 @@ L["Y Offset"] = true
 L.TemplateSaved = "All items on bar %d saved as farming template: %s"
 L.TemplateDeleted = [[Template "%s" deleted.]]
 L.InvalidItemID = "Invalid itemID: %d"
+
+L.Options_Config = function(widget)
+    local strings = {
+        ["bar.charSpecific"] = [["*" denotes character specific database settings]],
+    }
+
+    return strings[widget]
+end

@@ -51,6 +51,21 @@ end
 
 ------------------------------------------------------------
 
+function addon:GetBarDBInfo(key, barID, isCharDB)
+    local keys = {strsplit(".", key)}
+    local path = FarmingBar.db[isCharDB and "char" or "profile"].bars[barID]
+
+    for k, key in pairs(keys) do
+        if k < #keys then
+            path = path[key]
+        end
+    end
+
+    return path[keys[#keys]]
+end
+
+------------------------------------------------------------
+
 function addon:GetBarTitle(barID)
     if barID == 0 then return L["All Bars"] end
 
@@ -217,10 +232,6 @@ function addon:SetBarDBInfo(key, value, barID, isCharDB)
     end
 
     path[keys[#keys]] = value
-
-    ------------------------------------------------------------
-
-    self.Config:RefreshBars()
 end
 
 ------------------------------------------------------------

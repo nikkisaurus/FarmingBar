@@ -73,3 +73,9 @@ function addon:GetOptions()
 
     return self.options
 end
+
+------------------------------------------------------------
+
+function addon:RefreshOptions()
+    LibStub("AceConfigRegistry-3.0"):NotifyChange(addonName)
+end

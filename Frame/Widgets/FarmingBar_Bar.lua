@@ -171,6 +171,18 @@ local methods = {
 
     ------------------------------------------------------------
 
+    GetBarDB = function(self)
+        return self:GetUserData("barDB")
+    end,
+
+    ------------------------------------------------------------
+
+    GetButtons = function(self)
+        return self:GetUserData("buttons")
+    end,
+
+    ------------------------------------------------------------
+
     RemoveButton = function(self)
         local barDB = self:GetUserData("barDB")
         local buttons = self:GetUserData("buttons")
@@ -237,6 +249,7 @@ local methods = {
 
     SetMovable = function(self)
         self.frame:SetMovable(self:GetUserData("barDB").movable)
+        addon:RefreshOptions()
     end,
 
     ------------------------------------------------------------
