@@ -1,5 +1,12 @@
 # Farming Bar
 ## Version 3.0
+### 3.0-alpha5
+- Some built in templates are now available
+- Config and Objective Builder have been reworked into the main options frame
+  - To add an objective to a bar, there is an icon next to the selected objective's title (on the Objective tab) that you can click to load the objective onto your cursor
+- The /craft slash command is still available for now, but will be reworked into a "RECIPE" display reference in a future build
+- There is now an operation to cleanup unused quick objectives (objectives created automatically when adding an item to a bar)
+
 ### 3.0-alpha4
 - You can now add a "counts for" value to trackers to specify how many times the objective should be incremented each time the tracker objective is met
   - For example: if you have an objective to track the number of enchanting dust you have and want to include shards that can be broken down into dust, you can set one tracker for dust (objective 1 and counts for 1) and one tracker for shards (objective 1 and counts for 3); you could even add crystals (objective 1 and counts for 6; 1 crystal = 2 shards)

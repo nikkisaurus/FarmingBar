@@ -247,9 +247,6 @@ local function frame_OnReceiveDrag(self)
         end
     elseif not objectiveTitle then
         objectiveTitle = addon:CreateObjectiveFromCursor(widget)
-        if objectiveTitle then
-            widget:SetObjectiveID(objectiveTitle)
-        end
     end
 
     addon.DragFrame:Clear()
@@ -264,8 +261,6 @@ local function frame_PostClick(self, buttonClicked, ...)
 
     if cursorType == "item" and not IsModifierKeyDown() and buttonClicked == "LeftButton" then
         local objectiveTitle = addon:CreateObjectiveFromCursor(widget)
-        widget:SetObjectiveID(objectiveTitle)
-        ClearCursor()
         return
     elseif addon.DragFrame:IsVisible() then
         if addon.moveButton then
