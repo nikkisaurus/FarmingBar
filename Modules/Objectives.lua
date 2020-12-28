@@ -90,48 +90,49 @@ function addon:CreateObjectiveFromCursor(widget)
 
         tinsert(defaultInfo.trackers, tracker)
 
+        ------------------------------------------------------------
+
         local objectiveTitle = "item:"..(select(1, GetItemInfo(cursorID)))
-        local overwriteQuickObjectives = FarmingBar.db.global.settings.newQuickObjectives
-
-        if addon:GetObjectiveInfo(objectiveTitle) and overwriteQuickObjectives == "PROMPT" then -- PROMPT
-            local dialog = StaticPopup_Show("FARMINGBAR_CONFIRM_NEW_QUICK_OBJECTIVE_PROMPT", objectiveTitle)
-            if dialog then
-                dialog.data = {widget = widget, objectiveTitle = objectiveTitle, defaultInfo = defaultInfo}
-            end
-        elseif overwriteQuickObjectives == "OVERWRITE" then -- OVERWRITE
-            self:CreateObjective(objectiveTitle, defaultInfo, true)
-        elseif overwriteQuickObjectives == "NEW" then -- CREATE NEW
-            objectiveTitle = self:CreateObjective(objectiveTitle, defaultInfo)
-            if widget then
-                widget:SetObjectiveID(objectiveTitle)
-            end
-        elseif not addon:GetObjectiveInfo(objectiveTitle) then
-            self:CreateObjective(objectiveTitle, defaultInfo)
-        -- else use existing
-        end
-
-        return objectiveTitle
+        self:CreateQuickObjective(objectiveTitle, defaultInfo, widget)
     end
 end
 
 ------------------------------------------------------------
 
-function addon:CreateObjectiveFromID(objectiveTitle, itemID, widget)
-    -- TODO: Move some of this dupe code from CreateObjectiveFromCursor to a new func
-    local defaultInfo = self:GetDefaultObjective()
-    defaultInfo.icon = GetItemIconByID(itemID)
-    defaultInfo.displayRef.trackerType = "ITEM"
-    defaultInfo.displayRef.trackerID = itemID
+-- function addon:CreateObjectiveFromID(itemID, widget)
+--     local defaultInfo = self:GetDefaultObjective()
+--     defaultInfo.icon = GetItemIconByID(itemID)
+--     defaultInfo.displayRef.trackerType = "ITEM"
+--     defaultInfo.displayRef.trackerID = itemID
 
-    local tracker = addon:GetDefaultTracker()
-    tracker.trackerType = "ITEM"
-    tracker.trackerID = itemID
+--     local tracker = addon:GetDefaultTracker()
+--     tracker.trackerType = "ITEM"
+--     tracker.trackerID = itemID
 
-    tinsert(defaultInfo.trackers, tracker)
+--     tinsert(defaultInfo.trackers, tracker)
 
+--     ------------------------------------------------------------
+
+--     local objectiveTitle = "item:"..itemID
+--     self:CreateQuickObjective(objectiveTitle, defaultInfo, widget)
+
+--     ------------------------------------------------------------
+
+--     self.CacheItem(itemID, function(objectiveTitle, itemID)
+--         -- TODO: left off here. built in templates are added with itemid as name, then renamed but this is sometimes not working; probably will have to bite the bullet and do some sort of coroutine or precache any template items
+--         C_Timer.After(1, function()
+--             print(objectiveTitle, "item:"..(select(1, GetItemInfo(itemID))))
+--             addon:RenameObjective(objectiveTitle, "item:"..(select(1, GetItemInfo(itemID))))
+--         end)
+--     end, objectiveTitle, itemID)
+-- end
+
+------------------------------------------------------------
+
+function addon:CreateQuickObjective(objectiveTitle, defaultInfo, widget)
     local overwriteQuickObjectives = FarmingBar.db.global.settings.newQuickObjectives
 
-    if addon:GetObjectiveInfo(objectiveTitle) and overwriteQuickObjectives == "PROMPT" then -- PROMPT
+    if self:GetObjectiveInfo(objectiveTitle) and overwriteQuickObjectives == "PROMPT" then -- PROMPT
         local dialog = StaticPopup_Show("FARMINGBAR_CONFIRM_NEW_QUICK_OBJECTIVE_PROMPT", objectiveTitle)
         if dialog then
             dialog.data = {widget = widget, objectiveTitle = objectiveTitle, defaultInfo = defaultInfo}
@@ -140,15 +141,12 @@ function addon:CreateObjectiveFromID(objectiveTitle, itemID, widget)
         self:CreateObjective(objectiveTitle, defaultInfo, true)
     elseif overwriteQuickObjectives == "NEW" then -- CREATE NEW
         objectiveTitle = self:CreateObjective(objectiveTitle, defaultInfo)
-        if widget then
-            widget:SetObjectiveID(objectiveTitle)
-        end
-    elseif not addon:GetObjectiveInfo(objectiveTitle) then
+    elseif not self:GetObjectiveInfo(objectiveTitle) then
         objectiveTitle = self:CreateObjective(objectiveTitle, defaultInfo)
-        if widget then
-            widget:SetObjectiveID(objectiveTitle)
-        end
-    -- else use existing
+    end
+
+    if widget then
+        widget:SetObjectiveID(objectiveTitle)
     end
 
     return objectiveTitle

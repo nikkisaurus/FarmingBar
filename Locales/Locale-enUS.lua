@@ -351,4 +351,6 @@ L["Y Offset"] = true
 ------------------------------------------------------------
 
 -- Modules\Templates.lua
+L.TemplateSaved = "All items on bar %d saved as farming template: %s"
 L.TemplateDeleted = [[Template "%s" deleted.]]
+L.InvalidItemID = "Invalid itemID: %d"
