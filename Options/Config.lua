@@ -105,6 +105,36 @@ end
 
 ------------------------------------------------------------
 
+local function loadTemplate_OnValueChanged(self, _, selected)
+    addon:LoadTemplate(nil, Config:GetSelectedBar(), selected)
+    self:SetValue()
+end
+
+------------------------------------------------------------
+
+local function loadUserTemplate_OnValueChanged(self, _, selected)
+    local barID = Config:GetSelectedBar()
+
+    if FarmingBar.db.global.settings.preserveTemplateData == "PROMPT" then
+        local dialog = StaticPopup_Show("FARMINGBAR_INCLUDE_TEMPLATE_DATA", selected)
+        if dialog then
+            dialog.data = {barID, selected}
+        end
+    else
+        if FarmingBar.db.global.settings.preserveTemplateOrder == "PROMPT" then
+            local dialog = StaticPopup_Show("FARMINGBAR_SAVE_TEMPLATE_ORDER", selected)
+            if dialog then
+                dialog.data = {barID, selected, FarmingBar.db.global.settings.preserveTemplateData == "ENABLED"}
+            end
+        else
+            addon:LoadTemplate("user", barID, selected, FarmingBar.db.global.settings.preserveTemplateData == "ENABLED", FarmingBar.db.global.settings.preserveTemplateOrder == "ENABLED")
+        end
+    end
+    self:SetValue()
+end
+
+------------------------------------------------------------
+
 local function mainTabGroup_OnGroupSelected(self, _, selected)
     local barID = Config:GetSelectedBar()
     if barID then
@@ -652,10 +682,7 @@ function addon:Config_LoadBarTab(tabContent)
         templateGroup:AddChild(loadTemplate)
         Config:SetUserData("loadTemplate", loadTemplate)
 
-        loadTemplate:SetCallback("OnValueChanged", function(self, _, selected)
-            addon:LoadTemplate(nil, barID, selected)
-            self:SetValue()
-        end)
+        loadTemplate:SetCallback("OnValueChanged", loadTemplate_OnValueChanged)
 
         ------------------------------------------------------------
 
@@ -667,24 +694,7 @@ function addon:Config_LoadBarTab(tabContent)
         templateGroup:AddChild(loadUserTemplate)
         Config:SetUserData("loadUserTemplate", loadUserTemplate)
 
-        loadUserTemplate:SetCallback("OnValueChanged", function(self, _, selected)
-            if FarmingBar.db.global.settings.preserveTemplateData == "PROMPT" then
-                local dialog = StaticPopup_Show("FARMINGBAR_INCLUDE_TEMPLATE_DATA", selected)
-                if dialog then
-                    dialog.data = {barID, selected}
-                end
-            else
-                if FarmingBar.db.global.settings.preserveTemplateOrder == "PROMPT" then
-                    local dialog = StaticPopup_Show("FARMINGBAR_SAVE_TEMPLATE_ORDER", selected)
-                    if dialog then
-                        dialog.data = {barID, selected, FarmingBar.db.global.settings.preserveTemplateData == "ENABLED"}
-                    end
-                else
-                    addon:LoadTemplate("user", barID, selected, FarmingBar.db.global.settings.preserveTemplateData == "ENABLED", FarmingBar.db.global.settings.preserveTemplateOrder == "ENABLED")
-                end
-            end
-            self:SetValue()
-        end)
+        loadUserTemplate:SetCallback("OnValueChanged", loadUserTemplate_OnValueChanged)
 
         --*------------------------------------------------------------------------
 

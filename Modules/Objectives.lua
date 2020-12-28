@@ -99,33 +99,22 @@ end
 
 ------------------------------------------------------------
 
--- function addon:CreateObjectiveFromID(itemID, widget)
---     local defaultInfo = self:GetDefaultObjective()
---     defaultInfo.icon = GetItemIconByID(itemID)
---     defaultInfo.displayRef.trackerType = "ITEM"
---     defaultInfo.displayRef.trackerID = itemID
+function addon:CreateObjectiveFromID(objectiveTitle, itemID, widget)
+    local defaultInfo = self:GetDefaultObjective()
+    defaultInfo.icon = GetItemIconByID(itemID)
+    defaultInfo.displayRef.trackerType = "ITEM"
+    defaultInfo.displayRef.trackerID = itemID
 
---     local tracker = addon:GetDefaultTracker()
---     tracker.trackerType = "ITEM"
---     tracker.trackerID = itemID
+    local tracker = addon:GetDefaultTracker()
+    tracker.trackerType = "ITEM"
+    tracker.trackerID = itemID
 
---     tinsert(defaultInfo.trackers, tracker)
+    tinsert(defaultInfo.trackers, tracker)
 
---     ------------------------------------------------------------
+    ------------------------------------------------------------
 
---     local objectiveTitle = "item:"..itemID
---     self:CreateQuickObjective(objectiveTitle, defaultInfo, widget)
-
---     ------------------------------------------------------------
-
---     self.CacheItem(itemID, function(objectiveTitle, itemID)
---         -- TODO: left off here. built in templates are added with itemid as name, then renamed but this is sometimes not working; probably will have to bite the bullet and do some sort of coroutine or precache any template items
---         C_Timer.After(1, function()
---             print(objectiveTitle, "item:"..(select(1, GetItemInfo(itemID))))
---             addon:RenameObjective(objectiveTitle, "item:"..(select(1, GetItemInfo(itemID))))
---         end)
---     end, objectiveTitle, itemID)
--- end
+    self:CreateQuickObjective(objectiveTitle, defaultInfo, widget)
+end
 
 ------------------------------------------------------------
 

@@ -373,6 +373,10 @@ function addon:LoadTemplate(templateType, barID, templateName, withData, saveOrd
     local i = 0
     for buttonID, objective in pairs(template) do
         i = saveOrder and tonumber(buttonID) or (i + 1)
+        local objectiveTitle = objective.objectiveTitle
+        if not self:GetObjectiveInfo(objectiveTitle) then
+            objectiveTitle = self:CreateObjectiveFromID(objectiveTitle, objective.itemID)
+        end
         buttons[i]:SetObjectiveID(objective.objectiveTitle, withData and objective.objective)
     end
 
