@@ -6,7 +6,10 @@ local pairs, unpack = pairs, unpack
 local format, strlen, strlower, strsub = string.format, string.len, string.lower, string.sub
 local GameTooltip_AddBlankLinesToTooltip = GameTooltip_AddBlankLinesToTooltip
 
-local GetItemCount, GetCurrencyInfo = GetItemCount, C_CurrencyInfo and C_CurrencyInfo.GetCurrencyInfo
+local GetItemCount = GetItemCount
+--@retail@
+local GetCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo
+--@end-retail@
 
 --*------------------------------------------------------------------------
 

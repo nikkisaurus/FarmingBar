@@ -7,8 +7,10 @@ local select, type = select, type
 local floor, min, max = math.floor, math.min, math.max
 local format, strsplit, strupper, tonumber = string.format, strsplit, string.upper, tonumber
 local pairs, tinsert, tremove, wipe = pairs, table.insert, table.remove, table.wipe
-
-local GetItemCount, GetCurrencyInfo, GetCurrencyInfoFromLink, GetCurrencyIDFromLink = GetItemCount, C_CurrencyInfo and C_CurrencyInfo.GetCurrencyInfo, C_CurrencyInfo and C_CurrencyInfo.GetCurrencyInfoFromLink, C_CurrencyInfo and C_CurrencyInfo.GetCurrencyIDFromLink
+local GetItemCount = GetItemCount
+--@retail@
+local GetCurrencyInfo, GetCurrencyInfoFromLink, GetCurrencyIDFromLink = C_CurrencyInfo.GetCurrencyInfo, C_CurrencyInfo.GetCurrencyInfoFromLink, C_CurrencyInfo.GetCurrencyIDFromLink
+--@end-retail@
 
 --*------------------------------------------------------------------------
 

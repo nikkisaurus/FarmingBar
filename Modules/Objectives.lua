@@ -8,7 +8,10 @@ local format, strfind, strmatch, strsplit, strupper, tonumber = string.format, s
 local pairs, tinsert = pairs, table.insert
 
 local GetCursorInfo, ClearCursor = GetCursorInfo, ClearCursor
-local GetItemIconByID, GetCurrencyInfo = C_Item.GetItemIconByID, C_CurrencyInfo and C_CurrencyInfo.GetCurrencyInfo
+local GetItemIconByID = C_Item.GetItemIconByID
+--@retail@
+local GetCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo
+--@end-retail@
 local StaticPopup_Show = StaticPopup_Show
 
 --*------------------------------------------------------------------------

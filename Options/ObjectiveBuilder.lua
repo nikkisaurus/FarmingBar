@@ -4,7 +4,10 @@ local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 local ACD = LibStub("AceConfigDialog-3.0")
 
 local format, tonumber, tostring = string.format, tonumber, tostring
-local GetCurrencyInfo, GetItemIconByID = C_CurrencyInfo.GetCurrencyInfo, C_Item.GetItemIconByID
+local GetItemIconByID = C_Item.GetItemIconByID
+--@retail@
+local GetCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo
+--@end-retail@
 
 --*------------------------------------------------------------------------
 
@@ -687,6 +690,7 @@ end
 ------------------------------------------------------------
 
 function addon:RefreshObjectiveBuilderOptions()
+    if not self.options then return end
     self.options.args.objectiveBuilder.args = self:GetObjectiveBuilderOptions()
     self:RefreshOptions()
 end
@@ -694,6 +698,7 @@ end
 ------------------------------------------------------------
 
 function addon:RefreshObjectiveBuilderTrackerOptions(objectiveTitle)
+    if not self.options then return end
     self.options.args.objectiveBuilder.args[objectiveTitle].args.trackers.args = self:GetTrackersObjectiveBuilderOptions(objectiveTitle)
     self:RefreshOptions()
 end
