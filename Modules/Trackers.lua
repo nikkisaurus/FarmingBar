@@ -5,19 +5,14 @@ local AceGUI = LibStub("AceGUI-3.0", true)
 
 local select, type = select, type
 local floor, min, max = math.floor, math.min, math.max
-local strsplit, strupper, tonumber = strsplit, string.upper, tonumber
+local format, strsplit, strupper, tonumber = string.format, strsplit, string.upper, tonumber
 local pairs, tinsert, tremove, wipe = pairs, table.insert, table.remove, table.wipe
 
 local GetItemCount, GetCurrencyInfo, GetCurrencyInfoFromLink, GetCurrencyIDFromLink = GetItemCount, C_CurrencyInfo and C_CurrencyInfo.GetCurrencyInfo, C_CurrencyInfo and C_CurrencyInfo.GetCurrencyInfoFromLink, C_CurrencyInfo and C_CurrencyInfo.GetCurrencyIDFromLink
 
 --*------------------------------------------------------------------------
 
-function addon:CreateTracker(tracker)
-    local ObjectiveBuilder = self.ObjectiveBuilder
-    local objectiveTitle, objectiveInfo = ObjectiveBuilder:GetSelectedObjectiveInfo()
-
-    ------------------------------------------------------------
-
+function addon:CreateTracker(objectiveTitle, tracker)
     local defaultTracker = self:GetDefaultTracker()
 
     if tracker then
@@ -36,11 +31,11 @@ function addon:CreateTracker(tracker)
             end
         end
 
-        if not self:TrackerExists(trackerID) then
+        if not self:TrackerExists(objectiveTitle, trackerID) then
             defaultTracker.trackerType = trackerType
             defaultTracker.trackerID = trackerID
         else
-            addon:ReportError(L.TrackerIDExists(trackerID))
+            addon:ReportError(format(L.TrackerIDExists, trackerID))
             return
         end
     end
@@ -50,21 +45,21 @@ function addon:CreateTracker(tracker)
 
     ------------------------------------------------------------
 
-    local trackerList = ObjectiveBuilder:GetUserData("trackerList")
-    local button = addon:AddTrackerButton(newTracker, defaultTracker)
+    -- local trackerList = ObjectiveBuilder:GetUserData("trackerList")
+    -- local button = addon:AddTrackerButton(newTracker, defaultTracker)
 
-    for _, button in pairs(trackerList.children) do
-        button:SetSelected(false)
-    end
+    -- for _, button in pairs(trackerList.children) do
+    --     button:SetSelected(false)
+    -- end
 
-    ObjectiveBuilder:SelectTracker(newTracker)
-    button:SetSelected(true)
-    trackerList.scrollbar:SetValue(1000)
+    -- ObjectiveBuilder:SelectTracker(newTracker)
+    -- button:SetSelected(true)
+    -- trackerList.scrollbar:SetValue(1000)
 
     ------------------------------------------------------------
 
     self:UpdateButtons(objectiveTitle)
-    ObjectiveBuilder:RefreshObjectives()
+    -- ObjectiveBuilder:RefreshObjectives()
 end
 
 ------------------------------------------------------------
@@ -306,8 +301,8 @@ end
 
 ------------------------------------------------------------
 
-function addon:TrackerExists(trackerID)
-    for _, tracker in pairs(FarmingBar.db.global.objectives[(self:GetSelectedObjectiveInfo())].trackers) do
+function addon:TrackerExists(objectiveTitle, trackerID)
+    for _, tracker in pairs(FarmingBar.db.global.objectives[objectiveTitle].trackers) do
         if tracker.trackerID == trackerID then
             return true
         end

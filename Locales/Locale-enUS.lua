@@ -36,7 +36,8 @@ L.UnknownRecipe = "You do not know the recipe: %s"
 L.invalidSyntax = function(err) return "Syntax error: "..err end
 L.InvalidTrackerID = "Invalid tracker: %s:%s"
 -- L.InvalidTrackerID = function(trackerType, trackerID) return format("Invalid tracker ID: %s:%s", strupper(trackerType), trackerID) end
-L.TrackerIDExists = function(trackerID) return format("Already tracking %s", trackerID) end
+L.TrackerIDExists = "Already tracking %s"
+-- L.TrackerIDExists = function(trackerID) return format("Already tracking %s", trackerID) end
 
 
 --*------------------------------------------------------------------------

@@ -2,7 +2,7 @@ local addonName, addon = ...
 local FarmingBar = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
 local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 
-local format = string.format
+local format, tostring = string.format, tostring
 
 --*------------------------------------------------------------------------
 
@@ -23,9 +23,32 @@ local displayRefSort = {"ITEM", "CURRENCY", "RECIPE", "MACROTEXT", "NONE"}
 local displayRefSort = {"ITEM", "CRAFT", "MACROTEXT", "NONE"}
 --@end-non-retail@]===]
 
+------------------------------------------------------------
+
+--@retail@
+local newTrackerType, newTrackerID = "ITEM"
+
+local trackers = {
+    ITEM = L["Item"],
+    CURRENCY = L["Currency"],
+}
+
+local trackerSort = {"ITEM", "CURRENCY"}
+--@end-retail@
+
+------------------------------------------------------------
+
+local trackerConditions = {
+    ANY = L["Any"],
+    ALL = L["All"],
+    CUSTOM = L["Custom"],
+}
+
+local trackerConditionSort = {"ANY", "ALL", "CUSTOM"}
+
 --*------------------------------------------------------------------------
 
-local function GetDisplayRefTrackerIDLabel()
+local function GetDisplayRefTrackerIDLabel(objectiveTitle)
     local trackerType = addon:GetObjectiveDBValue("displayRef.trackerType", objectiveTitle)
 
     if trackerType == "ITEM" then
@@ -38,6 +61,18 @@ local function GetDisplayRefTrackerIDLabel()
         return L["Tradeskill Recipe Name"]
     elseif trackerType == "MACROTEXT" then
         return L["Macrotext"]
+    end
+end
+
+------------------------------------------------------------
+
+local function GetTrackerIDLabel()
+    if newTrackerType == "ITEM" then
+        return L["Item ID/Name/Link"]
+    --@retail@
+    elseif newTrackerType == "CURRENCY" then
+        return L["Currency ID/Link"]
+    --@end-retail@
     end
 end
 
@@ -206,61 +241,152 @@ function addon:GetObjectiveObjectiveBuilderOptions(objectiveTitle)
                 trackerID = {
                     order = 2,
                     type = "input",
+                    width = "full",
+                    multiline = true,
                     name = function()
-                        return GetDisplayRefTrackerIDLabel()
+                        return GetDisplayRefTrackerIDLabel(objectiveTitle)
                     end,
                     hidden = function()
-                        local trackerType = self:GetObjectiveDBValue("displayRef.trackerType", objectiveTitle)
-                        return trackerType == "NONE" or trackerType == "MACROTEXT"
+                        return self:GetObjectiveDBValue("displayRef.trackerType", objectiveTitle) == "NONE"
                     end,
                     get = function(info)
-                        local trackerID = self:GetObjectiveDBValue("displayRef.trackerID", objectiveTitle)
+                        local trackerID = self:GetObjectiveDBValue("displayRef."..info[#info], objectiveTitle)
                         return trackerID and tostring(trackerID)
-                    end,
-                    set = function(info, value)
-                        local trackerType = self:GetObjectiveDBValue("displayRef.trackerType", objectiveTitle)
-
-                        if trackerType == "RECIPE" then
-                            -- TODO: validate recipe
-                            self:SetObjectiveDBInfo("displayRef.trackerID", value, objectiveTitle)
-                        else
-                            local validTrackerID, trackerType = self:ValidateObjectiveData(trackerType, value)
-                            self:SetObjectiveDBInfo("displayRef.trackerID", validTrackerID, objectiveTitle)
-                        end
                     end,
                     validate = function(_, value)
                         if value == "" then return true end
                         local trackerType = self:GetObjectiveDBValue("displayRef.trackerType", objectiveTitle)
 
-                        if trackerType == "RECIPE" then
+                        if trackerType == "ITEM" or trackerType == "CURRENCY" then
+                            return self:ValidateObjectiveData(trackerType, value) or format(L.InvalidTrackerID, trackerType, value)
+                        elseif trackerType == "RECIPE" then
                             -- TODO: validate recipe
                             return true
-                        else
-                            return self:ValidateObjectiveData(trackerType, value) or format(L.InvalidTrackerID, trackerType, value)
+                        else -- MACROTEXT
+                            return true
                         end
+                    end,
+                    set = function(info, value)
+                        local trackerType = self:GetObjectiveDBValue("displayRef.trackerType", objectiveTitle)
+
+                        if trackerType == "ITEM" or trackerType == "CURRENCY" then
+                            local validTrackerID = self:ValidateObjectiveData(trackerType, value)
+                            self:SetObjectiveDBInfo("displayRef."..info[#info], validTrackerID, objectiveTitle)
+                        else
+                            self:SetObjectiveDBInfo("displayRef."..info[#info], value, objectiveTitle)
+                        end
+                    end,
+                },
+            },
+        },
+
+        ------------------------------------------------------------
+
+        trackers = {
+            order = 5,
+            type = "group",
+            inline = true,
+            name = L["Trackers"],
+            args = {
+                trackerCondition = {
+                    order = 1,
+                    type = "select",
+                    name = L["Tracker Condition"],
+                    values = trackerConditions,
+                    sorting = trackerConditionSort,
+                    get = function(info)
+                        return self:GetObjectiveDBValue(info[#info], objectiveTitle)
+                    end,
+                    set = function(info, value)
+                        self:SetObjectiveDBInfo(info[#info], value, objectiveTitle)
                     end,
                 },
 
                 ------------------------------------------------------------
 
-                trackerID_Multi = {
+                customCondition = {
                     order = 2,
                     type = "input",
                     width = "full",
-                    name = function()
-                        return GetDisplayRefTrackerIDLabel()
-                    end,
-                    hidden = function()
-                        return self:GetObjectiveDBValue("displayRef.trackerType", objectiveTitle) ~= "MACROTEXT"
-                    end,
                     multiline = true,
+                    name = L["Custom Condition"],
+                    hidden = function()
+                        return self:GetObjectiveDBValue("trackerCondition", objectiveTitle) ~= "CUSTOM"
+                    end,
                     get = function(info)
-                        return self:GetObjectiveDBValue("displayRef.trackerID", objectiveTitle)
+                        return self:GetObjectiveDBValue(info[#info], objectiveTitle)
+                    end,
+                    validate = function(_, value)
+                        if value == "" then return true end
+                        local validCondition, err = self:ValidateCustomCondition(value)
+
+                        if err then
+                            addon:ReportError(L.InvalidCustomCondition)
+                            print(err)
+                        else
+                            return true
+                        end
                     end,
                     set = function(info, value)
-                        self:SetObjectiveDBInfo("displayRef.trackerID", value, objectiveTitle)
+                        return self:SetObjectiveDBInfo(info[#info], value, objectiveTitle)
                     end,
                 },
+
+                ------------------------------------------------------------
+
+                newTracker = {
+                    order = 3,
+                    type = "header",
+                    name = L["New Tracker"],
+                },
+
+                ------------------------------------------------------------
+
+                type = {
+                    order = 4,
+                    type = "select",
+                    name = L["Type"],
+                    values = trackers,
+                    sorting = trackerSort,
+                    --[===[@non-retail@
+                    hidden = function()
+                        return true
+                    end,
+                    --@end-non-retail@]===]
+                    get = function(info)
+                        return newTrackerType
+                    end,
+                    set = function(info, value)
+                        newTrackerType = value
+                    end,
+                },
+
+                ------------------------------------------------------------
+
+                newTrackerID = {
+                    order = 5,
+                    type = "input",
+                    width = "full",
+                    name = function()
+                        return GetTrackerIDLabel(objectiveTitle)
+                    end,
+                    validate = function(_, value)
+                        local validTrackerID = self:ValidateObjectiveData(newTrackerType, value)
+                        local trackerIDExists = validTrackerID and self:TrackerExists(objectiveTitle, validTrackerID)
+
+                        if trackerIDExists then
+                            return format(L.TrackerIDExists, value)
+                        else
+                            return validTrackerID or format(L.InvalidTrackerID, newTrackerType, value)
+                        end
+                    end,
+                    set = function(info, value)
+                        local validTrackerID = self:ValidateObjectiveData(newTrackerType, value)
+                        self:CreateTracker(objectiveTitle, {trackerType = newTrackerType, trackerID = validTrackerID})
+                        -- TODO: select tracker in builder
+                    end,
+                },
+
             },
         },
     }
