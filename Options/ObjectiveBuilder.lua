@@ -30,9 +30,9 @@ local displayRefSort = {"ITEM", "CRAFT", "MACROTEXT", "NONE"}
 
 ------------------------------------------------------------
 
---@retail@
 local newTrackerType, newTrackerID = "ITEM"
 
+--@retail@
 local trackers = {
     ITEM = L["Item"],
     CURRENCY = L["Currency"],
