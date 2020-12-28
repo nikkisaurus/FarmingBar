@@ -6,6 +6,7 @@
   - To add an objective to a bar, there is an icon next to the selected objective's title (on the Objective tab) that you can click to load the objective onto your cursor
 - The /craft slash command is still available for now, but will be reworked into a "RECIPE" display reference in a future build
 - There is now an operation to cleanup unused quick objectives (objectives created automatically when adding an item to a bar)
+- Alpha should be properly compatible with Classic
 
 ### 3.0-alpha4
 - You can now add a "counts for" value to trackers to specify how many times the objective should be incremented each time the tracker objective is met
