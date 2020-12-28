@@ -56,7 +56,6 @@ local postClickMethods = {
     ------------------------------------------------------------
 
     showObjectiveBuilder = function(self, ...)
-        -- ACD:SelectGroup(addonName, "objectiveBuilder")
         ACD:SelectGroup(addonName, "objectiveBuilder", self.obj:GetObjectiveTitle())
         ACD:Open(addonName)
     end,
@@ -268,14 +267,14 @@ local function frame_PostClick(self, buttonClicked, ...)
         widget:SetObjectiveID(objectiveTitle)
         ClearCursor()
         return
-    -- elseif addon.DragFrame:IsVisible() then
-    --     if addon.moveButton then
-    --         widget:SwapButtons(addon.moveButton)
-    --     else
-    --         widget:SetObjectiveID(addon.DragFrame:GetObjective())
-    --     end
-    --     addon.DragFrame:Clear()
-    --     return
+    elseif addon.DragFrame:IsVisible() then
+        if addon.moveButton then
+            widget:SwapButtons(addon.moveButton)
+        else
+            widget:SetObjectiveID(addon.DragFrame:GetObjective())
+        end
+        addon.DragFrame:Clear()
+        return
     end
 
     ClearCursor()

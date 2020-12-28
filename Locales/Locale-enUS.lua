@@ -349,6 +349,7 @@ L["Style"] = true
 L["Styles"] = true
 L["Template"] = true
 L["Thickoutline"] = true
+L["Export Objective"] = true
 L["Title"] = true
 L["Top"] = true
 L["Topleft"] = true
@@ -362,6 +363,7 @@ L["Y Offset"] = true
 
 ------------------------------------------------------------
 
+L.ObjectiveExists = "Objectives exists"
 -- Modules\Templates.lua
 L.TemplateSaved = "All items on bar %d saved as farming template: %s"
 L.TemplateDeleted = [[Template "%s" deleted.]]
@@ -385,7 +387,7 @@ L.Options_ObjectiveBuilder = function(widget)
     local strings = {
         ["cleanup"] = "Permanently deletes unused quick objectives.",
         ["cleanup_confirm"] = "Are you sure you want to cleanup quick objectives? This process is irreversible.",
-        ["objective.manage.deleteObjective_confirm"] = [[Are you sure you want to permanently delete the objective "%s"]],
+        ["objective.manage.deleteObjective_confirm"] = [["%s" is being tracked on %d button(s). Deleting this objective will remove it from all bars globally. Do you want to continue?]],
     }
 
     return strings[widget]

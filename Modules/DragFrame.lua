@@ -62,10 +62,10 @@ local methods = {
 
 function addon:Initialize_DragFrame()
     local DragFrame = CreateFrame("Frame", "FarmingBarDragFrame", UIParent)
-    DragFrame:SetSize(35, 35)
+    DragFrame:SetSize(20, 20)
     DragFrame:SetPoint("CENTER")
     DragFrame:Hide()
-    DragFrame:SetFrameStrata("FULLSCREEN_DIALOG")
+    DragFrame:SetFrameStrata("TOOLTIP")
     addon.DragFrame = DragFrame
 
     --@retail@
@@ -81,9 +81,8 @@ function addon:Initialize_DragFrame()
     DragFrame.icon:SetAllPoints(DragFrame)
     DragFrame.icon:SetTexture("")
 
-    DragFrame.text = DragFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-    DragFrame.text:SetPoint("LEFT", DragFrame.icon, "RIGHT", 3, 0)
-    DragFrame.text:Hide()
+    DragFrame.text = DragFrame:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+    DragFrame.text:SetPoint("LEFT", DragFrame.icon, "RIGHT", 5, 0)
 
     ------------------------------------------------------------
 

@@ -6,7 +6,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 
 function addon:Initialize_Options()
     LibStub("AceConfig-3.0"):RegisterOptionsTable(addonName, self:GetOptions())
-    LibStub("AceConfigDialog-3.0"):SetDefaultSize(addonName, 800, 500)
+    LibStub("AceConfigDialog-3.0"):SetDefaultSize(addonName, 850, 600)
 end
 
 --*------------------------------------------------------------------------

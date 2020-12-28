@@ -22,7 +22,7 @@ StaticPopupDialogs["FARMINGBAR_CONFIRM_DELETE_MULTIPLE_OBJECTIVES"] = {
 ------------------------------------------------------------
 
 StaticPopupDialogs["FARMINGBAR_CONFIRM_DELETE_OBJECTIVE"] = {
-    text = [[You are about to delete the objective "%s". |cffff0000This will remove this objective from all bars globally.|r This objective is active on %d button(s). Do you want to continue?]],
+    text = L.Options_ObjectiveBuilder("objective.manage.deleteObjective_confirm"),
     button1 = YES,
     button2 = NO,
     OnAccept = function(_, objectiveTitle)
@@ -50,6 +50,17 @@ StaticPopupDialogs["FARMINGBAR_CONFIRM_NEW_QUICK_OBJECTIVE_PROMPT"] = {
             objectiveInfo.widget:SetObjectiveID(objectiveTitle)
         end
     end,
+    timeout = 0,
+    whileDead = true,
+    hideOnEscape = true,
+    preferredIndex = 3
+}
+
+------------------------------------------------------------
+
+StaticPopupDialogs["FARMINGBAR_OBJECTIVE_CLEANUP_FINISHED"] = {
+    text = "Cleanup finished! %d quick objective(s) removed.",
+    button1 = OKAY,
     timeout = 0,
     whileDead = true,
     hideOnEscape = true,
@@ -181,3 +192,5 @@ StaticPopupDialogs["FARMINGBAR_V30_ALPHA2_BARRESET"] = {
     hideOnEscape = true,
     preferredIndex = 3
 }
+
+--*------------------------------------------------------------------------

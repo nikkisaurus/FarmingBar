@@ -172,8 +172,59 @@ end
 
 function addon:GetObjectiveObjectiveBuilderOptions(objectiveTitle)
     local options = {
-        icon = {
+        dropper = {
+            order = 0,
+            type = "execute",
+            name = " ",
+            desc = "Click to place this objective onto a bar",
+            width = 1/3,
+            image = function()
+                return self:GetObjectiveIcon(objectiveTitle), 35, 35
+            end,
+            func = function()
+                self.DragFrame:Load(objectiveTitle)
+            end,
+        },
+
+        ------------------------------------------------------------
+
+        title = {
             order = 1,
+            type = "input",
+            width = 2.5,
+            name = L["Title"],
+            validate = function(_, value)
+                if value == "" then return end
+                return objectiveTitle == value or not self:GetObjectiveInfo(value) or L.ObjectiveExists
+            end,
+            get = function(info)
+                return objectiveTitle
+            end,
+            set = function(info, value)
+                if objectiveTitle == value then return end
+                self:RenameObjective(objectiveTitle, value)
+                LibStub("AceConfigDialog-3.0"):SelectGroup(addonName, "objectiveBuilder", value)
+            end,
+        },
+
+        ------------------------------------------------------------
+
+        autoIcon = {
+            order = 2,
+            type = "toggle",
+            name = L["Automatic Icon"],
+            get = function(info)
+                return self:GetObjectiveDBValue(info[#info], objectiveTitle)
+            end,
+            set = function(info, value)
+                self:SetObjectiveDBInfo(info[#info], value, objectiveTitle)
+            end,
+        },
+
+        ------------------------------------------------------------
+
+        icon = {
+            order = 3,
             type = "input",
             name = L["Icon"],
             hidden = function()
@@ -190,7 +241,7 @@ function addon:GetObjectiveObjectiveBuilderOptions(objectiveTitle)
         ------------------------------------------------------------
 
         iconSelector = {
-            order = 2,
+            order = 4,
             type = "execute",
             name = L["Choose"],
             hidden = function()
@@ -203,22 +254,8 @@ function addon:GetObjectiveObjectiveBuilderOptions(objectiveTitle)
 
         ------------------------------------------------------------
 
-        autoIcon = {
-            order = 3,
-            type = "toggle",
-            name = L["Automatic Icon"],
-            get = function(info)
-                return self:GetObjectiveDBValue(info[#info], objectiveTitle)
-            end,
-            set = function(info, value)
-                self:SetObjectiveDBInfo(info[#info], value, objectiveTitle)
-            end,
-        },
-
-        ------------------------------------------------------------
-
         displayRef = {
-            order = 4,
+            order = 5,
             type = "group",
             inline = true,
             name = L["Display Reference"],
@@ -284,7 +321,7 @@ function addon:GetObjectiveObjectiveBuilderOptions(objectiveTitle)
         ------------------------------------------------------------
 
         trackers = {
-            order = 5,
+            order = 6,
             type = "group",
             inline = true,
             name = L["Trackers"],
@@ -394,7 +431,7 @@ function addon:GetObjectiveObjectiveBuilderOptions(objectiveTitle)
         ------------------------------------------------------------
 
         manage = {
-            order = 6,
+            order = 7,
             type = "group",
             inline = true,
             name = L["Manage"],
@@ -410,15 +447,27 @@ function addon:GetObjectiveObjectiveBuilderOptions(objectiveTitle)
 
                 ------------------------------------------------------------
 
-                deleteObjective = {
+                exportObjective = {
                     order = 2,
+                    type = "execute",
+                    name = L["Export Objective"],
+                    disabled = true,
+                    func = function()
+
+                    end,
+                },
+
+                ------------------------------------------------------------
+
+                deleteObjective = {
+                    order = 3,
                     type = "execute",
                     name = L["Delete Objective"],
                     func = function()
                         self:DeleteObjective(objectiveTitle)
                     end,
                     confirm = function()
-                        return format(L.Options_ObjectiveBuilder("objective.manage.deleteObjective_confirm"), objectiveTitle)
+                        return format(L.Options_ObjectiveBuilder("objective.manage.deleteObjective_confirm"), objectiveTitle, self:GetNumButtonsContainingObjective(objectiveTitle))
                     end,
                 },
             },

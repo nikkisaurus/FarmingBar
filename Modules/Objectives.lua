@@ -14,11 +14,15 @@ local StaticPopup_Show = StaticPopup_Show
 --*------------------------------------------------------------------------
 
 function addon:CleanupQuickObjectives()
+    local count = 0
     for objectiveTitle, _ in pairs(FarmingBar.db.global.objectives) do
         if self:IsObjectiveAutoItem(objectiveTitle) and self:GetNumButtonsContainingObjective(objectiveTitle) == 0 then
             self:DeleteObjective(objectiveTitle)
+            count = count + 1
         end
     end
+
+    StaticPopup_Show("FARMINGBAR_OBJECTIVE_CLEANUP_FINISHED", count)
 end
 
 ------------------------------------------------------------
@@ -373,16 +377,13 @@ end
 ------------------------------------------------------------
 
 function addon:RenameObjective(objectiveTitle, newObjectiveTitle)
-    if addon:GetObjectiveInfo(newObjectiveTitle) then
-        print("ERROR") -- TODO: Show StaticPopup to confirm overwrite OR reselect and reset
-        return
-    end
-
     FarmingBar.db.global.objectives[newObjectiveTitle] = FarmingBar.db.global.objectives[objectiveTitle]
     FarmingBar.db.global.objectives[objectiveTitle] = nil
 
     self:UpdateExclusions(objectiveTitle, newObjectiveTitle)
     self:UpdateRenamedObjectiveButtons(objectiveTitle, newObjectiveTitle)
+
+    self:RefreshObjectiveBuilderOptions()
 end
 
 ------------------------------------------------------------
