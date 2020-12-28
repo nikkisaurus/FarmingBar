@@ -333,6 +333,7 @@ end
 ------------------------------------------------------------
 
 function addon:ValidateObjectiveData(trackerType, trackerID)
+    if not trackerID then return end
     if trackerType == "ITEM" then
         return (GetItemInfoInstant(trackerID or 0)), "ITEM"
     elseif trackerType == "CURRENCY" then

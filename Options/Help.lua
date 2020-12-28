@@ -13,7 +13,7 @@ local categories = {
     templates = L["Templates"],
 }
 
-------------------------------------------------------------
+--*------------------------------------------------------------------------
 
 function addon:GetHelpOptions()
     local options = {}

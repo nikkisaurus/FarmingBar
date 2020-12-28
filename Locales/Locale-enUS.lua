@@ -34,7 +34,8 @@ L.MissingCraftRecipeName = "Please specify a tradeskill recipe name"
 L.UnknownRecipe = "You do not know the recipe: %s"
 
 L.invalidSyntax = function(err) return "Syntax error: "..err end
-L.InvalidTrackerID = function(trackerType, trackerID) return format("Invalid tracker ID: %s:%s", strupper(trackerType), trackerID) end
+L.InvalidTrackerID = "Invalid tracker: %s:%s"
+-- L.InvalidTrackerID = function(trackerType, trackerID) return format("Invalid tracker ID: %s:%s", strupper(trackerType), trackerID) end
 L.TrackerIDExists = function(trackerID) return format("Already tracking %s", trackerID) end
 
 
@@ -124,6 +125,7 @@ L["All"] = true
 L["Any"] = true
 L["Automatic Icon"] = true
 L["Choose"] = true
+L["Cleanup"] = true
 L["Close"] = true
 L["Condition"] = true
 L["Currency"] = true
@@ -142,7 +144,7 @@ L["Export"] = true
 L["FALSE"] = true
 L["Filter Auto Items"] = true
 L["Help"] = true
-L["Import Objective"] = true
+L["Import"] = true
 L["Include All Characters"] = true
 L["Include Bank"] = true
 L["Invalid Tracker"] = true
@@ -189,6 +191,7 @@ L["Objective Complete"] = true
 L["Counts For"] = true
 L["Currency ID/Link"] = true
 L["Item ID/Name/Link"] = true
+L["Tradeskill Recipe Name"] = true
 
 ------------------------------------------------------------
 
@@ -228,7 +231,7 @@ L["Enable Modifier"] = true
 L["Enabled"] = true
 L["ENABLED"] = true
 L["Face"] = true
-L["Filter quick objectives (Objective Builder)"] = true
+L["Filter quick objectives"] = true
 L["Fonts"] = true
 L["General"] = true
 L["Global"] = true
@@ -347,6 +350,8 @@ L["Thickoutline"] = true
 L["Title"] = true
 L["Top"] = true
 L["Topleft"] = true
+L["Icon"] = true
+L["Recipe"] = true
 L["Topright"] = true
 L["Up"] = true
 L["Visibility"] = true
@@ -360,10 +365,24 @@ L.TemplateSaved = "All items on bar %d saved as farming template: %s"
 L.TemplateDeleted = [[Template "%s" deleted.]]
 L.InvalidItemID = "Invalid itemID: %d"
 
+--*------------------------------------------------------------------------
+
 L.Options_Config = function(widget)
     local strings = {
         ["charSpecific"] = [["*" denotes character specific database settings]],
         ["mixedSpecific"] = [["**" denotes mixed character and profile specific database settings]],
+    }
+
+    return strings[widget]
+end
+
+
+--*------------------------------------------------------------------------
+
+L.Options_ObjectiveBuilder = function(widget)
+    local strings = {
+        ["cleanup"] = "Permanently deletes unused quick objectives.",
+        ["cleanup_confirm"] = "Are you sure you want to cleanup quick objectives? This process is irreversible.",
     }
 
     return strings[widget]

@@ -2,6 +2,9 @@ local addonName, addon = ...
 local FarmingBar = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
 local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 
+local pairs, tinsert, unpack = pairs, table.insert, unpack
+local format = string.format
+
 --*------------------------------------------------------------------------
 
 function addon:GetSettingsOptions()
@@ -146,7 +149,7 @@ function addon:GetSettingsOptions()
                                     style = "dropdown",
                                     name = L["Delete Template"],
                                     desc = L.Options_settings_global_templates_deleteTemplate,
-                                    confirm = function(_, value) return string.format(L.Options_settings_global_templates_deleteTemplateConfirm, value) end,
+                                    confirm = function(_, value) return format(L.Options_settings_global_templates_deleteTemplateConfirm, value) end,
                                     disabled = function()
                                         return self.tcount(FarmingBar.db.global.templates) == 0
                                     end,

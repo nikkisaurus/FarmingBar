@@ -1,13 +1,12 @@
 local addonName, addon = ...
 local FarmingBar = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
 local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
-local ACD = LibStub("AceConfigDialog-3.0")
-local LSM = LibStub("LibSharedMedia-3.0")
 
 --*------------------------------------------------------------------------
 
 function addon:Initialize_Options()
     LibStub("AceConfig-3.0"):RegisterOptionsTable(addonName, self:GetOptions())
+    LibStub("AceConfigDialog-3.0"):SetDefaultSize(addonName, 800, 500)
 end
 
 --*------------------------------------------------------------------------
@@ -31,6 +30,7 @@ function addon:GetOptions()
                 order = 2,
                 type = "group",
                 name = L["Objectives"],
+                childGroups = "select",
                 args = self:GetObjectiveBuilderOptions(),
             },
 
@@ -40,7 +40,7 @@ function addon:GetOptions()
                 order = 3,
                 type = "group",
                 name = L["Settings"],
-                childGroups = "tab",
+                childGroups = "select",
                 args = self:GetSettingsOptions(),
             },
 

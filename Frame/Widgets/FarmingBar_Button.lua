@@ -2,6 +2,7 @@ local addonName, addon = ...
 local FarmingBar = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
 local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
+local ACD = LibStub("AceConfigDialog-3.0")
 local LSM = LibStub("LibSharedMedia-3.0")
 
 local _G = _G
@@ -55,7 +56,9 @@ local postClickMethods = {
     ------------------------------------------------------------
 
     showObjectiveBuilder = function(self, ...)
-        addon.ObjectiveBuilder:Load(self.obj:GetUserData("objectiveTitle"))
+        -- ACD:SelectGroup(addonName, "objectiveBuilder")
+        ACD:SelectGroup(addonName, "objectiveBuilder", self.obj:GetObjectiveTitle())
+        ACD:Open(addonName)
     end,
 
     ------------------------------------------------------------
@@ -265,14 +268,14 @@ local function frame_PostClick(self, buttonClicked, ...)
         widget:SetObjectiveID(objectiveTitle)
         ClearCursor()
         return
-    elseif addon.DragFrame:IsVisible() then
-        if addon.moveButton then
-            widget:SwapButtons(addon.moveButton)
-        else
-            widget:SetObjectiveID(addon.DragFrame:GetObjective())
-        end
-        addon.DragFrame:Clear()
-        return
+    -- elseif addon.DragFrame:IsVisible() then
+    --     if addon.moveButton then
+    --         widget:SwapButtons(addon.moveButton)
+    --     else
+    --         widget:SetObjectiveID(addon.DragFrame:GetObjective())
+    --     end
+    --     addon.DragFrame:Clear()
+    --     return
     end
 
     ClearCursor()

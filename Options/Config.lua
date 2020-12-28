@@ -4,6 +4,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 
 local pairs, tinsert = pairs, table.insert
 local format = string.format
+local StaticPopup_Show = StaticPopup_Show
 
 --*------------------------------------------------------------------------
 
@@ -19,50 +20,7 @@ local anchors = {
     BOTTOMRIGHT = L["Bottomright"],
 }
 
-------------------------------------------------------------
-
 local anchorSort = {"TOPLEFT", "TOP", "TOPRIGHT", "LEFT", "CENTER", "RIGHT", "BOTTOMLEFT", "BOTTOM", "BOTTOMRIGHT"}
-
---*------------------------------------------------------------------------
-
-function addon:GetConfigOptions()
-    local options = {}
-
-    for barID = 0, #self.bars do
-        options["bar"..barID] = {
-            order = barID,
-            type = "group",
-            name = barID > 0 and (L["Bar"].." "..barID) or L["All"],
-            childGroups = "tab",
-            args = {
-                bar = {
-                    order = 1,
-                    type = "group",
-                    name = L["Bar"],
-                    args = self:GetBarConfigOptions(barID),
-                },
-
-                ------------------------------------------------------------
-
-                button = {
-                    order = 2,
-                    type = "group",
-                    name = L["Button"],
-                    args = self:GetButtonConfigOptions(barID),
-                },
-            },
-        }
-    end
-
-    return options
-end
-
-------------------------------------------------------------
-
-function addon:RefreshConfigOptions()
-    self.options.args.config.args = self:GetConfigOptions()
-    addon:RefreshOptions()
-end
 
 --*------------------------------------------------------------------------
 
@@ -732,4 +690,45 @@ function addon:GetButtonConfigOptions(barID)
     end
 
     return options
+end
+
+------------------------------------------------------------
+
+function addon:GetConfigOptions()
+    local options = {}
+
+    for barID = 0, #self.bars do
+        options["bar"..barID] = {
+            order = barID,
+            type = "group",
+            name = barID > 0 and (L["Bar"].." "..barID) or L["All"],
+            childGroups = "tab",
+            args = {
+                bar = {
+                    order = 1,
+                    type = "group",
+                    name = L["Bar"],
+                    args = self:GetBarConfigOptions(barID),
+                },
+
+                ------------------------------------------------------------
+
+                button = {
+                    order = 2,
+                    type = "group",
+                    name = L["Button"],
+                    args = self:GetButtonConfigOptions(barID),
+                },
+            },
+        }
+    end
+
+    return options
+end
+
+------------------------------------------------------------
+
+function addon:RefreshConfigOptions()
+    self.options.args.config.args = self:GetConfigOptions()
+    addon:RefreshOptions()
 end

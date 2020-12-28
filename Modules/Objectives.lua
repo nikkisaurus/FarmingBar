@@ -13,8 +13,17 @@ local StaticPopup_Show = StaticPopup_Show
 
 --*------------------------------------------------------------------------
 
+function addon:CleanupQuickObjectives()
+    for objectiveTitle, _ in pairs(FarmingBar.db.global.objectives) do
+        if self:IsObjectiveAutoItem(objectiveTitle) and self:GetNumButtonsContainingObjective(objectiveTitle) == 0 then
+            self:DeleteObjective(objectiveTitle)
+        end
+    end
+end
+
+------------------------------------------------------------
+
 function addon:CreateObjective(objectiveTitle, objectiveInfo, overwrite, supressSelect)
-    local ObjectiveBuilder = self.ObjectiveBuilder
     local defaultInfo = self:GetDefaultObjective()
     if objectiveInfo then
         -- If we don't do it this way, the table ref to the duplicated objective will remain and changes will happen to both
@@ -46,26 +55,8 @@ function addon:CreateObjective(objectiveTitle, objectiveInfo, overwrite, supress
 
     ------------------------------------------------------------
 
-    if not overwrite or isNew then
-        local button = addon:AddObjectiveButton(newObjectiveTitle)
-        if ObjectiveBuilder:IsVisible() then
-            button:RenameObjective()
-            if not supressSelect then
-                ObjectiveBuilder:ClearSelectedObjective()
-                ObjectiveBuilder:SelectObjective(newObjectiveTitle)
-                button:SetSelected(true)
-            end
-        end
-    end
-
-    if ObjectiveBuilder:IsVisible() then
-        ObjectiveBuilder:RefreshObjectives()
-        if newObjectiveTitle == ObjectiveBuilder:GetSelectedObjective() then
-            ObjectiveBuilder:SelectObjective(newObjectiveTitle)
-        end
-    end
-
     self:UpdateButtons()
+    self:RefreshObjectiveBuilderOptions()
 
     ------------------------------------------------------------
 
@@ -144,42 +135,10 @@ end
 ------------------------------------------------------------
 
 function addon:DeleteObjective(objectiveTitle)
-    local ObjectiveBuilder = self.ObjectiveBuilder
-    local objectiveList = ObjectiveBuilder:GetUserData("objectiveList")
-
-    if not objectiveTitle then
-        local releaseKeys = {}
-        for key, button in pairs(objectiveList.children) do
-            if button:GetUserData("selected") and not button:GetUserData("filtered") then
-                local objectiveTitle = button:GetObjective()
-
-                FarmingBar.db.global.objectives[objectiveTitle] = nil
-                tinsert(releaseKeys, key)
-
-                if ObjectiveBuilder:GetSelectedObjective() == objectiveTitle then
-                    ObjectiveBuilder:ClearSelectedObjective()
-                end
-
-                self:UpdateExclusions(objectiveTitle)
-                self:ClearDeletedObjectives(objectiveTitle)
-            end
-        end
-
-        -- Release buttons after the initial loop, backwards, to ensure all buttons are properly released
-        for _, key in addon.pairs(releaseKeys, function(a, b) return b < a end) do
-            ObjectiveBuilder:ReleaseChild(objectiveList.children[key])
-        end
-    else
-        FarmingBar.db.global.objectives[objectiveTitle] = nil
-        if ObjectiveBuilder:GetSelectedObjective() == objectiveTitle then
-            ObjectiveBuilder:ClearSelectedObjective()
-        end
-        ObjectiveBuilder:ReleaseChild(ObjectiveBuilder:GetObjectiveButton(objectiveTitle))
-        self:UpdateExclusions(objectiveTitle)
-        self:ClearDeletedObjectives(objectiveTitle)
-    end
-
-    ObjectiveBuilder:RefreshObjectives()
+    FarmingBar.db.global.objectives[objectiveTitle] = nil
+    self:UpdateExclusions(objectiveTitle)
+    self:ClearDeletedObjectives(objectiveTitle)
+    self:RefreshObjectiveBuilderOptions()
 end
 
 ------------------------------------------------------------
@@ -252,7 +211,7 @@ function addon:GetObjectiveIcon(objectiveTitle)
 
     local icon
     if objectiveInfo.autoIcon then
-        local lookupTable = (objectiveInfo.displayRef.trackerType and objectiveInfo.displayRef.trackerType ~= "MACROTEXT") and objectiveInfo.displayRef or objectiveInfo.trackers[1]
+        local lookupTable = (objectiveInfo.displayRef.trackerType and objectiveInfo.displayRef.trackerType == "ITEM" or objectiveInfo.displayRef.trackerType == "CURRENCY") and objectiveInfo.displayRef or objectiveInfo.trackers[1]
         local trackerType, trackerID = lookupTable and lookupTable.trackerType, lookupTable and lookupTable.trackerID
 
         if trackerType == "ITEM" then
@@ -270,6 +229,21 @@ function addon:GetObjectiveIcon(objectiveTitle)
     end
 
     return icon or 134400
+end
+
+------------------------------------------------------------
+
+function addon:GetObjectiveDBValue(key, objectiveTitle)
+    local keys = {strsplit(".", key)}
+    local path = FarmingBar.db.global.objectives[objectiveTitle]
+
+    for k, key in pairs(keys) do
+        if k < #keys then
+            path = path[key]
+        end
+    end
+
+    return path[keys[#keys]]
 end
 
 ------------------------------------------------------------
@@ -413,9 +387,8 @@ end
 ------------------------------------------------------------
 
 function addon:SetObjectiveDBInfo(key, value, objectiveTitle)
-    local title = objectiveTitle or addon.ObjectiveBuilder:GetSelectedObjective()
     local keys = {strsplit(".", key)}
-    local path = FarmingBar.db.global.objectives[title]
+    local path = FarmingBar.db.global.objectives[objectiveTitle]
 
     for k, key in pairs(keys) do
         if k < #keys then
@@ -427,8 +400,7 @@ function addon:SetObjectiveDBInfo(key, value, objectiveTitle)
 
     ------------------------------------------------------------
 
-    self:UpdateButtons(title)
-    self.ObjectiveBuilder:RefreshObjectives()
+    self:UpdateButtons(objectiveTitle)
 end
 
 ------------------------------------------------------------
