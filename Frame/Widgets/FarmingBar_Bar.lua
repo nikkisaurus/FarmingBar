@@ -12,11 +12,14 @@ local CreateFrame, UIParent = CreateFrame, UIParent
 
 local Type = "FarmingBar_Bar"
 local Version = 1
+
 --*------------------------------------------------------------------------
 
 local postClickMethods = {
     configBar = function(self, ...)
-        addon.Config:Load(self.obj:GetUserData("barID"))
+        local barID = self.obj:GetBarID()
+        ACD:SelectGroup(addonName, "config", "bar"..barID)
+        ACD:Open(addonName)
     end,
 
     ------------------------------------------------------------

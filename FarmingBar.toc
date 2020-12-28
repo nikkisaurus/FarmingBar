@@ -61,3 +61,7 @@ Modules\Templates.lua
 Options\Commands.lua
 Options\Options.lua
 Options\Config.lua
+Options\ObjectiveBuilder.lua
+Options\Settings.lua
+Options\StyleEditor.lua
+Options\Help.lua

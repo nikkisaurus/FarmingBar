@@ -33,6 +33,7 @@ end
 function addon:CreateBar()
     tinsert(FarmingBar.db.profile.bars, addon:GetDefaultBar())
     self:LoadBar(#FarmingBar.db.profile.bars)
+    self:RefreshConfigOptions()
 end
 
 ------------------------------------------------------------
@@ -133,15 +134,6 @@ function addon:RemoveBar(barID)
 
     ------------------------------------------------------------
 
-    -- Check if bar is currently selected in Config
-    -- Select "All Bars" if it is
-    local selectedBarID = Config:GetSelectedBar()
-    if barID == selectedBarID then
-        Config:ClearSelectedBar()
-    end
-
-    ------------------------------------------------------------
-
     -- Release all bars from the removed one and on
     for i = barID, #bars do
         self.bars[i]:Release()
@@ -162,7 +154,7 @@ function addon:RemoveBar(barID)
 
     ------------------------------------------------------------
 
-    Config:RefreshBars()
+    self:RefreshConfigOptions()
 end
 
 ------------------------------------------------------------

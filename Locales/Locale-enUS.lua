@@ -6,6 +6,10 @@ local format, gsub, strlower, strupper = string.format, string.gsub, string.lowe
 local sexteal = utils.ChatColors["SEXTEAL"]
 
 --*------------------------------------------------------------------------
+
+L.addon = "Farming Bar"
+
+--*------------------------------------------------------------------------
 --*Errors------------------------------------------------------------------
 
 -- Shared
@@ -108,6 +112,9 @@ L["Loot Coin"] = true
 L["Quest Activate"] = true
 L["Quest Complete"] = true
 L["Quest Failed"] = true
+
+L["Manage"] = true
+L.ConfirmRemoveBar = "Are you sure you want to permanently remove bar %d?"
 
 ------------------------------------------------------------
 
@@ -337,6 +344,7 @@ L["Show on Mouseover"] = true
 L["Size"] = true
 L["Size Bar to Buttons"] = true
 L["Style"] = true
+L["Styles"] = true
 L["Template"] = true
 L["Thickoutline"] = true
 L["Title"] = true

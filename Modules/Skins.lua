@@ -325,8 +325,8 @@ function addon:Initialize_Masque()
     local MSQ, MSQVersion = LibStub("Masque", true)
     if MSQ and MSQVersion >= 90001 then
         self.MSQ = {
-            anchor = MSQ:Group("Farming Bar", "Anchor"),
-            button = MSQ:Group("Farming Bar", "Button", true),
+            anchor = MSQ:Group(L.addon, "Anchor"),
+            button = MSQ:Group(L.addon, "Button", true),
         }
 
         self.MSQ.anchor:SetCallback(MSQ_Callback)
