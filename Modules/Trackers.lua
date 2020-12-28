@@ -64,52 +64,56 @@ end
 
 ------------------------------------------------------------
 
-function addon:DeleteTracker()
-    local ObjectiveBuilder = self.ObjectiveBuilder
-    local trackerList = ObjectiveBuilder:GetUserData("trackerList")
-    local objectiveTitle, objectiveInfo = ObjectiveBuilder:GetSelectedObjectiveInfo()
-
-    ------------------------------------------------------------
-
-    local releaseKeys = {}
-    for key, button in pairs(trackerList.children) do
-        if button:GetUserData("selected") then
-            if ObjectiveBuilder:GetSelectedTracker() == key then
-                ObjectiveBuilder:ClearSelectedTracker()
-            end
-
-            FarmingBar.db.global.objectives[objectiveTitle].trackers[key] = nil
-            tinsert(releaseKeys, key)
-        end
-    end
-
-    -- Release buttons after the initial loop, backwards, to ensure all buttons are properly released
-    for _, key in addon.pairs(releaseKeys, function(a, b) return b < a end) do
-        ObjectiveBuilder:ReleaseChild(trackerList.children[key])
-    end
-
-    ------------------------------------------------------------
-
-    -- Reindex trackers table so trackerList buttons aren't messed up
-    local trackers = {}
-    for _, trackerInfo in pairs(objectiveInfo.trackers) do
-        tinsert(trackers, trackerInfo)
-    end
-
-    FarmingBar.db.global.objectives[objectiveTitle].trackers = trackers
-
-    ------------------------------------------------------------
-
-    -- Update tracker button keys
-    for key, button in pairs(trackerList.children) do
-        button:SetUserData("trackerKey", key)
-    end
-
-    ------------------------------------------------------------
-
-    trackerList:DoLayout()
+function addon:DeleteTracker(objectiveTitle, tracker)
+    FarmingBar.db.global.objectives[objectiveTitle].trackers[tracker] = nil
     self:UpdateButtons(objectiveTitle)
-    ObjectiveBuilder:RefreshObjectives()
+    self:RefreshObjectiveBuilderOptions()
+
+    -- local ObjectiveBuilder = self.ObjectiveBuilder
+    -- local trackerList = ObjectiveBuilder:GetUserData("trackerList")
+    -- local objectiveTitle, objectiveInfo = ObjectiveBuilder:GetSelectedObjectiveInfo()
+
+    -- ------------------------------------------------------------
+
+    -- local releaseKeys = {}
+    -- for key, button in pairs(trackerList.children) do
+    --     if button:GetUserData("selected") then
+    --         if ObjectiveBuilder:GetSelectedTracker() == key then
+    --             ObjectiveBuilder:ClearSelectedTracker()
+    --         end
+
+    --         FarmingBar.db.global.objectives[objectiveTitle].trackers[key] = nil
+    --         tinsert(releaseKeys, key)
+    --     end
+    -- end
+
+    -- -- Release buttons after the initial loop, backwards, to ensure all buttons are properly released
+    -- for _, key in addon.pairs(releaseKeys, function(a, b) return b < a end) do
+    --     ObjectiveBuilder:ReleaseChild(trackerList.children[key])
+    -- end
+
+    -- ------------------------------------------------------------
+
+    -- -- Reindex trackers table so trackerList buttons aren't messed up
+    -- local trackers = {}
+    -- for _, trackerInfo in pairs(objectiveInfo.trackers) do
+    --     tinsert(trackers, trackerInfo)
+    -- end
+
+    -- FarmingBar.db.global.objectives[objectiveTitle].trackers = trackers
+
+    -- ------------------------------------------------------------
+
+    -- -- Update tracker button keys
+    -- for key, button in pairs(trackerList.children) do
+    --     button:SetUserData("trackerKey", key)
+    -- end
+
+    -- ------------------------------------------------------------
+
+    -- trackerList:DoLayout()
+    -- self:UpdateButtons(objectiveTitle)
+    -- ObjectiveBuilder:RefreshObjectives()
 end
 
 ------------------------------------------------------------
@@ -220,6 +224,20 @@ function addon:GetTrackerDataTable(...)
             return data
         end
     end
+end
+
+------------------------------------------------------------
+
+function addon:GetTrackerDBInfo(objectiveTitle, tracker, key)
+    local keys = {strsplit(".", key)}
+    local path = FarmingBar.db.global.objectives[objectiveTitle].trackers[tracker]
+    for k, key in pairs(keys) do
+        if k < #keys then
+            path = path[key]
+        end
+    end
+
+    return path[keys[#keys]]
 end
 
 ------------------------------------------------------------

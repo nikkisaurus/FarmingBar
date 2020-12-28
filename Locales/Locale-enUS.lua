@@ -132,7 +132,7 @@ L["Condition"] = true
 L["Currency"] = true
 L["Custom"] = true
 L["Custom Condition"] = true
-L["Delete"] = true
+L["Delete Tracker"] = true
 L["Delete Objective"] = true
 L["Display Ref"] = true
 L["Display Reference"] = true
@@ -140,6 +140,7 @@ L["Duplicate"] = true
 L["Duplicate Objective"] = true
 L["Enabled"] = true
 L["Exclude Objective"] = true
+L["Remove Excluded Objective"] = true
 L["Excluded"] = true
 L["Export"] = true
 L["FALSE"] = true
@@ -389,6 +390,7 @@ L.Options_ObjectiveBuilder = function(widget)
         ["cleanup_confirm"] = "Are you sure you want to cleanup quick objectives? This process is irreversible.",
         ["objective.dropper"] = "Click to place this objective onto a bar.",
         ["objective.manage.deleteObjective_confirm"] = [["%s" is being tracked on %d button(s). Deleting this objective will remove it from all bars globally. Do you want to continue?]],
+        ["tracker.deleteTracker"] = [[Are you sure you want to permanently delete this tracker?]],
     }
 
     return strings[widget]

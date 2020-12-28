@@ -1,8 +1,9 @@
 local addonName, addon = ...
 local FarmingBar = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
 local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
+local ACD = LibStub("AceConfigDialog-3.0")
 
-local format, tostring = string.format, tostring
+local format, tonumber, tostring = string.format, tonumber, tostring
 local GetCurrencyInfo, GetItemIconByID = C_CurrencyInfo.GetCurrencyInfo, C_Item.GetItemIconByID
 
 --*------------------------------------------------------------------------
@@ -202,7 +203,7 @@ function addon:GetObjectiveObjectiveBuilderOptions(objectiveTitle)
             set = function(info, value)
                 if objectiveTitle == value then return end
                 self:RenameObjective(objectiveTitle, value)
-                LibStub("AceConfigDialog-3.0"):SelectGroup(addonName, "objectiveBuilder", value)
+                ACD:SelectGroup(addonName, "objectiveBuilder", value)
             end,
         },
 
@@ -420,7 +421,7 @@ function addon:GetObjectiveObjectiveBuilderOptions(objectiveTitle)
                     set = function(info, value)
                         local validTrackerID = self:ValidateObjectiveData(newTrackerType, value)
                         self:CreateTracker(objectiveTitle, {trackerType = newTrackerType, trackerID = validTrackerID})
-                        -- TODO: select tracker in builder
+                        ACD:SelectGroup(addonName, "objectiveBuilder", objectiveTitle, "trackers", value)
                     end,
                 },
 
@@ -481,23 +482,202 @@ end
 function addon:GetTrackersObjectiveBuilderOptions(objectiveTitle)
     local options = {}
 
-    for _, trackerInfo in pairs(FarmingBar.db.global.objectives[objectiveTitle].trackers) do
+    for tracker, trackerInfo in pairs(FarmingBar.db.global.objectives[objectiveTitle].trackers) do
         options[tostring(trackerInfo.trackerID)] = {
             type = "group",
             args = {
+                title = {
+                    order = 1,
+                    type = "description",
+                    width = "full",
+                    imageWidth = 20,
+                    imageHeight = 20,
+                    fontSize = "medium",
+                },
 
+                ------------------------------------------------------------
+
+                objective = {
+                    order = 2,
+                    type = "input",
+                    width = "full",
+                    name = L["Objective"],
+                    get = function(info)
+                        return tostring(self:GetTrackerDBInfo(objectiveTitle, tracker, info[#info]))
+                    end,
+                    validate = function(_, value)
+                        value = tonumber(value) or 0
+                        return value > 0
+                    end,
+                    set = function(info, value)
+                        self:SetTrackerDBInfo(objectiveTitle, tracker, info[#info], tonumber(value))
+                    end,
+                },
+
+                ------------------------------------------------------------
+
+                countsFor = {
+                    order = 3,
+                    type = "input",
+                    width = "full",
+                    name = L["Counts For"],
+                    get = function(info)
+                        return tostring(self:GetTrackerDBInfo(objectiveTitle, tracker, info[#info]))
+                    end,
+                    validate = function(_, value)
+                        value = tonumber(value) or 0
+                        return value > 0
+                    end,
+                    set = function(info, value)
+                        self:SetTrackerDBInfo(objectiveTitle, tracker, info[#info], tonumber(value))
+                    end,
+                },
+
+                ------------------------------------------------------------
+
+                includeBank = {
+                    order = 4,
+                    type = "toggle",
+                    width = "full",
+                    name = L["Include Bank"],
+                    get = function(info)
+                        return self:GetTrackerDBInfo(objectiveTitle, tracker, info[#info])
+                    end,
+                    set = function(info, value)
+                        self:SetTrackerDBInfo(objectiveTitle, tracker, info[#info], value)
+                        self:UpdateButtons(objectiveTitle)
+                    end,
+                },
+
+                ------------------------------------------------------------
+
+                includeAllChars = {
+                    order = 4,
+                    type = "toggle",
+                    width = "full",
+                    name = L["Include All Characters"],
+                    get = function(info)
+                        return self:GetTrackerDBInfo(objectiveTitle, tracker, info[#info])
+                    end,
+                    set = function(info, value)
+                        self:SetTrackerDBInfo(objectiveTitle, tracker, info[#info], value)
+                    end,
+                },
+
+                ------------------------------------------------------------
+
+                exclude = {
+                    order = 5,
+                    type = "select",
+                    width = "full",
+                    name = L["Exclude Objective"],
+                    values = function()
+                        local values = {}
+
+                        for eObjectiveTitle, _ in self.pairs(FarmingBar.db.global.objectives, function(a, b) return strupper(a) < strupper(b) end) do
+                            if eObjectiveTitle ~= objectiveTitle and not self:ObjectiveIsExcluded(trackerInfo.exclude, eObjectiveTitle) then
+                                values[eObjectiveTitle] = eObjectiveTitle
+                            end
+                        end
+
+                        return values
+                    end,
+                    sorting = function()
+                        local sorting = {}
+
+                        for eObjectiveTitle, _ in self.pairs(FarmingBar.db.global.objectives, function(a, b) return strupper(a) < strupper(b) end) do
+                            if eObjectiveTitle ~= objectiveTitle and not self:ObjectiveIsExcluded(trackerInfo.exclude, eObjectiveTitle) then
+                                tinsert(sorting, eObjectiveTitle)
+                            end
+                        end
+
+                        return sorting
+                    end,
+                    disabled = function(info)
+                        local count = 0
+
+                        for eObjectiveTitle, _ in self.pairs(FarmingBar.db.global.objectives, function(a, b) return strupper(a) < strupper(b) end) do
+                            if eObjectiveTitle ~= objectiveTitle and not self:ObjectiveIsExcluded(trackerInfo.exclude, eObjectiveTitle) then
+                                count = count + 1
+                            end
+                        end
+
+                        return count == 0
+                    end,
+                    set = function(_, value)
+                        tinsert(FarmingBar.db.global.objectives[objectiveTitle].trackers[tracker].exclude, value)
+                        self:UpdateButtons()
+                    end,
+                },
+
+                ------------------------------------------------------------
+
+                excluded = {
+                    order = 6,
+                    type = "select",
+                    width = "full",
+                    name = L["Remove Excluded Objective"],
+                    values = function()
+                        local values = {}
+
+                        for _, eObjectiveTitle in self.pairs(trackerInfo.exclude, function(a, b) return strupper(a) < strupper(b) end) do
+                            values[eObjectiveTitle] = eObjectiveTitle
+                        end
+
+                        return values
+                    end,
+                    sorting = function()
+                        local sorting = {}
+
+                        for _, eObjectiveTitle in self.pairs(trackerInfo.exclude, function(a, b) return strupper(a) < strupper(b) end) do
+                            tinsert(sorting, eObjectiveTitle)
+                        end
+
+                        return sorting
+                    end,
+                    disabled = function(info)
+                        return self.tcount(trackerInfo.exclude) == 0
+                    end,
+                    set = function(_, value)
+                        for key, eObjectiveTitle in pairs(trackerInfo.exclude) do
+                            if eObjectiveTitle == value then
+                                tremove(trackerInfo.exclude, key)
+                            end
+                        end
+                        self:UpdateButtons()
+                    end,
+                },
+
+                ------------------------------------------------------------
+
+                deleteTracker = {
+                    order = 7,
+                    type = "execute",
+                    width = "full",
+                    name = L["Delete Tracker"],
+                    func = function()
+                        self:DeleteTracker(objectiveTitle, tracker)
+                    end,
+                    confirm = function(...)
+                        return L.Options_ObjectiveBuilder("tracker.deleteTracker")
+                    end,
+                },
             },
         }
 
         if trackerInfo.trackerType == "ITEM" then
             self.CacheItem(trackerInfo.trackerID, function(itemID)
                 options[tostring(trackerInfo.trackerID)].name = GetItemInfo(itemID)
+                options[tostring(trackerInfo.trackerID)].args.title.name = self.ColorFontString(GetItemInfo(itemID), "gold")
             end, trackerInfo.trackerID)
             options[tostring(trackerInfo.trackerID)].icon = GetItemIconByID(trackerInfo.trackerID)
+            options[tostring(trackerInfo.trackerID)].args.title.image = GetItemIconByID(trackerInfo.trackerID)
         else
             local currency = GetCurrencyInfo(trackerInfo.trackerID)
             options[tostring(trackerInfo.trackerID)].name = currency.name
+            options[tostring(trackerInfo.trackerID)].args.title.name = self.ColorFontString(currency.name, "gold")
             options[tostring(trackerInfo.trackerID)].icon = currency.iconFileID
+            options[tostring(trackerInfo.trackerID)].args.title.image = currency.iconFileID
         end
     end
 
@@ -510,6 +690,7 @@ function addon:RefreshObjectiveBuilderOptions()
     self.options.args.objectiveBuilder.args = self:GetObjectiveBuilderOptions()
     self:RefreshOptions()
 end
+
 ------------------------------------------------------------
 
 function addon:RefreshObjectiveBuilderTrackerOptions(objectiveTitle)
