@@ -387,6 +387,7 @@ L.Options_ObjectiveBuilder = function(widget)
     local strings = {
         ["cleanup"] = "Permanently deletes unused quick objectives.",
         ["cleanup_confirm"] = "Are you sure you want to cleanup quick objectives? This process is irreversible.",
+        ["objective.dropper"] = "Click to place this objective onto a bar.",
         ["objective.manage.deleteObjective_confirm"] = [["%s" is being tracked on %d button(s). Deleting this objective will remove it from all bars globally. Do you want to continue?]],
     }
 

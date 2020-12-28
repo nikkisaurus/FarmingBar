@@ -122,7 +122,6 @@ function addon:GetObjectiveBuilderOptions()
         filter = {
             order = 4,
             type = "toggle",
-            width = "full",
             name = L["Filter quick objectives"],
             get = function()
                 return self:GetDBValue("global", "settings.filterQuickObjectives")
@@ -176,7 +175,7 @@ function addon:GetObjectiveObjectiveBuilderOptions(objectiveTitle)
             order = 0,
             type = "execute",
             name = " ",
-            desc = "Click to place this objective onto a bar",
+            desc = L.Options_ObjectiveBuilder("objective.dropper"),
             width = 1/3,
             image = function()
                 return self:GetObjectiveIcon(objectiveTitle), 35, 35
