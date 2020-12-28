@@ -57,6 +57,7 @@ local function addButton_OnClick(self)
     if barDB.numVisibleButtons < addon.maxButtons then
         barDB.numVisibleButtons = barDB.numVisibleButtons + 1
         widget:AddButton(barDB.numVisibleButtons)
+        addon:RefreshOptions()
     end
 end
 
@@ -121,6 +122,7 @@ local function removeButton_OnClick(self)
     if barDB.numVisibleButtons > 0 then
         barDB.numVisibleButtons = barDB.numVisibleButtons - 1
         widget:RemoveButton()
+        addon:RefreshOptions()
     end
 end
 

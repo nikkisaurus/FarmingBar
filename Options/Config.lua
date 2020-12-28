@@ -7,6 +7,24 @@ local format = string.format
 
 --*------------------------------------------------------------------------
 
+local anchors = {
+    TOPLEFT = L["Topleft"],
+    TOP = L["Top"],
+    TOPRIGHT = L["Topright"],
+    LEFT = L["Left"],
+    CENTER = L["Center"],
+    RIGHT = L["Right"],
+    BOTTOMLEFT = L["Bottomleft"],
+    BOTTOM = L["Bottom"],
+    BOTTOMRIGHT = L["Bottomright"],
+}
+
+------------------------------------------------------------
+
+local anchorSort = {"TOPLEFT", "TOP", "TOPRIGHT", "LEFT", "CENTER", "RIGHT", "BOTTOMLEFT", "BOTTOM", "BOTTOMRIGHT"}
+
+--*------------------------------------------------------------------------
+
 function addon:GetConfigOptions()
     local options = {}
 
@@ -422,7 +440,8 @@ function addon:GetBarConfigOptions(barID)
             charSpecific = {
                 order = 7,
                 type = "description",
-                name = L.Options_Config("bar.charSpecific"),
+                width = "full",
+                name = L.Options_Config("charSpecific"),
             },
         }
     end
@@ -434,6 +453,7 @@ end
 
 function addon:GetButtonConfigOptions(barID)
     local options
+    local bar = barID > 0 and self.bars[barID]
 
     if barID == 0 then
         options = {
@@ -441,7 +461,273 @@ function addon:GetButtonConfigOptions(barID)
         }
     else
         options = {
+            buttons = {
+                order = 1,
+                type = "group",
+                inline = true,
+                width = "full",
+                name = L["Buttons"],
+                get = function(info)
+                    return self:GetBarDBInfo(info[#info], barID)
+                end,
+                args = {
+                    numVisibleButtons = {
+                        order = 1,
+                        type = "range",
+                        name = L["Number of Buttons"],
+                        min = 0,
+                        max = self.maxButtons,
+                        step = 1,
+                        set = function(info, value)
+                            self:SetBarDBInfo(info[#info], value, barID)
+                            bar:UpdateVisibleButtons()
+                        end,
+                    },
 
+                    ------------------------------------------------------------
+
+                    buttonWrap = {
+                        order = 2,
+                        type = "range",
+                        name = L["Buttons Per Wrap"],
+                        min = 1,
+                        max = self.maxButtons,
+                        step = 1,
+                        set = function(info, value)
+                            self:SetBarDBInfo(info[#info], value, barID)
+                            bar:AnchorButtons()
+                        end,
+                    },
+                },
+            },
+
+            ------------------------------------------------------------
+
+            style = {
+                order = 2,
+                type = "group",
+                inline = true,
+                width = "full",
+                name = L["Style"],
+                args = {
+                    size = {
+                        order = 1,
+                        type = "range",
+                        name = L["Size"],
+                        min = self.minButtonSize,
+                        max = self.maxButtonSize,
+                        step = 1,
+                        get = function(info)
+                            return self:GetBarDBInfo("button."..info[#info], barID)
+                        end,
+                        set = function(info, value)
+                            self:SetBarDBInfo("button."..info[#info], value, barID)
+                            bar:SetSize()
+                        end,
+                    },
+
+                    ------------------------------------------------------------
+
+                    padding = {
+                        order = 2,
+                        type = "range",
+                        name = L["Padding"],
+                        min = self.minButtonPadding,
+                        max = self.maxButtonPadding,
+                        step = 1,
+                        get = function(info)
+                            return self:GetBarDBInfo("button."..info[#info], barID)
+                        end,
+                        set = function(info, value)
+                            self:SetBarDBInfo("button."..info[#info], value, barID)
+                            bar:SetSize()
+                            bar:AnchorButtons()
+                        end,
+                    },
+
+                    ------------------------------------------------------------
+
+                    countHeader = {
+                        order = 3,
+                        type = "header",
+                        name = L["Count Fontstring"]
+                    },
+
+                    ------------------------------------------------------------
+
+                    countAnchor = {
+                        order = 4,
+                        type = "select",
+                        name = L["Anchor"],
+                        values = anchors,
+                        sorting = anchorSort,
+                        get = function(info)
+                            return self:GetBarDBInfo("button.fontStrings.count.anchor", barID)
+                        end,
+                        set = function(info, value)
+                            self:SetBarDBInfo("button.fontStrings.count.anchor", value, barID)
+                            self:UpdateButtons()
+                        end,
+                    },
+
+                    ------------------------------------------------------------
+
+                    countXOffset = {
+                        order = 5,
+                        type = "range",
+                        name = L["X Offset"],
+                        min = -self.OffsetX,
+                        max = self.OffsetX,
+                        step = 1,
+                        get = function(info)
+                            return self:GetBarDBInfo("button.fontStrings.count.xOffset", barID)
+                        end,
+                        set = function(info, value)
+                            self:SetBarDBInfo("button.fontStrings.count.xOffset", value, barID)
+                            self:UpdateButtons()
+                        end,
+                    },
+
+                    ------------------------------------------------------------
+
+                    countYOffset = {
+                        order = 6,
+                        type = "range",
+                        name = L["Y Offset"],
+                        min = -self.OffsetY,
+                        max = self.OffsetY,
+                        step = 1,
+                        get = function(info)
+                            return self:GetBarDBInfo("button.fontStrings.count.yOffset", barID)
+                        end,
+                        set = function(info, value)
+                            self:SetBarDBInfo("button.fontStrings.count.yOffset", value, barID)
+                            self:UpdateButtons()
+                        end,
+                    },
+
+                    ------------------------------------------------------------
+
+                    objectiveHeader = {
+                        order = 7,
+                        type = "header",
+                        name = L["Objective Fontstring"]
+                    },
+
+                    ------------------------------------------------------------
+
+                    objectiveAnchor = {
+                        order = 8,
+                        type = "select",
+                        name = L["Anchor"],
+                        values = anchors,
+                        sorting = anchorSort,
+                        get = function(info)
+                            return self:GetBarDBInfo("button.fontStrings.objective.anchor", barID)
+                        end,
+                        set = function(info, value)
+                            self:SetBarDBInfo("button.fontStrings.objective.anchor", value, barID)
+                            self:UpdateButtons()
+                        end,
+                    },
+
+                    ------------------------------------------------------------
+
+                    objectiveXOffset = {
+                        order = 9,
+                        type = "range",
+                        name = L["X Offset"],
+                        min = -self.OffsetX,
+                        max = self.OffsetX,
+                        step = 1,
+                        get = function(info)
+                            return self:GetBarDBInfo("button.fontStrings.objective.xOffset", barID)
+                        end,
+                        set = function(info, value)
+                            self:SetBarDBInfo("button.fontStrings.objective.xOffset", value, barID)
+                            self:UpdateButtons()
+                        end,
+                    },
+
+                    ------------------------------------------------------------
+
+                    objectiveYOffset = {
+                        order = 10,
+                        type = "range",
+                        name = L["Y Offset"],
+                        min = -self.OffsetY,
+                        max = self.OffsetY,
+                        step = 1,
+                        get = function(info)
+                            return self:GetBarDBInfo("button.fontStrings.objective.yOffset", barID)
+                        end,
+                        set = function(info, value)
+                            self:SetBarDBInfo("button.fontStrings.objective.yOffset", value, barID)
+                            self:UpdateButtons()
+                        end,
+                    },
+                },
+            },
+
+            ------------------------------------------------------------
+
+            operations = {
+                order = 3,
+                type = "group",
+                inline = true,
+                width = "full",
+                name = L["Operations"],
+                args = {
+                    clearButtons = {
+                        order = 1,
+                        type = "execute",
+                        name = "*"..L["Clear Buttons"],
+                        func = function()
+                            self:ClearBar(barID)
+                        end,
+                    },
+
+                    ------------------------------------------------------------
+
+                    reindexButtons = {
+                        order = 2,
+                        type = "execute",
+                        name = "*"..L["Reindex Buttons"],
+                        func = function()
+                            self:ReindexButtons(barID)
+                        end,
+                    },
+
+                    ------------------------------------------------------------
+
+                    sizeBarToButtons = {
+                        order = 3,
+                        type = "execute",
+                        name = "**"..L["Size Bar to Buttons"],
+                        func = function()
+                            self:SizeBarToButtons(barID)
+                        end,
+                    },
+                },
+            },
+
+            ------------------------------------------------------------
+
+            charSpecific = {
+                order = 4,
+                type = "description",
+                width = "full",
+                name = L.Options_Config("charSpecific"),
+            },
+
+            ------------------------------------------------------------
+
+            mixedSpecific = {
+                order = 4,
+                type = "description",
+                width = "full",
+                name = L.Options_Config("mixedSpecific"),
+            },
         }
     end
 

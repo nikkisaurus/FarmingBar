@@ -204,9 +204,6 @@ L["Bar"] = true
 L["Config"] = true
 L["Remove Bar"] = true
 
-L.Config_bar_charSpecific = [["*" denotes character specific database settings]]
-L.Config_bar_mixedSpecific = [["**" denotes mixed character and profile specific database settings]]
-
 ------------------------------------------------------------
 
 -- Options\Options.lua
@@ -365,7 +362,8 @@ L.InvalidItemID = "Invalid itemID: %d"
 
 L.Options_Config = function(widget)
     local strings = {
-        ["bar.charSpecific"] = [["*" denotes character specific database settings]],
+        ["charSpecific"] = [["*" denotes character specific database settings]],
+        ["mixedSpecific"] = [["**" denotes mixed character and profile specific database settings]],
     }
 
     return strings[widget]
