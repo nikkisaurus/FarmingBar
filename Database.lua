@@ -347,7 +347,7 @@ function addon:GetDefaultObjective()
         customCondition = "",
         displayRef = {
             trackerID = false,
-            trackerType = false,
+            trackerType = "NONE",
         },
         icon = 134400,
         trackerCondition = "ALL",

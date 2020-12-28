@@ -133,11 +133,11 @@ L["Currency"] = true
 L["Custom"] = true
 L["Custom Condition"] = true
 L["Delete"] = true
-L["Delete Selected"] = true
+L["Delete Objective"] = true
 L["Display Ref"] = true
 L["Display Reference"] = true
 L["Duplicate"] = true
-L["Duplicate All"] = true
+L["Duplicate Objective"] = true
 L["Enabled"] = true
 L["Exclude Objective"] = true
 L["Excluded"] = true
@@ -163,6 +163,7 @@ L["Tracker Condition"] = true
 L["Trackers"] = true
 L["TRUE"] = true
 L["Type"] = true
+
 
 L.DisplayReferenceDescription = [[Display References allow you to set which item/currency you want to use for automatic objective information. This includes the icon chosen when using "Automatic Icon" and the item associated with a button's "use" attribute. However, when set to a macrotext, the icon will be unaffected.
 
@@ -384,6 +385,7 @@ L.Options_ObjectiveBuilder = function(widget)
     local strings = {
         ["cleanup"] = "Permanently deletes unused quick objectives.",
         ["cleanup_confirm"] = "Are you sure you want to cleanup quick objectives? This process is irreversible.",
+        ["objective.manage.deleteObjective_confirm"] = [[Are you sure you want to permanently delete the objective "%s"]],
     }
 
     return strings[widget]

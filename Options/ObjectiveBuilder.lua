@@ -3,6 +3,7 @@ local FarmingBar = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
 local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 
 local format, tostring = string.format, tostring
+local GetCurrencyInfo, GetItemIconByID = C_CurrencyInfo.GetCurrencyInfo, C_Item.GetItemIconByID
 
 --*------------------------------------------------------------------------
 
@@ -85,7 +86,7 @@ function addon:GetObjectiveBuilderOptions()
             type = "execute",
             name = L["New Objective"],
             func = function()
-
+                self:CreateObjective()
             end,
         },
 
@@ -389,6 +390,39 @@ function addon:GetObjectiveObjectiveBuilderOptions(objectiveTitle)
 
             },
         },
+
+        ------------------------------------------------------------
+
+        manage = {
+            order = 6,
+            type = "group",
+            inline = true,
+            name = L["Manage"],
+            args = {
+                duplicateObjective = {
+                    order = 1,
+                    type = "execute",
+                    name = L["Duplicate Objective"],
+                    func = function()
+                        self:CreateObjective(objectiveTitle, self:GetObjectiveInfo(objectiveTitle))
+                    end,
+                },
+
+                ------------------------------------------------------------
+
+                deleteObjective = {
+                    order = 2,
+                    type = "execute",
+                    name = L["Delete Objective"],
+                    func = function()
+                        self:DeleteObjective(objectiveTitle)
+                    end,
+                    confirm = function()
+                        return format(L.Options_ObjectiveBuilder("objective.manage.deleteObjective_confirm"), objectiveTitle)
+                    end,
+                },
+            },
+        },
     }
 
     return options
@@ -399,14 +433,38 @@ end
 function addon:GetTrackersObjectiveBuilderOptions(objectiveTitle)
     local options = {}
 
+    for _, trackerInfo in pairs(FarmingBar.db.global.objectives[objectiveTitle].trackers) do
+        options[tostring(trackerInfo.trackerID)] = {
+            type = "group",
+            args = {
+
+            },
+        }
+
+        if trackerInfo.trackerType == "ITEM" then
+            self.CacheItem(trackerInfo.trackerID, function(itemID)
+                options[tostring(trackerInfo.trackerID)].name = GetItemInfo(itemID)
+            end, trackerInfo.trackerID)
+            options[tostring(trackerInfo.trackerID)].icon = GetItemIconByID(trackerInfo.trackerID)
+        else
+            local currency = GetCurrencyInfo(trackerInfo.trackerID)
+            options[tostring(trackerInfo.trackerID)].name = currency.name
+            options[tostring(trackerInfo.trackerID)].icon = currency.iconFileID
+        end
+    end
+
     return options
 end
 
 ------------------------------------------------------------
 
-------------------------------------------------------------
-
 function addon:RefreshObjectiveBuilderOptions()
     self.options.args.objectiveBuilder.args = self:GetObjectiveBuilderOptions()
-    addon:RefreshOptions()
+    self:RefreshOptions()
+end
+------------------------------------------------------------
+
+function addon:RefreshObjectiveBuilderTrackerOptions(objectiveTitle)
+    self.options.args.objectiveBuilder.args[objectiveTitle].args.trackers.args = self:GetTrackersObjectiveBuilderOptions(objectiveTitle)
+    self:RefreshOptions()
 end
