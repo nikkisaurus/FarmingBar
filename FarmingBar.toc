@@ -42,7 +42,7 @@ Database.lua
 StaticPopup.lua
 
 # Frame
-Frame\Widgets.xml
+Widgets\Widgets.xml
 
 # Modules
 Modules\Skins.lua

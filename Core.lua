@@ -226,3 +226,19 @@ function addon:GetDataStoreCount(itemID, includeBank)
 
     return count
 end
+
+--*------------------------------------------------------------------------
+
+function addon:GetModifiers()
+    local mod = ""
+    if IsShiftKeyDown() then
+        mod = "shift"
+    end
+    if IsControlKeyDown() then
+        mod = "ctrl"..(mod ~= "" and "-" or "")..mod
+    end
+    if IsAltKeyDown() then
+        mod = "alt"..(mod ~= "" and "-" or "")..mod
+    end
+    return mod
+end
