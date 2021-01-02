@@ -42,6 +42,8 @@ function addon:ClearBar(barID)
     local bar = self.bars[barID]
     local buttons = bar:GetUserData("buttons")
 
+    wipe(FarmingBar.db.char.bars[barID].objectives)
+
     for _, button in pairs(buttons) do
         if button:GetObjectiveTitle() then
             button:ClearObjective()

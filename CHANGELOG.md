@@ -2,13 +2,14 @@
 ## Version 3.0
 ### 3.0-alpha6
 - Bug fixes:
+  - -- Using the Clear Buttons operation now properly clears objectives on hidden buttons
   - -- Removing a bar now clears objectives
   - -- Bars now grow to accomodate templates correctly
   - -- Deleting objectives contained within templates now requires confirmation
   - -- Missing objectives in user templates are not automatically created
   - -- Loading a built in template no longer opens newly created objectives
 - Remaining built in templates are now available
-- DataStore compatible account counts are temporarily available until reworked
+- DataStore compatible account counts are temporarily available until reworked to require no dependencies
 - Objective tracker settings have been moved to the Trackers tab
 
 ### 3.0-alpha5
