@@ -1,12 +1,15 @@
 # Farming Bar
 ## Version 3.0
 ### 3.0-alpha6
-- Fix bug when loading templates when saving ordering while the number of visible buttons was less than the last template item's button ID
+- Bug fixes:
+  - -- Removing a bar now clears objectives appropriately
+  - -- Loading templates where there aren't enough buttons visible for objectives now properly creates the necessary buttons
+- Reenable DataStore compatible account counts temporarily until reworked
 
 ### 3.0-alpha5
 - Some built in templates are now available
 - Config and Objective Builder have been reworked into the main options frame
-  - To add an objective to a bar, there is an icon next to the selected objective's title (on the Objective tab) that you can click to load the objective onto your cursor
+  - -- To add an objective to a bar, there is an icon next to the selected objective's title (on the Objective tab) that you can click to load the objective onto your cursor
 - The /craft slash command is still available for now, but will be reworked into a "RECIPE" display reference in a future build
 - There is now an operation to cleanup unused quick objectives (objectives created automatically when adding an item to a bar)
 - Alpha should be properly compatible with Classic
