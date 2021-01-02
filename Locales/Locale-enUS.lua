@@ -370,6 +370,8 @@ L.TemplateSaved = "All items on bar %d saved as farming template: %s"
 L.TemplateDeleted = [[Template "%s" deleted.]]
 L.InvalidItemID = "Invalid itemID: %d"
 
+L.TemplateObjectiveMissing = [[Missing template objective "%s" not loaded.]]
+
 --*------------------------------------------------------------------------
 
 L.Options_Config = function(widget)

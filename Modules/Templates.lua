@@ -353,12 +353,8 @@ function addon:LoadTemplate(templateType, barID, templateName, withData, saveOrd
 
     if saveOrder then
         -- Get the key for the last template item
-        local i = 0
-        for buttonID, _ in pairs(template) do
-            i = i + 1
-            if i == numTemplateButtons then
-                numTemplateButtons = tonumber(buttonID)
-            end
+        for buttonID, _ in addon.pairs(template) do
+            numTemplateButtons = tonumber(buttonID)
         end
     end
 
@@ -375,9 +371,15 @@ function addon:LoadTemplate(templateType, barID, templateName, withData, saveOrd
         i = saveOrder and tonumber(buttonID) or (i + 1)
         local objectiveTitle = objective.objectiveTitle
         if not self:GetObjectiveInfo(objectiveTitle) then
-            objectiveTitle = self:CreateObjectiveFromID(objectiveTitle, objective.itemID)
+            if objective.itemID then
+                objectiveTitle = self:CreateObjectiveFromID(objectiveTitle, objective.itemID)
+            else
+                self:ReportError(string.format(L.TemplateObjectiveMissing, objectiveTitle))
+            end
         end
-        buttons[i]:SetObjectiveID(objective.objectiveTitle, withData and objective.objective)
+        if self:GetObjectiveInfo(objectiveTitle) then
+            buttons[i]:SetObjectiveID(objective.objectiveTitle, withData and objective.objective)
+        end
     end
 
     ------------------------------------------------------------

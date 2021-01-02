@@ -1,5 +1,8 @@
 # Farming Bar
 ## Version 3.0
+### 3.0-alpha6
+- Fix bug when loading templates when saving ordering while the number of visible buttons was less than the last template item's button ID
+
 ### 3.0-alpha5
 - Some built in templates are now available
 - Config and Objective Builder have been reworked into the main options frame
