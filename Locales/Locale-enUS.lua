@@ -276,7 +276,7 @@ L.Options_settings_global_general_hints_enableModifier = "Allows tooltip hints t
 L.Options_settings_global_general_hints_modifier = "Sets the modifier key used to show tooltip hints."
 L.Options_settings_global_misc_autoLootOnUse = "Temporarily enables auto loot when using an item"
 L.Options_settings_global_misc_filterQuickObjectives = "Hides automatically created item objectives from the Objective Builder list"
-L.Options_settings_global_misc_newQuickObjectives = "Sets the behavior when quick objectives are added to a button (create a new objective, overwrite existing objectives, use existing objects, or prompt)."
+L.Options_settings_global_misc_newQuickObjectives = "Sets the behavior when quick objectives are added to a button (create a new objective, overwrite existing objectives, use existing objectives, or prompt)."
 L.Options_settings_global_templates_deleteTemplate = "Permanently deletes a user-defined template."
 L.Options_settings_global_templates_deleteTemplateConfirm = [[Are you sure you want to permanently delete the template "%s"?]]
 L.Options_settings_global_templates_preserveTemplateData = "Includes objective data when loading user-defined templates."
@@ -400,7 +400,7 @@ end
 
 --*------------------------------------------------------------------------
 
-L.Options_Help = [[|cffffcc00Farming Bar (v3.0-alpha5)|r
+L.Options_Help = [[|cffffcc00Farming Bar (v3.0-alpha6)|r
 
 Thank you for testing the alpha! If you have any suggestions or bug reports, please create an issue at |cff00ccff[ https://github.com/niketa-wow/farmingbar/issues ]|r and specify the current alpha version. Features in the stable release that are not yet implemented in this alpha are not bugs and should not be reported.
 
