@@ -16,6 +16,12 @@ addon.templates = {
         {itemID = 2592, objectiveTitle = "item:Wool Cloth"},
         {itemID = 14256, objectiveTitle = "item:Felcloth"},
         {itemID = 14047, objectiveTitle = "item:Runecloth"},
+        {itemID = 2997, objectiveTitle = "item:Bolt of Woolen Cloth"},
+        {itemID = 2996, objectiveTitle = "item:Bolt of Linen Cloth"},
+        {itemID = 14342, objectiveTitle = "item:Mooncloth"},
+        {itemID = 14048, objectiveTitle = "item:Bolt of Runecloth"},
+        {itemID = 4339, objectiveTitle = "item:Bolt of Mageweave"},
+        {itemID = 4305, objectiveTitle = "item:Bolt of Silk Cloth"},
     },
     --@retail@
     ["CLOTH (BC)"] = {
@@ -73,6 +79,9 @@ addon.templates = {
         {itemID = 173204, objectiveTitle = "item:Lightless Silk"},
     },
     --@end-retail@
+
+    ------------------------------------------------------------
+
     ["ELEMENTAL"] = {
         {itemID = 7080, objectiveTitle = "item:Essence of Water"},
         {itemID = 12808, objectiveTitle = "item:Essence of Undeath"},
@@ -85,6 +94,9 @@ addon.templates = {
         {itemID = 7082, objectiveTitle = "item:Essence of Air"},
         {itemID = 7069, objectiveTitle = "item:Elemental Air"},
     },
+
+    ------------------------------------------------------------
+
     ["ENCHANTING"] = {
         {itemID = 10938, objectiveTitle = "item:Lesser Magic Essence"},
         {itemID = 10939, objectiveTitle = "item:Greater Magic Essence"},
@@ -94,23 +106,83 @@ addon.templates = {
         {itemID = 14344, objectiveTitle = "item:Large Brilliant Shard"},
         {itemID = 16203, objectiveTitle = "item:Greater Eternal Essence"},
         {itemID = 16202, objectiveTitle = "item:Lesser Eternal Essence"},
-        --[===[@non-retail@{itemID = 11174, objectiveTitle = "item:"},--@end-non-retail@]===]
-        --[===[@non-retail@{itemID = 11175, objectiveTitle = "item:"},--@end-non-retail@]===]
-        --[===[@non-retail@{itemID = 11135, objectiveTitle = "item:"},--@end-non-retail@]===]
-        --[===[@non-retail@{itemID = 11082, objectiveTitle = "item:"},--@end-non-retail@]===]
-        --[===[@non-retail@{itemID = 11134, objectiveTitle = "item:"},--@end-non-retail@]===]
-        --[===[@non-retail@{itemID = 10998, objectiveTitle = "item:"},--@end-non-retail@]===]
-        --[===[@non-retail@{itemID = 11137, objectiveTitle = "item:"},--@end-non-retail@]===]
-        --[===[@non-retail@{itemID = 11083, objectiveTitle = "item:"},--@end-non-retail@]===]
-        --[===[@non-retail@{itemID = 11176, objectiveTitle = "item:"},--@end-non-retail@]===]
-        --[===[@non-retail@{itemID = 11138, objectiveTitle = "item:"},--@end-non-retail@]===]
-        --[===[@non-retail@{itemID = 11177, objectiveTitle = "item:"},--@end-non-retail@]===]
-        --[===[@non-retail@{itemID = 11178, objectiveTitle = "item:"},--@end-non-retail@]===]
-        --[===[@non-retail@{itemID = 11139, objectiveTitle = "item:"},--@end-non-retail@]===]
-        --[===[@non-retail@{itemID = 20725, objectiveTitle = "item:"},--@end-non-retail@]===]
-        --[===[@non-retail@{itemID = 10978, objectiveTitle = "item:"},--@end-non-retail@]===]
-        --[===[@non-retail@{itemID = 11084, objectiveTitle = "item:"},--@end-non-retail@]===]
+        --[===[@non-retail@
+        {itemID = 11174, objectiveTitle = "item:Lesser Nether Essence"},
+        {itemID = 11175, objectiveTitle = "item:Greater Nether Essence"},
+        {itemID = 11135, objectiveTitle = "item:Greater Mystic Essence"},
+        {itemID = 11082, objectiveTitle = "item:Greater Astral Essence"},
+        {itemID = 11134, objectiveTitle = "item:Lesser Mystic Essence"},
+        {itemID = 10998, objectiveTitle = "item:Lesser Astral Essence"},
+        {itemID = 11137, objectiveTitle = "item:Vision Dust"},
+        {itemID = 11083, objectiveTitle = "item:Soul Dust"},
+        {itemID = 11176, objectiveTitle = "item:Dream Dust"},
+        {itemID = 11138, objectiveTitle = "item:Small Glowing Shard"},
+        {itemID = 11177, objectiveTitle = "item:Small Radiant Shard"},
+        {itemID = 11178, objectiveTitle = "item:Large Radiant Shard"},
+        {itemID = 11139, objectiveTitle = "item:Large Glowing Shard"},
+        {itemID = 20725, objectiveTitle = "item:Nexus Crystal"},
+        {itemID = 10978, objectiveTitle = "item:Small Glimmering Shard"},
+        {itemID = 11084, objectiveTitle = "item:Large Glimmering Shard"},
+        --@end-non-retail@]===]
     },
+    --@retail@
+    ["ENCHANTING (BC)"] = {
+        {itemID = 22448, objectiveTitle = "item:Small Prismatic Shard"},
+        {itemID = 22449, objectiveTitle = "item:Large Prismatic Shard"},
+        {itemID = 22447, objectiveTitle = "item:Lesser Planar Essence"},
+        {itemID = 22445, objectiveTitle = "item:Arcane Dust"},
+        {itemID = 22450, objectiveTitle = "item:Void Crystal"},
+        {itemID = 22446, objectiveTitle = "item:Greater Planar Essence"},
+    },
+    ["ENCHANTING (WRATH)"] = {
+        {itemID = 34055, objectiveTitle = "item:Greater Cosmic Essence"},
+        {itemID = 34057, objectiveTitle = "item:Abyss Crystal"},
+        {itemID = 34054, objectiveTitle = "item:Infinite Dust"},
+        {itemID = 34052, objectiveTitle = "item:Dream Shard"},
+        {itemID = 34056, objectiveTitle = "item:Lesser Cosmic Essence"},
+        {itemID = 34053, objectiveTitle = "item:Small Dream Shard"},
+    },
+    ["ENCHANTING (CATA)"] = {
+        {itemID = 52719, objectiveTitle = "item:Greater Celestial Essence"},
+        {itemID = 52720, objectiveTitle = "item:Small Heavenly Shard"},
+        {itemID = 52555, objectiveTitle = "item:Hypnotic Dust"},
+        {itemID = 52718, objectiveTitle = "item:Lesser Celestial Essence"},
+        {itemID = 52722, objectiveTitle = "item:Maelstrom Crystal"},
+        {itemID = 52721, objectiveTitle = "item:Heavenly Shard"},
+    },
+    ["ENCHANTING (MOP)"] = {
+        {itemID = 74247, objectiveTitle = "item:Ethereal Shard"},
+        {itemID = 74249, objectiveTitle = "item:Spirit Dust"},
+        {itemID = 74252, objectiveTitle = "item:Small Ethereal Shard"},
+        {itemID = 74250, objectiveTitle = "item:Mysterious Essence"},
+        {itemID = 74248, objectiveTitle = "item:Sha Crystal"},
+    },
+    ["ENCHANTING (WOD)"] = {
+        {itemID = 115502, objectiveTitle = "item:Small Luminous Shard"},
+        {itemID = 113588, objectiveTitle = "item:Temporal Crystal"},
+        {itemID = 109693, objectiveTitle = "item:Draenic Dust"},
+        {itemID = 115504, objectiveTitle = "item:Fractured Temporal Crystal"},
+        {itemID = 111245, objectiveTitle = "item:Luminous Shard"},
+    },
+    ["ENCHANTING (LEGION)"] = {
+        {itemID = 124440, objectiveTitle = "item:Arkhana"},
+        {itemID = 124442, objectiveTitle = "item:Chaos Crystal"},
+        {itemID = 124441, objectiveTitle = "item:Leylight Shard"},
+    },
+    ["ENCHANTING (BFA)"] = {
+        {itemID = 152876, objectiveTitle = "item:Umbra Shard"},
+        {itemID = 152875, objectiveTitle = "item:Gloom Dust"},
+        {itemID = 152877, objectiveTitle = "item:Veiled Crystal"},
+    },
+    ["ENCHANTING (SL)"] = {
+        {itemID = 172232, objectiveTitle = "item:Eternal Crystal"},
+        {itemID = 172230, objectiveTitle = "item:Soul Dust"},
+        {itemID = 172231, objectiveTitle = "item:Sacred Shard"},
+    },
+    --@end-retail@
+
+    ------------------------------------------------------------
+
     ["FISHING"] = {
         {itemID = 21071, objectiveTitle = "item:Raw Sagefish"},
         {itemID = 6289, objectiveTitle = "item:Raw Longjaw Mud Snapper"},
@@ -130,6 +202,149 @@ addon.templates = {
         {itemID = 6362, objectiveTitle = "item:Raw Rockscale Cod"},
         {itemID = 8365, objectiveTitle = "item:Raw Mithril Head Trout"},
     },
+    --@retail@
+    ["FISHING (BC)"] = {
+        {itemID = 27435, objectiveTitle = "item:Figluster's Mudfish"},
+        {itemID = 27422, objectiveTitle = "item:Barbed Gill Trout"},
+        {itemID = 33823, objectiveTitle = "item:Bloodfin Catfish"},
+        {itemID = 27437, objectiveTitle = "item:Icefin Bluefish"},
+        {itemID = 33824, objectiveTitle = "item:Crescent-Tail Skullfish"},
+        {itemID = 27515, objectiveTitle = "item:Huge Spotted Feltail"},
+        {itemID = 27439, objectiveTitle = "item:Furious Crawdad"},
+        {itemID = 27429, objectiveTitle = "item:Zangarian Sporefish"},
+        {itemID = 27516, objectiveTitle = "item:Enormous Barbed Gill Trout"},
+        {itemID = 27425, objectiveTitle = "item:Spotted Feltail"},
+    },
+    ["FISHING (WRATH)"] = {
+        {itemID = 41805, objectiveTitle = "item:Borean Man O' War"},
+        {itemID = 41801, objectiveTitle = "item:Moonglow Cuttlefish"},
+        {itemID = 41812, objectiveTitle = "item:Barrelhead Goby"},
+        {itemID = 41806, objectiveTitle = "item:Musselback Sculpin"},
+        {itemID = 41813, objectiveTitle = "item:Nettlefish"},
+        {itemID = 41809, objectiveTitle = "item:Glacial Salmon"},
+        {itemID = 41808, objectiveTitle = "item:Bonescale Snapper"},
+        {itemID = 41807, objectiveTitle = "item:Dragonfin Angelfish"},
+        {itemID = 41803, objectiveTitle = "item:Rockfin Grouper"},
+        {itemID = 41810, objectiveTitle = "item:Fangtooth Herring"},
+        {itemID = 41802, objectiveTitle = "item:Imperial Manta Ray"},
+    },
+    ["FISHING (CATA)"] = {
+        {itemID = 53065, objectiveTitle = "item:Albino Cavefish"},
+        {itemID = 53062, objectiveTitle = "item:Sharptooth"},
+        {itemID = 53071, objectiveTitle = "item:Algaefin Rockfish"},
+        {itemID = 53066, objectiveTitle = "item:Blackbelly Mudfish"},
+        {itemID = 53072, objectiveTitle = "item:Deepsea Sagefish"},
+        {itemID = 53069, objectiveTitle = "item:Murglesnout"},
+        {itemID = 53068, objectiveTitle = "item:Lavascale Catfish"},
+        {itemID = 53067, objectiveTitle = "item:Striped Lurker"},
+        {itemID = 53064, objectiveTitle = "item:Highland Guppy"},
+        {itemID = 53070, objectiveTitle = "item:Fathom Eel"},
+        {itemID = 53063, objectiveTitle = "item:Mountain Trout"},
+    },
+    ["FISHING (MOP)"] = {
+        {itemID = 74856, objectiveTitle = "item:Jade Lungfish"},
+        {itemID = 86544, objectiveTitle = "item:Spinefish Alpha"},
+        {itemID = 74861, objectiveTitle = "item:Tiger Gourami"},
+        {itemID = 74860, objectiveTitle = "item:Redbelly Mandarin"},
+        {itemID = 86542, objectiveTitle = "item:Flying Tiger Gourami"},
+        {itemID = 83064, objectiveTitle = "item:Spinefish"},
+        {itemID = 86545, objectiveTitle = "item:Mimic Octopus"},
+        {itemID = 74865, objectiveTitle = "item:Krasarang Paddlefish"},
+        {itemID = 74864, objectiveTitle = "item:Reef Octopus"},
+        {itemID = 74863, objectiveTitle = "item:Jewel Danio"},
+        {itemID = 74859, objectiveTitle = "item:Emperor Salmon"},
+        {itemID = 74866, objectiveTitle = "item:Golden Carp"},
+        {itemID = 74857, objectiveTitle = "item:Giant Mantis Shrimp"},
+    },
+    ["FISHING (WOD)"] = {
+        {itemID = 111595, objectiveTitle = "item:Crescent Saberfish"},
+        {itemID = 111666, objectiveTitle = "item:Fire Ammonite"},
+        {itemID = 111665, objectiveTitle = "item:Sea Scorpion"},
+        {itemID = 127141, objectiveTitle = "item:Bloated Thresher"},
+        {itemID = 124669, objectiveTitle = "item:Darkmoon Daggermaw"},
+        {itemID = 127991, objectiveTitle = "item:Felmouth Frenzy"},
+        {itemID = 111669, objectiveTitle = "item:Jawless Skulker"},
+        {itemID = 111668, objectiveTitle = "item:Fat Sleeper"},
+        {itemID = 111667, objectiveTitle = "item:Blind Lake Sturgeon"},
+        {itemID = 111664, objectiveTitle = "item:Abyssal Gulper Eel"},
+        {itemID = 118565, objectiveTitle = "item:Savage Piranha"},
+        {itemID = 111663, objectiveTitle = "item:Blackwater Whiptail"},
+    },
+    ["FISHING (LEGION)"] = {
+        {itemID = 139660, objectiveTitle = "item:Ancient Highmountain Salmon"},
+        {itemID = 133714, objectiveTitle = "item:Silverscale Minnow"},
+        {itemID = 133716, objectiveTitle = "item:Soggy Drakescale"},
+        {itemID = 133712, objectiveTitle = "item:Frost Worm"},
+        {itemID = 133713, objectiveTitle = "item:Moosehorn Hook"},
+        {itemID = 133717, objectiveTitle = "item:Enchanted Lure"},
+        {itemID = 133707, objectiveTitle = "item:Nightmare Nightcrawler"},
+        {itemID = 133721, objectiveTitle = "item:Message in a Beer Bottle"},
+        {itemID = 133723, objectiveTitle = "item:Stunned, Angry Shark"},
+        {itemID = 133709, objectiveTitle = "item:Funky Sea Snail"},
+        {itemID = 133708, objectiveTitle = "item:Drowned Thistleleaf"},
+        {itemID = 133703, objectiveTitle = "item:Pearlescent Conch"},
+        {itemID = 133705, objectiveTitle = "item:Rotten Fishbone"},
+        {itemID = 133724, objectiveTitle = "item:Decayed Whale Blubber"},
+        {itemID = 133719, objectiveTitle = "item:Sleeping Murloc"},
+        {itemID = 133704, objectiveTitle = "item:Rusty Queenfish Brooch"},
+        {itemID = 133715, objectiveTitle = "item:Ancient Vrykul Ring"},
+        {itemID = 146962, objectiveTitle = "item:Golden Minnow"},
+        {itemID = 133701, objectiveTitle = "item:Skrog Toenail"},
+        {itemID = 124108, objectiveTitle = "item:Mossgill Perch"},
+        {itemID = 139655, objectiveTitle = "item:Terrorfin"},
+        {itemID = 139666, objectiveTitle = "item:Tainted Runescale Koi"},
+        {itemID = 139663, objectiveTitle = "item:Thundering Stormray"},
+        {itemID = 139656, objectiveTitle = "item:Thorned Flounder"},
+        {itemID = 139659, objectiveTitle = "item:Coldriver Carp"},
+        {itemID = 139667, objectiveTitle = "item:Axefish"},
+        {itemID = 139664, objectiveTitle = "item:Magic-Eater Frog"},
+        {itemID = 139654, objectiveTitle = "item:Ghostly Queenfish"},
+        {itemID = 139657, objectiveTitle = "item:Ancient Mossgill"},
+        {itemID = 139662, objectiveTitle = "item:Graybelly Lobster"},
+        {itemID = 139652, objectiveTitle = "item:Leyshimmer Blenny"},
+        {itemID = 133720, objectiveTitle = "item:Demonic Detritus"},
+        {itemID = 139669, objectiveTitle = "item:Ancient Black Barracuda"},
+        {itemID = 133731, objectiveTitle = "item:Mountain Puffer"},
+        {itemID = 124110, objectiveTitle = "item:Stormray"},
+        {itemID = 124107, objectiveTitle = "item:Cursed Queenfish"},
+        {itemID = 133607, objectiveTitle = "item:Silver Mackerel"},
+        {itemID = 124112, objectiveTitle = "item:Black Barracuda"},
+        {itemID = 124109, objectiveTitle = "item:Highmountain Salmon"},
+        {itemID = 139653, objectiveTitle = "item:Nar'thalas Hermit"},
+        {itemID = 138967, objectiveTitle = "item:Big Fountain Goldfish"},
+        {itemID = 133734, objectiveTitle = "item:Oodelfjisk"},
+        {itemID = 138114, objectiveTitle = "item:Gloaming Frenzy"},
+        {itemID = 124111, objectiveTitle = "item:Runescale Koi"},
+    },
+    ["FISHING (BFA)"] = {
+        {itemID = 152547, objectiveTitle = "item:Great Sea Catfish"},
+        {itemID = 152543, objectiveTitle = "item:Sand Shifter"},
+        {itemID = 162515, objectiveTitle = "item:Midnight Salmon"},
+        {itemID = 152549, objectiveTitle = "item:Redtail Loach"},
+        {itemID = 160711, objectiveTitle = "item:Aromatic Fish Oil"},
+        {itemID = 168302, objectiveTitle = "item:Viper Fish"},
+        {itemID = 167562, objectiveTitle = "item:Ionized Minnow"},
+        {itemID = 168646, objectiveTitle = "item:Mauve Stinger"},
+        {itemID = 152544, objectiveTitle = "item:Slimy Mackerel"},
+    },
+    ["FISHING (SL)"] = {
+        {itemID = 173035, objectiveTitle = "item:Pocked Bonefish"},
+        {itemID = 173037, objectiveTitle = "item:Elysian Thade"},
+        {itemID = 173034, objectiveTitle = "item:Silvergill Pike"},
+        {itemID = 173039, objectiveTitle = "item:Iridescent Amberjack Bait"},
+        {itemID = 173041, objectiveTitle = "item:Pocked Bonefish Bait"},
+        {itemID = 173042, objectiveTitle = "item:Spinefin Piranha Bait"},
+        {itemID = 173043, objectiveTitle = "item:Elysian Thade Bait"},
+        {itemID = 173038, objectiveTitle = "item:Lost Sole Bait"},
+        {itemID = 173032, objectiveTitle = "item:Lost Sole"},
+        {itemID = 173036, objectiveTitle = "item:Spinefin Piranha"},
+        {itemID = 173040, objectiveTitle = "item:Silvergill Pike Bait"},
+        {itemID = 173033, objectiveTitle = "item:Iridescent Amberjack"},
+    },
+    --@end-retail@
+
+    ------------------------------------------------------------
+
     ["LOCKBOXES"] = {
         {itemID = 16883, objectiveTitle = "item:Worn Junkbox"},
         {itemID = 4636, objectiveTitle = "item:Strong Iron Lockbox"},
@@ -146,6 +361,45 @@ addon.templates = {
         {itemID = 4638, objectiveTitle = "item:Reinforced Steel Lockbox"},
         {itemID = 4637, objectiveTitle = "item:Steel Lockbox"},
     },
+    --@retail@
+    ["LOCKBOXES (BC)"] = {
+        {itemID = 29569, objectiveTitle = "item:Strong Junkbox"},
+        {itemID = 31952, objectiveTitle = "item:Khorium Lockbox"},
+    },
+    ["LOCKBOXES (WRATH)"] = {
+        {itemID = 43624, objectiveTitle = "item:Titanium Lockbox"},
+        {itemID = 45986, objectiveTitle = "item:Tiny Titanium Lockbox"},
+        {itemID = 43622, objectiveTitle = "item:Froststeel Lockbox"},
+        {itemID = 43575, objectiveTitle = "item:Reinforced Junkbo"},
+    },
+    ["LOCKBOXES (CATA)"] = {
+        {itemID = 68729, objectiveTitle = "item:Elementium Lockbox"},
+        {itemID = 63349, objectiveTitle = "item:Flame-Scarred Junkbox"},
+    },
+    ["LOCKBOXES (MOP)"] = {
+        {itemID = 88567, objectiveTitle = "item:Ghost Iron Lockbox"},
+        {itemID = 88165, objectiveTitle = "item:Vine-Cracked Junkbox"},
+    },
+    ["LOCKBOXES (WOD)"] = {
+        {itemID = 116920, objectiveTitle = "item:True Steel Lockbox"},
+        {itemID = 106895, objectiveTitle = "item:Iron-Bound Junkbox"},
+    },
+    ["LOCKBOXES (LEGION)"] = {
+        {itemID = 121331, objectiveTitle = "item:Leystone Lockbox"},
+    },
+    ["LOCKBOXES (BFA)"] = {
+        {itemID = 169475, objectiveTitle = "item:Barnacled Lockbox"},
+    },
+    ["LOCKBOXES (SL)"] = {
+        {itemID = 179311, objectiveTitle = "item:Oxxein Lockbox"},
+        {itemID = 180522, objectiveTitle = "item:Phaedrum Lockbox"},
+        {itemID = 180533, objectiveTitle = "item:Solenium Lockbox"},
+        {itemID = 180532, objectiveTitle = "item:Laestrite Lockbox"},
+    },
+    --@end-retail@
+
+    ------------------------------------------------------------
+
     ["HERBALISM"] = {
         {itemID = 2453, objectiveTitle = "item:Bruiseweed"},
         {itemID = 2452, objectiveTitle = "item:Swiftthistle"},
@@ -178,6 +432,107 @@ addon.templates = {
         {itemID = 3356, objectiveTitle = "item:Kingsblood"},
         {itemID = 3820, objectiveTitle = "item:Stranglekelp"},
     },
+    --@retail@
+    ["HERBALISM (BC)"] = {
+        {itemID = 22794, objectiveTitle = "item:Fel Lotus"},
+        {itemID = 22789, objectiveTitle = "item:Terocone"},
+        {itemID = 22785, objectiveTitle = "item:Felweed"},
+        {itemID = 22793, objectiveTitle = "item:Mana Thistle"},
+        {itemID = 22792, objectiveTitle = "item:Nightmare Vine"},
+        {itemID = 22791, objectiveTitle = "item:Netherbloom"},
+        {itemID = 22787, objectiveTitle = "item:Ragveil"},
+        {itemID = 22790, objectiveTitle = "item:Ancient Lichen"},
+        {itemID = 22786, objectiveTitle = "item:Dreaming Glory"},
+    },
+    ["HERBALISM (WRATH)"] = {
+        {itemID = 36903, objectiveTitle = "item:Adder's Tongue"},
+        {itemID = 36907, objectiveTitle = "item:Talandra's Rose"},
+        {itemID = 36908, objectiveTitle = "item:Frost Lotus"},
+        {itemID = 36906, objectiveTitle = "item:Icethorn"},
+        {itemID = 36905, objectiveTitle = "item:Lichbloom"},
+        {itemID = 36901, objectiveTitle = "item:Goldclover"},
+        {itemID = 36904, objectiveTitle = "item:Tiger Lily"},
+        {itemID = 37921, objectiveTitle = "item:Deadnettle"},
+    },
+    ["HERBALISM (CATA)"] = {
+        {itemID = 52983, objectiveTitle = "item:Cinderbloom"},
+        {itemID = 52988, objectiveTitle = "item:Whiptail"},
+        {itemID = 52986, objectiveTitle = "item:Heartblossom"},
+        {itemID = 52987, objectiveTitle = "item:Twilight Jasmine"},
+        {itemID = 52984, objectiveTitle = "item:Stormvine"},
+        {itemID = 52985, objectiveTitle = "item:Azshara's Veil"},
+    },
+    ["HERBALISM (MOP)"] = {
+        {itemID = 72237, objectiveTitle = "item:Rain Poppy"},
+        {itemID = 89639, objectiveTitle = "item:Desecrated Herb"},
+        {itemID = 72234, objectiveTitle = "item:Green Tea Leaf"},
+        {itemID = 72238, objectiveTitle = "item:Golden Lotus"},
+        {itemID = 79010, objectiveTitle = "item:Snow Lily"},
+        {itemID = 72235, objectiveTitle = "item:Silkweed"},
+        {itemID = 79011, objectiveTitle = "item:Fool's Cap"},
+    },
+    ["HERBALISM (WOD)"] = {
+        {itemID = 109126, objectiveTitle = "item:Gorgrond Flytrap"},
+        {itemID = 109127, objectiveTitle = "item:Starflower"},
+        {itemID = 109124, objectiveTitle = "item:Frostweed"},
+        {itemID = 109125, objectiveTitle = "item:Fireweed"},
+        {itemID = 109128, objectiveTitle = "item:Nagrand Arrowbloom"},
+        {itemID = 109129, objectiveTitle = "item:Talador Orchid"},
+    },
+    ["HERBALISM (LEGION)"] = {
+        {itemID = 151565, objectiveTitle = "item:Astral Glory"},
+        {itemID = 124103, objectiveTitle = "item:Foxflower"},
+        {itemID = 124101, objectiveTitle = "item:Aethril"},
+        {itemID = 124102, objectiveTitle = "item:Dreamleaf"},
+        {itemID = 124104, objectiveTitle = "item:Fjarnskaggl"},
+        {itemID = 124105, objectiveTitle = "item:Starlight Rose"},
+        {itemID = 128304, objectiveTitle = "item:Yseralline Seed"},
+        {itemID = 129289, objectiveTitle = "item:Felwort Seed"},
+        {itemID = 124106, objectiveTitle = "item:Felwort"},
+    },
+    ["HERBALISM (BFA)"] = {
+        {itemID = 168487, objectiveTitle = "item:Zin'anthid"},
+        {itemID = 152506, objectiveTitle = "item:Star Moss"},
+        {itemID = 152505, objectiveTitle = "item:Riverbud"},
+        {itemID = 152510, objectiveTitle = "item:Anchor Weed"},
+        {itemID = 152509, objectiveTitle = "item:Siren's Pollen"},
+        {itemID = 152507, objectiveTitle = "item:Akunda's Bite"},
+        {itemID = 152508, objectiveTitle = "item:Winter's Kiss"},
+        {itemID = 152511, objectiveTitle = "item:Sea Stalk"},
+    },
+    ["HERBALISM (SL)"] = {
+        {itemID = 168586, objectiveTitle = "item:Rising Glory"},
+        {itemID = 169701, objectiveTitle = "item:Death Blossom"},
+        {itemID = 168583, objectiveTitle = "item:Widowbloom"},
+        {itemID = 168589, objectiveTitle = "item:Marrowroot"},
+        {itemID = 170554, objectiveTitle = "item:Vigil's Torch"},
+        {itemID = 171315, objectiveTitle = "item:Nightshade"},
+    },
+    --@end-retail@
+
+    ------------------------------------------------------------
+
+    --@retail@
+    ["MECHAGON (BFA)"] = {
+        {itemID = 167562, objectiveTitle = "item:Ionized Minnow"},
+        {itemID = 168961, objectiveTitle = "item:Exothermic Evaporator Coil"},
+        {itemID = 168215, objectiveTitle = "item:Machined Gear Assembly"},
+        {itemID = 169610, objectiveTitle = "item:S.P.A.R.E. Crate"},
+        {itemID = 168264, objectiveTitle = "item:Recycling Requisition"},
+        {itemID = 166971, objectiveTitle = "item:Empty Energy Cell"},
+        {itemID = 166970, objectiveTitle = "item:Energy Cell"},
+        {itemID = 168266, objectiveTitle = "item:Strange Recycling Requisition"},
+        {itemID = 168217, objectiveTitle = "item:Hardened Spring"},
+        {itemID = 168216, objectiveTitle = "item:Tempered Plating"},
+        {itemID = 168258, objectiveTitle = "item:Bundle of Recyclable Parts"},
+        {itemID = 168832, objectiveTitle = "item:Galvanic Oscillator"},
+        {itemID = 166846, objectiveTitle = "item:Spare Parts"},
+        {itemID = 168327, objectiveTitle = "item:Chain Ignitercoil"},
+    },
+    --@end-retail@
+
+    ------------------------------------------------------------
+
     ["MINING"] = {
         {itemID = 2835, objectiveTitle = "item:Rough Stone"},
         {itemID = 2775, objectiveTitle = "item:Silver Ore"},
@@ -193,8 +548,6 @@ addon.templates = {
         {itemID = 2776, objectiveTitle = "item:Gold Ore"},
         {itemID = 2770, objectiveTitle = "item:Copper Ore"},
         {itemID = 2836, objectiveTitle = "item:Coarse Stone"},
-    },
-    ["MINING: BARS"] = {
         {itemID = 3576, objectiveTitle = "item:Tin Bar"},
         {itemID = 3575, objectiveTitle = "item:Iron Bar"},
         {itemID = 17771, objectiveTitle = "item:Enchanted Elementium Bar"},
@@ -208,6 +561,61 @@ addon.templates = {
         {itemID = 3577, objectiveTitle = "item:Gold Bar"},
         {itemID = 3859, objectiveTitle = "item:Steel Bar"},
     },
+    --@retail@
+    ["MINING (BC)"] = {
+        {itemID = 23424, objectiveTitle = "item:Fel Iron Ore"},
+        {itemID = 23426, objectiveTitle = "item:Khorium Ore"},
+        {itemID = 23427, objectiveTitle = "item:Eternium Ore"},
+        {itemID = 23425, objectiveTitle = "item:Adamantite Ore"},
+    },
+    ["MINING (WRATH)"] = {
+        {itemID = 36909, objectiveTitle = "item:Cobalt Ore"},
+        {itemID = 36910, objectiveTitle = "item:Titanium Ore"},
+        {itemID = 36912, objectiveTitle = "item:Saronite Ore"},
+    },
+    ["MINING (CATA)"] = {
+        {itemID = 53038, objectiveTitle = "item:Obsidium Ore"},
+        {itemID = 52183, objectiveTitle = "item:Pyrite Ore"},
+        {itemID = 52185, objectiveTitle = "item:Elementium Ore"},
+    },
+    ["MINING (MOP)"] = {
+        {itemID = 72092, objectiveTitle = "item:Ghost Iron Ore"},
+        {itemID = 72094, objectiveTitle = "item:Black Trillium Ore"},
+        {itemID = 72103, objectiveTitle = "item:White Trillium Ore"},
+        {itemID = 72093, objectiveTitle = "item:Kyparite"},
+    },
+    ["MINING (WOD)"] = {
+        {itemID = 108042, objectiveTitle = "item:Draenic Iron Ore"},
+        {itemID = 109119, objectiveTitle = "item:True Iron Ore"},
+        {itemID = 109118, objectiveTitle = "item:Blackrock Ore"},
+    },
+    ["MINING (LEGION)"] = {
+        {itemID = 123918, objectiveTitle = "item:Leystone Ore"},
+        {itemID = 151564, objectiveTitle = "item:Empyrium"},
+        {itemID = 124444, objectiveTitle = "item:Infernal Brimstone"},
+        {itemID = 123919, objectiveTitle = "item:Felslate"},
+    },
+    ["MINING (BFA)"] = {
+        {itemID = 152512, objectiveTitle = "item:Monelite Ore"},
+        {itemID = 152513, objectiveTitle = "item:Platinum Ore"},
+        {itemID = 168185, objectiveTitle = "item:Osmenite Ore"},
+        {itemID = 152579, objectiveTitle = "item:Storm Silver Ore"},
+    },
+    ["MINING (SL)"] = {
+        {itemID = 171830, objectiveTitle = "item:Oxxein Ore"},
+        {itemID = 177061, objectiveTitle = "item:Twilight Bark"},
+        {itemID = 171829, objectiveTitle = "item:Solenium Ore"},
+        {itemID = 171841, objectiveTitle = "item:Shaded Stone"},
+        {itemID = 171840, objectiveTitle = "item:Porous Stone"},
+        {itemID = 171832, objectiveTitle = "item:Sinvyr Ore"},
+        {itemID = 171831, objectiveTitle = "item:Phaedrum Ore"},
+        {itemID = 171828, objectiveTitle = "item:Laestrite Ore"},
+        {itemID = 171833, objectiveTitle = "item:Elethium Ore"},
+    },
+    --@end-retail@
+
+    ------------------------------------------------------------
+
     ["SKINNING"] = {
         {itemID = 2318, objectiveTitle = "item:Light Leather"},
         {itemID = 4232, objectiveTitle = "item:Medium Hide"},
@@ -237,81 +645,68 @@ addon.templates = {
         {itemID = 4234, objectiveTitle = "item:Heavy Leather"},
         {itemID = 4235, objectiveTitle = "item:Heavy Hide"},
     },
-    ["TAILORING: CLOTH"] = {
-        {itemID = 2592, objectiveTitle = "item:Wool Cloth"},
-        {itemID = 2997, objectiveTitle = "item:Bolt of Woolen Cloth"},
-        {itemID = 2996, objectiveTitle = "item:Bolt of Linen Cloth"},
-        {itemID = 14256, objectiveTitle = "item:Felcloth"},
-        {itemID = 2589, objectiveTitle = "item:Linen Cloth"},
-        {itemID = 14342, objectiveTitle = "item:Mooncloth"},
-        {itemID = 14047, objectiveTitle = "item:Runecloth"},
-        {itemID = 14048, objectiveTitle = "item:Bolt of Runecloth"},
-        {itemID = 4338, objectiveTitle = "item:Mageweave Cloth"},
-        {itemID = 4339, objectiveTitle = "item:Bolt of Mageweave"},
-        {itemID = 4306, objectiveTitle = "item:Silk Cloth"},
-        {itemID = 4305, objectiveTitle = "item:Bolt of Silk Cloth"},
+    --@retail@
+    ["SKINNING (BC)"] = {
+        {itemID = 25649, objectiveTitle = "item:Knothide Leather Scraps"},
+        {itemID = 25708, objectiveTitle = "item:Thick Clefthoof Leather"},
+        {itemID = 25707, objectiveTitle = "item:Fel Hide"},
+        {itemID = 21887, objectiveTitle = "item:Knothide Leather"},
     },
+    ["SKINNING (WRATH)"] = {
+        {itemID = 38557, objectiveTitle = "item:Icy Dragonscale"},
+        {itemID = 33567, objectiveTitle = "item:Borean Leather Scraps"},
+        {itemID = 38558, objectiveTitle = "item:Nerubian Chitin"},
+        {itemID = 33568, objectiveTitle = "item:Borean Leather"},
+        {itemID = 44128, objectiveTitle = "item:Arctic Fur"},
+        {itemID = 38561, objectiveTitle = "item:Jormungar Scale"},
+    },
+    ["SKINNING (CATA)"] = {
+        {itemID = 52982, objectiveTitle = "item:Deepsea Scale"},
+        {itemID = 52979, objectiveTitle = "item:Blackened Dragonscale"},
+        {itemID = 67495, objectiveTitle = "item:Strange Bloated Stomach"},
+        {itemID = 52980, objectiveTitle = "item:Pristine Hide"},
+        {itemID = 52976, objectiveTitle = "item:Savage Leather"},
+        {itemID = 52977, objectiveTitle = "item:Savage Leather Scraps"},
+    },
+    ["SKINNING (MOP)"] = {
+        {itemID = 72162, objectiveTitle = "item:Sha-Touched Leather"},
+        {itemID = 72163, objectiveTitle = "item:Magnificent Hide"},
+        {itemID = 79101, objectiveTitle = "item:Prismatic Scale"},
+        {itemID = 72201, objectiveTitle = "item:Plump Intestines"},
+        {itemID = 72120, objectiveTitle = "item:Exotic Leather"},
+    },
+    ["SKINNING (WOD)"] = {
+        {itemID = 110610, objectiveTitle = "item:Raw Beast Hide Scraps"},
+        {itemID = 110611, objectiveTitle = "item:Burnished Leather"},
+        {itemID = 110609, objectiveTitle = "item:Raw Beast Hide"},
+    },
+    ["SKINNING (LEGION)"] = {
+        {itemID = 124113, objectiveTitle = "item:Stonehide Leather"},
+        {itemID = 151566, objectiveTitle = "item:Fiendish Leather"},
+        {itemID = 124116, objectiveTitle = "item:Felhide"},
+        {itemID = 124115, objectiveTitle = "item:Stormscale"},
+    },
+    ["SKINNING (BFA)"] = {
+        {itemID = 152541, objectiveTitle = "item:Coarse Leather"},
+        {itemID = 153051, objectiveTitle = "item:Mistscale"},
+        {itemID = 154722, objectiveTitle = "item:Tempest Hide"},
+        {itemID = 168650, objectiveTitle = "item:Cragscale"},
+        {itemID = 154165, objectiveTitle = "item:Calcified Bone"},
+        {itemID = 154164, objectiveTitle = "item:Blood-Stained Bone"},
+        {itemID = 168649, objectiveTitle = "item:Dredged Leather"},
+        {itemID = 153050, objectiveTitle = "item:Shimmerscale"},
+    },
+    ["SKINNING (SL)"] = {
+        {itemID = 172093, objectiveTitle = "item:Desolate Leather Scraps"},
+        {itemID = 177279, objectiveTitle = "item:Gaunt Sinew"},
+        {itemID = 172092, objectiveTitle = "item:Pallid Bone"},
+        {itemID = 172096, objectiveTitle = "item:Heavy Desolate Leather"},
+        {itemID = 172094, objectiveTitle = "item:Callous Hide"},
+        {itemID = 172097, objectiveTitle = "item:Heavy Callous Hide"},
+        {itemID = 172089, objectiveTitle = "item:Desolate Leather"},
+    },
+    --@end-retail@
 }
-
-------------------------------------------------------------
-
---@retail@
-
--- addon.templates["BC:ENCHANT"] = {22445,22447,22446,22449,22448,22450}
--- addon.templates["WRATH:ENCHANT"] = {34054,34056,34055,34052,34053,34057}
--- addon.templates["CATA:ENCHANT"] = {52722,52721,52720,52719,52718,52555}
--- addon.templates["MOP:ENCHANT"] = {74249,74250,74252,74247,74248}
--- addon.templates["WOD:ENCHANT"] = {109693,111247,115502,111245,113589,115504,113588}
--- addon.templates["LEGION:ENCHANT"] = {124440,124441,124442}
--- addon.templates["BFA:ENCHANT"] = {152875,152876,152877}
--- addon.templates["SL:ENCHANT"] = {172232,172231,172230}
-
--- addon.templates["BC:FISHING"] = {27422,27425,27429,27435,27437,2743,27439,27515,27516,33823,33824}
--- addon.templates["WRATH:FISHING"] = {41801,41802,41803,41805,41806,41807,41808,41809,41810,41812,41813}
--- addon.templates["CATA:FISHING"] = {53062,53063,53064,53065,53066,53067,53068,53069,53070,53071,53072}
--- addon.templates["MOP:FISHING"] = {74856,74857,74859,74860,74861,74863,74864,74865,74866,83064,86542,86544,86545}
--- addon.templates["WOD:FISHING"] = {111595,111663,111664,111665,111666,111667,111668,111669,118565,124669,127141,127991}
--- addon.templates["BFA:FISHING"] = {152543,152544,152547,152549,162515,167562,168302,168646,160711}
--- addon.templates["SL:FISHING"] = {173035,173033,173036,173034,173037,173032,173038,173043,173040,173041,173039,173042}
-
--- addon.templates["BC:HERBS"] = {22785,22786,22789,22787,22790,22791,22792,22793,22794}
--- addon.templates["WRATH:HERBS"] = {36901,37921,36904,36907,36903,36905,36906,36908}
--- addon.templates["CATA:HERBS"] = {52983,52984,52985,52986,52988,52987}
--- addon.templates["MOP:HERBS"] = {72234,72235,72237,79010,79011,72238,89639}
--- addon.templates["WOD:HERBS"] = {109125,109129,109128,109127,109126,109124,109130}
--- addon.templates["LEGION:HERBS"] = {124103,124106,151565,124102,124101,128304,124105,129289,124104}
--- addon.templates["BFA:HERBS"] = {152505,152511,152506,152507,152508,152509,152510,168487}
--- addon.templates["SL:HERBS"] = {168586,168589,170554,168583,169701,171315}
-
--- addon.templates["BC:LOCKBOX"] = {29569,31952}
--- addon.templates["WRATH:LOCKBOX"] = {43624,43575,45986,43622}
--- addon.templates["CATA:LOCKBOX"] = {68729,63349}
--- addon.templates["MOP:LOCKBOX"] = {88567,88165}
--- addon.templates["WOD:LOCKBOX"] = {116920,106895}
--- addon.templates["LEGION:LOCKBOX"] = {121331}
--- addon.templates["BFA:LOCKBOX"] = {169475}
--- addon.templates["SL:LOCKBOX"] = {179311,180532,180522,180533}
-
--- addon.templates["BFA:MECHAGON"] = {169610,166846,168266,168264,168258,168215,168216,168217,167562,166970,166971,168832,168327,168961}
-
--- addon.templates["BC:MINING"] = {23424,23425,23426,23427}
--- addon.templates["WRATH:MINING"] = {36909,36912,36910}
--- addon.templates["CATA:MINING"] = {53038,52185,52183}
--- addon.templates["MOP:MINING"] = {72092,72093,72094,72103}
--- addon.templates["WOD:MINING"] = {108042,109118,109119}
--- addon.templates["LEGION:MINING"] = {123918,123919,151564,124444}
--- addon.templates["BFA:MINING"] = {152512,152579,152513,168185}
--- addon.templates["SL:MINING"] = {171828,171833,171829,171830,171831,171832,171840,171841,177061}
-
--- addon.templates["BC:SKIN"] = {25649,21887,25708,25707}
--- addon.templates["WRATH:SKIN"] = {33567,33568,38557,38561,38558,44128}
--- addon.templates["CATA:SKIN"] = {52977,52976,52979,52982,52980,67495}
--- addon.templates["MOP:SKIN"] = {72162,72120,79101,72163,72201}
--- addon.templates["WOD:SKIN"] = {110610,110609,110611}
--- addon.templates["LEGION:SKIN"] = {124113,124115,151566,124116}
--- addon.templates["BFA:SKIN"] = {152541,153050,154164,154722,153051,154165,168650,168649}
--- addon.templates["SL:SKIN"] = {172093,172089,172094,172092,177279,172096,172097}
---@end-retail@
 
 --*------------------------------------------------------------------------
 
@@ -329,6 +724,7 @@ function addon:LoadTemplate(templateType, barID, templateName, withData, saveOrd
         template = FarmingBar.db.global.templates[strupper(templateName)]
     else
         -- This removes invalid itemIDs (from different game versions) but preserves the actual template.
+        -- It shouldn't be a problem anymore since templates are restructured, but I'll keep this here just in case something gets through.
         for buttonID, objective in pairs(self.templates[strupper(templateName)]) do
             if GetItemInfoInstant(objective.itemID) then
                 tinsert(template, objective)
@@ -370,14 +766,15 @@ function addon:LoadTemplate(templateType, barID, templateName, withData, saveOrd
     for buttonID, objective in pairs(template) do
         i = saveOrder and tonumber(buttonID) or (i + 1)
         local objectiveTitle = objective.objectiveTitle
+
         if not self:GetObjectiveInfo(objectiveTitle) then
             if objective.itemID then
                 objectiveTitle = self:CreateObjectiveFromID(objectiveTitle, objective.itemID)
+                buttons[i]:SetObjectiveID(objective.objectiveTitle, withData and objective.objective)
             else
                 self:ReportError(string.format(L.TemplateObjectiveMissing, objectiveTitle))
             end
-        end
-        if self:GetObjectiveInfo(objectiveTitle) then
+        else
             buttons[i]:SetObjectiveID(objective.objectiveTitle, withData and objective.objective)
         end
     end

@@ -64,7 +64,7 @@ function addon:CreateObjective(objectiveTitle, objectiveInfo, overwrite, supress
 
     self:UpdateButtons()
     self:RefreshObjectiveBuilderOptions()
-    LibStub("AceConfigDialog-3.0"):SelectGroup(addonName, "objectiveBuilder", newObjectiveTitle)
+    -- LibStub("AceConfigDialog-3.0"):SelectGroup(addonName, "objectiveBuilder", newObjectiveTitle) -- TODO: reenable add suppress
 
     ------------------------------------------------------------
 
