@@ -149,6 +149,9 @@ function addon:RemoveBar(barID)
 
     ------------------------------------------------------------
 
+    -- Clear the bar
+    self:ClearBar(barID)
+
     -- Release all bars from the removed one and on
     for i = barID, #bars do
         self.bars[i]:Release()
