@@ -58,8 +58,23 @@ StaticPopupDialogs["FARMINGBAR_CONFIRM_NEW_QUICK_OBJECTIVE_PROMPT"] = {
 
 ------------------------------------------------------------
 
+StaticPopupDialogs["FARMINGBAR_CONFIRM_DELETE_OBJECTIVE_USED_IN_TEMPLATE"] = {
+    text = [[The objective "%s" is being used in %d template(s). Are you sure you want to permanently delete it?]],
+    button1 = YES,
+    button2 = NO,
+    OnAccept = function(_, objectiveTitle)
+        addon:DeleteObjective(objectiveTitle, true)
+    end,
+    timeout = 0,
+    whileDead = true,
+    hideOnEscape = true,
+    preferredIndex = 3,
+}
+
+------------------------------------------------------------
+
 StaticPopupDialogs["FARMINGBAR_OBJECTIVE_CLEANUP_FINISHED"] = {
-    text = "Cleanup finished! %d quick objective(s) removed.",
+    text = "Cleanup finished! %d quick objective(s) processed.",
     button1 = OKAY,
     timeout = 0,
     whileDead = true,

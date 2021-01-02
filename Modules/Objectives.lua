@@ -64,7 +64,9 @@ function addon:CreateObjective(objectiveTitle, objectiveInfo, overwrite, supress
 
     self:UpdateButtons()
     self:RefreshObjectiveBuilderOptions()
-    -- LibStub("AceConfigDialog-3.0"):SelectGroup(addonName, "objectiveBuilder", newObjectiveTitle) -- TODO: reenable add suppress
+    if not supressSelect then
+        LibStub("AceConfigDialog-3.0"):SelectGroup(addonName, "objectiveBuilder", newObjectiveTitle) -- TODO: reenable add suppress
+    end
 
     ------------------------------------------------------------
 
@@ -98,7 +100,7 @@ end
 
 ------------------------------------------------------------
 
-function addon:CreateObjectiveFromID(objectiveTitle, itemID, widget)
+function addon:CreateObjectiveFromID(objectiveTitle, itemID, widget, suppressSelect)
     local defaultInfo = self:GetDefaultObjective()
     defaultInfo.icon = GetItemIconByID(itemID)
     defaultInfo.displayRef.trackerType = "ITEM"
@@ -112,12 +114,12 @@ function addon:CreateObjectiveFromID(objectiveTitle, itemID, widget)
 
     ------------------------------------------------------------
 
-    self:CreateQuickObjective(objectiveTitle, defaultInfo, widget)
+    self:CreateQuickObjective(objectiveTitle, defaultInfo, widget, suppressSelect)
 end
 
 ------------------------------------------------------------
 
-function addon:CreateQuickObjective(objectiveTitle, defaultInfo, widget)
+function addon:CreateQuickObjective(objectiveTitle, defaultInfo, widget, suppressSelect)
     local overwriteQuickObjectives = FarmingBar.db.global.settings.newQuickObjectives
 
     if self:GetObjectiveInfo(objectiveTitle) and overwriteQuickObjectives == "PROMPT" then -- PROMPT
@@ -126,11 +128,11 @@ function addon:CreateQuickObjective(objectiveTitle, defaultInfo, widget)
             dialog.data = {widget = widget, objectiveTitle = objectiveTitle, defaultInfo = defaultInfo}
         end
     elseif overwriteQuickObjectives == "OVERWRITE" then -- OVERWRITE
-        self:CreateObjective(objectiveTitle, defaultInfo, true)
+        self:CreateObjective(objectiveTitle, defaultInfo, true, suppressSelect)
     elseif overwriteQuickObjectives == "NEW" then -- CREATE NEW
-        objectiveTitle = self:CreateObjective(objectiveTitle, defaultInfo)
+        objectiveTitle = self:CreateObjective(objectiveTitle, defaultInfo, nil, suppressSelect)
     elseif not self:GetObjectiveInfo(objectiveTitle) then
-        objectiveTitle = self:CreateObjective(objectiveTitle, defaultInfo)
+        objectiveTitle = self:CreateObjective(objectiveTitle, defaultInfo, nil, suppressSelect)
     end
 
     if widget then
@@ -142,7 +144,18 @@ end
 
 ------------------------------------------------------------
 
-function addon:DeleteObjective(objectiveTitle)
+function addon:DeleteObjective(objectiveTitle, confirmed)
+    -- Check if objective is used in a template and confirm deletion
+    local templateContainsObjective = self:TemplateContainsObjective(objectiveTitle)
+    if not confirmed and templateContainsObjective > 0 then
+        local dialog = StaticPopup_Show("FARMINGBAR_CONFIRM_DELETE_OBJECTIVE_USED_IN_TEMPLATE", objectiveTitle, templateContainsObjective)
+        if dialog then
+            dialog.data = objectiveTitle
+        end
+        return
+    end
+
+    -- Delete objective
     FarmingBar.db.global.objectives[objectiveTitle] = nil
     self:UpdateExclusions(objectiveTitle)
     self:ClearDeletedObjectives(objectiveTitle)

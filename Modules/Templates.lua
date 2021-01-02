@@ -769,7 +769,7 @@ function addon:LoadTemplate(templateType, barID, templateName, withData, saveOrd
 
         if not self:GetObjectiveInfo(objectiveTitle) then
             if objective.itemID then
-                objectiveTitle = self:CreateObjectiveFromID(objectiveTitle, objective.itemID)
+                objectiveTitle = self:CreateObjectiveFromID(objectiveTitle, objective.itemID, nil, true)
                 buttons[i]:SetObjectiveID(objective.objectiveTitle, withData and objective.objective)
             else
                 self:ReportError(string.format(L.TemplateObjectiveMissing, objectiveTitle))
@@ -814,4 +814,18 @@ function addon:SaveTemplate(barID, templateName, overwrite)
 
         FarmingBar:Print(format(L.TemplateSaved, barID, templateName))
     end
+end
+
+------------------------------------------------------------
+
+function addon:TemplateContainsObjective(objectiveTitle)
+    local count = 0
+    for templateName, template in pairs(FarmingBar.db.global.templates) do
+        for buttonID, objective in pairs(template) do
+            if objective.objectiveTitle == objectiveTitle then
+                count = count + 1
+            end
+        end
+    end
+    return count
 end

@@ -2,10 +2,13 @@
 ## Version 3.0
 ### 3.0-alpha6
 - Bug fixes:
-  - -- Removing a bar now clears objectives appropriately
-  - -- Loading templates where there aren't enough buttons visible for objectives now properly creates the necessary buttons
-- DataStore compatible account counts are temporarily available until reworked until reworked
+  - -- Removing a bar now clears objectives
+  - -- Bars now grow to accomodate templates correctly
+  - -- Deleting objectives contained within templates now requires confirmation
+  - -- Missing objectives in user templates are not automatically created
+  - -- Loading a built in template no longer opens newly created objectives
 - Remaining built in templates are now available
+- DataStore compatible account counts are temporarily available until reworked
 - Some settings have moved
 
 ### 3.0-alpha5
