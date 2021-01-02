@@ -395,8 +395,30 @@ function addon:GetBarConfigOptions(barID)
 
             ------------------------------------------------------------
 
-            charSpecific = {
+            manage = {
                 order = 7,
+                type = "group",
+                inline = true,
+                name = L["Manage"],
+                args = {
+                    removeBar = {
+                        order = 1,
+                        type = "execute",
+                        name = L["Remove Bar"],
+                        confirm = function()
+                            return format(L.ConfirmRemoveBar, barID)
+                        end,
+                        func = function()
+                            self:RemoveBar(barID)
+                        end,
+                    },
+                },
+            },
+
+            ------------------------------------------------------------
+
+            charSpecific = {
+                order = 8,
                 type = "description",
                 width = "full",
                 name = L.Options_Config("charSpecific"),

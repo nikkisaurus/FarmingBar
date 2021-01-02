@@ -5,6 +5,7 @@
   - -- Removing a bar now clears objectives appropriately
   - -- Loading templates where there aren't enough buttons visible for objectives now properly creates the necessary buttons
 - Reenable DataStore compatible account counts temporarily until reworked
+- Some settings have moved
 
 ### 3.0-alpha5
 - Some built in templates are now available
