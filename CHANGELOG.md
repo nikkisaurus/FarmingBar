@@ -9,7 +9,7 @@
   - -- Loading a built in template no longer opens newly created objectives
 - Remaining built in templates are now available
 - DataStore compatible account counts are temporarily available until reworked
-- Some settings have moved
+- Objective tracker settings have been moved to the Trackers tab
 
 ### 3.0-alpha5
 - Some built in templates are now available
