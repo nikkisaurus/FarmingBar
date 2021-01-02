@@ -61,7 +61,7 @@ function addon:CreateTracker(objectiveTitle, tracker)
     ------------------------------------------------------------
 
     self:UpdateButtons(objectiveTitle)
-    self:RefreshObjectiveBuilderTrackerOptions(objectiveTitle)
+    self:RefreshObjectiveBuilderOptions(objectiveTitle)
 end
 
 ------------------------------------------------------------
