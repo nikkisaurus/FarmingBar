@@ -5,7 +5,7 @@
   - -- Using the Clear Buttons operation now properly clears objectives on hidden buttons
   - -- Removing a bar now clears objectives
   - -- Bars now grow to accomodate templates correctly
-  - -- Deleting objectives contained within templates now requires confirmation
+  - -- Deleting objectives contained within templates now requires confirmation (known issue: when using Cleanup with multiple objectives that are in a template, only one confirmation pops up)
   - -- Missing objectives in user templates are not automatically created
   - -- Loading a built in template no longer opens newly created objectives
   - -- The config slash command now properly loads config options
