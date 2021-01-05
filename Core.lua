@@ -1,6 +1,7 @@
 local addonName, addon = ...
 local FarmingBar = LibStub("AceAddon-3.0"):NewAddon("FarmingBar", "AceConsole-3.0", "AceEvent-3.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
+local ACD = LibStub("AceConfigDialog-3.0")
 local LSM = LibStub("LibSharedMedia-3.0")
 LibStub("LibAddonUtils-1.0"):Embed(addon)
 
@@ -167,7 +168,9 @@ function FarmingBar:SlashCommandFunc(input)
             end
         end
     elseif cmd == "CONFIG" then
-        addon.Config:Load()
+        local arg = tonumber(arg)
+        ACD:SelectGroup(addonName, "config", addon.bars[arg] and "bar"..arg)
+        ACD:Open(addonName)
     else
         LibStub("AceConfigDialog-3.0"):Open(addonName)
         self:Print([[Currently available commands: "build", "bar add", "bar remove barID", "config"]])

@@ -208,17 +208,13 @@ function addon:GetObjectiveBuilderOptions()
 
                             ------------------------------------------------------------
 
+                            --@retail@
                             type = {
                                 order = 4,
                                 type = "select",
                                 name = L["Type"],
                                 values = trackers,
                                 sorting = trackerSort,
-                                --[===[@non-retail@
-                                hidden = function()
-                                    return true
-                                end,
-                                --@end-non-retail@]===]
                                 get = function(info)
                                     return newTrackerType
                                 end,
@@ -226,6 +222,7 @@ function addon:GetObjectiveBuilderOptions()
                                     newTrackerType = value
                                 end,
                             },
+                            --@end-retail@
 
                             ------------------------------------------------------------
 
