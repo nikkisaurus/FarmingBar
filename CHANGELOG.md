@@ -1,5 +1,10 @@
 # Farming Bar
 ## Version 3.0
+## 3.0-alpha7
+- Bug fixes:
+  - Fix issue where item name can't be cached for trackers and causes Options to break
+- Adjusted tooltip tracker counts to be more clear
+
 ### 3.0-alpha6
 - Bug fixes:
   - -- Using the Clear Buttons operation now properly clears objectives on hidden buttons

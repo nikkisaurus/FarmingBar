@@ -167,7 +167,7 @@ function addon:GetButtonTooltip(widget, tooltip)
                             trackerRawCount = GetCurrencyInfo(trackerInfo.trackerID) and GetCurrencyInfo(trackerInfo.trackerID).quantity
                         end
 
-                        tooltip:AddDoubleLine(data.name, format("%d/%d", trackerCount, trackerRawCount), unpack(self.tooltip_description))
+                        tooltip:AddDoubleLine(data.name, format("%d (%d) / %d", trackerCount, trackerRawCount, trackerInfo.objective), unpack(self.tooltip_description))
                         tooltip:AddTexture(data.icon or 134400)
                     end)
                 end

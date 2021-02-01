@@ -474,6 +474,7 @@ function addon:GetTrackersObjectiveBuilderOptions(objectiveTitle, tracker)
             title = {
                 order = 1,
                 type = "description",
+                name = trackerInfo.trackerID,
                 width = "full",
                 imageWidth = 20,
                 imageHeight = 20,
