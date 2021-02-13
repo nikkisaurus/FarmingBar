@@ -1,6 +1,9 @@
-local addonName, addon = ...
-local FarmingBar = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
+local addonName = ...
+local addon = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
 local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
+
+------------------------------------------------------------
+
 local ACD = LibStub("AceConfigDialog-3.0")
 
 local format, tonumber, tostring = string.format, tonumber, tostring
@@ -137,7 +140,7 @@ function addon:GetObjectiveBuilderOptions()
         },
     }
 
-    for objectiveTitle, objectiveInfo in self.pairs(FarmingBar.db.global.objectives) do
+    for objectiveTitle, objectiveInfo in self.pairs(addon.db.global.objectives) do
         local autoFilterEnabled = self:GetDBValue("global", "settings.filterQuickObjectives")
         local autoFiltered = autoFilterEnabled and self:IsObjectiveAutoItem(objectiveTitle)
 
@@ -254,7 +257,7 @@ function addon:GetObjectiveBuilderOptions()
                 },
             }
 
-            for tracker, trackerInfo in pairs(FarmingBar.db.global.objectives[objectiveTitle].trackers) do
+            for tracker, trackerInfo in pairs(addon.db.global.objectives[objectiveTitle].trackers) do
                 options[objectiveTitle].args.trackers.args[tostring(trackerInfo.trackerID)] = self:GetTrackersObjectiveBuilderOptions(objectiveTitle, tracker)
             end
         end
@@ -465,7 +468,7 @@ end
 ------------------------------------------------------------
 
 function addon:GetTrackersObjectiveBuilderOptions(objectiveTitle, tracker)
-    local trackerInfo = FarmingBar.db.global.objectives[objectiveTitle].trackers[tracker]
+    local trackerInfo = addon.db.global.objectives[objectiveTitle].trackers[tracker]
 
     local options = {
         type = "group",
@@ -560,7 +563,7 @@ function addon:GetTrackersObjectiveBuilderOptions(objectiveTitle, tracker)
                 values = function()
                     local values = {}
 
-                    for eObjectiveTitle, _ in self.pairs(FarmingBar.db.global.objectives, function(a, b) return strupper(a) < strupper(b) end) do
+                    for eObjectiveTitle, _ in self.pairs(addon.db.global.objectives, function(a, b) return strupper(a) < strupper(b) end) do
                         if eObjectiveTitle ~= objectiveTitle and not self:ObjectiveIsExcluded(trackerInfo.exclude, eObjectiveTitle) then
                             values[eObjectiveTitle] = eObjectiveTitle
                         end
@@ -571,7 +574,7 @@ function addon:GetTrackersObjectiveBuilderOptions(objectiveTitle, tracker)
                 sorting = function()
                     local sorting = {}
 
-                    for eObjectiveTitle, _ in self.pairs(FarmingBar.db.global.objectives, function(a, b) return strupper(a) < strupper(b) end) do
+                    for eObjectiveTitle, _ in self.pairs(addon.db.global.objectives, function(a, b) return strupper(a) < strupper(b) end) do
                         if eObjectiveTitle ~= objectiveTitle and not self:ObjectiveIsExcluded(trackerInfo.exclude, eObjectiveTitle) then
                             tinsert(sorting, eObjectiveTitle)
                         end
@@ -582,7 +585,7 @@ function addon:GetTrackersObjectiveBuilderOptions(objectiveTitle, tracker)
                 disabled = function(info)
                     local count = 0
 
-                    for eObjectiveTitle, _ in self.pairs(FarmingBar.db.global.objectives, function(a, b) return strupper(a) < strupper(b) end) do
+                    for eObjectiveTitle, _ in self.pairs(addon.db.global.objectives, function(a, b) return strupper(a) < strupper(b) end) do
                         if eObjectiveTitle ~= objectiveTitle and not self:ObjectiveIsExcluded(trackerInfo.exclude, eObjectiveTitle) then
                             count = count + 1
                         end
@@ -591,7 +594,7 @@ function addon:GetTrackersObjectiveBuilderOptions(objectiveTitle, tracker)
                     return count == 0
                 end,
                 set = function(_, value)
-                    tinsert(FarmingBar.db.global.objectives[objectiveTitle].trackers[tracker].exclude, value)
+                    tinsert(addon.db.global.objectives[objectiveTitle].trackers[tracker].exclude, value)
                     self:UpdateButtons()
                 end,
             },

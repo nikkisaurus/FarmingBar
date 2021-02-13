@@ -1,6 +1,8 @@
-local addonName, addon = ...
-local FarmingBar = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
+local addonName = ...
+local addon = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
 local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
+
+------------------------------------------------------------
 
 local pairs = pairs
 local strfind = string.find
@@ -50,17 +52,18 @@ local methods = {
         return self.text:GetText()
     end,
 
-    Load = function(self, objectiveTitle)
-        self.selected = objectiveTitle
-        self.icon:SetTexture(addon:GetObjectiveIcon(objectiveTitle))
-        self.text:SetText(objectiveTitle)
+    Load = function(self, objectiveInfo)
+        -- self.selected = objectiveTitle
+        self.icon:SetTexture(objectiveInfo.icon)
+        -- self.icon:SetTexture(addon:GetObjectiveIcon(objectiveTitle))
+        self.text:SetText(objectiveInfo.title)
         self:Show()
     end,
 }
 
 --*------------------------------------------------------------------------
 
-function addon:Initialize_DragFrame()
+function addon:InitializeDragFrame()
     local DragFrame = CreateFrame("Frame", "FarmingBarDragFrame", UIParent)
     DragFrame:SetSize(20, 20)
     DragFrame:SetPoint("CENTER")

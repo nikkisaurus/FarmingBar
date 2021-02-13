@@ -1,6 +1,8 @@
-local addonName, addon = ...
-local FarmingBar = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
+local addonName = ...
+local addon = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
 local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
+
+------------------------------------------------------------
 
 local pairs, sort, tinsert = pairs, table.sort, table.insert
 local format, strupper = string.format, string.upper
@@ -711,7 +713,7 @@ addon.templates = {
 --*------------------------------------------------------------------------
 
 function addon:DeleteTemplate(templateName)
-    FarmingBar.db.global.templates[templateName] = nil
+    addon.db.global.templates[templateName] = nil
     FarmingBar:Print(format(L.TemplateDeleted, templateName))
 end
 
@@ -721,7 +723,7 @@ function addon:LoadTemplate(templateType, barID, templateName, withData, saveOrd
     -- Get template table
     local template = {}
     if templateType == "user" then
-        template = FarmingBar.db.global.templates[strupper(templateName)]
+        template = addon.db.global.templates[strupper(templateName)]
     else
         -- This removes invalid itemIDs (from different game versions) but preserves the actual template.
         -- It shouldn't be a problem anymore since templates are restructured, but I'll keep this here just in case something gets through.
@@ -755,7 +757,7 @@ function addon:LoadTemplate(templateType, barID, templateName, withData, saveOrd
     end
 
     if numVisibleButtons < numTemplateButtons then
-        self:SetBarDBInfo("numVisibleButtons", numTemplateButtons, barID)
+        self:SetBarDBValue("numVisibleButtons", numTemplateButtons, barID)
         bar:UpdateVisibleButtons()
     end
 
@@ -792,7 +794,7 @@ end
 function addon:SaveTemplate(barID, templateName, overwrite)
     templateName = strupper(templateName)
 
-    if FarmingBar.db.global.templates[templateName] and not overwrite then
+    if addon.db.global.templates[templateName] and not overwrite then
         -- Confirm overwrite
         local dialog = StaticPopup_Show("FARMINGBAR_CONFIRM_OVERWRITE_TEMPLATE", templateName)
         if dialog then
@@ -800,7 +802,7 @@ function addon:SaveTemplate(barID, templateName, overwrite)
             dialog.data2 = templateName
         end
     else
-        FarmingBar.db.global.templates[templateName] = {}
+        addon.db.global.templates[templateName] = {}
 
         -- Add items from bar to the template
         local buttons = self.bars[barID]:GetUserData("buttons")
@@ -808,7 +810,7 @@ function addon:SaveTemplate(barID, templateName, overwrite)
         for buttonID, button in pairs(buttons) do
             local objectiveTitle = button:GetObjectiveTitle()
             if objectiveTitle then
-                FarmingBar.db.global.templates[templateName][tostring(buttonID)] = {objectiveTitle = objectiveTitle, objective = button:GetObjective()}
+                addon.db.global.templates[templateName][tostring(buttonID)] = {objectiveTitle = objectiveTitle, objective = button:GetObjective()}
             end
         end
 
@@ -820,7 +822,7 @@ end
 
 function addon:TemplateContainsObjective(objectiveTitle)
     local count = 0
-    for templateName, template in pairs(FarmingBar.db.global.templates) do
+    for templateName, template in pairs(addon.db.global.templates) do
         for buttonID, objective in pairs(template) do
             if objective.objectiveTitle == objectiveTitle then
                 count = count + 1

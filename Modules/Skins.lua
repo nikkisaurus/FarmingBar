@@ -1,6 +1,9 @@
-local addonName, addon = ...
-local FarmingBar = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
+local addonName = ...
+local addon = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
 local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
+
+------------------------------------------------------------
+
 
 local unpack = unpack
 
@@ -224,7 +227,7 @@ end
 function addon:SkinBar(bar, skin)
     self:StripBarTextures(bar)
 
-    skin = (strmatch(skin, "^FarmingBar_") and addon.skins[skin] or FarmingBar.db.global.skins[skin]).bar
+    skin = (strmatch(skin, "^FarmingBar_") and addon.skins[skin] or addon.db.global.skins[skin]).bar
     local frame = bar.anchor
 
     if frame:GetNormalTexture() then
@@ -277,7 +280,7 @@ end
 function addon:SkinButton(button, skin)
     self:StripButtonTextures(button)
 
-    skin = (strmatch(skin, "^FarmingBar_") and addon.skins[skin] or FarmingBar.db.global.skins[skin]).button
+    skin = (strmatch(skin, "^FarmingBar_") and addon.skins[skin] or addon.db.global.skins[skin]).button
     local frame = button.frame
 
     for layerName, layer in pairs(skin) do

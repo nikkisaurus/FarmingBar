@@ -1,6 +1,8 @@
-local addonName, addon = ...
-local FarmingBar = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
+local addonName = ...
+local addon = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
 local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
+
+------------------------------------------------------------
 
 local pairs, unpack = pairs, unpack
 local format, strlen, strlower, strsub = string.format, string.len, string.lower, string.sub
@@ -56,17 +58,17 @@ end)
 --*------------------------------------------------------------------------
 
 function addon:IsTooltipMod()
-    if not FarmingBar.db.global.hints.enableModifier then
+    if not addon.db.global.settings.hints.enableModifier then
         return true
     else
-        return _G["Is" .. FarmingBar.db.global.hints.modifier .. "KeyDown"]()
+        return _G["Is" .. addon.db.global.settings.hints.modifier .. "KeyDown"]()
     end
 end
 
 --*------------------------------------------------------------------------
 
 function addon:GetBarTooltip(widget, tooltip)
-    if not FarmingBar.db.global.tooltips.bar then return end
+    if not addon.db.global.settings.tooltips.bar then return end
     local barDB = widget:GetUserData("barDB")
 
     tooltip:AddLine(self:GetBarTitle(widget:GetBarID()), 0, 1, 0, 1)
@@ -84,15 +86,15 @@ function addon:GetBarTooltip(widget, tooltip)
     tooltip:AddDoubleLine(L["Scale"], self.round(barDB.scale * 100, 2).."%", unpack(self.tooltip_keyvalue))
     tooltip:AddDoubleLine(L["Movable"], barDB.movable and L["TRUE"] or L["FALSE"], unpack(self.tooltip_keyvalue))
 
-    if FarmingBar.db.global.hints.bars then
+    if addon.db.global.settings.hints.bars then
         GameTooltip_AddBlankLinesToTooltip(GameTooltip, 1)
         if self:IsTooltipMod() then
             GameTooltip:AddLine(format("%s:", L["Hints"]))
-            for k, v in self.pairs(FarmingBar.db.global.keybinds.bar, function(a, b) return barCommandSort[a] < barCommandSort[b] end) do
+            for k, v in self.pairs(addon.db.global.settings.keybinds.bar, function(a, b) return barCommandSort[a] < barCommandSort[b] end) do
                 GameTooltip:AddLine(L.BarHints(k, v), unpack(self.tooltip_description))
             end
         else
-            tooltip:AddDoubleLine(L["Show Hints"]..":", L[FarmingBar.db.global.hints.modifier], unpack(self.tooltip_keyvalue))
+            tooltip:AddDoubleLine(L["Show Hints"]..":", L[addon.db.global.settings.hints.modifier], unpack(self.tooltip_keyvalue))
         end
     end
 end
@@ -100,19 +102,18 @@ end
 ------------------------------------------------------------
 
 function addon:GetButtonTooltip(widget, tooltip)
-    if not FarmingBar.db.global.tooltips.button then return end
-    local objectiveTitle = widget:GetUserData("objectiveTitle")
-    local objectiveInfo = self:GetObjectiveInfo(objectiveTitle)
+    if not addon.db.global.settings.tooltips.button then return end
+    local buttonDB = widget:GetButtonDB()
 
     ------------------------------------------------------------
 
-    if objectiveInfo then
-        local numTrackers = #objectiveInfo.trackers
+    if not widget:IsEmpty() then
+        local numTrackers = self.tcount(buttonDB.trackers)
         local count = widget:GetCount()
         local objective = widget:GetObjective()
 
-        if objectiveInfo.displayRef.trackerType and objectiveInfo.displayRef.trackerID and (objectiveInfo.displayRef.trackerType == "ITEM" or objectiveInfo.displayRef.trackerType == "CURRENCY") then
-            tooltip:SetHyperlink(format("%s:%s", string.lower(objectiveInfo.displayRef.trackerType), objectiveInfo.displayRef.trackerID))
+        if buttonDB.action and buttonDB.actionInfo and (buttonDB.action == "ITEM" or buttonDB.action == "CURRENCY") then
+            tooltip:SetHyperlink(format("%s:%s", string.lower(buttonDB.action), buttonDB.actionInfo))
 
             -- Divider
             GameTooltip_AddBlankLinesToTooltip(GameTooltip, 1)
@@ -122,20 +123,20 @@ function addon:GetButtonTooltip(widget, tooltip)
 
         tooltip:AddLine(objectiveTitle, 0, 1, 0, 1)
 
-        if not FarmingBar.db.global.tooltips.hideObjectiveInfo then
-            if objectiveInfo.displayRef.trackerType and objectiveInfo.displayRef.trackerID then
-                if  objectiveInfo.displayRef.trackerType == "MACROTEXT" then
-                    tooltip:AddDoubleLine(L["Display Ref"], strsub(objectiveInfo.displayRef.trackerID, 1, 15)..(strlen(objectiveInfo.displayRef.trackerID) > 15 and "..." or ""), unpack(self.tooltip_keyvalue))
+        if not addon.db.global.settings.tooltips.hideObjectiveInfo then
+            if buttonDB.action and buttonDB.actionInfo then
+                if  buttonDB.action == "MACROTEXT" then
+                    tooltip:AddDoubleLine(L["Action"], strsub(buttonDB.actionInfo, 1, 15)..(strlen(buttonDB.actionInfo) > 15 and "..." or ""), unpack(self.tooltip_keyvalue))
                 else
-                    self:GetTrackerDataTable(objectiveInfo.displayRef.trackerType, objectiveInfo.displayRef.trackerID, function(data)
-                        tooltip:AddDoubleLine(L["Display Ref"],  strsub(data.name, 1, 15)..(strlen(data.name) > 15 and "..." or ""), unpack(self.tooltip_keyvalue))
+                    self:GetTrackerDataTable(buttonDB.action, buttonDB.actionInfo, function(data)
+                        tooltip:AddDoubleLine(L["Action"],  strsub(data.name, 1, 15)..(strlen(data.name) > 15 and "..." or ""), unpack(self.tooltip_keyvalue))
                     end)
                 end
             else
-                tooltip:AddDoubleLine(L["Display Ref"], L["None"], unpack(self.tooltip_keyvalue))
+                tooltip:AddDoubleLine(L["Action"], L["None"], unpack(self.tooltip_keyvalue))
             end
 
-            tooltip:AddDoubleLine(L["Tracker Condition"], L[strsub(objectiveInfo.trackerCondition, 1, 1)..strlower(strsub(objectiveInfo.trackerCondition, 2))], unpack(self.tooltip_keyvalue))
+            tooltip:AddDoubleLine(L["Condition"], L[strsub(buttonDB.condition, 1, 1)..strlower(strsub(buttonDB.condition, 2))], unpack(self.tooltip_keyvalue))
 
             GameTooltip_AddBlankLinesToTooltip(tooltip, 1)
 
@@ -151,20 +152,23 @@ function addon:GetButtonTooltip(widget, tooltip)
 
             tooltip:AddDoubleLine(L["Trackers"], numTrackers, unpack(self.tooltip_keyvalue))
 
-            for key, trackerInfo in pairs(objectiveInfo.trackers) do
-                if key > 10 then
+            local count = 0
+            for key, trackerInfo in pairs(buttonDB.trackers) do
+                count = count + 1
+                if count > 10 then
                     tooltip:AddLine(format("%d %s...", numTrackers - 10, L["more"]), unpack(self.tooltip_description))
                     tooltip:AddTexture(134400)
                     break
                 else
-                    self:GetTrackerDataTable(trackerInfo.trackerType, trackerInfo.trackerID, function(data)
-                        local trackerCount = self:GetTrackerCount(objectiveTitle, trackerInfo)
+                    local trackerType, trackerID = self:ParseTrackerKey(key)
+                    self:GetTrackerDataTable(trackerType, trackerID, function(data)
+                        local trackerCount = self:GetTrackerCount(widget, key)
 
                         local trackerRawCount
-                        if trackerInfo.trackerType == "ITEM" then
-                            trackerRawCount = GetItemCount(trackerInfo.trackerID, trackerInfo.includeBank)
-                        elseif trackerInfo.trackerType == "CURRENCY" and trackerInfo.trackerID ~= "" then
-                            trackerRawCount = GetCurrencyInfo(trackerInfo.trackerID) and GetCurrencyInfo(trackerInfo.trackerID).quantity
+                        if trackerType == "ITEM" then
+                            trackerRawCount = GetItemCount(trackerID, trackerInfo.includeBank)
+                        elseif trackerType == "CURRENCY" and trackerID ~= "" then
+                            trackerRawCount = GetCurrencyInfo(trackerID) and GetCurrencyInfo(trackerID).quantity
                         end
 
                         tooltip:AddDoubleLine(data.name, format("%d (%d) / %d", trackerCount, trackerRawCount, trackerInfo.objective), unpack(self.tooltip_description))
@@ -182,17 +186,17 @@ function addon:GetButtonTooltip(widget, tooltip)
 
     tooltip:AddDoubleLine("Button ID", widget:GetButtonID(), unpack(self.tooltip_keyvalue))
 
-    if FarmingBar.db.global.hints.buttons then
+    if addon.db.global.settings.hints.buttons then
         GameTooltip_AddBlankLinesToTooltip(GameTooltip, 1)
         if self:IsTooltipMod() then
             GameTooltip:AddLine(format("%s:", L["Hints"]))
-            for k, v in self.pairs(FarmingBar.db.global.keybinds.button, function(a, b) return buttonCommandSort[a] < buttonCommandSort[b] end) do
-                if objectiveInfo or v.showOnEmpty then
+            for k, v in self.pairs(addon.db.global.settings.keybinds.button, function(a, b) return buttonCommandSort[a] < buttonCommandSort[b] end) do
+                if buttonDB or v.showOnEmpty then
                     GameTooltip:AddLine(L.ButtonHints(k, v), unpack(self.tooltip_description))
                 end
             end
         else
-            tooltip:AddDoubleLine(L["Show Hints"]..":", L[FarmingBar.db.global.hints.modifier], unpack(self.tooltip_keyvalue))
+            tooltip:AddDoubleLine(L["Show Hints"]..":", L[addon.db.global.settings.hints.modifier], unpack(self.tooltip_keyvalue))
         end
     end
 end
@@ -200,12 +204,12 @@ end
 ------------------------------------------------------------
 
 function addon:GetExcludeListLabelTooltip(widget, tooltip)
-    if FarmingBar.db.global.hints.ObjectiveBuilder then
+    if addon.db.global.settings.hints.ObjectiveBuilder then
         if self:IsTooltipMod() then
             tooltip:AddLine(format("%s:", L["Hint"]))
             tooltip:AddLine(L.RemoveExcludeHint, unpack(self.tooltip_description))
         else
-            tooltip:AddDoubleLine(L["Show Hints"]..":", L[FarmingBar.db.global.hints.modifier], unpack(self.tooltip_keyvalue))
+            tooltip:AddDoubleLine(L["Show Hints"]..":", L[addon.db.global.settings.hints.modifier], unpack(self.tooltip_keyvalue))
         end
     end
 end
@@ -213,12 +217,12 @@ end
 ------------------------------------------------------------
 
 function addon:GetFilterAutoItemsTooltip(widget, tooltip)
-    if FarmingBar.db.global.hints.ObjectiveBuilder then
+    if addon.db.global.settings.hints.ObjectiveBuilder then
         if self:IsTooltipMod() then
             GameTooltip:AddLine(format("%s:", L["Hint"]))
             GameTooltip:AddLine(L.FilterAutoItemsHint, unpack(self.tooltip_description))
         else
-            tooltip:AddDoubleLine(L["Show Hints"]..":", L[FarmingBar.db.global.hints.modifier], unpack(self.tooltip_keyvalue))
+            tooltip:AddDoubleLine(L["Show Hints"]..":", L[addon.db.global.settings.hints.modifier], unpack(self.tooltip_keyvalue))
         end
     end
 end
@@ -226,40 +230,42 @@ end
 ------------------------------------------------------------
 
 function addon:GetObjectiveButtonTooltip(widget, tooltip)
-    local objectiveTitle = widget:GetUserData("objectiveTitle")
-    local objectiveInfo = self:GetObjectiveInfo(objectiveTitle)
-    if not objectiveInfo then return end
-    local numTrackers = #objectiveInfo.trackers
+    local buttonDB = widget:GetButtonDB()
+    if not buttonDB then return end
+    local numTrackers = #buttonDB.trackers
 
     ------------------------------------------------------------
 
-    tooltip:AddLine(objectiveTitle)
-    tooltip:AddDoubleLine(L["Tracked"], addon:GetNumButtonsContainingObjective(objectiveTitle), unpack(self.tooltip_keyvalue))
+    tooltip:AddLine(buttonDB.title)
+    tooltip:AddDoubleLine(L["Tracked"], addon:GetNumButtonsContainingObjective(buttonDB.title), unpack(self.tooltip_keyvalue))
 
     GameTooltip_AddBlankLinesToTooltip(tooltip, 1)
-    if objectiveInfo.displayRef.trackerType and objectiveInfo.displayRef.trackerID then
-        if  objectiveInfo.displayRef.trackerType == "MACROTEXT" then
-            tooltip:AddDoubleLine(L["Display Ref"], strsub(objectiveInfo.displayRef.trackerID, 1, 15)..(strlen(objectiveInfo.displayRef.trackerID) > 15 and "..." or ""), unpack(self.tooltip_keyvalue))
+    if buttonDB.action and buttonDB.actionInfo then
+        if  buttonDB.action == "MACROTEXT" then
+            tooltip:AddDoubleLine(L["Action"], strsub(buttonDB.actionInfo, 1, 15)..(strlen(buttonDB.actionInfo) > 15 and "..." or ""), unpack(self.tooltip_keyvalue))
         else
-            self:GetTrackerDataTable(objectiveInfo.displayRef.trackerType, objectiveInfo.displayRef.trackerID, function(data)
-                tooltip:AddDoubleLine(L["Display Ref"],  strsub(data.name, 1, 15)..(strlen(data.name) > 15 and "..." or ""), unpack(self.tooltip_keyvalue))
+            self:GetTrackerDataTable(buttonDB.action, buttonDB.actionInfo, function(data)
+                tooltip:AddDoubleLine(L["Action"],  strsub(data.name, 1, 15)..(strlen(data.name) > 15 and "..." or ""), unpack(self.tooltip_keyvalue))
             end)
         end
     else
-        tooltip:AddDoubleLine(L["Display Ref"], L["None"], unpack(self.tooltip_keyvalue))
+        tooltip:AddDoubleLine(L["Action"], L["None"], unpack(self.tooltip_keyvalue))
     end
 
-    tooltip:AddDoubleLine(L["Tracker Condition"], L[strsub(objectiveInfo.trackerCondition, 1, 1)..strlower(strsub(objectiveInfo.trackerCondition, 2))], unpack(self.tooltip_keyvalue))
+    tooltip:AddDoubleLine(L["Condition"], L[strsub(buttonDB.condition, 1, 1)..strlower(strsub(buttonDB.condition, 2))], unpack(self.tooltip_keyvalue))
 
     GameTooltip_AddBlankLinesToTooltip(tooltip, 1)
     tooltip:AddDoubleLine(L["Trackers"], numTrackers, unpack(self.tooltip_keyvalue))
-    for key, trackerInfo in pairs(objectiveInfo.trackers) do
-        if key > 10 then
+    local count = 0
+    for key, trackerInfo in pairs(buttonDB.trackers) do
+        local trackerType, trackerID = self:ParseTrackerKey(key)
+        count = count + 1
+        if count > 10 then
             tooltip:AddLine(format("%d %s...", numTrackers - 10, L["more"]), unpack(self.tooltip_description))
             tooltip:AddTexture(134400)
             break
         else
-            self:GetTrackerDataTable(trackerInfo.trackerType, trackerInfo.trackerID, function(data)
+            self:GetTrackerDataTable(trackerType, trackerID, function(data)
                 tooltip:AddDoubleLine(data.name, trackerInfo.objective, unpack(self.tooltip_description))
                 tooltip:AddTexture(data.icon or 134400)
             end)
@@ -268,13 +274,13 @@ function addon:GetObjectiveButtonTooltip(widget, tooltip)
 
     ------------------------------------------------------------
 
-    if FarmingBar.db.global.hints.ObjectiveBuilder then
+    if addon.db.global.settings.hints.ObjectiveBuilder then
         GameTooltip_AddBlankLinesToTooltip(tooltip, 1)
         if self:IsTooltipMod() then
             tooltip:AddLine(format("%s:", L["Hint"]))
             tooltip:AddLine(L.ObjectiveContextMenuHint, unpack(self.tooltip_description))
         else
-            tooltip:AddDoubleLine(L["Show Hints"]..":", L[FarmingBar.db.global.hints.modifier], unpack(self.tooltip_keyvalue))
+            tooltip:AddDoubleLine(L["Show Hints"]..":", L[addon.db.global.settings.hints.modifier], unpack(self.tooltip_keyvalue))
         end
     end
 end
@@ -282,12 +288,12 @@ end
 ------------------------------------------------------------
 
 function addon:GetNewObjectiveButtonTooltip(widget, tooltip)
-    if FarmingBar.db.global.hints.ObjectiveBuilder then
+    if addon.db.global.settings.hints.ObjectiveBuilder then
         if self:IsTooltipMod() then
             tooltip:AddLine(format("%s:", L["Hint"]))
             tooltip:AddLine(L.NewObjectiveHint, unpack(self.tooltip_description))
         else
-            tooltip:AddDoubleLine(L["Show Hints"]..":", L[FarmingBar.db.global.hints.modifier], unpack(self.tooltip_keyvalue))
+            tooltip:AddDoubleLine(L["Show Hints"]..":", L[addon.db.global.settings.hints.modifier], unpack(self.tooltip_keyvalue))
         end
     end
 end
@@ -325,13 +331,13 @@ function addon:GetTrackerButtonTooltip(widget, tooltip)
 
     ------------------------------------------------------------
 
-    if FarmingBar.db.global.hints.ObjectiveBuilder then
+    if addon.db.global.settings.hints.ObjectiveBuilder then
         GameTooltip_AddBlankLinesToTooltip(tooltip, 1)
         if self:IsTooltipMod() then
             tooltip:AddLine(format("%s:", L["Hint"]))
             tooltip:AddLine(L.TrackerContextMenuHint, unpack(self.tooltip_description))
         else
-            tooltip:AddDoubleLine(L["Show Hints"]..":", L[FarmingBar.db.global.hints.modifier], unpack(self.tooltip_keyvalue))
+            tooltip:AddDoubleLine(L["Show Hints"]..":", L[addon.db.global.settings.hints.modifier], unpack(self.tooltip_keyvalue))
         end
     end
 end

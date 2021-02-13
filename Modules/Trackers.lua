@@ -1,6 +1,9 @@
-local addonName, addon = ...
-local FarmingBar = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
+local addonName = ...
+local addon = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
 local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
+
+------------------------------------------------------------
+
 local AceGUI = LibStub("AceGUI-3.0", true)
 
 local select, type = select, type
@@ -42,8 +45,8 @@ function addon:CreateTracker(objectiveTitle, tracker)
         end
     end
 
-    tinsert(FarmingBar.db.global.objectives[objectiveTitle].trackers, defaultTracker)
-    local newTracker = #FarmingBar.db.global.objectives[objectiveTitle].trackers
+    tinsert(addon.db.global.objectives[objectiveTitle].trackers, defaultTracker)
+    local newTracker = #addon.db.global.objectives[objectiveTitle].trackers
 
     ------------------------------------------------------------
 
@@ -67,7 +70,7 @@ end
 ------------------------------------------------------------
 
 function addon:DeleteTracker(objectiveTitle, tracker)
-    FarmingBar.db.global.objectives[objectiveTitle].trackers[tracker] = nil
+    addon.db.global.objectives[objectiveTitle].trackers[tracker] = nil
     self:UpdateButtons(objectiveTitle)
     self:RefreshObjectiveBuilderOptions()
 
@@ -84,7 +87,7 @@ function addon:DeleteTracker(objectiveTitle, tracker)
     --             ObjectiveBuilder:ClearSelectedTracker()
     --         end
 
-    --         FarmingBar.db.global.objectives[objectiveTitle].trackers[key] = nil
+    --         addon.db.global.objectives[objectiveTitle].trackers[key] = nil
     --         tinsert(releaseKeys, key)
     --     end
     -- end
@@ -102,7 +105,7 @@ function addon:DeleteTracker(objectiveTitle, tracker)
     --     tinsert(trackers, trackerInfo)
     -- end
 
-    -- FarmingBar.db.global.objectives[objectiveTitle].trackers = trackers
+    -- addon.db.global.objectives[objectiveTitle].trackers = trackers
 
     -- ------------------------------------------------------------
 
@@ -116,6 +119,20 @@ function addon:DeleteTracker(objectiveTitle, tracker)
     -- trackerList:DoLayout()
     -- self:UpdateButtons(objectiveTitle)
     -- ObjectiveBuilder:RefreshObjectives()
+end
+
+------------------------------------------------------------
+
+function addon:GetFirstTracker(widget)
+    local buttonDB = widget:GetButtonDB()
+
+    local firstOrder, firstTracker = 0
+    for k, v in pairs(buttonDB.trackers) do
+        firstOrder = firstTracker and min(v.order, firstOrder) or v.order
+        firstTracker = firstTracker and (firstOrder == v.order and k or firstTracker) or k
+    end
+
+    return firstTracker
 end
 
 ------------------------------------------------------------
@@ -141,57 +158,56 @@ end
 
 ------------------------------------------------------------
 
-function addon:GetTrackerCount(objectiveTitle, trackerInfo)
-    local ObjectiveBuilder = addon.ObjectiveBuilder
-    local objectiveInfo = self:GetObjectiveInfo(objectiveTitle)
-
-    if not trackerInfo then return 0 end
+function addon:GetTrackerCount(widget, trackerKey)
+    local trackerType, trackerID = self:ParseTrackerKey(trackerKey)
+    local trackerInfo = widget:GetButtonDB().trackers[trackerKey]
     local count
 
-    if trackerInfo.trackerType == "ITEM" then
-        count = trackerInfo.includeAllChars and self:GetDataStoreCount(trackerInfo.trackerID, trackerInfo.includeBank) or GetItemCount(trackerInfo.trackerID, trackerInfo.includeBank)
-    elseif trackerInfo.trackerType == "CURRENCY" and trackerInfo.trackerID ~= "" then
-        count = GetCurrencyInfo(trackerInfo.trackerID) and GetCurrencyInfo(trackerInfo.trackerID).quantity
+    if trackerType == "ITEM" then
+        count = GetItemCount(trackerID, trackerInfo.includeBank)
+        -- count = trackerInfo.includeAllChars and self:GetDataStoreCount(trackerID, trackerInfo.includeBank) or GetItemCount(trackerID, trackerInfo.includeBank)
+    elseif trackerType == "CURRENCY" then
+        count = GetCurrencyInfo(trackerID) and GetCurrencyInfo(trackerID).quantity
     end
 
     if not count then
         return 0
     end
 
-    if #trackerInfo.exclude > 0 then
-        for _, eObjectiveTitle in pairs(trackerInfo.exclude) do
-            local eObjectiveInfo = addon:GetObjectiveInfo(eObjectiveTitle)
-            local eObjective, eObjectiveButton = addon:GetMaxTrackerObjective(eObjectiveTitle)
+    -- if #trackerInfo.exclude > 0 then
+    --     for _, eObjectiveTitle in pairs(trackerInfo.exclude) do
+    --         local eObjectiveInfo = addon:GetObjectiveInfo(eObjectiveTitle)
+    --         local eObjective, eObjectiveButton = addon:GetMaxTrackerObjective(eObjectiveTitle)
 
-            -- Only exclude if an objective is set (otherwise, how do we know how many to exclude?)
-            if eObjective then
-                for _, eTrackerInfo in pairs(eObjectiveInfo.trackers) do
-                    if eTrackerInfo.trackerID == trackerInfo.trackerID then
-                        -- Get the max amount used for the objective: either the objective itself or the count
-                        local maxCount = min(addon:GetObjectiveCount(eObjectiveButton, eObjectiveTitle), eObjective)
-                        -- The number of of this tracker required for the objective is the tracker objective x max
-                        count = count - maxCount
-                    end
-                end
-            end
-        end
-    end
+    --         -- Only exclude if an objective is set (otherwise, how do we know how many to exclude?)
+    --         if eObjective then
+    --             for _, eTrackerInfo in pairs(eObjectiveInfo.trackers) do
+    --                 if eTrackerInfo.trackerID == trackerInfo.trackerID then
+    --                     -- Get the max amount used for the objective: either the objective itself or the count
+    --                     local maxCount = min(addon:GetObjectiveCount(eObjectiveButton, eObjectiveTitle), eObjective)
+    --                     -- The number of of this tracker required for the objective is the tracker objective x max
+    --                     count = count - maxCount
+    --                 end
+    --             end
+    --         end
+    --     end
+    -- end
 
     count = floor(count / trackerInfo.objective)
 
-    -- If objective is excluded, get max objective
-    -- If count > max objective while excluded, return max objective
-    -- Surplus above objective goes toward the objective excluding this one
-    -- Ex: if A has an objective of 20 and a count of 25 and B excludes A, A will show a count of 20 with objective complete and B will show a count of 5
-    local objective
-    for _, eObjectiveInfo in pairs(FarmingBar.db.global.objectives) do
-        for _, eTrackerInfo in pairs(eObjectiveInfo.trackers) do
-            if self:ObjectiveIsExcluded(eTrackerInfo.exclude, objectiveTitle) then
-                objective = addon:GetMaxTrackerObjective(objectiveTitle)
-                break
-            end
-        end
-    end
+    -- -- If objective is excluded, get max objective
+    -- -- If count > max objective while excluded, return max objective
+    -- -- Surplus above objective goes toward the objective excluding this one
+    -- -- Ex: if A has an objective of 20 and a count of 25 and B excludes A, A will show a count of 20 with objective complete and B will show a count of 5
+    -- local objective
+    -- for _, eObjectiveInfo in pairs(addon.db.global.objectives) do
+    --     for _, eTrackerInfo in pairs(eObjectiveInfo.trackers) do
+    --         if self:ObjectiveIsExcluded(eTrackerInfo.exclude, objectiveTitle) then
+    --             objective = addon:GetMaxTrackerObjective(objectiveTitle)
+    --             break
+    --         end
+    --     end
+    -- end
 
     count = (count > 0 and count or 0) * (trackerInfo.countsFor or 1)
 
@@ -232,7 +248,7 @@ end
 
 function addon:GetTrackerDBInfo(objectiveTitle, tracker, key)
     local keys = {strsplit(".", key)}
-    local path = FarmingBar.db.global.objectives[objectiveTitle].trackers[tracker]
+    local path = addon.db.global.objectives[objectiveTitle].trackers[tracker]
     for k, key in pairs(keys) do
         if k < #keys then
             path = path[key]
@@ -245,7 +261,7 @@ end
 ------------------------------------------------------------
 
 function addon:GetTrackerInfo(objectiveTitle, tracker)
-    return FarmingBar.db.global.objectives[objectiveTitle] and FarmingBar.db.global.objectives[objectiveTitle].trackers[tracker]
+    return addon.db.global.objectives[objectiveTitle] and addon.db.global.objectives[objectiveTitle].trackers[tracker]
 end
 
 ------------------------------------------------------------
@@ -275,8 +291,8 @@ function addon:MoveTracker(currentKey, direction)
     ------------------------------------------------------------
 
     -- Swap trackerInfo in the database
-    FarmingBar.db.global.objectives[objectiveTitle].trackers[currentKey] = destinationInfo
-    FarmingBar.db.global.objectives[objectiveTitle].trackers[destinationKey] = currentInfo
+    addon.db.global.objectives[objectiveTitle].trackers[currentKey] = destinationInfo
+    addon.db.global.objectives[objectiveTitle].trackers[destinationKey] = currentInfo
 
     ------------------------------------------------------------
 
@@ -297,9 +313,16 @@ end
 
 ------------------------------------------------------------
 
+function addon:ParseTrackerKey(trackerID)
+    local trackerType, trackerID = strsplit(":", trackerID)
+    return trackerType, tonumber(trackerID)
+end
+
+------------------------------------------------------------
+
 function addon:SetTrackerDBInfo(objectiveTitle, tracker, key, value)
     local keys = {strsplit(".", key)}
-    local path = FarmingBar.db.global.objectives[objectiveTitle].trackers[tracker]
+    local path = addon.db.global.objectives[objectiveTitle].trackers[tracker]
     for k, key in pairs(keys) do
         if k < #keys then
             path = path[key]
@@ -322,7 +345,7 @@ end
 ------------------------------------------------------------
 
 function addon:TrackerExists(objectiveTitle, trackerID)
-    for _, tracker in pairs(FarmingBar.db.global.objectives[objectiveTitle].trackers) do
+    for _, tracker in pairs(addon.db.global.objectives[objectiveTitle].trackers) do
         if tracker.trackerID == trackerID then
             return true
         end
@@ -332,7 +355,7 @@ end
 ------------------------------------------------------------
 
 function addon:UpdateExclusions(objectiveTitle, newObjectiveTitle)
-    for _, objectiveInfo in pairs(FarmingBar.db.global.objectives) do
+    for _, objectiveInfo in pairs(addon.db.global.objectives) do
         for _, trackerInfo in pairs(objectiveInfo.trackers) do
             local removeKey = self.GetTableKey(trackerInfo.exclude, objectiveTitle)
             if removeKey then

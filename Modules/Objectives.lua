@@ -1,6 +1,8 @@
-local addonName, addon = ...
-local FarmingBar = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
+local addonName = ...
+local addon = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
 local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
+
+------------------------------------------------------------
 
 local loadstring, select, type = loadstring, select, type
 local min = math.min
@@ -18,7 +20,7 @@ local StaticPopup_Show = StaticPopup_Show
 
 function addon:CleanupQuickObjectives()
     local count = 0
-    for objectiveTitle, _ in pairs(FarmingBar.db.global.objectives) do
+    for objectiveTitle, _ in pairs(addon.db.global.objectives) do
         if self:IsObjectiveAutoItem(objectiveTitle) and self:GetNumButtonsContainingObjective(objectiveTitle) == 0 then
             self:DeleteObjective(objectiveTitle)
             count = count + 1
@@ -58,7 +60,7 @@ function addon:CreateObjective(objectiveTitle, objectiveInfo, overwrite, supress
     end
 
     newObjectiveTitle = newObjectiveTitle or objectiveTitle or defaultTitle
-    FarmingBar.db.global.objectives[newObjectiveTitle] = defaultInfo
+    addon.db.global.objectives[newObjectiveTitle] = defaultInfo
 
     ------------------------------------------------------------
 
@@ -80,22 +82,24 @@ function addon:CreateObjectiveFromCursor(widget)
     ClearCursor()
 
     if cursorType == "item" then
-        local defaultInfo = self:GetDefaultObjective()
-        defaultInfo.icon = GetItemIconByID(cursorID)
-        defaultInfo.displayRef.trackerType = "ITEM"
-        defaultInfo.displayRef.trackerID = cursorID
+        local buttonDB = widget:GetButtonDB()
 
-        local tracker = addon:GetDefaultTracker()
-        tracker.trackerType = "ITEM"
-        tracker.trackerID = cursorID
+        buttonDB.title = "ITEM:"..cursorID
+        buttonDB.icon = GetItemIconByID(cursorID)
+        buttonDB.action = "ITEM"
+        buttonDB.actionInfo = cursorID
 
-        tinsert(defaultInfo.trackers, tracker)
+        local tracker =  buttonDB.trackers["ITEM:"..cursorID]
+        tracker.order = 1
 
-        ------------------------------------------------------------
-
-        local objectiveTitle = "item:"..(select(1, GetItemInfo(cursorID)))
-        self:CreateQuickObjective(objectiveTitle, defaultInfo, widget)
+        widget:UpdateLayers()
     end
+end
+
+------------------------------------------------------------
+
+function addon:CreateObjectiveFromTemplate()
+
 end
 
 ------------------------------------------------------------
@@ -120,7 +124,7 @@ end
 ------------------------------------------------------------
 
 function addon:CreateQuickObjective(objectiveTitle, defaultInfo, widget, suppressSelect)
-    local overwriteQuickObjectives = FarmingBar.db.global.settings.newQuickObjectives
+    local overwriteQuickObjectives = addon.db.global.settings.newQuickObjectives
 
     if self:GetObjectiveInfo(objectiveTitle) and overwriteQuickObjectives == "PROMPT" then -- PROMPT
         local dialog = StaticPopup_Show("FARMINGBAR_CONFIRM_NEW_QUICK_OBJECTIVE_PROMPT", objectiveTitle)
@@ -156,7 +160,7 @@ function addon:DeleteObjective(objectiveTitle, confirmed)
     end
 
     -- Delete objective
-    FarmingBar.db.global.objectives[objectiveTitle] = nil
+    addon.db.global.objectives[objectiveTitle] = nil
     self:UpdateExclusions(objectiveTitle)
     self:ClearDeletedObjectives(objectiveTitle)
     self:RefreshObjectiveBuilderOptions()
@@ -226,14 +230,12 @@ end
 
 ------------------------------------------------------------
 
-function addon:GetObjectiveIcon(objectiveTitle)
-    local objectiveInfo = addon:GetObjectiveInfo(objectiveTitle)
-    if not objectiveInfo then return end
+function addon:GetObjectiveIcon(widget)
+    local buttonDB = widget:GetButtonDB()
 
     local icon
-    if objectiveInfo.autoIcon then
-        local lookupTable = (objectiveInfo.displayRef.trackerType and objectiveInfo.displayRef.trackerType == "ITEM" or objectiveInfo.displayRef.trackerType == "CURRENCY") and objectiveInfo.displayRef or objectiveInfo.trackers[1]
-        local trackerType, trackerID = lookupTable and lookupTable.trackerType, lookupTable and lookupTable.trackerID
+    if buttonDB.autoIcon then
+        local trackerType, trackerID = self:ParseTrackerKey(self:GetFirstTracker(widget))
 
         if trackerType == "ITEM" then
             icon = GetItemIconByID(tonumber(trackerID) or 0)
@@ -242,9 +244,9 @@ function addon:GetObjectiveIcon(objectiveTitle)
             icon = currency and currency.iconFileID
         end
     else
-        if objectiveInfo.icon then
+        if buttonDB.icon then
             -- Convert db icon value to number if it's a file ID, otherwise use the string value
-            icon = (tonumber(objectiveInfo.icon) and tonumber(objectiveInfo.icon) ~= objectiveInfo.icon) and tonumber(objectiveInfo.icon) or objectiveInfo.icon
+            icon = (tonumber(buttonDB.icon) and tonumber(buttonDB.icon) ~= buttonDB.icon) and tonumber(buttonDB.icon) or buttonDB.icon
             icon = (icon == "" or not icon) and 134400 or icon
         end
     end
@@ -256,7 +258,7 @@ end
 
 function addon:GetObjectiveDBValue(key, objectiveTitle)
     local keys = {strsplit(".", key)}
-    local path = FarmingBar.db.global.objectives[objectiveTitle]
+    local path = addon.db.global.objectives[objectiveTitle]
 
     for k, key in pairs(keys) do
         if k < #keys then
@@ -270,7 +272,7 @@ end
 ------------------------------------------------------------
 
 function addon:GetObjectiveInfo(objectiveTitle, tracker)
-    local objectiveInfo = FarmingBar.db.global.objectives[objectiveTitle]
+    local objectiveInfo = addon.db.global.objectives[objectiveTitle]
     local trackerInfo = objectiveInfo and tracker and self:GetTrackerInfo(objectiveTitle, tracker)
 
     return objectiveInfo, trackerInfo
@@ -296,15 +298,26 @@ end
 
 ------------------------------------------------------------
 
-function addon:IsObjectiveBankIncluded(objectiveTitle)
-    local trackerInfo = self:GetTrackerInfo(objectiveTitle, 1)
-    return self:IsObjectiveAutoItem(objectiveTitle) and trackerInfo and trackerInfo.includeBank
+function addon:IsObjectiveBankIncluded(widget)
+    local total, included, notIncluded = 0, 0, 0
+    for _, v in pairs(widget:GetButtonDB().trackers) do
+        if v.includeBank then
+            included = included + 1
+        else
+            notIncluded = notIncluded + 1
+        end
+        total = total + 1
+    end
+
+    return total, included, notIncluded
+    -- local trackerInfo = self:GetTrackerInfo(objectiveTitle, 1)
+    -- return self:IsObjectiveAutoItem(objectiveTitle) and trackerInfo and trackerInfo.includeBank
 end
 
 ------------------------------------------------------------
 
 function addon:ObjectiveExists(objective)
-    for objectiveTitle, _ in pairs(FarmingBar.db.global.objectives) do
+    for objectiveTitle, _ in pairs(addon.db.global.objectives) do
         if strupper(objectiveTitle) == strupper(objective) then
             return objectiveTitle
         end
@@ -323,68 +336,65 @@ end
 
 ------------------------------------------------------------
 
-function addon:GetObjectiveCount(button, objectiveTitle)
-    local objectiveInfo = self:GetObjectiveInfo(objectiveTitle)
-    if not objectiveInfo then return 0 end
-
-    if #objectiveInfo.trackers == 0 then return 0 end
+function addon:GetObjectiveCount(widget, objectiveTitle)
+    local buttonDB = widget:GetButtonDB()
 
     local count = 0
-    if objectiveInfo.trackerCondition == "ANY" then
-        for _, trackerInfo in pairs(objectiveInfo.trackers) do
+    if buttonDB.condition == "ANY" then
+        for _, trackerInfo in pairs(buttonDB.trackers) do
             count = count + addon:GetTrackerCount(objectiveTitle, trackerInfo)
         end
-    elseif objectiveInfo.trackerCondition == "ALL" then
+    elseif buttonDB.condition == "ALL" then
         local pendingCount
-        for _, trackerInfo in pairs(objectiveInfo.trackers) do
+        for trackerKey, _ in pairs(buttonDB.trackers) do
             if not pendingCount then
-                pendingCount = addon:GetTrackerCount(objectiveTitle, trackerInfo)
+                pendingCount = addon:GetTrackerCount(widget, trackerKey)
             else
-                pendingCount = min(pendingCount, addon:GetTrackerCount(objectiveTitle, trackerInfo))
+                pendingCount = min(pendingCount, addon:GetTrackerCount(widget, trackerKey))
             end
         end
         count = count + pendingCount
-    elseif objectiveInfo.trackerCondition == "CUSTOM" then
-        -- Custom conditions should be a table with nested tables inside
-        -- Each nested table is an objectiveGroup which will be evaluated like an objective with an ALL condition
-        -- The first nested tables will use item counts before following tables; this means the order matters!
-        -- E.g. if you want to make as many of your least material required, put that first and then any remaining mats can go toward the following table
-        -- Nested tables should be key value pairs where key is in the format t%d, where %d is the tracker number, and value is the required count
-        -- Objective saved in trackerInfo will not be used in custom conditions
-        local customCondition = addon:ValidateCustomCondition(objectiveInfo.customCondition)
+    elseif buttonDB.condition == "CUSTOM" then
+        -- -- Custom conditions should be a table with nested tables inside
+        -- -- Each nested table is an objectiveGroup which will be evaluated like an objective with an ALL condition
+        -- -- The first nested tables will use item counts before following tables; this means the order matters!
+        -- -- E.g. if you want to make as many of your least material required, put that first and then any remaining mats can go toward the following table
+        -- -- Nested tables should be key value pairs where key is in the format t%d, where %d is the tracker number, and value is the required count
+        -- -- Objective saved in trackerInfo will not be used in custom conditions
+        -- local customCondition = addon:ValidateCustomCondition(buttonDB.customCondition)
 
-        if customCondition and customCondition ~= "" then
-            local countsUsed = {}
-            for key, objectiveGroup in pairs(customCondition) do
-                local pendingCount
-                for trackerID, objective in pairs(objectiveGroup) do
-                    trackerID = tonumber(strmatch(trackerID, "^t(%d+)$"))
-                    local trackerInfo = objectiveInfo.trackers[trackerID]
-                    if trackerInfo then
-                        local info = {}
-                        for k, v in pairs(trackerInfo) do
-                            info[k] = k ~= "objective" and v or objective
-                        end
-                        local trackerCount = addon:GetTrackerCount(objectiveTitle, info)
-                        local used = countsUsed[trackerID]
+        -- if customCondition and customCondition ~= "" then
+        --     local countsUsed = {}
+        --     for key, objectiveGroup in pairs(customCondition) do
+        --         local pendingCount
+        --         for trackerID, objective in pairs(objectiveGroup) do
+        --             trackerID = tonumber(strmatch(trackerID, "^t(%d+)$"))
+        --             local trackerInfo = buttonDB.trackers[trackerID]
+        --             if trackerInfo then
+        --                 local info = {}
+        --                 for k, v in pairs(trackerInfo) do
+        --                     info[k] = k ~= "objective" and v or objective
+        --                 end
+        --                 local trackerCount = addon:GetTrackerCount(objectiveTitle, info)
+        --                 local used = countsUsed[trackerID]
 
-                        if used then
-                            trackerCount = ((trackerCount * objective) - used) / objective
-                            trackerCount = trackerCount > 0 and trackerCount or 0
-                        end
+        --                 if used then
+        --                     trackerCount = ((trackerCount * objective) - used) / objective
+        --                     trackerCount = trackerCount > 0 and trackerCount or 0
+        --                 end
 
-                        if not pendingCount then
-                            pendingCount = trackerCount
-                        else
-                            pendingCount = min(pendingCount, trackerCount)
-                        end
+        --                 if not pendingCount then
+        --                     pendingCount = trackerCount
+        --                 else
+        --                     pendingCount = min(pendingCount, trackerCount)
+        --                 end
 
-                        countsUsed[trackerID] = (used or 0) + (pendingCount * objective)
-                    end
-                end
-                count = count + (pendingCount or 0)
-            end
-        end
+        --                 countsUsed[trackerID] = (used or 0) + (pendingCount * objective)
+        --             end
+        --         end
+        --         count = count + (pendingCount or 0)
+        --     end
+        -- end
     end
 
     return count > 0 and count or 0
@@ -393,8 +403,8 @@ end
 ------------------------------------------------------------
 
 function addon:RenameObjective(objectiveTitle, newObjectiveTitle)
-    FarmingBar.db.global.objectives[newObjectiveTitle] = FarmingBar.db.global.objectives[objectiveTitle]
-    FarmingBar.db.global.objectives[objectiveTitle] = nil
+    addon.db.global.objectives[newObjectiveTitle] = addon.db.global.objectives[objectiveTitle]
+    addon.db.global.objectives[objectiveTitle] = nil
 
     self:UpdateExclusions(objectiveTitle, newObjectiveTitle)
     self:UpdateRenamedObjectiveButtons(objectiveTitle, newObjectiveTitle)
@@ -406,7 +416,7 @@ end
 
 function addon:SetObjectiveDBInfo(key, value, objectiveTitle)
     local keys = {strsplit(".", key)}
-    local path = FarmingBar.db.global.objectives[objectiveTitle]
+    local path = addon.db.global.objectives[objectiveTitle]
 
     for k, key in pairs(keys) do
         if k < #keys then

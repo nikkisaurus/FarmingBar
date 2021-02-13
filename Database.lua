@@ -1,8 +1,16 @@
-local addonName, addon = ...
-local FarmingBar = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
+local addonName = ...
+local addon = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
 local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 
-function addon:Initialize_DB()
+------------------------------------------------------------
+
+local currentVersion = 4
+
+--*------------------------------------------------------------------------
+
+function addon:InitializeDB()
+    local backup = self:ValidateDB()
+
     local defaults = {
         char = {
             bars = {
@@ -15,7 +23,38 @@ function addon:Initialize_DB()
                         muteAll = false, --bar.muteAlerts
                     },
 
-                    objectives = {}, -- buttonID = {}
+                    objectives = {
+                        ["**"] = { -- buttonID
+                            template = false, -- global objective template
+
+                            -- Template
+                            title = "",
+                            autoIcon = true,
+                            icon = 134400,
+                            action = "", -- displayRef.trackerType: CURRENCY, ITEM, MACROTEXT, RECIPE
+                            actionInfo = "", -- displayRef.trackerID
+                            condition = "ALL", -- trackerCondition
+                            conditionInfo = "", -- customCondition
+                            --
+
+                            objective = 0,
+
+                            trackers = {
+                                ["**"] = { -- trackerID: "ITEM:1412", "CURRENCY:1803"
+                                    --Template
+                                    order = 0,
+                                    objective = 1,
+                                    countsFor = 1,
+                                    --
+
+                                    --Char
+                                    includeAllChars = false,
+                                    includeBank = false,
+                                    exclude = {}, -- buttonIDs
+                                },
+                            },
+                        },
+                    },
                 },
             },
         },
@@ -23,12 +62,33 @@ function addon:Initialize_DB()
         ------------------------------------------------------------
 
         global = {
-            enabled = true,
-            resetAlphaDB = 1,
-
-            ------------------------------------------------------------
+            objectives = {},
+            templates = {},
 
             settings = {
+                commands = {
+                    farmingbar = true,
+                    farmbar = true,
+                    farm = true,
+                    fbar = true,
+                    fb = false,
+                },
+
+                ------------------------------------------------------------
+
+                debug = {
+                    enabled = false, -- ! Set false before releases; enables debug toggles in GUI
+                    barDB = false, -- resets bar database on reload
+                    commands = false, -- enables debug only commands
+                    Config = false, -- opens Config frame on reload
+                    ConfigButtons = false, -- opens Config frame to buttons tab if Config enabled
+                    ObjectiveBuilder = false, -- opens Objective Builder on reload
+                    ObjectiveBuilderTrackers = false, -- opens Objective Builder to trackers tab if Objective Builder enabled
+                    StyleEditor = false, -- opens Style Editor on reload
+                },
+
+                ------------------------------------------------------------
+
                 alerts = {
                     bar = {
                         chat = true, --global.alerts.barChat
@@ -80,135 +140,101 @@ function addon:Initialize_DB()
 
                 ------------------------------------------------------------
 
-                autoLootOnUse = false, -- global.autoLootItems
-                filterQuickObjectives = false, -- hides auto added items from ObjectiveBuilder list
-                newQuickObjectives = "PROMPT", -- PROMPT, NEW, OVERWRITE, USEEXISTING
-                preserveTemplateData = "DISABLED", -- PROMPT, ENABLED, DISABLED
-                preserveTemplateOrder = "DISABLED", -- PROMPT, ENABLED, DISABLED
-            },
+                keybinds = {
+                    bar = {
+                        moveBar = {
+                            type = "drag",
+                            button = "LeftButton",
+                            modifier = "",
+                        },
 
-            ------------------------------------------------------------
+                        configBar = {
+                            button = "RightButton",
+                            modifier = "shift",
+                        },
 
-            keybinds = {
-                bar = {
-                    moveBar = {
-                        type = "drag",
-                        button = "LeftButton",
-                        modifier = "",
+                        toggleMovable = {
+                            button = "LeftButton",
+                            modifier = "shift",
+                        },
+
+                        openSettings = {
+                            button = "LeftButton",
+                            modifier = "ctrl",
+                        },
+
+                        openHelp = {
+                            button = "RightButton",
+                            modifier = "",
+                        },
                     },
 
-                    configBar = {
-                        button = "RightButton",
-                        modifier = "shift",
-                    },
+                    button = {
+                        clearObjective = {
+                            button = "RightButton",
+                            modifier = "shift",
+                        },
 
-                    toggleMovable = {
-                        button = "LeftButton",
-                        modifier = "shift",
-                    },
+                        includeBank = {
+                            button = "LeftButton",
+                            modifier = "alt",
+                        },
 
-                    openSettings = {
-                        button = "LeftButton",
-                        modifier = "ctrl",
-                    },
+                        moveObjective = {
+                            button = "LeftButton",
+                            modifier = "",
+                        },
 
-                    openHelp = {
-                        button = "RightButton",
-                        modifier = "",
-                    },
-                },
+                        dragObjective = {
+                            type = "drag",
+                            button = "LeftButton",
+                            modifier = "shift",
+                        },
 
-                button = {
-                    clearObjective = {
-                        button = "RightButton",
-                        modifier = "shift",
-                    },
+                        showObjectiveBuilder = {
+                            showOnEmpty = true,
+                            button = "RightButton",
+                            modifier = "ctrl",
+                        },
 
-                    includeBank = {
-                        button = "LeftButton",
-                        modifier = "alt",
-                    },
+                        showObjectiveEditBox = {
+                            button = "LeftButton",
+                            modifier = "ctrl",
+                        },
 
-                    moveObjective = {
-                        button = "LeftButton",
-                        modifier = "",
-                    },
-
-                    dragObjective = {
-                        type = "drag",
-                        button = "LeftButton",
-                        modifier = "shift",
-                    },
-
-                    showObjectiveBuilder = {
-                        showOnEmpty = true,
-                        button = "RightButton",
-                        modifier = "ctrl",
-                    },
-
-                    showObjectiveEditBox = {
-                        button = "LeftButton",
-                        modifier = "ctrl",
-                    },
-
-                    useItem = {
-                        button = "RightButton",
-                        modifier = "",
+                        useItem = {
+                            button = "RightButton",
+                            modifier = "",
+                        },
                     },
                 },
-            },
 
-            ------------------------------------------------------------
+                ------------------------------------------------------------
 
-            commands = {
-                farmingbar = true,
-                farmbar = true,
-                farm = true,
-                fbar = true,
-                fb = false,
-            },
+                tooltips = {
+                    bar = true,
+                    button = true,
+                    hideObjectiveInfo = false,
+                },
 
-            ------------------------------------------------------------
+                ------------------------------------------------------------
 
-            tooltips = {
-                bar = true,
-                button = true,
-                hideObjectiveInfo = false,
-            },
+                hints = {
+                    enableModifier = false, --global.tooltips.enableMod
+                    modifier = "Alt", --global.tooltips.mod
 
-            ------------------------------------------------------------
+                    bars = true, --global.tooltips.barTips
+                    buttons = true, --global.tooltips.buttonTips
+                    ObjectiveBuilder = true,
+                },
 
-            hints = {
-                enableModifier = false, --global.tooltips.enableMod
-                modifier = "Alt", --global.tooltips.mod
+                ------------------------------------------------------------
 
-                bars = true, --global.tooltips.barTips
-                buttons = true, --global.tooltips.buttonTips
-                ObjectiveBuilder = true,
-            },
-
-            ------------------------------------------------------------
-
-            debugMode = false, -- ! Set false before releases; enables debug toggles in GUI
-            debug = {
-                barDB = false, -- resets bar database on reload
-                commands = false, -- enables debug only commands
-                Config = false, -- opens Config frame on reload
-                ConfigButtons = false, -- opens Config frame to buttons tab if Config enabled
-                ObjectiveBuilder = false, -- opens Objective Builder on reload
-                ObjectiveBuilderTrackers = false, -- opens Objective Builder to trackers tab if Objective Builder enabled
-                StyleEditor = false, -- opens Style Editor on reload
-            },
-
-            ------------------------------------------------------------
-
-            objectives = {},
-            templates = {},
-
-            ------------------------------------------------------------
-
-            skins = {
-                -- ["**"] = {},
+                misc = {
+                    autoLootOnUse = false, -- global.autoLootItems
+                    preserveTemplateData = "DISABLED", -- PROMPT, ENABLED, DISABLED
+                    preserveTemplateOrder = "DISABLED", -- PROMPT, ENABLED, DISABLED
+                },
             },
         },
 
@@ -216,13 +242,53 @@ function addon:Initialize_DB()
 
         profile = {
             enabled = true, --enables bar creation for new users/characters; disable when user deletes all bars
-            bars = {},
+            bars = {
+                ["**"] = { -- barID
+                    enabled = false,
+                    movable = true,
+
+                    hidden = false,
+                    anchorMouseover = false,
+                    mouseover = false,
+                    showEmpty = true,
+
+                    alpha = 1,
+                    scale = 1,
+
+                    numVisibleButtons = 6,
+                    buttonWrap = 12,
+                    grow = {"RIGHT", "NORMAL"}, -- [1] = "RIGHT", "LEFT", "UP", "DOWN"; [2] = "NORMAL", "REVERSE"
+                    point = {"TOP"},
+
+                    button = {
+                        size = 35, --bar.buttonSize
+                        padding = 2, --bar.buttonPadding
+
+                        fontStrings = {
+                            count = {
+                                anchor = "BOTTOM",
+                                xOffset = -1,
+                                yOffset = 6,
+                            },
+
+                            objective = {
+                                anchor = "TOPLEFT",
+                                xOffset = 6,
+                                yOffset = -4,
+                            },
+                        },
+                    },
+                },
+            },
+
             style = {
                 skin = "FarmingBar_Default",
+
                 font = {
                     face = "Friz Quadrata TT",
                     outline = "OUTLINE",
                     size = 11,
+
                     fontStrings = {
                         count = {
                             style = "CUSTOM", -- "CUSTOM", "INCLUDEBANK", "ITEMQUALITY" --profile.style.count.type
@@ -230,6 +296,7 @@ function addon:Initialize_DB()
                         },
                     },
                 },
+
                 buttonLayers = {
                     AutoCastable = true, --bank overlay
                     Border = true, --item quality
@@ -241,143 +308,36 @@ function addon:Initialize_DB()
     }
 
     ------------------------------------------------------------
-    --Debug-----------------------------------------------------
-    ------------------------------------------------------------
-    if defaults.global.debug.commands then
-        defaults.global.commands.fb = true
-    end
-    ------------------------------------------------------------
-    ------------------------------------------------------------
 
-    -- Convert/save old DB before initializing DB
-    local backup = {}
-    local version2
+    self.db = LibStub("AceDB-3.0"):New("FarmingBarDB", defaults)
+    self.db.global.version = currentVersion
+    if backup then self.db.global.db_backup = backup end
+end
+
+------------------------------------------------------------
+
+function addon:ValidateDB()
+    local backup
+
     if FarmingBarDB then
-        version2 = FarmingBarDB.global and not FarmingBarDB.global.version or FarmingBarDB.global.version < 3 -- version 2 coming new to version 3
-        if version2 then
-            for k, v in pairs(FarmingBarDB) do
-                backup[k] = v
-            end
-            wipe(FarmingBarDB)
+        local version = FarmingBarDB.global.version
+        if version == currentVersion then
+            return
+        else
+            backup = self:CloneTable(FarmingBarDB)
+            FarmingBarDB = nil
         end
     end
 
-
-    ------------------------------------------------------------
-
-    FarmingBar.db = LibStub("AceDB-3.0"):New("FarmingBarDB", defaults)
-
-    ------------------------------------------------------------
-
-    -- Have to keep track of version manually since it will otherwise get wiped out from AceDB
-    -- Check for previous versions first and convert before changing the version.
-    -- This should only be done once database is finalized.
-    FarmingBar.db.global.version = 3
-
-    ------------------------------------------------------------
-
-    if version2 then
-        FarmingBarDB.global.version2 = backup
-    end
-
-    ------------------------------------------------------------
-
-    -- alpha1 -> alpha2 only
-    -- Moving bars from character to profile specific
-    local charKey = UnitName("player").." - "..GetRealmName()
-    if FarmingBar.db.char.enabled then
-        FarmingBar.db.profile.enabled = FarmingBar.db.char.enabled
-        FarmingBar.db.char.enabled = nil
-    end
-
-    if FarmingBar.db.global.resetAlphaDB then
-        for k, v in pairs(FarmingBar.db.char.bars) do
-            tremove(FarmingBar.db.char.bars, k)
-        end
-        FarmingBar.db.global.resetAlphaDB = false
-        StaticPopup_Show("FARMINGBAR_V30_ALPHA2_BARRESET")
-    end
-end
-
---*------------------------------------------------------------------------
-
-function addon:GetDefaultBar()
-    local bar = {
-        movable = true,
-
-        hidden = false,
-        anchorMouseover = false,
-        mouseover = false,
-        showEmpty = true,
-
-        alpha = 1,
-        scale = 1,
-
-        numVisibleButtons = 6,
-        buttonWrap = 12,
-        grow = {"RIGHT", "NORMAL"}, -- [1] = "RIGHT", "LEFT", "UP", "DOWN"; [2] = "NORMAL", "REVERSE"
-        point = {"TOP"},
-
-        button = {
-            size = 35, --bar.buttonSize
-            padding = 2, --bar.buttonPadding
-            fontStrings = {
-                count = {
-                    anchor = "BOTTOM",
-                    xOffset = -1,
-                    yOffset = 6,
-                },
-                objective = {
-                    anchor = "TOPLEFT",
-                    xOffset = 6,
-                    yOffset = -4,
-                },
-            },
-        },
-    }
-
-    return bar
-end
-
-------------------------------------------------------------
-
-function addon:GetDefaultObjective()
-    local objective = {
-        autoIcon = true,
-        customCondition = "",
-        displayRef = {
-            trackerID = false,
-            trackerType = "NONE",
-        },
-        icon = 134400,
-        trackerCondition = "ALL",
-        trackers = {},
-    }
-
-    return objective
-end
-
-------------------------------------------------------------
-
-function addon:GetDefaultTracker()
-    local tracker = {
-        includeAllChars = false,
-        includeBank = false,
-        exclude = {},
-        objective = 1,
-        countsFor = 1,
-        trackerType = "ITEM",
-        trackerID = "",
-    }
-
-    return tracker
+    return backup
 end
 
 --*------------------------------------------------------------------------
 
 function addon:GetDBValue(scope, key)
+    local path = self.db[scope]
+    if not key then return path end
     local keys = {strsplit(".", key)}
-    local path = FarmingBar.db[scope]
 
     for k, key in pairs(keys) do
         if k < #keys then
@@ -392,11 +352,19 @@ end
 
 function addon:SetDBValue(scope, key, value)
     local keys = {strsplit(".", key)}
-    local path = FarmingBar.db[scope]
+    local path = self.db[scope]
 
     for k, key in pairs(keys) do
         if k < #keys then
             path = path[key]
+        end
+    end
+
+    if value == "_TOGGLE_" then
+        if path[keys[#keys]] then
+            value = false
+        else
+            value = true
         end
     end
 

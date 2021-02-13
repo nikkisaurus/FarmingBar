@@ -1,5 +1,9 @@
 local addonName = ...
+local addon = LibStub("AceAddon-3.0"):NewAddon("FarmingBar", "AceConsole-3.0", "AceEvent-3.0")
 local L = LibStub("AceLocale-3.0"):NewLocale("FarmingBar", "enUS", true)
+
+------------------------------------------------------------
+
 local utils = LibStub("LibAddonUtils-1.0")
 
 local format, gsub, strlower, strupper = string.format, string.gsub, string.lower, string.upper
@@ -134,7 +138,7 @@ L["Custom"] = true
 L["Custom Condition"] = true
 L["Delete Tracker"] = true
 L["Delete Objective"] = true
-L["Display Ref"] = true
+L["Action"] = true
 L["Display Reference"] = true
 L["Duplicate"] = true
 L["Duplicate Objective"] = true
@@ -160,7 +164,7 @@ L["None"] = true
 L["Objective"] = true
 L["Objective Builder"] = true
 L["Rename"] = true
-L["Tracker Condition"] = true
+L["Condition"] = true
 L["Trackers"] = true
 L["TRUE"] = true
 L["Type"] = true

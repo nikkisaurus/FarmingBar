@@ -1,17 +1,20 @@
-local addonName, addon = ...
-local FarmingBar = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
+local addonName = ...
+local addon = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
 local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
-local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
+
+------------------------------------------------------------
+
 local ACD = LibStub("AceConfigDialog-3.0")
+local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 local LSM = LibStub("LibSharedMedia-3.0")
 
-local abs, fmod = math.abs, math.fmod
-local CreateFrame, UIParent = CreateFrame, UIParent
-
---*------------------------------------------------------------------------
+------------------------------------------------------------
 
 local Type = "FarmingBar_Bar"
-local Version = 1
+local Version = 2
+
+local abs = math.abs
+local CreateFrame, UIParent = CreateFrame, UIParent
 
 --*------------------------------------------------------------------------
 
@@ -26,11 +29,10 @@ local postClickMethods = {
 
     toggleMovable = function(self, ...)
         local widget = self.obj
-        local barID = widget:GetBarID()
-
-        addon:SetBarDBInfo("movable", "_TOGGLE_", barID)
+        widget:SetDBValue("movable", "_TOGGLE_")
         widget:SetMovable()
-        FarmingBar:Print(L.ToggleMovable(addon:GetBarTitle(barID), widget:GetUserData("barDB").movable))
+
+        addon:Print(L.ToggleMovable(widget:GetBarTitle(), widget:GetUserData("barDB").movable))
     end,
 
     ------------------------------------------------------------
@@ -64,19 +66,19 @@ end
 ------------------------------------------------------------
 
 local function anchor_OnDragStart(self)
-    if not self.obj.frame:IsMovable() then return end
-    self.obj.frame:StartMoving()
+    local frame = self.obj.frame
+    if not frame:IsMovable() then return end
+    frame:StartMoving()
 end
 
 ------------------------------------------------------------
 
 local function anchor_OnDragStop(self)
-    if not self.obj.frame:IsMovable() then return end
     local widget = self.obj
-    local barDB = widget:GetUserData("barDB")
-
-    widget.frame:StopMovingOrSizing()
-    barDB.point = {widget.frame:GetPoint()}
+    local frame = widget.frame
+    if not frame:IsMovable() then return end
+    frame:StopMovingOrSizing()
+    widget:SetDBValue("point", {frame:GetPoint()})
 end
 
 ------------------------------------------------------------
@@ -84,13 +86,10 @@ end
 local function anchor_PostClick(self, buttonClicked, ...)
     ClearCursor()
 
-    ------------------------------------------------------------
-
-    local keybinds = FarmingBar.db.global.keybinds.bar
-
+    local keybinds = addon:GetDBValue("global", "settings.keybinds.bar")
     for keybind, keybindInfo in pairs(keybinds) do
         if buttonClicked == keybindInfo.button then
-            local mod = addon:GetModifiers()
+            local mod = addon:GetModifierString()
 
             if mod == keybindInfo.modifier then
                 local func = postClickMethods[keybind]
@@ -105,11 +104,12 @@ end
 ------------------------------------------------------------
 
 local function frame_OnEvent(self, event)
+    local widget = self.obj
     if event == "PLAYER_REGEN_DISABLED" then
-        self.obj.addButton:Disable()
-        self.obj.removeButton:Disable()
+        widget.addButton:Disable()
+        widget.removeButton:Disable()
     elseif event == "PLAYER_REGEN_ENABLED" then
-        self.obj:SetQuickButtonStates()
+        widget:SetQuickButtonStates()
     end
 end
 
@@ -162,7 +162,7 @@ local methods = {
     ------------------------------------------------------------
 
     ApplySkin = function(self)
-        addon:SkinBar(self, FarmingBar.db.profile.style.skin)
+        addon:SkinBar(self, addon:GetDBValue("profile", "style.skin"))
     end,
 
     ------------------------------------------------------------
@@ -179,6 +179,12 @@ local methods = {
 
     ------------------------------------------------------------
 
+    GetBarTitle = function(self)
+        return addon:GetBarTitle(self:GetBarID())
+    end,
+
+    ------------------------------------------------------------
+
     GetButtons = function(self)
         return self:GetUserData("buttons")
     end,
@@ -186,7 +192,6 @@ local methods = {
     ------------------------------------------------------------
 
     RemoveButton = function(self)
-        local barDB = self:GetUserData("barDB")
         local buttons = self:GetUserData("buttons")
 
         buttons[#buttons]:Release()
@@ -212,7 +217,7 @@ local methods = {
 
         ------------------------------------------------------------
 
-        local barDB = FarmingBar.db.profile.bars[barID]
+        local barDB = addon:GetDBValue("profile", "bars")[barID]
         self:SetUserData("barDB", barDB)
 
         ------------------------------------------------------------
@@ -231,6 +236,12 @@ local methods = {
         self:SetSize()
         self:SetPoint(unpack(barDB.point))
         self:SetQuickButtonStates()
+    end,
+
+    ------------------------------------------------------------
+
+    SetDBValue = function(self, key, value, isCharDB)
+        addon:SetBarDBValue(key, value, self:GetBarID(), isCharDB)
     end,
 
     ------------------------------------------------------------
@@ -310,7 +321,7 @@ local methods = {
         self.removeButton:SetPoint("TOPRIGHT", -paddingSize, -paddingSize)
 
 
-        local fontDB = FarmingBar.db.profile.style.font
+        local fontDB = addon.db.profile.style.font
         self.barID:SetFont(LSM:Fetch("font", fontDB.face), fontSize, fontDB.outline)
         self.barID:SetPoint("BOTTOM", 0, paddingSize)
 
@@ -349,8 +360,12 @@ local function Constructor()
 
     frame:SetScript("OnEvent", frame_OnEvent)
 
+    ------------------------------------------------------------
+
     local backdrop = CreateFrame("Frame", nil, frame, BackdropTemplateMixin and "BackdropTemplate")
     backdrop:EnableMouse(true)
+
+    ------------------------------------------------------------
 
     local anchor = CreateFrame("Button", "$parentAnchor", frame)
     anchor:SetAllPoints(frame)
@@ -366,8 +381,12 @@ local function Constructor()
 
     anchor:SetFrameStrata("MEDIUM")
 
+    ------------------------------------------------------------
+
     local FloatingBG = anchor:CreateTexture("$parentFloatingBG", "BACKGROUND")
     FloatingBG:SetAllPoints(anchor)
+
+    ------------------------------------------------------------
 
     local addButton = CreateFrame("Button", nil, anchor)
     addButton:SetNormalTexture([[INTERFACE\ADDONS\FARMINGBAR\MEDIA\PLUS]])
@@ -375,12 +394,15 @@ local function Constructor()
 
     addButton:SetScript("OnClick", addButton_OnClick)
 
+    ------------------------------------------------------------
 
     local removeButton = CreateFrame("Button", nil, anchor)
     removeButton:SetNormalTexture([[INTERFACE\ADDONS\FARMINGBAR\MEDIA\MINUS]])
     removeButton:SetDisabledTexture([[INTERFACE\ADDONS\FARMINGBAR\MEDIA\MINUS-DISABLED]])
 
     removeButton:SetScript("OnClick", removeButton_OnClick)
+
+    ------------------------------------------------------------
 
     local barID = anchor:CreateFontString(nil, "OVERLAY")
     barID:SetFont([[Fonts\FRIZQT__.TTF]], 12, "NORMAL")
@@ -399,6 +421,8 @@ local function Constructor()
     }
 
     frame.obj, anchor.obj, addButton.obj, removeButton.obj = widget, widget, widget, widget
+
+    ------------------------------------------------------------
 
     for method, func in pairs(methods) do
         widget[method] = func

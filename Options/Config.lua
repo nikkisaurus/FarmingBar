@@ -1,6 +1,8 @@
-local addonName, addon = ...
-local FarmingBar = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
+local addonName = ...
+local addon = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
 local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
+
+------------------------------------------------------------
 
 local pairs, tinsert = pairs, table.insert
 local format = string.format
@@ -89,10 +91,10 @@ function addon:GetBarConfigOptions(barID)
                 width = "full",
                 name = "*"..L["Title"],
                 get = function()
-                    return addon:GetBarDBInfo("title", barID, true)
+                    return addon:GetBarDBValue("title", barID, true)
                 end,
                 set = function(_, value)
-                    addon:SetBarDBInfo("title", value, barID, true)
+                    addon:SetBarDBValue("title", value, barID, true)
                 end,
             },
 
@@ -105,10 +107,10 @@ function addon:GetBarConfigOptions(barID)
                 width = "full",
                 name = "*"..L["Alerts"],
                 get = function(info)
-                    return addon:GetBarDBInfo("alerts."..info[#info], barID, true)
+                    return addon:GetBarDBValue("alerts."..info[#info], barID, true)
                 end,
                 set = function(info, value)
-                    addon:SetBarDBInfo("alerts."..info[#info], value, barID, true)
+                    addon:SetBarDBValue("alerts."..info[#info], value, barID, true)
                 end,
                 args = {
                     muteAll = {
@@ -146,10 +148,10 @@ function addon:GetBarConfigOptions(barID)
                 width = "full",
                 name = L["Visibility"],
                 get = function(info)
-                    return addon:GetBarDBInfo(info[#info], barID)
+                    return addon:GetBarDBValue(info[#info], barID)
                 end,
                 set = function(info, value)
-                    addon:SetBarDBInfo(info[#info], value, barID)
+                    addon:SetBarDBValue(info[#info], value, barID)
                 end,
                 args = {
                     hidden = {
@@ -157,7 +159,7 @@ function addon:GetBarConfigOptions(barID)
                         type = "toggle",
                         name = L["Hidden"],
                         set = function(info, value)
-                            addon:SetBarDBInfo(info[#info], value, barID)
+                            addon:SetBarDBValue(info[#info], value, barID)
                             bar:SetHidden()
                         end,
                     },
@@ -212,10 +214,10 @@ function addon:GetBarConfigOptions(barID)
                         },
                         sorting = {"RIGHT", "LEFT", "UP", "DOWN"},
                         get = function()
-                            return addon:GetBarDBInfo("grow", barID)[1]
+                            return addon:GetBarDBValue("grow", barID)[1]
                         end,
                         set = function(info, value)
-                            FarmingBar.db.profile.bars[barID].grow[1] = value
+                            addon.db.profile.bars[barID].grow[1] = value
                             bar:AnchorButtons()
                         end,
 
@@ -233,10 +235,10 @@ function addon:GetBarConfigOptions(barID)
                         },
                         sorting = {"NORMAL", "REVERSE"},
                         get = function()
-                            return addon:GetBarDBInfo("grow", barID)[2]
+                            return addon:GetBarDBValue("grow", barID)[2]
                         end,
                         set = function(info, value)
-                            FarmingBar.db.profile.bars[barID].grow[2] = value
+                            addon.db.profile.bars[barID].grow[2] = value
                             bar:AnchorButtons()
                         end,
 
@@ -249,10 +251,10 @@ function addon:GetBarConfigOptions(barID)
                         type = "toggle",
                         name = L["Movable"],
                         get = function(info)
-                            return addon:GetBarDBInfo(info[#info], barID)
+                            return addon:GetBarDBValue(info[#info], barID)
                         end,
                         set = function(info, value)
-                            addon:SetBarDBInfo(info[#info], value, barID)
+                            addon:SetBarDBValue(info[#info], value, barID)
                             bar:SetMovable()
                         end,
                     },
@@ -268,7 +270,7 @@ function addon:GetBarConfigOptions(barID)
                 width = "full",
                 name = L["Style"],
                 get = function(info)
-                    return addon:GetBarDBInfo(info[#info], barID)
+                    return addon:GetBarDBValue(info[#info], barID)
                 end,
                 args = {
                     scale = {
@@ -279,7 +281,7 @@ function addon:GetBarConfigOptions(barID)
                         max = self.maxScale,
                         step = .01,
                         set = function(info, value)
-                            addon:SetBarDBInfo(info[#info], value, barID)
+                            addon:SetBarDBValue(info[#info], value, barID)
                             bar:SetScale()
                         end,
                     },
@@ -294,7 +296,7 @@ function addon:GetBarConfigOptions(barID)
                         max = 1,
                         step = .01,
                         set = function(info, value)
-                            addon:SetBarDBInfo(info[#info], value, barID)
+                            addon:SetBarDBValue(info[#info], value, barID)
                             bar:SetAlpha()
                         end,
                     },
@@ -357,7 +359,7 @@ function addon:GetBarConfigOptions(barID)
                         values = function()
                             local values = {}
 
-                            for templateName, _ in self.pairs(FarmingBar.db.global.templates) do
+                            for templateName, _ in self.pairs(addon.db.global.templates) do
                                 values[templateName] = templateName
                             end
 
@@ -366,26 +368,26 @@ function addon:GetBarConfigOptions(barID)
                         sorting = function()
                             local sorting = {}
 
-                            for templateName, _ in self.pairs(FarmingBar.db.global.templates) do
+                            for templateName, _ in self.pairs(addon.db.global.templates) do
                                 tinsert(sorting, templateName)
                             end
 
                             return sorting
                         end,
                         set = function(_, templateName)
-                            if FarmingBar.db.global.settings.preserveTemplateData == "PROMPT" then
+                            if addon.db.global.settings.preserveTemplateData == "PROMPT" then
                                 local dialog = StaticPopup_Show("FARMINGBAR_INCLUDE_TEMPLATE_DATA", templateName)
                                 if dialog then
                                     dialog.data = {barID, templateName}
                                 end
                             else
-                                if FarmingBar.db.global.settings.preserveTemplateOrder == "PROMPT" then
+                                if addon.db.global.settings.preserveTemplateOrder == "PROMPT" then
                                     local dialog = StaticPopup_Show("FARMINGBAR_SAVE_TEMPLATE_ORDER", templateName)
                                     if dialog then
-                                        dialog.data = {barID, templateName, FarmingBar.db.global.settings.preserveTemplateData == "ENABLED"}
+                                        dialog.data = {barID, templateName, addon.db.global.settings.preserveTemplateData == "ENABLED"}
                                     end
                                 else
-                                    addon:LoadTemplate("user", barID, templateName, FarmingBar.db.global.settings.preserveTemplateData == "ENABLED", FarmingBar.db.global.settings.preserveTemplateOrder == "ENABLED")
+                                    addon:LoadTemplate("user", barID, templateName, addon.db.global.settings.preserveTemplateData == "ENABLED", addon.db.global.settings.preserveTemplateOrder == "ENABLED")
                                 end
                             end
                         end,
@@ -448,7 +450,7 @@ function addon:GetButtonConfigOptions(barID)
                 width = "full",
                 name = L["Buttons"],
                 get = function(info)
-                    return self:GetBarDBInfo(info[#info], barID)
+                    return self:GetBarDBValue(info[#info], barID)
                 end,
                 args = {
                     numVisibleButtons = {
@@ -459,7 +461,7 @@ function addon:GetButtonConfigOptions(barID)
                         max = self.maxButtons,
                         step = 1,
                         set = function(info, value)
-                            self:SetBarDBInfo(info[#info], value, barID)
+                            self:SetBarDBValue(info[#info], value, barID)
                             bar:UpdateVisibleButtons()
                         end,
                     },
@@ -474,7 +476,7 @@ function addon:GetButtonConfigOptions(barID)
                         max = self.maxButtons,
                         step = 1,
                         set = function(info, value)
-                            self:SetBarDBInfo(info[#info], value, barID)
+                            self:SetBarDBValue(info[#info], value, barID)
                             bar:AnchorButtons()
                         end,
                     },
@@ -498,10 +500,10 @@ function addon:GetButtonConfigOptions(barID)
                         max = self.maxButtonSize,
                         step = 1,
                         get = function(info)
-                            return self:GetBarDBInfo("button."..info[#info], barID)
+                            return self:GetBarDBValue("button."..info[#info], barID)
                         end,
                         set = function(info, value)
-                            self:SetBarDBInfo("button."..info[#info], value, barID)
+                            self:SetBarDBValue("button."..info[#info], value, barID)
                             bar:SetSize()
                         end,
                     },
@@ -516,10 +518,10 @@ function addon:GetButtonConfigOptions(barID)
                         max = self.maxButtonPadding,
                         step = 1,
                         get = function(info)
-                            return self:GetBarDBInfo("button."..info[#info], barID)
+                            return self:GetBarDBValue("button."..info[#info], barID)
                         end,
                         set = function(info, value)
-                            self:SetBarDBInfo("button."..info[#info], value, barID)
+                            self:SetBarDBValue("button."..info[#info], value, barID)
                             bar:SetSize()
                             bar:AnchorButtons()
                         end,
@@ -542,10 +544,10 @@ function addon:GetButtonConfigOptions(barID)
                         values = anchors,
                         sorting = anchorSort,
                         get = function(info)
-                            return self:GetBarDBInfo("button.fontStrings.count.anchor", barID)
+                            return self:GetBarDBValue("button.fontStrings.count.anchor", barID)
                         end,
                         set = function(info, value)
-                            self:SetBarDBInfo("button.fontStrings.count.anchor", value, barID)
+                            self:SetBarDBValue("button.fontStrings.count.anchor", value, barID)
                             self:UpdateButtons()
                         end,
                     },
@@ -560,10 +562,10 @@ function addon:GetButtonConfigOptions(barID)
                         max = self.OffsetX,
                         step = 1,
                         get = function(info)
-                            return self:GetBarDBInfo("button.fontStrings.count.xOffset", barID)
+                            return self:GetBarDBValue("button.fontStrings.count.xOffset", barID)
                         end,
                         set = function(info, value)
-                            self:SetBarDBInfo("button.fontStrings.count.xOffset", value, barID)
+                            self:SetBarDBValue("button.fontStrings.count.xOffset", value, barID)
                             self:UpdateButtons()
                         end,
                     },
@@ -578,10 +580,10 @@ function addon:GetButtonConfigOptions(barID)
                         max = self.OffsetY,
                         step = 1,
                         get = function(info)
-                            return self:GetBarDBInfo("button.fontStrings.count.yOffset", barID)
+                            return self:GetBarDBValue("button.fontStrings.count.yOffset", barID)
                         end,
                         set = function(info, value)
-                            self:SetBarDBInfo("button.fontStrings.count.yOffset", value, barID)
+                            self:SetBarDBValue("button.fontStrings.count.yOffset", value, barID)
                             self:UpdateButtons()
                         end,
                     },
@@ -603,10 +605,10 @@ function addon:GetButtonConfigOptions(barID)
                         values = anchors,
                         sorting = anchorSort,
                         get = function(info)
-                            return self:GetBarDBInfo("button.fontStrings.objective.anchor", barID)
+                            return self:GetBarDBValue("button.fontStrings.objective.anchor", barID)
                         end,
                         set = function(info, value)
-                            self:SetBarDBInfo("button.fontStrings.objective.anchor", value, barID)
+                            self:SetBarDBValue("button.fontStrings.objective.anchor", value, barID)
                             self:UpdateButtons()
                         end,
                     },
@@ -621,10 +623,10 @@ function addon:GetButtonConfigOptions(barID)
                         max = self.OffsetX,
                         step = 1,
                         get = function(info)
-                            return self:GetBarDBInfo("button.fontStrings.objective.xOffset", barID)
+                            return self:GetBarDBValue("button.fontStrings.objective.xOffset", barID)
                         end,
                         set = function(info, value)
-                            self:SetBarDBInfo("button.fontStrings.objective.xOffset", value, barID)
+                            self:SetBarDBValue("button.fontStrings.objective.xOffset", value, barID)
                             self:UpdateButtons()
                         end,
                     },
@@ -639,10 +641,10 @@ function addon:GetButtonConfigOptions(barID)
                         max = self.OffsetY,
                         step = 1,
                         get = function(info)
-                            return self:GetBarDBInfo("button.fontStrings.objective.yOffset", barID)
+                            return self:GetBarDBValue("button.fontStrings.objective.yOffset", barID)
                         end,
                         set = function(info, value)
-                            self:SetBarDBInfo("button.fontStrings.objective.yOffset", value, barID)
+                            self:SetBarDBValue("button.fontStrings.objective.yOffset", value, barID)
                             self:UpdateButtons()
                         end,
                     },

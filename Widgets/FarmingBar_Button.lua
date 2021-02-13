@@ -1,6 +1,9 @@
-local addonName, addon = ...
-local FarmingBar = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
+local addonName = ...
+local addon = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
 local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
+
+------------------------------------------------------------
+
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 local ACD = LibStub("AceConfigDialog-3.0")
 local LSM = LibStub("LibSharedMedia-3.0")
@@ -24,30 +27,26 @@ local postClickMethods = {
     ------------------------------------------------------------
 
     includeBank = function(self, ...)
-        local widget = self.obj
-        local objectiveTitle = widget:GetUserData("objectiveTitle")
+        -- local widget = self.obj
+        -- local objectiveTitle = widget:GetUserData("objectiveTitle")
 
-        if addon:IsObjectiveAutoItem(objectiveTitle) then
-            addon:SetTrackerDBInfo(objectiveTitle, 1, "includeBank", "_toggle")
-            widget:UpdateLayers()
-            -- TODO: Update tracker frame if visible
-            -- TODO: Alert bar progress if changed
-        end
+        -- if addon:IsObjectiveAutoItem(objectiveTitle) then
+        --     addon:SetTrackerDBInfo(objectiveTitle, 1, "includeBank", "_toggle")
+        --     widget:UpdateLayers()
+        --     -- TODO: Update tracker frame if visible
+        --     -- TODO: Alert bar progress if changed
+        -- end
     end,
 
     ------------------------------------------------------------
 
     moveObjective = function(self, ...)
         local widget = self.obj
-        local bar = addon.bars[widget:GetUserData("barID")]
-        local objectiveTitle = widget:GetUserData("objectiveTitle")
-        local objective = widget:GetUserData("objective")
-        local buttonID = widget:GetUserData("buttonID")
 
-        if objectiveTitle and not addon.moveButton then
+        if not widget:IsEmpty() and not addon.moveButton then
             widget.Flash:Show()
             UIFrameFlash(widget.Flash, 0.5, 0.5, -1)
-            addon.moveButton = {widget, objectiveTitle, objective}
+            addon.moveButton = {widget, addon:CloneTable(widget:GetButtonDB())}
         elseif addon.moveButton then
             widget:SwapButtons(addon.moveButton)
         end
@@ -56,15 +55,16 @@ local postClickMethods = {
     ------------------------------------------------------------
 
     showObjectiveBuilder = function(self, ...)
-        ACD:SelectGroup(addonName, "objectiveBuilder", self.obj:GetObjectiveTitle())
-        ACD:Open(addonName)
+        -- ACD:SelectGroup(addonName, "objectiveBuilder", self.obj:GetObjectiveTitle())
+        -- ACD:Open(addonName)
     end,
 
     ------------------------------------------------------------
 
     showObjectiveEditBox = function(self, ...)
-        if self.obj:GetObjectiveTitle() then
-            self.obj.objectiveEditBox:Show()
+        local widget = self.obj
+        if not widget:IsEmpty() then
+            widget.objectiveEditBox:Show()
         end
     end,
 }
@@ -103,19 +103,17 @@ end
 
 local function frame_OnDragStart(self, buttonClicked, ...)
     local widget = self.obj
-    if not widget:GetObjectiveTitle() then return end
+    if widget:IsEmpty() then return end
 
-    local keybinds = FarmingBar.db.global.keybinds.button.dragObjective
+    local keybinds = addon:GetDBValue("global", "settings.keybinds.button.dragObjective")
     if buttonClicked == keybinds.button then
-        local mod = addon:GetModifiers()
+        local mod = addon:GetModifierString()
 
         if mod == keybinds.modifier then
             widget:SetUserData("isDragging", true)
-            local objectiveTitle = widget:GetUserData("objectiveTitle")
-            local objective = widget:GetUserData("objective")
-            addon.moveButton = {widget, objectiveTitle, objective}
-            addon.DragFrame:Load(objectiveTitle)
-            widget:ClearObjective()
+            addon.moveButton = {widget, addon:CloneTable(widget:GetButtonDB())}
+            addon.DragFrame:Load(addon:CloneTable(widget:GetButtonDB()))
+            -- widget:ClearObjective()
         end
     end
 end
@@ -130,17 +128,13 @@ end
 
 local function frame_OnEvent(self, event, ...)
     local widget = self.obj
-    local barID = widget:GetUserData("barID")
-    if not barID then return end
-    local barDB = addon.bars[barID]:GetUserData("barDB")
-    local alerts = FarmingBar.db.char.bars[barID].alerts
-    local buttonID = widget:GetUserData("buttonID")
-    local objectiveTitle = widget:GetUserData("objectiveTitle")
-    local objectiveInfo = addon:GetObjectiveInfo(objectiveTitle)
+    if widget:IsEmpty() then return end
+    local alerts = addon:GetBarDBValue("alerts", widget:GetBarID(), true)
+    local buttonDB = widget:GetButtonDB()
 
     if event == "BAG_UPDATE" or event == "BAG_UPDATE_COOLDOWN" or event == "CURRENCY_DISPLAY_UPDATE" then
         local oldCount = widget:GetCount()
-        local newCount = addon:GetObjectiveCount(widget, objectiveTitle)
+        local newCount = addon:GetObjectiveCount(widget)
         local objective = widget:GetUserData("objective")
         local alert, soundID, barAlert
 
@@ -148,7 +142,7 @@ local function frame_OnEvent(self, event, ...)
             if not alerts.muteAll then
                 if objective then
                     if alerts.completedObjectives or (not alerts.completedObjectives and ((oldCount < objective) or (newCount < oldCount and newCount < objective))) then
-                        alert = FarmingBar.db.global.settings.alerts.button.format.withObjective
+                        alert = addon:GetDBValue("global", "settings.alerts.button.format.withObjective")
 
                         if oldCount < objective and newCount >= objective then
                             soundID = "objectiveComplete"
@@ -162,12 +156,12 @@ local function frame_OnEvent(self, event, ...)
                         end
                     end
                 else
-                    alert = FarmingBar.db.global.settings.alerts.button.format.withoutObjective
+                    alert = addon:GetDBValue("global", "settings.alerts.button.format.withoutObjective")
                     soundID = oldCount < newCount and "progress"
                 end
 
                 local alertInfo = {
-                    objectiveTitle = gsub(objectiveTitle, "^item:", ""),
+                    objectiveTitle = buttonDB.title,
                     objective = objective,
                     oldCount = oldCount,
                     newCount = newCount,
@@ -175,11 +169,11 @@ local function frame_OnEvent(self, event, ...)
                 }
 
                 -- Play alerts
-                if FarmingBar.db.global.settings.alerts.button.chat and alert then
-                    FarmingBar:Print(addon:ParseAlert(alert, alertInfo))
+                if addon:GetDBValue("global", "settings.alerts.button.chat") and alert then
+                    addon:Print(addon:ParseAlert(alert, alertInfo))
                 end
 
-                if FarmingBar.db.global.settings.alerts.button.screen and alert then
+                if addon:GetDBValue("global", "settings.alerts.button.screen") and alert then
                     -- if not addon.CoroutineUpdater:IsVisible() then
                         UIErrorsFrame:AddMessage(addon:ParseAlert(alert, alertInfo), 1, 1, 1)
                     -- else
@@ -187,8 +181,8 @@ local function frame_OnEvent(self, event, ...)
                     -- end
                 end
 
-                if FarmingBar.db.global.settings.alerts.button.sound.enabled and soundID then
-                    PlaySoundFile(LSM:Fetch("sound", FarmingBar.db.global.settings.alerts.button.sound[soundID]))
+                if addon:GetDBValue("global", "settings.alerts.button.sound.enabled") and soundID then
+                    PlaySoundFile(LSM:Fetch("sound", addon:GetDBValue("global", "settings.alerts.button.sound")[soundID]))
                 end
 
                 if barAlert then
@@ -211,16 +205,15 @@ local function frame_OnEvent(self, event, ...)
         self:UnregisterEvent(event)
         -- TODO: print combat left
     elseif event == "COMBAT_LOG_EVENT_UNFILTERED" then
-        if not objectiveInfo then return end
-        local validTrackerID, trackerType = addon:ValidateObjectiveData(objectiveInfo.displayRef.trackerType, objectiveInfo.displayRef.trackerID)
+        local buttonDB = widget:GetButtonDB()
+        local validTrackerID, trackerType = addon:ValidateObjectiveData(buttonDB.action, buttonDB.actionInfo)
 
-        if FarmingBar.db.profile.style.buttonLayers.Cooldown and trackerType == "ITEM" and validTrackerID then
-            local startTime, duration, enable = GetItemCooldown(objectiveInfo.displayRef.trackerID)
+        if addon:GetDBValue("profile", "style.buttonLayers.Cooldown") and trackerType == "ITEM" and validTrackerID then
+            local fontDB = addon:GetDBValue("profile", "style.font")
+            widget.Cooldown:GetRegions():SetFont(LSM:Fetch("font", fontDB.face), fontDB.size, fontDB.outline)
+
+            local startTime, duration, enable = GetItemCooldown(buttonDB.actionInfo)
             widget.Cooldown:SetCooldown(startTime, duration)
-
-            widget.Cooldown:GetRegions():SetFontObject(NumberFontNormalSmall)
-            -- TODO: custom fonts
-            -- widget.Cooldown:GetRegions():SetFont(LSM:Fetch("font", self:GetBar().db.font.face or addon.db.profile.style.font.face) or "", (self:GetBar().db.font.size or addon.db.profile.style.font.size) * 1.5, self:GetBar().db.font.outline or addon.db.profile.style.font.outline)
             widget.Cooldown:Show()
         else
             widget.Cooldown:SetCooldown(0, 0)
@@ -233,20 +226,19 @@ end
 
 local function frame_OnReceiveDrag(self)
     local widget = self.obj
-    local objectiveTitle = addon.DragFrame:GetObjective()
+    local hasDragFrame = addon.DragFrame:GetObjective()
 
-    if objectiveTitle then
-        if addon.moveButton then
-            if addon.moveButton[1] == self.obj then
-                addon.moveButton = nil
-            else
-                widget:SwapButtons(addon.moveButton)
-            end
+    if addon.moveButton then
+        if addon.moveButton[1] == self.obj then
+            addon.moveButton = nil
         else
-            widget:SetObjectiveID(objectiveTitle)
+            widget:SwapButtons(addon.moveButton)
         end
-    elseif not objectiveTitle then
-        objectiveTitle = addon:CreateObjectiveFromCursor(widget)
+    elseif hasDragFrame then
+        print("CreateObjectiveFromDragFrame")
+    else
+        widget:ClearObjective()
+        addon:CreateObjectiveFromCursor(widget)
     end
 
     addon.DragFrame:Clear()
@@ -260,13 +252,14 @@ local function frame_PostClick(self, buttonClicked, ...)
     local cursorType, cursorID = GetCursorInfo()
 
     if cursorType == "item" and not IsModifierKeyDown() and buttonClicked == "LeftButton" then
-        local objectiveTitle = addon:CreateObjectiveFromCursor(widget)
+        widget:ClearObjective()
+        addon:CreateObjectiveFromCursor(widget)
         return
     elseif addon.DragFrame:IsVisible() then
         if addon.moveButton then
             widget:SwapButtons(addon.moveButton)
         else
-            widget:SetObjectiveID(addon.DragFrame:GetObjective())
+            print("CreateObjectiveFromDragFrame")
         end
         addon.DragFrame:Clear()
         return
@@ -276,11 +269,11 @@ local function frame_PostClick(self, buttonClicked, ...)
 
     ------------------------------------------------------------
 
-    local keybinds = FarmingBar.db.global.keybinds.button
+    local keybinds = addon.db.global.settings.keybinds.button
 
     for keybind, keybindInfo in pairs(keybinds) do
         if buttonClicked == keybindInfo.button then
-            local mod = addon:GetModifiers()
+            local mod = addon:GetModifierString()
 
             if mod == keybindInfo.modifier then
                 local func = postClickMethods[keybind]
@@ -299,8 +292,8 @@ local function objectiveEditBox_OnEnterPressed(self)
     objective = objective and (objective > 0 and objective)
     self.obj:SetObjective(objective)
 
-    if FarmingBar.db.global.settings.alerts.button.sound.enabled then
-        PlaySoundFile(LSM:Fetch("sound", FarmingBar.db.global.settings.alerts.button.sound[objective and "objectiveSet" or "objectiveCleared"]))
+    if addon:GetDBValue("global", "settings.alerts.button.sound.enabled") then
+        PlaySoundFile(LSM:Fetch("sound", addon:GetDBValue("global", "settings.alerts.button.sound")[objective and "objectiveSet" or "objectiveCleared"]))
     end
 
     self:ClearFocus()
@@ -355,16 +348,24 @@ local methods = {
     ------------------------------------------------------------
 
     ApplySkin = function(self)
-        addon:SkinButton(self, FarmingBar.db.profile.style.skin)
+        addon:SkinButton(self, self:GetDBValue("profile", "style.skin"))
         self:UpdateLayers()
     end,
 
     ------------------------------------------------------------
 
     ClearObjective = function(self)
-        self:SetUserData("objectiveTitle")
         self:SetUserData("objective")
-        FarmingBar.db.char.bars[self:GetUserData("barID")].objectives[self:GetUserData("buttonID")] = nil
+        local buttonDB = self:GetButtonDB()
+        for k, v in pairs(buttonDB) do
+            if k == "trackers" then
+                for trackerKey, trackerInfo in pairs(v) do
+                    buttonDB.trackers[trackerKey] = nil
+                end
+            else
+                buttonDB[k] = addon.db.char.bars[0].objectives[0][k]
+            end
+        end
 
         self.frame:UnregisterEvent("BAG_UPDATE")
         self.frame:UnregisterEvent("BAG_UPDATE_COOLDOWN")
@@ -374,6 +375,24 @@ local methods = {
 
         self:UpdateLayers()
         addon:UpdateButtons()
+    end,
+
+    ------------------------------------------------------------
+
+    GetBarDB = function(self)
+        return self:GetUserData("barDB")
+    end,
+
+    ------------------------------------------------------------
+
+    GetBarID = function(self)
+        return self:GetUserData("barID")
+    end,
+
+    ------------------------------------------------------------
+
+    GetButtonDB = function(self)
+        return self:GetBarID() and addon:GetBarDBValue(nil, self:GetUserData("barID"), true).objectives[self:GetUserData("buttonID")]
     end,
 
     ------------------------------------------------------------
@@ -404,6 +423,12 @@ local methods = {
 
     ------------------------------------------------------------
 
+    IsEmpty = function(self)
+        return not self:GetBarID() or self:GetButtonDB().title == ""
+    end,
+
+    ------------------------------------------------------------
+
     SetAlpha = function(self)
         self.frame:SetAlpha(self:GetUserData("barDB").alpha)
     end,
@@ -411,17 +436,17 @@ local methods = {
     ------------------------------------------------------------
 
     SetAttribute = function(self)
-        local info = FarmingBar.db.global.keybinds.button.useItem
+        local info = addon:GetDBValue("global", "settings.keybinds.button.useItem")
         local buttonType = (info.modifier ~= "" and (info.modifier.."-") or "").."type"..(info.button == "RightButton" and 2 or 1)
-        local objectiveTitle = self:GetUserData("objectiveTitle")
-        local objectiveInfo = addon:GetObjectiveInfo(objectiveTitle)
+        local isEmpty = self:IsEmpty()
+        local buttonDB = self:GetButtonDB()
 
-        if objectiveInfo and self.frame:GetAttribute(buttonType) == "macro" and objectiveInfo.displayRef.trackerType == "MACROTEXT" then
-            if self.frame:GetAttribute("macrotext") == objectiveInfo.displayRef.trackerID then
+        if not isEmpty and self.frame:GetAttribute(buttonType) == "macro" and buttonDB.action == "MACROTEXT" then
+            if self.frame:GetAttribute("macrotext") == buttonDB.actionInfo then
                 return
             end
-        elseif objectiveInfo and self.frame:GetAttribute(buttonType) == "item" and objectiveInfo.displayRef.trackerType == "ITEM" then
-            if self.frame:GetAttribute("item") == ("item"..objectiveInfo.displayRef.trackerID) then
+        elseif not isEmpty and self.frame:GetAttribute(buttonType) == "item" and buttonDB.action == "ITEM" then
+            if self.frame:GetAttribute("item") == ("item"..buttonDB.actionInfo) then
                 return
             end
         end
@@ -436,14 +461,14 @@ local methods = {
         self.frame:SetAttribute("item", nil)
         self.frame:SetAttribute("macrotext", nil)
 
-        if not objectiveInfo then return end
+        if isEmpty then return end
 
-        if objectiveInfo.displayRef.trackerType == "ITEM" and objectiveInfo.displayRef.trackerID then
+        if buttonDB.action == "ITEM" and buttonDB.actionInfo then
             self.frame:SetAttribute(buttonType, "item")
-            self.frame:SetAttribute("item", "item:"..objectiveInfo.displayRef.trackerID)
-        elseif objectiveInfo.displayRef.trackerType == "MACROTEXT" then
+            self.frame:SetAttribute("item", "item:"..buttonDB.actionInfo)
+        elseif buttonDB.action == "MACROTEXT" then
             self.frame:SetAttribute(buttonType, "macro")
-            self.frame:SetAttribute("macrotext", objectiveInfo.displayRef.trackerID)
+            self.frame:SetAttribute("macrotext", buttonDB.actionInfo)
         end
     end,
 
@@ -461,35 +486,45 @@ local methods = {
         self:SetScale()
         self:SetSize(bar.frame:GetWidth() / .9, bar.frame:GetHeight() / .9)
         self:SetHidden()
-
-        local objectiveInfo = FarmingBar.db.char.bars[bar:GetUserData("barID")].objectives[buttonID]
-        if objectiveInfo then
-            self:SetObjectiveID(objectiveInfo.objectiveTitle, objectiveInfo.objective)
-        else
-            self:ClearObjective()
-        end
+        self:UpdateLayers()
     end,
 
     ------------------------------------------------------------
 
     SetCount = function(self)
-        local objectiveTitle = self:GetUserData("objectiveTitle")
-        local objectiveInfo = addon:GetObjectiveInfo(objectiveTitle)
-        local style = FarmingBar.db.profile.style.font.fontStrings.count
-        if objectiveTitle then
-            self:SetUserData("count", addon:GetObjectiveCount(self, objectiveTitle))
+        local style = addon:GetDBValue("profile", "style.font.fontStrings.count")
+        local isEmpty = self:IsEmpty()
+        if not isEmpty then
+            self:SetUserData("count", addon:GetObjectiveCount(self))
         end
 
-        self.Count:SetText(objectiveTitle and addon.iformat(self:GetCount(), 2) or "")
+        self.Count:SetText(not isEmpty and addon.iformat(self:GetCount(), 2) or "")
         self:UpdateObjective()
 
-        if not objectiveTitle then return end
+        if isEmpty then return end
 
-        if style.style == "ITEMQUALITY" and addon:IsObjectiveAutoItem(objectiveTitle) then -- and item
-            local r, g, b = GetItemQualityColor(C_Item.GetItemQualityByID(objectiveInfo.trackers[1].trackerID))
-            self.Count:SetTextColor(r, g, b, 1)
-        elseif style.style == "INCLUDEBANK" and addon:IsObjectiveBankIncluded(objectiveTitle) then -- and includeBank
-            self.Count:SetTextColor(1, .82, 0, 1)
+        if style.style == "ITEMQUALITY" then
+            local itemQuality = 0
+
+            for k, v in pairs(self:GetButtonDB().trackers) do
+                local trackerType, trackerID = addon:ParseTrackerKey(k)
+                itemQuality = trackerType == "ITEM" and max(itemQuality, C_Item.GetItemQualityByID(trackerID)) or itemQuality
+            end
+
+            if itemQuality > 1 then
+
+                local r, g, b = GetItemQualityColor(itemQuality)
+                self.Count:SetTextColor(r, g, b, 1)
+            end
+        elseif style.style == "INCLUDEBANK" then
+            local total, included, notIncluded = addon:IsObjectiveBankIncluded(self)
+            if notIncluded == total  then
+                self.Count:SetTextColor(1, 1, 1, 1)
+            elseif included == total then
+                self.Count:SetTextColor(1, .82, 0, 1)
+            else
+                self.Count:SetTextColor(.5, .5, .5, 1)
+            end
         elseif style.style == "CUSTOM" then
             self.Count:SetTextColor(unpack(style.color))
         else
@@ -499,8 +534,15 @@ local methods = {
 
     ------------------------------------------------------------
 
+    SetDBValue = function(self, key, value)
+        -- addon:SetBarDBValue(key, value, self:GetBarID(), isCharDB)
+        addon:SetButtonDBValues(key, value, self:GetBarID(), self:GetUserData("buttonID"))
+    end,
+
+    ------------------------------------------------------------
+
     SetFontStringSettings = function(self, fontString)
-        local fontDB = FarmingBar.db.profile.style.font
+        local fontDB = addon:GetDBValue("profile", "style.font")
         self.Count:SetFont(LSM:Fetch("font", fontDB.face), fontDB.size, fontDB.outline)
         self.Objective:SetFont(LSM:Fetch("font", fontDB.face), fontDB.size, fontDB.outline)
 
@@ -527,8 +569,7 @@ local methods = {
     ------------------------------------------------------------
 
     SetIcon = function(self)
-        local objectiveTitle = self:GetUserData("objectiveTitle")
-        self.Icon:SetTexture(objectiveTitle and addon:GetObjectiveIcon(objectiveTitle) or "")
+        self.Icon:SetTexture(self:IsEmpty() and "" or addon:GetObjectiveIcon(self))
     end,
 
     ------------------------------------------------------------
@@ -536,30 +577,9 @@ local methods = {
     SetObjective = function(self, objective)
         objective = tonumber(objective)
         self:SetUserData("objective", objective)
-        FarmingBar.db.char.bars[self:GetUserData("barID")].objectives[self:GetUserData("buttonID")].objective = objective
+        self:SetDBValue("objective", objective)
         self:UpdateObjective()
         addon:UpdateButtons()
-    end,
-
-    ------------------------------------------------------------
-
-    SetObjectiveID = function(self, objectiveTitle, objective)
-        if not objectiveTitle and not addon.moveButton then
-            self:ClearObjective()
-            return
-        end
-
-        self:SetUserData("objectiveTitle", objectiveTitle)
-        self:SetUserData("objective", objective)
-        FarmingBar.db.char.bars[self:GetUserData("barID")].objectives[self:GetUserData("buttonID")] = {objectiveTitle = objectiveTitle, objective = objective}
-
-        self.frame:RegisterEvent("BAG_UPDATE")
-        self.frame:RegisterEvent("BAG_UPDATE_COOLDOWN")
-        --@retail@
-        self.frame:RegisterEvent("CURRENCY_DISPLAY_UPDATE")
-        --@end-retail@
-
-        self:UpdateLayers()
     end,
 
     ------------------------------------------------------------
@@ -585,27 +605,62 @@ local methods = {
     ------------------------------------------------------------
 
     SwapButtons = function(self, moveButton)
-        local objectiveTitle = self:GetUserData("objectiveTitle")
-        local objective = self:GetUserData("objective")
-        local moveButtonWidget, moveButtonObjectiveTitle, moveButtonObjective = moveButton[1], moveButton[2], moveButton[3]
+        local buttonDB = {trackers = {}}
+        local currentButtonDB = self:GetButtonDB()
+        local moveButtonDB = moveButton[1]:GetButtonDB()
+
+        for k, v in pairs(moveButtonDB) do
+            if k == "trackers" then
+                for trackerKey, trackerInfo in pairs(v) do
+                    buttonDB.trackers[trackerKey] = {}
+                    for key, value in pairs(trackerInfo) do
+                        buttonDB.trackers[trackerKey][key] = value
+                    end
+                    moveButtonDB.trackers[trackerKey] = nil
+                end
+            else
+                buttonDB[k] = v
+                moveButtonDB[k] = currentButtonDB[k]
+            end
+        end
+
+        for k, v in pairs(currentButtonDB) do
+            if k == "trackers" then
+                for trackerKey, trackerInfo in pairs(v) do
+                    moveButtonDB.trackers[trackerKey] = {}
+                    for key, value in pairs(trackerInfo) do
+                        moveButtonDB.trackers[trackerKey][key] = value
+                    end
+                    currentButtonDB.trackers[trackerKey] = nil
+                end
+                for trackerKey, trackerInfo in pairs(buttonDB.trackers) do
+                    currentButtonDB.trackers[trackerKey] = {}
+                    for key, value in pairs(trackerInfo) do
+                        currentButtonDB.trackers[trackerKey][key] = value
+                    end
+                end
+            else
+                currentButtonDB[k] = buttonDB[k]
+            end
+        end
+
+        UIFrameFlashStop(moveButton[1].Flash)
+        moveButton[1].Flash:Hide()
+
+        self:UpdateLayers()
+        moveButton[1]:UpdateLayers()
         addon.moveButton = nil
-
-        self:SetObjectiveID(moveButtonObjectiveTitle, moveButtonObjective)
-        moveButtonWidget:SetObjectiveID(objectiveTitle, objective)
-
-        UIFrameFlashStop(moveButtonWidget.Flash)
-        moveButtonWidget.Flash:Hide()
     end,
 
     ------------------------------------------------------------
 
     UpdateAutoCastable = function(self)
-        local objectiveTitle = self:GetUserData("objectiveTitle")
-
-        if objectiveTitle and FarmingBar.db.profile.style.buttonLayers.AutoCastable then
-            if not addon:IsObjectiveBankIncluded(objectiveTitle) then
+        if not self:IsEmpty() and addon:GetDBValue("profile", "style.buttonLayers.AutoCastable") then
+            local total, included, notIncluded = addon:IsObjectiveBankIncluded(self)
+            if notIncluded == total  then
                 self.AutoCastable:Hide()
             else
+                self.AutoCastable:SetDesaturated(included ~= total and 1)
                 self.AutoCastable:Show()
             end
         else
@@ -616,31 +671,51 @@ local methods = {
     ------------------------------------------------------------
 
     UpdateBorder = function(self)
-        local objectiveTitle = self:GetUserData("objectiveTitle")
-        local objectiveInfo = addon:GetObjectiveInfo(objectiveTitle)
+        self.Border:Hide()
+        if not self:IsEmpty() and addon:GetDBValue("profile", "style.buttonLayers.Border") then
+            local itemQuality = 0
 
-        if objectiveInfo and FarmingBar.db.profile.style.buttonLayers.Border and objectiveInfo.trackers[1] then
-            local itemQuality = C_Item.GetItemQualityByID(objectiveInfo.trackers[1].trackerID)
-            if itemQuality and itemQuality > 1 then
+            for k, v in pairs(self:GetButtonDB().trackers) do
+                local trackerType, trackerID = addon:ParseTrackerKey(k)
+                itemQuality = trackerType == "ITEM" and max(itemQuality, C_Item.GetItemQualityByID(trackerID)) or itemQuality
+            end
+
+            if itemQuality > 1 then
                 local r, g, b = GetItemQualityColor(itemQuality)
                 self.Border:SetVertexColor(r, g, b, 1)
                 self.Border:Show()
             end
-        else
-            self.Border:Hide()
         end
     end,
 
     ------------------------------------------------------------
 
     UpdateCooldown = function(self)
-        self.Cooldown:SetDrawEdge(FarmingBar.db.profile.style.buttonLayers.CooldownEdge)
+        self.Cooldown:SetDrawEdge(addon:GetDBValue("profile", "style.buttonLayers.CooldownEdge"))
+    end,
+
+    ------------------------------------------------------------
+
+    UpdateEvents = function(self)
+        if self:IsEmpty() then
+            self.frame:UnregisterEvent("BAG_UPDATE")
+            self.frame:UnregisterEvent("BAG_UPDATE_COOLDOWN")
+            --@retail@
+            self.frame:UnregisterEvent("CURRENCY_DISPLAY_UPDATE")
+            --@end-retail@
+        else
+            self.frame:RegisterEvent("BAG_UPDATE")
+            self.frame:RegisterEvent("BAG_UPDATE_COOLDOWN")
+            --@retail@
+            self.frame:RegisterEvent("CURRENCY_DISPLAY_UPDATE")
+            --@end-retail@
+        end
     end,
 
     ------------------------------------------------------------
 
     UpdateLayers = function(self)
-        addon:SkinButton(self, FarmingBar.db.profile.style.skin)
+        addon:SkinButton(self, addon:GetDBValue("profile", "style.skin"))
         self:SetFontStringSettings("Count")
         self:SetFontStringSettings("Objective")
         self:SetIcon()
@@ -650,19 +725,21 @@ local methods = {
         self:UpdateBorder()
         self:UpdateCooldown()
         self:SetAttribute()
+        self:UpdateEvents()
     end,
 
     ------------------------------------------------------------
 
     UpdateObjective = function(self)
-        local objectiveTitle = self:GetUserData("objectiveTitle")
-        local objective = self:GetUserData("objective")
+        local buttonDB = self:GetButtonDB()
 
-        if objective then
-            local formattedObjective, objective = addon.iformat(objective, 2)
+        if self:IsEmpty() or buttonDB.objective == 0 then
+            self.Objective:SetText("")
+        else
+            local formattedObjective, objective = addon.iformat(buttonDB.objective, 2)
             self.Objective:SetText(formattedObjective)
 
-            local count = addon:GetObjectiveCount(self, objectiveTitle)
+            local count = addon:GetObjectiveCount(self)
 
             if count >= objective then
                 self.Objective:SetTextColor(0, 1 , 0, 1)
@@ -672,8 +749,6 @@ local methods = {
             else
                 self.Objective:SetTextColor(1, .82, 0, 1)
             end
-        else
-            self.Objective:SetText("")
         end
     end,
 }

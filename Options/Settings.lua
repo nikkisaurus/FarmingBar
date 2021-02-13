@@ -1,6 +1,8 @@
-local addonName, addon = ...
-local FarmingBar = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
+local addonName = ...
+local addon = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
 local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
+
+------------------------------------------------------------
 
 local pairs, tinsert, unpack = pairs, table.insert, unpack
 local format = string.format
@@ -151,12 +153,12 @@ function addon:GetSettingsOptions()
                                     desc = L.Options_settings_global_templates_deleteTemplate,
                                     confirm = function(_, value) return format(L.Options_settings_global_templates_deleteTemplateConfirm, value) end,
                                     disabled = function()
-                                        return self.tcount(FarmingBar.db.global.templates) == 0
+                                        return self.tcount(addon.db.global.templates) == 0
                                     end,
                                     values = function(info)
                                         local info = {}
 
-                                        for templateName, _ in pairs(FarmingBar.db.global.templates) do
+                                        for templateName, _ in pairs(addon.db.global.templates) do
                                             info[templateName] = templateName
                                         end
 
@@ -368,7 +370,7 @@ function addon:GetSettingsOptions()
                             FarmingBar_Minimal = "FarmingBar_Minimal",
                         }
 
-                        for k, _ in pairs(FarmingBar.db.global.skins) do
+                        for k, _ in pairs(addon.db.global.skins) do
                             info[k] = k
                         end
 
@@ -377,7 +379,7 @@ function addon:GetSettingsOptions()
                     sorting = function(info)
                         local info = {"FarmingBar_Default", "FarmingBar_Minimal"}
 
-                        for k, _ in self.pairs(FarmingBar.db.global.skins) do
+                        for k, _ in self.pairs(addon.db.global.skins) do
                             tinsert(info, k)
                         end
 
@@ -549,14 +551,14 @@ function addon:GetSettingsOptions()
 
     ------------------------------------------------------------
 
-    for k, v in pairs(FarmingBar.db.global.debug) do
+    for k, v in pairs(addon.db.global.settings.debug) do
         options.global.args.general.args.debug.args[k] = {
             type = "toggle",
             name = k,
         }
     end
 
-    if not FarmingBar.db.global.debugMode then
+    if not addon.db.global.settings.debugMode then
          options.global.args.general.args.debug = nil
     end
 
