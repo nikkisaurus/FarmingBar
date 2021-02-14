@@ -107,7 +107,7 @@ StaticPopupDialogs["FARMINGBAR_CONFIRM_REMOVE_BAR"] = {
     button1 = YES,
     button2 = NO,
     OnAccept = function(_, barID)
-        addon:RemoveBar(barID)
+        addon:SetBarDisabled(barID)
     end,
     timeout = 0,
     whileDead = true,

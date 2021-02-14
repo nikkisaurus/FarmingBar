@@ -1,5 +1,10 @@
 # Farming Bar
 ## Version 3.0
+## 3.0-alpha8
+- Restructured database
+- Restructured behavior of objectives
+  - -- Bars and buttons have been rewritten to incorporate this change
+
 ## 3.0-alpha7
 - Bug fixes:
   - Fix issue where item name can't be cached for trackers and causes Options to break

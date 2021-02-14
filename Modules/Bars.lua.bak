@@ -138,14 +138,14 @@ end
 
 function addon:RemoveAllBars()
     for key, button in addon.pairs(self.Config:GetUserData("barList").children, function(a, b) return b < a end) do
-        self:RemoveBar(button:GetBarID())
+        self:SetBarDisabled(button:GetBarID())
         if key == 2 then return end
     end
 end
 
 ------------------------------------------------------------
 
-function addon:RemoveBar(barID)
+function addon:SetBarDisabled(barID)
     local Config = self.Config
     local bars = addon.db.profile.bars
 
@@ -187,7 +187,7 @@ function addon:RemoveSelectedBars(confirmed)
     if confirmed then
         for _, button in addon.pairs(barButtons, function(a, b) return b < a end) do
             if button:GetUserData("selected") then
-                self:RemoveBar(button:GetBarID())
+                self:SetBarDisabled(button:GetBarID())
             end
         end
         return

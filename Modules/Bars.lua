@@ -28,8 +28,10 @@ function addon:InitializeBars()
     if self.tcount(bars, nil, "enabled") == 0 and profile.enabled then
         self:CreateBar()
     else
-        for barID, _ in pairs(bars) do
-            self:LoadBar(barID)
+        for barID, barDB in pairs(bars) do
+            if barDB.enabled then
+                self:LoadBar(barID)
+            end
         end
     end
 end
@@ -38,26 +40,23 @@ end
 
 function addon:CreateBar()
     local bars = self:GetDBValue("profile", "bars")
-    local numBars = self.tcount(bars, nil, "enabled")
+    local numBars = #bars
 
     bars[numBars + 1].enabled = true
     self:LoadBar(numBars + 1)
+    self:SetDBValue("profile", "enabled", true)
     self:RefreshConfigOptions()
 end
 
 ------------------------------------------------------------
 
 function addon:ClearBar(barID)
-    -- local bar = self.bars[barID]
-    -- local buttons = bar:GetUserData("buttons")
+    local bar = self.bars[barID]
+    local buttons = bar:GetUserData("buttons")
 
-    -- wipe(self.db.char.bars[barID].objectives)
-
-    -- for _, button in pairs(buttons) do
-    --     if button:GetObjectiveTitle() then
-    --         button:ClearObjective()
-    --     end
-    -- end
+    for _, button in pairs(buttons) do
+        button:ClearObjective()
+    end
 end
 
 ------------------------------------------------------------
@@ -91,10 +90,7 @@ end
 ------------------------------------------------------------
 
 function addon:LoadBar(barID)
-    self:SetDBValue("profile", "enabled", true)
-
-    -- ------------------------------------------------------------
-
+    if barID == 0 then return end
     local bar = AceGUI:Create("FarmingBar_Bar")
     bar:SetBarDB(barID)
     self.bars[barID] = bar
@@ -139,7 +135,7 @@ end
 
 function addon:RemoveAllBars()
     -- for key, button in addon.pairs(self.Config:GetUserData("barList").children, function(a, b) return b < a end) do
-    --     self:RemoveBar(button:GetBarID())
+    --     self:SetBarDisabled(button:GetBarID())
     --     if key == 2 then return end
     -- end
 end
@@ -147,35 +143,30 @@ end
 ------------------------------------------------------------
 
 function addon:RemoveBar(barID)
-    -- local Config = self.Config
-    -- local bars = self.db.profile.bars
+    -- Clear bar
+    self:ClearBar(barID)
 
-    -- ------------------------------------------------------------
+    -- Release widget
+    self.bars[barID]:Release()
 
-    -- -- Clear the bar
-    -- self:ClearBar(barID)
+    -- Remove bar
+    tremove(self.db.profile.bars, barID)
+    tremove(self.db.char.bars, barID)
+    tremove(self.bars, barID)
 
-    -- -- Release all bars from the removed one and on
-    -- for i = barID, #bars do
-    --     self.bars[i]:Release()
-    --     self.bars[i] = nil
-    -- end
+    -- Update bars for existing widgets
+    -- There was a link left when just updating the barIDs on the widgets and when two bars were deleted in the middle of the bars, it would clear buttons after the second delete. Instead I'm releasing and loading new bars. They will be updated in self.bars during the LoadBar method.
+    for k, bar in pairs(self.bars) do
+        if k >= barID then
+            bar:Release()
+            self:LoadBar(k)
+        end
+    end
 
-    -- -- Remove from the database
-    -- tremove(self.db.profile.bars, barID)
+    -- If all bars were manually deleted, be sure to disable profile
+    self:SetDBValue("profile", "enabled", self.tcount(self:GetDBValue("profile", "bars")) > 0)
 
-    -- -- Reload the remaining bars that were reindexed
-    -- for i = barID, #bars do
-    --     self:LoadBar(i)
-    -- end
-
-    -- if addon.tcount(self.db.profile.bars) == 0 then
-    --     self.db.profile.enabled = false
-    -- end
-
-    -- ------------------------------------------------------------
-
-    -- self:RefreshConfigOptions()
+    self:RefreshConfigOptions()
 end
 
 ------------------------------------------------------------
@@ -188,7 +179,7 @@ function addon:RemoveSelectedBars(confirmed)
     -- if confirmed then
     --     for _, button in addon.pairs(barButtons, function(a, b) return b < a end) do
     --         if button:GetUserData("selected") then
-    --             self:RemoveBar(button:GetBarID())
+    --             self:SetBarDisabled(button:GetBarID())
     --         end
     --     end
     --     return
@@ -238,6 +229,19 @@ function addon:SetBarDBValue(key, value, barID, isCharDB)
     end
 
     path[keys[#keys]] = value
+end
+
+------------------------------------------------------------
+
+function addon:SetBarDisabled(barID, enabled)
+    local bars = self:GetDBValue("profile", "bars")
+    bars[barID].enabled = enabled
+    if not enabled then
+        self.bars[barID]:Release()
+    else
+        self:LoadBar(barID)
+    end
+    self:RefreshConfigOptions()
 end
 
 ------------------------------------------------------------

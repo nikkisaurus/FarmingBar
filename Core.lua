@@ -43,6 +43,7 @@ end
 function addon:OnEnable()
     self:InitializeBars()
     addon:InitializeDragFrame()
+    addon:InitializeOptions()
 end
 
 ------------------------------------------------------------
@@ -65,17 +66,17 @@ end
 ------------------------------------------------------------
 
 function addon:SlashCommandFunc(input)
+    ACD:Open(addonName)
 end
 
 --*------------------------------------------------------------------------
 
 -- https://forum.cockos.com/showthread.php?t=221712
 function addon:CloneTable(orig)
-    local orig_type = type(orig)
     local copy
-    if orig_type == 'table' then
+    if type(orig) == 'table' then
         copy = {}
-        for orig_key, orig_value in next, orig, nil do
+        for orig_key, orig_value in pairs(orig) do
             copy[self:CloneTable(orig_key)] = self:CloneTable(orig_value)
         end
         setmetatable(copy, self:CloneTable(getmetatable(orig)))

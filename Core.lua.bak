@@ -164,7 +164,7 @@ function addon:SlashCommandFunc(input)
         elseif arg == "REMOVE" then
             local arg2 = tonumber(arg2)
             if addon.bars[arg2] then
-                addon:RemoveBar(arg2)
+                addon:SetBarDisabled(arg2)
             end
         end
     elseif cmd == "CONFIG" then

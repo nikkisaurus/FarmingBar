@@ -38,25 +38,27 @@ function addon:GetBarConfigOptions(barID)
                 inline = true,
                 name = L["Manage"],
                 args = {
-                    removeBar = {
+                    RemoveBar = {
                         order = 1,
                         type = "select",
                         width = "full",
                         name = L["Remove Bar"],
                         values = function()
                             local values = {}
+                            local bars = self:GetDBValue("profile", "bars")
 
-                            for i = 1, #self.bars do
-                                values[i] = L["Bar"].." "..i
+                            for barID, _ in pairs(bars) do
+                                values[barID] = L["Bar"].." "..barID
                             end
 
                             return values
                         end,
                         sorting = function()
                             local sorting = {}
+                            local bars = self:GetDBValue("profile", "bars")
 
-                            for i = 1, #self.bars do
-                                tinsert(sorting, i)
+                            for barID, _ in pairs(bars) do
+                                tinsert(sorting, barID)
                             end
 
                             return sorting
@@ -85,6 +87,22 @@ function addon:GetBarConfigOptions(barID)
         }
     else
         options = {
+            enabled = {
+                order = 0,
+                type = "toggle",
+                width = "full",
+                name = "Enabled",
+                get = function()
+                    return addon:GetBarDBValue("enabled", barID)
+                end,
+                set = function(_, value)
+                    addon:SetBarDBValue("enabled", value, barID)
+                    addon:SetBarDisabled(barID, value)
+                end,
+            },
+
+            ------------------------------------------------------------
+
             title = {
                 order = 1,
                 type = "input",
@@ -403,7 +421,7 @@ function addon:GetBarConfigOptions(barID)
                 inline = true,
                 name = L["Manage"],
                 args = {
-                    removeBar = {
+                    SetBarDisabled = {
                         order = 1,
                         type = "execute",
                         name = L["Remove Bar"],
@@ -411,7 +429,7 @@ function addon:GetBarConfigOptions(barID)
                             return format(L.ConfirmRemoveBar, barID)
                         end,
                         func = function()
-                            self:RemoveBar(barID)
+                            self:SetBarDisabled(barID)
                         end,
                     },
                 },
@@ -719,13 +737,39 @@ end
 ------------------------------------------------------------
 
 function addon:GetConfigOptions()
-    local options = {}
+    local options = {
+        bar0 = {
+            order = 0,
+            type = "group",
+            name = L["All"],
+            childGroups = "tab",
+            args = {
+                bar = {
+                    order = 1,
+                    type = "group",
+                    name = L["Bar"],
+                    args = self:GetBarConfigOptions(0)
+                },
 
-    for barID = 0, #self.bars do
+                ------------------------------------------------------------
+
+                button = {
+                    order = 2,
+                    type = "group",
+                    name = L["Button"],
+                    args = self:GetButtonConfigOptions(0)
+                },
+            },
+        },
+    }
+
+    local bars = self:GetDBValue("profile", "bars")
+
+    for barID, _ in pairs(bars) do
         options["bar"..barID] = {
             order = barID,
             type = "group",
-            name = barID > 0 and (L["Bar"].." "..barID) or L["All"],
+            name = L["Bar"].." "..barID,
             childGroups = "tab",
             args = {
                 bar = {
