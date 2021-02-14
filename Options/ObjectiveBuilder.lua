@@ -88,12 +88,12 @@ end
 
 function addon:GetObjectiveBuilderOptions()
     local options = {
-        newObjective = {
+        new = {
             order = 1,
             type = "execute",
-            name = L["New Objective"],
+            name = L["New"],
             func = function()
-                self:CreateObjective()
+                self:CreateObjectiveTemplate()
             end,
         },
 
@@ -106,36 +106,6 @@ function addon:GetObjectiveBuilderOptions()
             disabled = true,
             func = function()
 
-            end,
-        },
-
-        ------------------------------------------------------------
-
-        cleanup = {
-            order = 3,
-            type = "execute",
-            name = L["Cleanup"],
-            desc = L.Options_ObjectiveBuilder("cleanup"),
-            func = function()
-                self:CleanupQuickObjectives()
-            end,
-            confirm = function()
-                return L.Options_ObjectiveBuilder("cleanup_confirm")
-            end,
-        },
-
-        ------------------------------------------------------------
-
-        filter = {
-            order = 4,
-            type = "toggle",
-            name = L["Filter quick objectives"],
-            get = function()
-                return self:GetDBValue("global", "settings.filterQuickObjectives")
-            end,
-            set = function(_, value)
-                self:SetDBValue("global", "settings.filterQuickObjectives", value)
-                self:RefreshObjectiveBuilderOptions()
             end,
         },
     }
@@ -168,7 +138,7 @@ function addon:GetObjectiveBuilderOptions()
                             trackerCondition = {
                                 order = 1,
                                 type = "select",
-                                name = L["Tracker Condition"],
+                                name = L["Action"],
                                 values = trackerConditions,
                                 sorting = trackerConditionSort,
                                 get = function(info)
@@ -186,7 +156,7 @@ function addon:GetObjectiveBuilderOptions()
                                 type = "input",
                                 width = "full",
                                 multiline = true,
-                                name = L["Custom Condition"],
+                                name = L["Custom"],
                                 hidden = function()
                                     return self:GetObjectiveDBValue("trackerCondition", objectiveTitle) ~= "CUSTOM"
                                 end,
@@ -269,6 +239,7 @@ end
 ------------------------------------------------------------
 
 function addon:GetObjectiveObjectiveBuilderOptions(objectiveTitle)
+    if true then return {} end --!
     local options = {
         dropper = {
             order = 0,
@@ -277,7 +248,7 @@ function addon:GetObjectiveObjectiveBuilderOptions(objectiveTitle)
             desc = L.Options_ObjectiveBuilder("objective.dropper"),
             width = 1/3,
             image = function()
-                return self:GetObjectiveIcon(objectiveTitle), 35, 35
+                -- return self:GetObjectiveIcon(objectiveTitle), 35, 35
             end,
             func = function()
                 self.DragFrame:Load(objectiveTitle)
@@ -429,7 +400,7 @@ function addon:GetObjectiveObjectiveBuilderOptions(objectiveTitle)
                     type = "execute",
                     name = L["Duplicate Objective"],
                     func = function()
-                        self:CreateObjective(objectiveTitle, self:GetObjectiveInfo(objectiveTitle))
+                        self:CreateObjectiveTemplate(objectiveTitle, self:GetObjectiveInfo(objectiveTitle))
                     end,
                 },
 

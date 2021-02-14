@@ -42,10 +42,10 @@ StaticPopupDialogs["FARMINGBAR_CONFIRM_NEW_QUICK_OBJECTIVE_PROMPT"] = {
     button2 = L["USE EXISTING"],
     button3 = L["CREATE NEW"],
     OnAccept = function(_, objectiveInfo) -- button1
-        addon:CreateObjective(objectiveInfo.objectiveTitle, objectiveInfo.defaultInfo, true)
+        addon:CreateObjectiveTemplate(objectiveInfo.objectiveTitle, objectiveInfo.defaultInfo, true)
     end,
     OnAlt = function(_, objectiveInfo) -- button3
-        local objectiveTitle = addon:CreateObjective(objectiveInfo.objectiveTitle, objectiveInfo.defaultInfo)
+        local objectiveTitle = addon:CreateObjectiveTemplate(objectiveInfo.objectiveTitle, objectiveInfo.defaultInfo)
         if objectiveInfo.widget then
             objectiveInfo.widget:SetObjectiveID(objectiveTitle)
         end

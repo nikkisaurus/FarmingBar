@@ -62,9 +62,32 @@ function addon:InitializeDB()
         ------------------------------------------------------------
 
         global = {
-            objectives = {},
             skins = {},
             templates = {},
+
+            ------------------------------------------------------------
+
+            objectives = {
+                ["**"] = { -- objectiveTitle
+                    title = "",
+                    autoIcon = true,
+                    icon = 134400,
+                    action = "",
+                    actionInfo = "",
+                    condition = "ALL",
+                    conditionInfo = "",
+
+                    trackers = {
+                        ["**"] = { -- trackerID: "ITEM:1412", "CURRENCY:1803"
+                            order = 0,
+                            objective = 1,
+                            countsFor = 1,
+                        },
+                    },
+                },
+            },
+
+            ------------------------------------------------------------
 
             settings = {
                 commands = {
