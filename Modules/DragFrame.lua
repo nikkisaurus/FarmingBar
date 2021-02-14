@@ -40,7 +40,7 @@ local methods = {
     end,
 
     GetObjective = function(self)
-        return self.text:GetText()
+        return self.text:GetText(), self.objectiveInfo
     end,
 
     LoadObjective = function(self, widget)
@@ -56,6 +56,8 @@ local methods = {
         self.icon:SetTexture(objectiveInfo.icon)
         self.icon:SetTexture(addon:GetObjectiveTemplateIcon(objectiveTitle))
         self.text:SetText(objectiveTitle)
+        self.objectiveInfo = addon:CloneTable(objectiveInfo)
+        self.objectiveInfo.template = objectiveTitle
         self:Show()
     end,
 }

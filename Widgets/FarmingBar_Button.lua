@@ -226,6 +226,7 @@ end
 
 local function frame_OnReceiveDrag(self)
     local widget = self.obj
+    local objectiveTitle, objectiveInfo = addon.DragFrame:GetObjective()
 
     if addon.moveButton then
         if addon.moveButton[1] == self.obj then
@@ -233,8 +234,8 @@ local function frame_OnReceiveDrag(self)
         else
             widget:SwapButtons(addon.moveButton)
         end
-    elseif addon.DragFrame:GetObjective() then
-        print("CreateObjectiveFromDragFrame")
+    elseif objectiveTitle then
+        addon:CreateObjectiveFromDragFrame(widget, objectiveInfo)
     else
         widget:ClearObjective()
         addon:CreateObjectiveFromCursor(widget)
@@ -249,16 +250,17 @@ local function frame_PostClick(self, buttonClicked, ...)
     local widget = self.obj
     if widget:GetUserData("isDragging") then return end
     local cursorType, cursorID = GetCursorInfo()
+    local objectiveTitle, objectiveInfo = addon.DragFrame:GetObjective()
 
     if cursorType == "item" and not IsModifierKeyDown() and buttonClicked == "LeftButton" then
         widget:ClearObjective()
         addon:CreateObjectiveFromCursor(widget)
         return
-    elseif addon.DragFrame:GetObjective() then
+    elseif objectiveTitle then
         if addon.moveButton then
             widget:SwapButtons(addon.moveButton)
         else
-            print("CreateObjectiveFromDragFrame")
+            addon:CreateObjectiveFromDragFrame(widget, objectiveInfo)
         end
         addon.DragFrame:Clear()
         return
@@ -734,7 +736,7 @@ local methods = {
 
         if self:IsEmpty() or buttonDB.objective == 0 then
             self.Objective:SetText("")
-        else
+        elseif buttonDB.objective then
             local formattedObjective, objective = addon.iformat(buttonDB.objective, 2)
             self.Objective:SetText(formattedObjective)
 

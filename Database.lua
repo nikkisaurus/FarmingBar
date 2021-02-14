@@ -86,6 +86,7 @@ function addon:InitializeDB()
                     },
 
                     links = {
+                        ["**"] = {},
                         -- profileKey = {
                         --     buttonID, ...
                         -- }

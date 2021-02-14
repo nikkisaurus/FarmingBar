@@ -79,8 +79,57 @@ end
 
 ------------------------------------------------------------
 
-function addon:CreateObjectiveFromTemplate()
+function addon:CreateObjectiveFromDragFrame(widget, objectiveInfo)
+    widget:ClearObjective()
+    local buttonDB = widget:GetButtonDB()
 
+    for k, v in pairs(objectiveInfo) do
+        if k ~= "links" then
+            if k == "trackers" then
+                for key, value in pairs(v) do
+                   buttonDB.trackers[key]  = nil
+                end
+                for key, value in pairs(objectiveInfo.trackers) do
+                    buttonDB.trackers[key] = {}
+                    for a, b in pairs(value) do
+                        buttonDB.trackers[key][a] = b
+                    end
+                end
+            else
+                buttonDB[k] = objectiveInfo[k]
+            end
+        end
+    end
+
+    if buttonDB.template then
+        local charKey = UnitName("player").." - "..GetRealmName()
+        local templateLinks = self:GetDBValue("global", "objectives")[buttonDB.template].links
+        tinsert(templateLinks[charKey], widget:GetButtonID())
+    end
+
+    -- for k, v in pairs(buttonDB) do
+    --     if k ~= "template" and k ~= "links" then
+    --         if k == "trackers" then
+    --             for key, value in pairs(v) do
+    --                buttonDB.trackers[key]  = nil
+    --             end
+    --             for key, value in pairs(objectiveInfo.trackers) do
+    --                 buttonDB.trackers[key] = {}
+    --                 for a, b in pairs(value) do
+    --                     buttonDB.trackers[key][a] = b
+    --                 end
+    --             end
+    --         else
+    --             buttonDB[k] = objectiveInfo[k]
+    --         end
+    --     end
+    -- end
+
+    -- if objectiveInfo.template then
+    --     buttonDB.template = objectiveInfo.template
+    -- end
+
+    widget:UpdateLayers()
 end
 
 ------------------------------------------------------------
@@ -129,6 +178,7 @@ end
 function addon:RenameObjectiveTemplate(objectiveTitle, newObjectiveTitle)
     local objectives = self:GetDBValue("global", "objectives")
     objectives[newObjectiveTitle] = objectives[objectiveTitle]
+    objectives[newObjectiveTitle].title = newObjectiveTitle
     objectives[objectiveTitle] = nil
 
     -- self:UpdateExclusions(objectiveTitle, newObjectiveTitle)
@@ -144,8 +194,8 @@ function addon:GetObjectiveCount(widget, objectiveTitle)
 
     local count = 0
     if buttonDB.condition == "ANY" then
-        for _, trackerInfo in pairs(buttonDB.trackers) do
-            count = count + addon:GetTrackerCount(objectiveTitle, trackerInfo)
+        for trackerKey, _ in pairs(buttonDB.trackers) do
+            count = count + addon:GetTrackerCount(widget, trackerKey)
         end
     elseif buttonDB.condition == "ALL" then
         local pendingCount
