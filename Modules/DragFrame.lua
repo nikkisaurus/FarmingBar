@@ -42,7 +42,6 @@ end
 
 local methods = {
     Clear = function(self)
-        self.selected = nil
         self.icon:SetTexture("")
         self.text:SetText("")
         self:Hide()
@@ -52,11 +51,19 @@ local methods = {
         return self.text:GetText()
     end,
 
-    Load = function(self, objectiveInfo)
-        -- self.selected = objectiveTitle
+    LoadObjective = function(self, widget)
+        local buttonDB = widget:GetButtonDB()
+        self.icon:SetTexture(buttonDB.icon)
+        self.icon:SetTexture(addon:GetObjectiveIcon(widget))
+        self.text:SetText(buttonDB.title)
+        self:Show()
+    end,
+
+    LoadObjectiveTemplate = function(self, objectiveTitle)
+        local objectiveInfo = addon:GetDBValue("global", "objectives")[objectiveTitle]
         self.icon:SetTexture(objectiveInfo.icon)
-        -- self.icon:SetTexture(addon:GetObjectiveIcon(objectiveTitle))
-        self.text:SetText(objectiveInfo.title)
+        self.icon:SetTexture(addon:GetObjectiveTemplateIcon(objectiveTitle))
+        self.text:SetText(objectiveTitle)
         self:Show()
     end,
 }

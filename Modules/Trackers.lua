@@ -123,6 +123,20 @@ end
 
 ------------------------------------------------------------
 
+function addon:GetFirstTemplateTracker(objectiveTitle)
+    local objectiveInfo = self:GetDBValue("global", "objectives")[objectiveTitle]
+
+    local firstOrder, firstTracker = 0
+    for k, v in pairs(objectiveInfo.trackers) do
+        firstOrder = firstTracker and min(v.order, firstOrder) or v.order
+        firstTracker = firstTracker and (firstOrder == v.order and k or firstTracker) or k
+    end
+
+    return firstTracker
+end
+
+------------------------------------------------------------
+
 function addon:GetFirstTracker(widget)
     local buttonDB = widget:GetButtonDB()
 
@@ -314,6 +328,7 @@ end
 ------------------------------------------------------------
 
 function addon:ParseTrackerKey(trackerID)
+    if not trackerID then return end
     local trackerType, trackerID = strsplit(":", trackerID)
     return trackerType, tonumber(trackerID)
 end

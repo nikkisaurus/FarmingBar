@@ -14,21 +14,21 @@ local GetCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo
 
 --*------------------------------------------------------------------------
 
-local displayRefs =  {
+local actions =  {
     ITEM = L["Item"],
     --@retail@
     CURRENCY = L["Currency"],
     --@end-retail@
-    RECIPE = L["Recipe"],
     MACROTEXT = L["Macrotext"],
+    RECIPE = L["Recipe"],
     NONE = L["None"],
 }
 
 --@retail@
-local displayRefSort = {"ITEM", "CURRENCY", "RECIPE", "MACROTEXT", "NONE"}
+local actionSort = {"ITEM", "CURRENCY", "MACROTEXT", "RECIPE", "NONE"}
 --@end-retail@
 --[===[@non-retail@
-local displayRefSort = {"ITEM", "CRAFT", "MACROTEXT", "NONE"}
+local actionSort = {"ITEM", "MACROTEXT", "RECIPE", "NONE"}
 --@end-non-retail@]===]
 
 ------------------------------------------------------------
@@ -56,8 +56,8 @@ local trackerConditionSort = {"ANY", "ALL", "CUSTOM"}
 
 --*------------------------------------------------------------------------
 
-local function GetDisplayRefTrackerIDLabel(objectiveTitle)
-    local trackerType = addon:GetObjectiveDBValue("displayRef.trackerType", objectiveTitle)
+local function GetActionInfoLabel(objectiveTitle)
+    local trackerType = addon:GetDBValue("global", "objectives")[objectiveTitle].action
 
     if trackerType == "ITEM" then
         return L["Item ID/Name/Link"]
@@ -66,7 +66,7 @@ local function GetDisplayRefTrackerIDLabel(objectiveTitle)
         return L["Currency ID/Link"]
     --@end-retail@
     elseif trackerType == "RECIPE" then
-        return L["Tradeskill Recipe Name"]
+        return L["Recipe String"]
     elseif trackerType == "MACROTEXT" then
         return L["Macrotext"]
     end
@@ -145,7 +145,7 @@ function addon:GetObjectiveBuilderOptions()
                                     return self:GetObjectiveDBValue(info[#info], objectiveTitle)
                                 end,
                                 set = function(info, value)
-                                    self:SetObjectiveDBInfo(info[#info], value, objectiveTitle)
+                                    self:SetObjectiveDBValue(info[#info], value, objectiveTitle)
                                 end,
                             },
 
@@ -175,7 +175,7 @@ function addon:GetObjectiveBuilderOptions()
                                     end
                                 end,
                                 set = function(info, value)
-                                    return self:SetObjectiveDBInfo(info[#info], value, objectiveTitle)
+                                    return self:SetObjectiveDBValue(info[#info], value, objectiveTitle)
                                 end,
                             },
 
@@ -239,7 +239,6 @@ end
 ------------------------------------------------------------
 
 function addon:GetObjectiveObjectiveBuilderOptions(objectiveTitle)
-    if true then return {} end --!
     local options = {
         dropper = {
             order = 0,
@@ -248,10 +247,10 @@ function addon:GetObjectiveObjectiveBuilderOptions(objectiveTitle)
             desc = L.Options_ObjectiveBuilder("objective.dropper"),
             width = 1/3,
             image = function()
-                -- return self:GetObjectiveIcon(objectiveTitle), 35, 35
+                return self:GetObjectiveTemplateIcon(objectiveTitle), 35, 35
             end,
             func = function()
-                self.DragFrame:Load(objectiveTitle)
+                self.DragFrame:LoadObjectiveTemplate(objectiveTitle)
             end,
         },
 
@@ -286,7 +285,7 @@ function addon:GetObjectiveObjectiveBuilderOptions(objectiveTitle)
                 return self:GetObjectiveDBValue(info[#info], objectiveTitle)
             end,
             set = function(info, value)
-                self:SetObjectiveDBInfo(info[#info], value, objectiveTitle)
+                self:SetObjectiveDBValue(info[#info], value, objectiveTitle)
             end,
         },
 
@@ -303,7 +302,7 @@ function addon:GetObjectiveObjectiveBuilderOptions(objectiveTitle)
                 return self:GetObjectiveDBValue(info[#info], objectiveTitle)
             end,
             set = function(info, value)
-                self:SetObjectiveDBInfo(info[#info], value, objectiveTitle)
+                self:SetObjectiveDBValue(info[#info], value, objectiveTitle)
             end,
         },
 
@@ -323,50 +322,46 @@ function addon:GetObjectiveObjectiveBuilderOptions(objectiveTitle)
 
         ------------------------------------------------------------
 
-        displayRef = {
+        action = {
             order = 5,
             type = "group",
             inline = true,
-            name = L["Display Reference"],
+            name = L["Action"],
+            get = function(info)
+                return tostring(self:GetObjectiveDBValue(info[#info], objectiveTitle))
+            end,
             args = {
-                trackerType = {
+                action = {
                     order = 1,
                     type = "select",
-                    name = L["Type"],
-                    values = displayRefs,
-                    sorting = displayRefSort,
-                    get = function(info)
-                        return self:GetObjectiveDBValue("displayRef."..info[#info], objectiveTitle)
-                    end,
+                    name = L["Action"],
+                    values = actions,
+                    sorting = actionSort,
                     set = function(info, value)
-                        self:SetObjectiveDBInfo("displayRef."..info[#info], value, objectiveTitle)
+                        self:SetObjectiveDBValue("action", value, objectiveTitle)
                     end,
                 },
 
                 ------------------------------------------------------------
 
-                trackerID = {
+                actionInfo = {
                     order = 2,
                     type = "input",
                     width = "full",
                     multiline = true,
                     name = function()
-                        return GetDisplayRefTrackerIDLabel(objectiveTitle)
+                        return GetActionInfoLabel(objectiveTitle)
                     end,
                     hidden = function()
-                        return self:GetObjectiveDBValue("displayRef.trackerType", objectiveTitle) == "NONE"
-                    end,
-                    get = function(info)
-                        local trackerID = self:GetObjectiveDBValue("displayRef."..info[#info], objectiveTitle)
-                        return trackerID and tostring(trackerID)
+                        return self:GetObjectiveDBValue("action", objectiveTitle) == "NONE"
                     end,
                     validate = function(_, value)
                         if value == "" then return true end
-                        local trackerType = self:GetObjectiveDBValue("displayRef.trackerType", objectiveTitle)
+                        local action = self:GetObjectiveDBValue("action", objectiveTitle)
 
-                        if trackerType == "ITEM" or trackerType == "CURRENCY" then
-                            return self:ValidateObjectiveData(trackerType, value) or format(L.InvalidTrackerID, trackerType, value)
-                        elseif trackerType == "RECIPE" then
+                        if action == "ITEM" or action == "CURRENCY" then
+                            return self:ValidateObjectiveData(action, value) or format(L.InvalidTrackerID, action, value)
+                        elseif action == "RECIPE" then
                             -- TODO: validate recipe
                             return true
                         else -- MACROTEXT
@@ -374,13 +369,20 @@ function addon:GetObjectiveObjectiveBuilderOptions(objectiveTitle)
                         end
                     end,
                     set = function(info, value)
-                        local trackerType = self:GetObjectiveDBValue("displayRef.trackerType", objectiveTitle)
+                        if value == "" then
+                            self:SetObjectiveDBValue(info[#info], value, objectiveTitle)
+                            return
+                        end
 
-                        if trackerType == "ITEM" or trackerType == "CURRENCY" then
-                            local validTrackerID = self:ValidateObjectiveData(trackerType, value)
-                            self:SetObjectiveDBInfo("displayRef."..info[#info], validTrackerID, objectiveTitle)
+                        local action = self:GetObjectiveDBValue("action", objectiveTitle)
+
+                        if action == "ITEM" or action == "CURRENCY" then
+                            local validTrackerID = self:ValidateObjectiveData(action, value)
+                            if validTrackerID then
+                                self:SetObjectiveDBValue(info[#info], validTrackerID, objectiveTitle)
+                            end
                         else
-                            self:SetObjectiveDBInfo("displayRef."..info[#info], value, objectiveTitle)
+                            self:SetObjectiveDBValue(info[#info], value, objectiveTitle)
                         end
                     end,
                 },
@@ -390,7 +392,7 @@ function addon:GetObjectiveObjectiveBuilderOptions(objectiveTitle)
         ------------------------------------------------------------
 
         manage = {
-            order = 7,
+            order = 6,
             type = "group",
             inline = true,
             name = L["Manage"],
@@ -399,6 +401,7 @@ function addon:GetObjectiveObjectiveBuilderOptions(objectiveTitle)
                     order = 1,
                     type = "execute",
                     name = L["Duplicate Objective"],
+                    disabled = true,
                     func = function()
                         self:CreateObjectiveTemplate(objectiveTitle, self:GetObjectiveInfo(objectiveTitle))
                     end,
@@ -422,6 +425,7 @@ function addon:GetObjectiveObjectiveBuilderOptions(objectiveTitle)
                     order = 3,
                     type = "execute",
                     name = L["Delete Objective"],
+                    disabled = true,
                     func = function()
                         self:DeleteObjective(objectiveTitle)
                     end,

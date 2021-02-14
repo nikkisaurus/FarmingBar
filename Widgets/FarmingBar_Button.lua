@@ -112,7 +112,7 @@ local function frame_OnDragStart(self, buttonClicked, ...)
         if mod == keybinds.modifier then
             widget:SetUserData("isDragging", true)
             addon.moveButton = {widget, addon:CloneTable(widget:GetButtonDB())}
-            addon.DragFrame:Load(addon:CloneTable(widget:GetButtonDB()))
+            addon.DragFrame:LoadObjective(widget)
             -- widget:ClearObjective()
         end
     end

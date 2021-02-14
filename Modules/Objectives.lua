@@ -20,7 +20,7 @@ local StaticPopup_Show = StaticPopup_Show
 
 function addon:GetObjectiveDBValue(key, objectiveTitle)
     local keys = {strsplit(".", key)}
-    local path = addon.db.global.objectives[objectiveTitle]
+    local path = self:GetDBValue("global", "objectives")[objectiveTitle]
 
     for k, key in pairs(keys) do
         if k < #keys then
@@ -33,9 +33,9 @@ end
 
 ------------------------------------------------------------
 
-function addon:SetObjectiveDBInfo(key, value, objectiveTitle)
+function addon:SetObjectiveDBValue(key, value, objectiveTitle)
     local keys = {strsplit(".", key)}
-    local path = addon.db.global.objectives[objectiveTitle]
+    local path = self:GetDBValue("global", "objectives")[objectiveTitle]
 
     for k, key in pairs(keys) do
         if k < #keys then
@@ -59,7 +59,7 @@ function addon:CreateObjectiveFromCursor(widget)
     if cursorType == "item" then
         local buttonDB = widget:GetButtonDB()
 
-        buttonDB.title = "ITEM:"..cursorID
+        buttonDB.title = GetItemInfo(itemID) -- don't need to cache since this is from our bags, we know the info is available
         buttonDB.icon = GetItemIconByID(cursorID)
         buttonDB.action = "ITEM"
         buttonDB.actionInfo = cursorID
@@ -182,7 +182,12 @@ function addon:GetObjectiveIcon(widget)
 
     local icon
     if buttonDB.autoIcon then
-        local trackerType, trackerID = self:ParseTrackerKey(self:GetFirstTracker(widget))
+        local trackerType, trackerID
+        if buttonDB.action == "ITEM" or buttonDB.action == "CURRENCY" then
+            trackerType, trackerID = buttonDB.action, buttonDB.actionInfo
+        else
+            trackerType, trackerID = self:ParseTrackerKey(self:GetFirstTracker(widget))
+        end
 
         if trackerType == "ITEM" then
             icon = GetItemIconByID(tonumber(trackerID) or 0)
@@ -194,6 +199,37 @@ function addon:GetObjectiveIcon(widget)
         if buttonDB.icon then
             -- Convert db icon value to number if it's a file ID, otherwise use the string value
             icon = (tonumber(buttonDB.icon) and tonumber(buttonDB.icon) ~= buttonDB.icon) and tonumber(buttonDB.icon) or buttonDB.icon
+            icon = (icon == "" or not icon) and 134400 or icon
+        end
+    end
+
+    return icon or 134400
+end
+
+------------------------------------------------------------
+
+function addon:GetObjectiveTemplateIcon(objectiveTitle)
+    local objectiveInfo = self:GetDBValue("global", "objectives")[objectiveTitle]
+
+    local icon
+    if objectiveInfo.autoIcon then
+        local trackerType, trackerID
+        if objectiveInfo.action == "ITEM" or objectiveInfo.action == "CURRENCY" then
+            trackerType, trackerID = objectiveInfo.action, objectiveInfo.actionInfo
+        else
+            trackerType, trackerID = self:ParseTrackerKey(self:GetFirstTemplateTracker(objectiveTitle))
+        end
+
+        if trackerType == "ITEM" then
+            icon = GetItemIconByID(tonumber(trackerID) or 0)
+        elseif trackerType == "CURRENCY" then
+            local currency = GetCurrencyInfo(tonumber(trackerID) or 0)
+            icon = currency and currency.iconFileID
+        end
+    else
+        if objectiveInfo.icon then
+            -- Convert db icon value to number if it's a file ID, otherwise use the string value
+            icon = (tonumber(objectiveInfo.icon) and tonumber(objectiveInfo.icon) ~= objectiveInfo.icon) and tonumber(objectiveInfo.icon) or objectiveInfo.icon
             icon = (icon == "" or not icon) and 134400 or icon
         end
     end

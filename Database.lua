@@ -31,7 +31,7 @@ function addon:InitializeDB()
                             title = "",
                             autoIcon = true,
                             icon = 134400,
-                            action = "", -- displayRef.trackerType: CURRENCY, ITEM, MACROTEXT, RECIPE
+                            action = "NONE", -- displayRef.trackerType: CURRENCY, ITEM, MACROTEXT, RECIPE, NONE
                             actionInfo = "", -- displayRef.trackerID
                             condition = "ALL", -- trackerCondition
                             conditionInfo = "", -- customCondition
@@ -72,7 +72,7 @@ function addon:InitializeDB()
                     title = "",
                     autoIcon = true,
                     icon = 134400,
-                    action = "",
+                    action = "NONE",
                     actionInfo = "",
                     condition = "ALL",
                     conditionInfo = "",

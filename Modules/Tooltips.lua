@@ -42,7 +42,7 @@ tooltipScanner:SetScript("OnUpdate", function(self)
     local frame = GetMouseFocus()
     local widget = frame and frame.obj
     local tooltip = widget and widget.GetUserData and widget:GetUserData("tooltip")
-    if tooltip and addon[tooltip] then
+    if tooltip and addon[tooltip] and not addon.DragFrame:GetObjective() then
         showTooltip = true
         GameTooltip:ClearLines()
         GameTooltip:SetOwner(frame, "ANCHOR_BOTTOMRIGHT", 0, 0)
