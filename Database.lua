@@ -63,6 +63,7 @@ function addon:InitializeDB()
 
         global = {
             objectives = {},
+            skins = {},
             templates = {},
 
             settings = {

@@ -262,11 +262,11 @@ end
 ------------------------------------------------------------
 
 function addon:UpdateBars()
-    -- for _, bar in pairs(self.bars) do
-    --     bar:ApplySkin()
-    --     bar:SetSize()
-    --     for _, button in pairs(bar:GetUserData("buttons")) do
-    --         button:UpdateLayers()
-    --     end
-    -- end
+    for _, bar in pairs(self.bars) do
+        bar:ApplySkin()
+        bar:SetSize()
+        for _, button in pairs(bar:GetUserData("buttons")) do
+            button:UpdateLayers()
+        end
+    end
 end
