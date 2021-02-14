@@ -164,8 +164,8 @@ function addon:GetTrackerCount(widget, trackerKey)
     local count
 
     if trackerType == "ITEM" then
-        count = GetItemCount(trackerID, trackerInfo.includeBank)
-        -- count = trackerInfo.includeAllChars and self:GetDataStoreCount(trackerID, trackerInfo.includeBank) or GetItemCount(trackerID, trackerInfo.includeBank)
+        -- count = GetItemCount(trackerID, trackerInfo.includeBank)
+        count = trackerInfo.includeAllChars and self:GetDataStoreCount(trackerID, trackerInfo.includeBank) or GetItemCount(trackerID, trackerInfo.includeBank)
     elseif trackerType == "CURRENCY" then
         count = GetCurrencyInfo(trackerID) and GetCurrencyInfo(trackerID).quantity
     end

@@ -367,6 +367,7 @@ function addon:GetBarConfigOptions(barID)
                 inline = true,
                 width = "full",
                 name = "*"..L["Template"],
+                disabled = true,
                 args = {
                     title = {
                         order = 1,
@@ -731,6 +732,7 @@ function addon:GetButtonConfigOptions(barID)
                         order = 2,
                         type = "execute",
                         name = "*"..L["Reindex Buttons"],
+                        disabled = true,
                         func = function()
                             self:ReindexButtons(barID)
                         end,
@@ -742,6 +744,7 @@ function addon:GetButtonConfigOptions(barID)
                         order = 3,
                         type = "execute",
                         name = "**"..L["Size Bar to Buttons"],
+                        disabled = true,
                         func = function()
                             self:SizeBarToButtons(barID)
                         end,
