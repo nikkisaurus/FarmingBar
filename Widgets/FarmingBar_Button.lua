@@ -31,7 +31,7 @@ local postClickMethods = {
         -- local objectiveTitle = widget:GetUserData("objectiveTitle")
 
         -- if addon:IsObjectiveAutoItem(objectiveTitle) then
-        --     addon:SetTrackerDBInfo(objectiveTitle, 1, "includeBank", "_toggle")
+        --     addon:SetTrackerDBValue(objectiveTitle, 1, "includeBank", "_TOGGLE_")
         --     widget:UpdateLayers()
         --     -- TODO: Update tracker frame if visible
         --     -- TODO: Alert bar progress if changed

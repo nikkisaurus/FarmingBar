@@ -43,11 +43,17 @@ function addon:SetObjectiveDBValue(key, value, objectiveTitle)
         end
     end
 
+    if value == "_TOGGLE_" then
+        if path[keys[#keys]] then
+            value = false
+        else
+            value = true
+        end
+    end
+
     path[keys[#keys]] = value
 
-    ------------------------------------------------------------
-
-    self:UpdateButtons(objectiveTitle)
+    -- self:UpdateButtons(objectiveTitle)
 end
 
 --*------------------------------------------------------------------------
@@ -59,7 +65,7 @@ function addon:CreateObjectiveFromCursor(widget)
     if cursorType == "item" then
         local buttonDB = widget:GetButtonDB()
 
-        buttonDB.title = GetItemInfo(itemID) -- don't need to cache since this is from our bags, we know the info is available
+        buttonDB.title = GetItemInfo(cursorID) -- don't need to cache since this is from our bags, we know the info is available
         buttonDB.icon = GetItemIconByID(cursorID)
         buttonDB.action = "ITEM"
         buttonDB.actionInfo = cursorID

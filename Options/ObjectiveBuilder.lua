@@ -135,10 +135,10 @@ function addon:GetObjectiveBuilderOptions()
                         type = "group",
                         name = L["Trackers"],
                         args = {
-                            trackerCondition = {
+                            condition = {
                                 order = 1,
                                 type = "select",
-                                name = L["Action"],
+                                name = L["Condition"],
                                 values = trackerConditions,
                                 sorting = trackerConditionSort,
                                 get = function(info)
@@ -151,14 +151,14 @@ function addon:GetObjectiveBuilderOptions()
 
                             ------------------------------------------------------------
 
-                            customCondition = {
+                            conditionInfo = {
                                 order = 2,
                                 type = "input",
                                 width = "full",
                                 multiline = true,
                                 name = L["Custom"],
                                 hidden = function()
-                                    return self:GetObjectiveDBValue("trackerCondition", objectiveTitle) ~= "CUSTOM"
+                                    return self:GetObjectiveDBValue("condition", objectiveTitle) ~= "CUSTOM"
                                 end,
                                 get = function(info)
                                     return self:GetObjectiveDBValue(info[#info], objectiveTitle)
@@ -208,7 +208,7 @@ function addon:GetObjectiveBuilderOptions()
                                 end,
                                 validate = function(_, value)
                                     local validTrackerID = self:ValidateObjectiveData(newTrackerType, value)
-                                    local trackerIDExists = validTrackerID and self:TrackerExists(objectiveTitle, validTrackerID)
+                                    local trackerIDExists = validTrackerID and self:TrackerExists(self:GetDBValue("global", "objectives")[objectiveTitle], strupper(newTrackerType)..":"..validTrackerID)
 
                                     if trackerIDExists then
                                         return format(L.TrackerIDExists, value)
@@ -218,8 +218,10 @@ function addon:GetObjectiveBuilderOptions()
                                 end,
                                 set = function(info, value)
                                     local validTrackerID = self:ValidateObjectiveData(newTrackerType, value)
-                                    self:CreateTracker(objectiveTitle, {trackerType = newTrackerType, trackerID = validTrackerID})
-                                    ACD:SelectGroup(addonName, "objectiveBuilder", objectiveTitle, "trackers", value)
+                                    local trackerKey = addon:CreateTracker(self:GetDBValue("global", "objectives")[objectiveTitle].trackers, newTrackerType, validTrackerID)
+                                    -- local validTrackerID = self:ValidateObjectiveData(newTrackerType, value)
+                                    -- self:CreateTracker(objectiveTitle, {trackerType = newTrackerType, trackerID = validTrackerID})
+                                    ACD:SelectGroup(addonName, "objectiveBuilder", objectiveTitle, "trackers", trackerKey)
                                 end,
                             },
                         },
@@ -228,7 +230,7 @@ function addon:GetObjectiveBuilderOptions()
             }
 
             for tracker, trackerInfo in pairs(addon.db.global.objectives[objectiveTitle].trackers) do
-                options[objectiveTitle].args.trackers.args[tostring(trackerInfo.trackerID)] = self:GetTrackersObjectiveBuilderOptions(objectiveTitle, tracker)
+                options[objectiveTitle].args.trackers.args[tracker] = self:GetTrackersObjectiveBuilderOptions(objectiveTitle, tracker)
             end
         end
     end
@@ -442,17 +444,23 @@ end
 
 ------------------------------------------------------------
 
-function addon:GetTrackersObjectiveBuilderOptions(objectiveTitle, tracker)
-    local trackerInfo = addon.db.global.objectives[objectiveTitle].trackers[tracker]
+function addon:GetTrackersObjectiveBuilderOptions(objectiveTitle, trackerKey)
+    local trackers = self:GetDBValue("global", "objectives")[objectiveTitle].trackers
+    local trackerInfo = trackers[trackerKey]
+    local trackerType, trackerID = self:ParseTrackerKey(trackerKey)
+
 
     local options = {
+        order = trackerInfo.order,
         type = "group",
-        name = "",
+        name = trackerKey,
+        -- name = "", --! add back after fixing below
         args = {
             title = {
                 order = 1,
                 type = "description",
-                name = trackerInfo.trackerID,
+                name = tostring(trackerID),
+                -- name = "", --! add back after fixing below
                 width = "full",
                 imageWidth = 20,
                 imageHeight = 20,
@@ -461,183 +469,203 @@ function addon:GetTrackersObjectiveBuilderOptions(objectiveTitle, tracker)
 
             ------------------------------------------------------------
 
-            objective = {
+            order = {
                 order = 2,
                 type = "input",
                 width = "full",
-                name = L["Objective"],
+                name = L["Order"],
                 get = function(info)
-                    return tostring(self:GetTrackerDBInfo(objectiveTitle, tracker, info[#info]))
+                    return tostring(self:GetTrackerDBInfo(trackers, trackerKey, info[#info]))
                 end,
                 validate = function(_, value)
                     value = tonumber(value) or 0
                     return value > 0
                 end,
                 set = function(info, value)
-                    self:SetTrackerDBInfo(objectiveTitle, tracker, info[#info], tonumber(value))
+                    self:SetTrackerDBValue(trackers, trackerKey, info[#info], tonumber(value))
+                end,
+            },
+
+            ------------------------------------------------------------
+
+
+            objective = {
+                order = 3,
+                type = "input",
+                width = "full",
+                name = L["Objective"],
+                get = function(info)
+                    return tostring(self:GetTrackerDBInfo(trackers, trackerKey, info[#info]))
+                end,
+                validate = function(_, value)
+                    value = tonumber(value) or 0
+                    return value > 0
+                end,
+                set = function(info, value)
+                    self:SetTrackerDBValue(trackers, trackerKey, info[#info], tonumber(value))
                 end,
             },
 
             ------------------------------------------------------------
 
             countsFor = {
-                order = 3,
+                order = 4,
                 type = "input",
                 width = "full",
                 name = L["Counts For"],
                 get = function(info)
-                    return tostring(self:GetTrackerDBInfo(objectiveTitle, tracker, info[#info]))
+                    return tostring(self:GetTrackerDBInfo(trackers, trackerKey, info[#info]))
                 end,
                 validate = function(_, value)
                     value = tonumber(value) or 0
                     return value > 0
                 end,
                 set = function(info, value)
-                    self:SetTrackerDBInfo(objectiveTitle, tracker, info[#info], tonumber(value))
+                    self:SetTrackerDBValue(trackers, trackerKey, info[#info], tonumber(value))
                 end,
             },
 
-            ------------------------------------------------------------
+            -- ------------------------------------------------------------
 
-            includeBank = {
-                order = 4,
-                type = "toggle",
-                width = "full",
-                name = L["Include Bank"],
-                get = function(info)
-                    return self:GetTrackerDBInfo(objectiveTitle, tracker, info[#info])
-                end,
-                set = function(info, value)
-                    self:SetTrackerDBInfo(objectiveTitle, tracker, info[#info], value)
-                    self:UpdateButtons(objectiveTitle)
-                end,
-            },
+            -- includeBank = {
+            --     order = 4,
+            --     type = "toggle",
+            --     width = "full",
+            --     name = L["Include Bank"],
+            --     get = function(info)
+            --         -- return self:GetTrackerDBInfo(objectiveTitle, trackerKey, info[#info])
+            --     end,
+            --     set = function(info, value)
+            --         -- self:SetTrackerDBValue(objectiveTitle, trackerKey, info[#info], value)
+            --         -- self:UpdateButtons(objectiveTitle)
+            --     end,
+            -- },
 
-            ------------------------------------------------------------
+            -- ------------------------------------------------------------
 
-            includeAllChars = {
-                order = 4,
-                type = "toggle",
-                width = "full",
-                name = L["Include All Characters"],
-                get = function(info)
-                    return self:GetTrackerDBInfo(objectiveTitle, tracker, info[#info])
-                end,
-                set = function(info, value)
-                    self:SetTrackerDBInfo(objectiveTitle, tracker, info[#info], value)
-                end,
-            },
+            -- includeAllChars = {
+            --     order = 4,
+            --     type = "toggle",
+            --     width = "full",
+            --     name = L["Include All Characters"],
+            --     get = function(info)
+            --         -- return self:GetTrackerDBInfo(objectiveTitle, trackerKey, info[#info])
+            --     end,
+            --     set = function(info, value)
+            --         -- self:SetTrackerDBValue(objectiveTitle, trackerKey, info[#info], value)
+            --     end,
+            -- },
 
-            ------------------------------------------------------------
+            -- ------------------------------------------------------------
 
-            exclude = {
-                order = 5,
-                type = "select",
-                width = "full",
-                name = L["Exclude Objective"],
-                values = function()
-                    local values = {}
+            -- exclude = {
+            --     order = 5,
+            --     type = "select",
+            --     width = "full",
+            --     name = L["Exclude Objective"],
+            --     values = function()
+            --         local values = {}
 
-                    for eObjectiveTitle, _ in self.pairs(addon.db.global.objectives, function(a, b) return strupper(a) < strupper(b) end) do
-                        if eObjectiveTitle ~= objectiveTitle and not self:ObjectiveIsExcluded(trackerInfo.exclude, eObjectiveTitle) then
-                            values[eObjectiveTitle] = eObjectiveTitle
-                        end
-                    end
+            --         for eObjectiveTitle, _ in self.pairs(addon.db.global.objectives, function(a, b) return strupper(a) < strupper(b) end) do
+            --             if eObjectiveTitle ~= objectiveTitle and not self:ObjectiveIsExcluded(trackerInfo.exclude, eObjectiveTitle) then
+            --                 values[eObjectiveTitle] = eObjectiveTitle
+            --             end
+            --         end
 
-                    return values
-                end,
-                sorting = function()
-                    local sorting = {}
+            --         return values
+            --     end,
+            --     sorting = function()
+            --         local sorting = {}
 
-                    for eObjectiveTitle, _ in self.pairs(addon.db.global.objectives, function(a, b) return strupper(a) < strupper(b) end) do
-                        if eObjectiveTitle ~= objectiveTitle and not self:ObjectiveIsExcluded(trackerInfo.exclude, eObjectiveTitle) then
-                            tinsert(sorting, eObjectiveTitle)
-                        end
-                    end
+            --         for eObjectiveTitle, _ in self.pairs(addon.db.global.objectives, function(a, b) return strupper(a) < strupper(b) end) do
+            --             if eObjectiveTitle ~= objectiveTitle and not self:ObjectiveIsExcluded(trackerInfo.exclude, eObjectiveTitle) then
+            --                 tinsert(sorting, eObjectiveTitle)
+            --             end
+            --         end
 
-                    return sorting
-                end,
-                disabled = function(info)
-                    local count = 0
+            --         return sorting
+            --     end,
+            --     disabled = function(info)
+            --         local count = 0
 
-                    for eObjectiveTitle, _ in self.pairs(addon.db.global.objectives, function(a, b) return strupper(a) < strupper(b) end) do
-                        if eObjectiveTitle ~= objectiveTitle and not self:ObjectiveIsExcluded(trackerInfo.exclude, eObjectiveTitle) then
-                            count = count + 1
-                        end
-                    end
+            --         for eObjectiveTitle, _ in self.pairs(addon.db.global.objectives, function(a, b) return strupper(a) < strupper(b) end) do
+            --             if eObjectiveTitle ~= objectiveTitle and not self:ObjectiveIsExcluded(trackerInfo.exclude, eObjectiveTitle) then
+            --                 count = count + 1
+            --             end
+            --         end
 
-                    return count == 0
-                end,
-                set = function(_, value)
-                    tinsert(addon.db.global.objectives[objectiveTitle].trackers[tracker].exclude, value)
-                    self:UpdateButtons()
-                end,
-            },
+            --         return count == 0
+            --     end,
+            --     set = function(_, value)
+            --         tinsert(addon.db.global.objectives[objectiveTitle].trackers[trackerKey].exclude, value)
+            --         self:UpdateButtons()
+            --     end,
+            -- },
 
-            ------------------------------------------------------------
+            -- ------------------------------------------------------------
 
-            excluded = {
-                order = 6,
-                type = "select",
-                width = "full",
-                name = L["Remove Excluded Objective"],
-                values = function()
-                    local values = {}
+            -- excluded = {
+            --     order = 6,
+            --     type = "select",
+            --     width = "full",
+            --     name = L["Remove Excluded Objective"],
+            --     values = function()
+            --         local values = {}
 
-                    for _, eObjectiveTitle in self.pairs(trackerInfo.exclude, function(a, b) return strupper(a) < strupper(b) end) do
-                        values[eObjectiveTitle] = eObjectiveTitle
-                    end
+            --         for _, eObjectiveTitle in self.pairs(trackerInfo.exclude, function(a, b) return strupper(a) < strupper(b) end) do
+            --             values[eObjectiveTitle] = eObjectiveTitle
+            --         end
 
-                    return values
-                end,
-                sorting = function()
-                    local sorting = {}
+            --         return values
+            --     end,
+            --     sorting = function()
+            --         local sorting = {}
 
-                    for _, eObjectiveTitle in self.pairs(trackerInfo.exclude, function(a, b) return strupper(a) < strupper(b) end) do
-                        tinsert(sorting, eObjectiveTitle)
-                    end
+            --         for _, eObjectiveTitle in self.pairs(trackerInfo.exclude, function(a, b) return strupper(a) < strupper(b) end) do
+            --             tinsert(sorting, eObjectiveTitle)
+            --         end
 
-                    return sorting
-                end,
-                disabled = function(info)
-                    return self.tcount(trackerInfo.exclude) == 0
-                end,
-                set = function(_, value)
-                    for key, eObjectiveTitle in pairs(trackerInfo.exclude) do
-                        if eObjectiveTitle == value then
-                            tremove(trackerInfo.exclude, key)
-                        end
-                    end
-                    self:UpdateButtons()
-                end,
-            },
+            --         return sorting
+            --     end,
+            --     disabled = function(info)
+            --         return self.tcount(trackerInfo.exclude) == 0
+            --     end,
+            --     set = function(_, value)
+            --         for key, eObjectiveTitle in pairs(trackerInfo.exclude) do
+            --             if eObjectiveTitle == value then
+            --                 tremove(trackerInfo.exclude, key)
+            --             end
+            --         end
+            --         self:UpdateButtons()
+            --     end,
+            -- },
 
-            ------------------------------------------------------------
+            -- ------------------------------------------------------------
 
-            deleteTracker = {
-                order = 7,
-                type = "execute",
-                width = "full",
-                name = L["Delete Tracker"],
-                func = function()
-                    self:DeleteTracker(objectiveTitle, tracker)
-                end,
-                confirm = function(...)
-                    return L.Options_ObjectiveBuilder("tracker.deleteTracker")
-                end,
-            },
+            -- deleteTracker = {
+            --     order = 7,
+            --     type = "execute",
+            --     width = "full",
+            --     name = L["Delete Tracker"],
+            --     func = function()
+            --         self:DeleteTracker(objectiveTitle, trackerKey)
+            --     end,
+            --     confirm = function(...)
+            --         return L.Options_ObjectiveBuilder("tracker.deleteTracker")
+            --     end,
+            -- },
         },
     }
 
-    if trackerInfo.trackerType == "ITEM" then
-        self.CacheItem(trackerInfo.trackerID, function(itemID)
+    if trackerType == "ITEM" then
+        self.CacheItem(trackerID, function(itemID)
             options.name = GetItemInfo(itemID)
             options.args.title.name = self.ColorFontString(GetItemInfo(itemID), "gold")
-        end, trackerInfo.trackerID)
-        options.icon = GetItemIconByID(trackerInfo.trackerID)
-        options.args.title.image = GetItemIconByID(trackerInfo.trackerID)
+        end, trackerID)
+        options.icon = GetItemIconByID(trackerID)
+        options.args.title.image = GetItemIconByID(trackerID)
     else
-        local currency = GetCurrencyInfo(trackerInfo.trackerID)
+        local currency = GetCurrencyInfo(trackerID)
         options.name = currency.name
         options.args.title.name = self.ColorFontString(currency.name, "gold")
         options.icon = currency.iconFileID

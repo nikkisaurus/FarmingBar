@@ -163,6 +163,7 @@ L["New Tracker"] = true
 L["None"] = true
 L["Objective"] = true
 L["Objective Builder"] = true
+L["Order"] = true
 L["Rename"] = true
 L["Condition"] = true
 L["Trackers"] = true
