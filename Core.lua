@@ -6,6 +6,12 @@ local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 
 LibStub("LibAddonUtils-1.0"):Embed(addon)
 local ACD = LibStub("AceConfigDialog-3.0")
+local LSM = LibStub("LibSharedMedia-3.0")
+
+------------------------------------------------------------
+
+local pairs, wipe = pairs, table.wipe
+local strjoin, strsplit, gsub, strupper = string.join, string.split, string.gsub, string.upper
 
 --*------------------------------------------------------------------------
 
@@ -34,6 +40,27 @@ function addon:OnInitialize()
 
     ------------------------------------------------------------
 
+    --@retail@
+    LSM:Register("sound", L["Auction Open"], 567482) -- id:5274
+    LSM:Register("sound", L["Auction Close"], 567499) -- id:5275
+    LSM:Register("sound", L["Loot Coin"], 567428) -- id:120
+    LSM:Register("sound", L["Quest Activate"], 567400) -- id:618
+    LSM:Register("sound", L["Quest Complete"], 567439) -- id:878
+    LSM:Register("sound", L["Quest Failed"], 567459) -- id:846
+    --@end-retail@
+
+    --[===[@non-retail@
+    LSM:Register("sound", L["Auction Open"], "sound/interface/auctionwindowopen.ogg") -- id:5274
+    LSM:Register("sound", L["Auction Close"], "sound/interface/auctionwindowclose.ogg") -- id:5275
+    LSM:Register("sound", L["Loot Coin"], "sound/interface/lootcoinsmall.ogg") -- id:120
+    LSM:Register("sound", L["Quest Activate"], "sound/interface/iquestactivate.ogg") -- id:618
+    LSM:Register("sound", L["Quest Complete"], "sound/interface/iquestcomplete.ogg") -- id:878
+    LSM:Register("sound", L["Quest Failed"], "sound/interface/igquestfailed.ogg") -- id:846
+    --@end-non-retail@]===]
+
+
+    ------------------------------------------------------------
+
     self:InitializeDB()
     self:RegisterSlashCommands()
 end
@@ -41,9 +68,12 @@ end
 ------------------------------------------------------------
 
 function addon:OnEnable()
-    self:InitializeBars()
+    -- addon:Initialize_Masque()
+    addon:InitializeBars()
     addon:InitializeDragFrame()
     addon:InitializeOptions()
+    -- addon:ClearDeletedObjectives()
+    -- TODO: addon:Initialize_Options()
 end
 
 ------------------------------------------------------------
@@ -66,10 +96,83 @@ end
 ------------------------------------------------------------
 
 function addon:SlashCommandFunc(input)
-    ACD:Open(addonName)
+    local cmd, arg, arg2 = strsplit(" ", strupper(input))
+    if cmd == "BUILD" then
+        addon.ObjectiveBuilder:Load()
+    elseif cmd == "BAR" then
+        if arg == "ADD" then
+            addon:CreateBar()
+        elseif arg == "REMOVE" then
+            local arg2 = tonumber(arg2)
+            if addon.bars[arg2] then
+                addon:SetBarDisabled(arg2)
+            end
+        end
+    elseif cmd == "CONFIG" then
+        local arg = tonumber(arg)
+        ACD:SelectGroup(addonName, "config", addon.bars[arg] and "bar"..arg)
+        ACD:Open(addonName)
+    else
+        LibStub("AceConfigDialog-3.0"):Open(addonName)
+        self:Print([[Currently available commands: "build", "bar add", "bar remove barID", "config"]])
+    end
 end
 
 --*------------------------------------------------------------------------
+
+local missing = {}
+function addon:IsDataStoreLoaded()
+    wipe(missing)
+
+    if not IsAddOnLoaded("DataStore") then
+        tinsert(missing, "DataStore")
+    end
+
+    if not IsAddOnLoaded("DataStore_Auctions") then
+        tinsert(missing, "DataStore_Auctions")
+    end
+
+    if not IsAddOnLoaded("DataStore_Containers") then
+        tinsert(missing, "DataStore_Containers")
+    end
+
+    if not IsAddOnLoaded("DataStore_Inventory") then
+        tinsert(missing, "DataStore_Inventory")
+    end
+
+    if not IsAddOnLoaded("DataStore_Mails") then
+        tinsert(missing, "DataStore_Mails")
+    end
+
+    return missing
+end
+
+------------------------------------------------------------
+
+function addon:GetDataStoreCount(itemID, includeBank)
+    if #self:IsDataStoreLoaded() > 0 then return end
+
+    local count = 0
+    for k, character in pairs(DataStore:GetCharacters(GetRealmName(), "Default")) do
+        local bags, bank = DataStore:GetContainerItemCount(character, itemID)
+        local mail = DataStore:GetMailItemCount(character, itemID) or 0
+        local auction = DataStore:GetAuctionHouseItemCount(character, itemID) or 0
+        local inventory = DataStore:GetInventoryItemCount(character, itemID) or 0
+        count = count + bags + (includeBank and bank or 0) + mail + auction + inventory
+    end
+
+    return count
+end
+
+------------------------------------------------------------
+
+function addon:ReportError(error)
+    PlaySound(846) -- "sound/interface/igquestfailed.ogg" classic?
+    addon:Print(string.format("%s %s", self.ColorFontString(L["Error"], "red"), error))
+end
+
+--*------------------------------------------------------------------------
+
 
 -- https://forum.cockos.com/showthread.php?t=221712
 function addon:CloneTable(orig)

@@ -2,9 +2,9 @@ local addonName = ...
 local addon = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
 local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 
-------------------------------------------------------------
-
 local ACD = LibStub("AceConfigDialog-3.0")
+
+------------------------------------------------------------
 
 local format, tonumber, tostring = string.format, tonumber, tostring
 local GetItemIconByID = C_Item.GetItemIconByID

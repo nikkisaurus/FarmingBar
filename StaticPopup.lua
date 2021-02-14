@@ -2,9 +2,6 @@ local addonName = ...
 local addon = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
 local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 
-------------------------------------------------------------
-
-
 --*------------------------------------------------------------------------
 
 -- TODO: Localize text
@@ -107,7 +104,7 @@ StaticPopupDialogs["FARMINGBAR_CONFIRM_REMOVE_BAR"] = {
     button1 = YES,
     button2 = NO,
     OnAccept = function(_, barID)
-        addon:SetBarDisabled(barID)
+        addon:RemoveBar(barID)
     end,
     timeout = 0,
     whileDead = true,
@@ -115,20 +112,6 @@ StaticPopupDialogs["FARMINGBAR_CONFIRM_REMOVE_BAR"] = {
     preferredIndex = 3
 }
 
-------------------------------------------------------------
-
-StaticPopupDialogs["FARMINGBAR_CONFIRM_REMOVE_MULTIPLE_BARS"] = {
-    text = "You are about to delete %d bars. Do you want to continue?",
-    button1 = YES,
-    button2 = NO,
-    OnAccept = function()
-        addon:RemoveSelectedBars(true)
-    end,
-    timeout = 0,
-    whileDead = true,
-    hideOnEscape = true,
-    preferredIndex = 3
-}
 
 --*------------------------------------------------------------------------
 
@@ -199,16 +182,3 @@ StaticPopupDialogs["FARMINGBAR_SAVE_TEMPLATE_ORDER"] = {
     hideOnEscape = true,
     preferredIndex = 3,
 }
-
---*------------------------------------------------------------------------
-
-StaticPopupDialogs["FARMINGBAR_V30_ALPHA2_BARRESET"] = {
-    text = "Farming Bar (v3.0-alpha2): General bar settings have been changed from character to profile specific. Alerts, bar titles, and objectives remain character specific. Your bars have been reset. Objectives have not been altered and can be added back to your bars from the Objective Builder.",
-    button1 = OKAY,
-    timeout = 0,
-    whileDead = true,
-    hideOnEscape = true,
-    preferredIndex = 3
-}
-
---*------------------------------------------------------------------------

@@ -2,8 +2,6 @@ local addonName = ...
 local addon = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
 local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 
-------------------------------------------------------------
-
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 
 ------------------------------------------------------------
@@ -36,6 +34,45 @@ function addon:InitializeBars()
     end
 end
 
+------------------------------------------------------------
+
+function addon:GetBarDBValue(key, barID, isCharDB)
+    local path = self:GetDBValue(isCharDB and "char" or "profile", "bars")[barID]
+    if not key then return path end
+    local keys = {strsplit(".", key)}
+
+    for k, key in pairs(keys) do
+        if k < #keys then
+            path = path[key]
+        end
+    end
+
+    return path[keys[#keys]]
+end
+
+------------------------------------------------------------
+
+function addon:SetBarDBValue(key, value, barID, isCharDB)
+    local keys = {strsplit(".", key)}
+    local path = self:GetDBValue(isCharDB and "char" or "profile", "bars")[barID]
+
+    for k, key in pairs(keys) do
+        if k < #keys then
+            path = path[key]
+        end
+    end
+
+    if value == "_TOGGLE_" then
+        if path[keys[#keys]] then
+            value = false
+        else
+            value = true
+        end
+    end
+
+    path[keys[#keys]] = value
+end
+
 --*------------------------------------------------------------------------
 
 function addon:CreateBar()
@@ -57,22 +94,6 @@ function addon:ClearBar(barID)
     for _, button in pairs(buttons) do
         button:ClearObjective()
     end
-end
-
-------------------------------------------------------------
-
-function addon:GetBarDBValue(key, barID, isCharDB)
-    local path = self:GetDBValue(isCharDB and "char" or "profile", "bars")[barID]
-    if not key then return path end
-    local keys = {strsplit(".", key)}
-
-    for k, key in pairs(keys) do
-        if k < #keys then
-            path = path[key]
-        end
-    end
-
-    return path[keys[#keys]]
 end
 
 ------------------------------------------------------------
@@ -167,68 +188,6 @@ function addon:RemoveBar(barID)
     self:SetDBValue("profile", "enabled", self.tcount(self:GetDBValue("profile", "bars")) > 0)
 
     self:RefreshConfigOptions()
-end
-
-------------------------------------------------------------
-
-function addon:RemoveSelectedBars(confirmed)
-    -- local barButtons = self.Config:GetUserData("barList").children
-
-    -- ------------------------------------------------------------
-
-    -- if confirmed then
-    --     for _, button in addon.pairs(barButtons, function(a, b) return b < a end) do
-    --         if button:GetUserData("selected") then
-    --             self:SetBarDisabled(button:GetBarID())
-    --         end
-    --     end
-    --     return
-    -- end
-
-    -- ------------------------------------------------------------
-
-    -- local selectedButton
-    -- local numSelectedButtons = 0
-    -- for _, button in pairs(barButtons) do
-    --     if button:GetUserData("selected") then
-    --         numSelectedButtons = numSelectedButtons + 1
-    --         selectedButton = button
-    --     end
-    -- end
-
-    -- ------------------------------------------------------------
-
-    -- if numSelectedButtons > 1 then
-    --     local dialog = StaticPopup_Show("FARMINGBAR_CONFIRM_REMOVE_MULTIPLE_BARS", numSelectedButtons)
-    -- else
-    --     local dialog = StaticPopup_Show("FARMINGBAR_CONFIRM_REMOVE_BAR", selectedButton:GetBarTitle())
-    --     if dialog then
-    --         dialog.data = selectedButton:GetBarID()
-    --     end
-    -- end
-end
-
-------------------------------------------------------------
-
-function addon:SetBarDBValue(key, value, barID, isCharDB)
-    local keys = {strsplit(".", key)}
-    local path = self:GetDBValue(isCharDB and "char" or "profile", "bars")[barID]
-
-    for k, key in pairs(keys) do
-        if k < #keys then
-            path = path[key]
-        end
-    end
-
-    if value == "_TOGGLE_" then
-        if path[keys[#keys]] then
-            value = false
-        else
-            value = true
-        end
-    end
-
-    path[keys[#keys]] = value
 end
 
 ------------------------------------------------------------

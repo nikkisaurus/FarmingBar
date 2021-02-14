@@ -2,19 +2,19 @@ local addonName = ...
 local addon = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
 local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 
-------------------------------------------------------------
-
 local ACD = LibStub("AceConfigDialog-3.0")
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 local LSM = LibStub("LibSharedMedia-3.0")
 
 ------------------------------------------------------------
 
-local Type = "FarmingBar_Bar"
-local Version = 2
-
 local abs = math.abs
 local CreateFrame, UIParent = CreateFrame, UIParent
+
+------------------------------------------------------------
+
+local Type = "FarmingBar_Bar"
+local Version = 2
 
 --*------------------------------------------------------------------------
 
