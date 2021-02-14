@@ -226,7 +226,6 @@ end
 
 local function frame_OnReceiveDrag(self)
     local widget = self.obj
-    local hasDragFrame = addon.DragFrame:GetObjective()
 
     if addon.moveButton then
         if addon.moveButton[1] == self.obj then
@@ -234,7 +233,7 @@ local function frame_OnReceiveDrag(self)
         else
             widget:SwapButtons(addon.moveButton)
         end
-    elseif hasDragFrame then
+    elseif addon.DragFrame:GetObjective() then
         print("CreateObjectiveFromDragFrame")
     else
         widget:ClearObjective()
@@ -255,7 +254,7 @@ local function frame_PostClick(self, buttonClicked, ...)
         widget:ClearObjective()
         addon:CreateObjectiveFromCursor(widget)
         return
-    elseif addon.DragFrame:IsVisible() then
+    elseif addon.DragFrame:GetObjective() then
         if addon.moveButton then
             widget:SwapButtons(addon.moveButton)
         else

@@ -14,8 +14,10 @@ local CreateFrame, UIParent = CreateFrame, UIParent
 
 local function DragFrame_OnEvent(self, event, buttonClicked, ...)
     if event == "GLOBAL_MOUSE_DOWN" then
-        self:Clear()
-        addon.moveButton = nil
+        if buttonClicked == "RightButton" or (self:GetObjective() and not strfind(GetMouseFocus():GetName(), "^FarmingBar_Button%d")) then
+            self:Clear()
+            addon.moveButton = nil
+        end
     end
 end
 
