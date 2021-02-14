@@ -14,18 +14,8 @@ local CreateFrame, UIParent = CreateFrame, UIParent
 
 local function DragFrame_OnEvent(self, event, buttonClicked, ...)
     if event == "GLOBAL_MOUSE_DOWN" then
-        local objectiveTitle = self.text:GetText()
-        if buttonClicked == "RightButton" then
-            self:Clear()
-            addon.moveButton = nil
-        elseif buttonClicked == "LeftButton" and objectiveTitle and not strfind(GetMouseFocus():GetName(), "^FarmingBar_Button%d") then
-            local dialog = StaticPopup_Show("FARMINGBAR_CONFIRM_DELETE_OBJECTIVE", objectiveTitle, addon:GetNumButtonsContainingObjective(objectiveTitle))
-            if dialog then
-                dialog.data = objectiveTitle
-            end
-            self:Clear()
-            addon.moveButton = nil
-        end
+        self:Clear()
+        addon.moveButton = nil
     end
 end
 

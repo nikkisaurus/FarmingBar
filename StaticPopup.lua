@@ -11,7 +11,7 @@ StaticPopupDialogs["FARMINGBAR_CONFIRM_DELETE_MULTIPLE_OBJECTIVES"] = {
     button1 = YES,
     button2 = NO,
     OnAccept = function()
-        addon:DeleteObjective()
+        addon:DeleteObjectiveTemplate()
     end,
     timeout = 0,
     whileDead = true,
@@ -22,11 +22,11 @@ StaticPopupDialogs["FARMINGBAR_CONFIRM_DELETE_MULTIPLE_OBJECTIVES"] = {
 ------------------------------------------------------------
 
 StaticPopupDialogs["FARMINGBAR_CONFIRM_DELETE_OBJECTIVE"] = {
-    text = L.Options_ObjectiveBuilder("objective.manage.deleteObjective_confirm"),
+    text = L.Options_ObjectiveBuilder("objective.manage.DeleteObjectiveTemplate_confirm"),
     button1 = YES,
     button2 = NO,
     OnAccept = function(_, objectiveTitle)
-        addon:DeleteObjective(objectiveTitle)
+        addon:DeleteObjectiveTemplate(objectiveTitle)
     end,
     timeout = 0,
     whileDead = true,
@@ -63,7 +63,7 @@ StaticPopupDialogs["FARMINGBAR_CONFIRM_DELETE_OBJECTIVE_USED_IN_TEMPLATE"] = {
     button1 = YES,
     button2 = NO,
     OnAccept = function(_, objectiveTitle)
-        addon:DeleteObjective(objectiveTitle, true)
+        addon:DeleteObjectiveTemplate(objectiveTitle, true)
     end,
     timeout = 0,
     whileDead = true,

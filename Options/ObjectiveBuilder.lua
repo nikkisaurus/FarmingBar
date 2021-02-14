@@ -265,14 +265,14 @@ function addon:GetObjectiveObjectiveBuilderOptions(objectiveTitle)
             name = L["Title"],
             validate = function(_, value)
                 if value == "" then return end
-                return objectiveTitle == value or not self:GetObjectiveInfo(value) or L.ObjectiveExists
+                return objectiveTitle == value or not self:ObjectiveTemplateExists(value) or L.ObjectiveExists
             end,
             get = function(info)
                 return objectiveTitle
             end,
             set = function(info, value)
                 if objectiveTitle == value then return end
-                self:RenameObjective(objectiveTitle, value)
+                self:RenameObjectiveTemplate(objectiveTitle, value)
                 ACD:SelectGroup(addonName, "objectiveBuilder", value)
             end,
         },
@@ -423,16 +423,15 @@ function addon:GetObjectiveObjectiveBuilderOptions(objectiveTitle)
 
                 ------------------------------------------------------------
 
-                deleteObjective = {
+                DeleteObjectiveTemplate = {
                     order = 3,
                     type = "execute",
                     name = L["Delete Objective"],
-                    disabled = true,
                     func = function()
-                        self:DeleteObjective(objectiveTitle)
+                        self:DeleteObjectiveTemplate(objectiveTitle)
                     end,
                     confirm = function()
-                        return format(L.Options_ObjectiveBuilder("objective.manage.deleteObjective_confirm"), objectiveTitle, self:GetNumButtonsContainingObjective(objectiveTitle))
+                        return format(L.Options_ObjectiveBuilder("objective.manage.DeleteObjectiveTemplate_confirm"), objectiveTitle)
                     end,
                 },
             },
@@ -640,20 +639,20 @@ function addon:GetTrackersObjectiveBuilderOptions(objectiveTitle, trackerKey)
             --     end,
             -- },
 
-            -- ------------------------------------------------------------
+            ------------------------------------------------------------
 
-            -- deleteTracker = {
-            --     order = 7,
-            --     type = "execute",
-            --     width = "full",
-            --     name = L["Delete Tracker"],
-            --     func = function()
-            --         self:DeleteTracker(objectiveTitle, trackerKey)
-            --     end,
-            --     confirm = function(...)
-            --         return L.Options_ObjectiveBuilder("tracker.deleteTracker")
-            --     end,
-            -- },
+            deleteTracker = {
+                order = 5,
+                type = "execute",
+                width = "full",
+                name = L["Delete Tracker"],
+                func = function()
+                    self:DeleteTracker(trackers, trackerKey)
+                end,
+                confirm = function(...)
+                    return L.Options_ObjectiveBuilder("tracker.deleteTracker")
+                end,
+            },
         },
     }
 

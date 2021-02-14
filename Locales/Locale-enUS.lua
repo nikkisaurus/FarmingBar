@@ -397,7 +397,7 @@ L.Options_ObjectiveBuilder = function(widget)
         ["cleanup"] = "Permanently deletes unused quick objectives.",
         ["cleanup_confirm"] = "Are you sure you want to cleanup quick objectives? This process is irreversible.",
         ["objective.dropper"] = "Click to place this objective onto a bar.",
-        ["objective.manage.deleteObjective_confirm"] = [["%s" is being tracked on %d button(s). Deleting this objective will remove it from all bars globally. Do you want to continue?]],
+        ["objective.manage.DeleteObjectiveTemplate_confirm"] = [[Are you sure you want to delete the objective template "%s"? Doing so will remove any template links on your bars globally.]],
         ["tracker.deleteTracker"] = [[Are you sure you want to permanently delete this tracker?]],
     }
 

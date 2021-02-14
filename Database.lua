@@ -84,6 +84,12 @@ function addon:InitializeDB()
                             countsFor = 1,
                         },
                     },
+
+                    links = {
+                        -- profileKey = {
+                        --     buttonID, ...
+                        -- }
+                    },
                 },
             },
 

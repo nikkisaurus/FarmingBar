@@ -115,6 +115,28 @@ function addon:CreateObjectiveTemplate(objectiveTitle, overwrite, supressSelect)
     return newObjectiveTitle
 end
 
+------------------------------------------------------------
+
+function addon:DeleteObjectiveTemplate(objectiveTitle, confirmed)
+    self:GetDBValue("global", "objectives")[objectiveTitle] = nil
+    -- self:UpdateExclusions(objectiveTitle)
+    -- self:ClearDeletedObjectives(objectiveTitle)
+    self:RefreshObjectiveBuilderOptions()
+end
+
+------------------------------------------------------------
+
+function addon:RenameObjectiveTemplate(objectiveTitle, newObjectiveTitle)
+    local objectives = self:GetDBValue("global", "objectives")
+    objectives[newObjectiveTitle] = objectives[objectiveTitle]
+    objectives[objectiveTitle] = nil
+
+    -- self:UpdateExclusions(objectiveTitle, newObjectiveTitle)
+    -- self:UpdateRenamedObjectiveButtons(objectiveTitle, newObjectiveTitle)
+
+    self:RefreshObjectiveBuilderOptions()
+end
+
 --*------------------------------------------------------------------------
 
 function addon:GetObjectiveCount(widget, objectiveTitle)
@@ -271,7 +293,7 @@ end
 --     local count = 0
 --     for objectiveTitle, _ in pairs(addon.db.global.objectives) do
 --         if self:IsObjectiveAutoItem(objectiveTitle) and self:GetNumButtonsContainingObjective(objectiveTitle) == 0 then
---             self:DeleteObjective(objectiveTitle)
+--             self:DeleteObjectiveTemplate(objectiveTitle)
 --             count = count + 1
 --         end
 --     end
@@ -370,7 +392,7 @@ end
 
 ------------------------------------------------------------
 
--- function addon:DeleteObjective(objectiveTitle, confirmed)
+-- function addon:DeleteObjectiveTemplate(objectiveTitle, confirmed)
 --     -- Check if objective is used in a template and confirm deletion
 --     local templateContainsObjective = self:TemplateContainsObjective(objectiveTitle)
 --     if not confirmed and templateContainsObjective > 0 then
@@ -498,7 +520,7 @@ end
 -- end
 ------------------------------------------------------------
 
--- function addon:RenameObjective(objectiveTitle, newObjectiveTitle)
+-- function addon:RenameObjectiveTemplate(objectiveTitle, newObjectiveTitle)
 --     addon.db.global.objectives[newObjectiveTitle] = addon.db.global.objectives[objectiveTitle]
 --     addon.db.global.objectives[objectiveTitle] = nil
 

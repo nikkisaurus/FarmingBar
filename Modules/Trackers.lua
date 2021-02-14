@@ -61,9 +61,20 @@ end
 function addon:CreateTracker(trackers, trackerType, trackerID)
     local trackerKey = strupper(trackerType)..":"..trackerID
     local tracker =  trackers[trackerKey]
-    tracker.order = self.tcount(trackers)
+    local lastIndex = 0
+    for k, v in pairs(trackers) do
+        lastIndex = max(v.order, lastIndex)
+    end
+    tracker.order = lastIndex + 1
     self:RefreshObjectiveBuilderOptions()
     return trackerKey
+end
+
+------------------------------------------------------------
+
+function addon:DeleteTracker(trackers, trackerKey)
+    trackers[trackerKey] = nil
+    self:RefreshObjectiveBuilderOptions()
 end
 
 --*------------------------------------------------------------------------
