@@ -166,6 +166,7 @@ L["Objective Builder"] = true
 L["Rename"] = true
 L["Condition"] = true
 L["Trackers"] = true
+L["Toggle Bar Enabled"] = true
 L["TRUE"] = true
 L["Type"] = true
 

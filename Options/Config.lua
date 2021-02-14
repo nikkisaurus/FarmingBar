@@ -38,11 +38,49 @@ function addon:GetBarConfigOptions(barID)
                 inline = true,
                 name = L["Manage"],
                 args = {
-                    RemoveBar = {
+                    ToggleBarDisabled = {
                         order = 1,
                         type = "select",
                         width = "full",
+                        name = L["Toggle Bar Enabled"],
+                        disabled = function()
+                            return self.tcount(self.bars) == 0
+                        end,
+                        values = function()
+                            local values = {}
+                            local bars = self:GetDBValue("profile", "bars")
+
+                            for barID, _ in pairs(bars) do
+                                values[barID] = L["Bar"].." "..barID
+                            end
+
+                            return values
+                        end,
+                        sorting = function()
+                            local sorting = {}
+                            local bars = self:GetDBValue("profile", "bars")
+
+                            for barID, _ in pairs(bars) do
+                                tinsert(sorting, barID)
+                            end
+
+                            return sorting
+                        end,
+                        set = function(_, barID)
+                            self:SetBarDisabled(barID, "_TOGGLE_")
+                        end,
+                    },
+
+                    ------------------------------------------------------------
+
+                    RemoveBar = {
+                        order = 2,
+                        type = "select",
+                        width = "full",
                         name = L["Remove Bar"],
+                        disabled = function()
+                            return self.tcount(self.bars) == 0
+                        end,
                         values = function()
                             local values = {}
                             local bars = self:GetDBValue("profile", "bars")
@@ -74,7 +112,7 @@ function addon:GetBarConfigOptions(barID)
                     ------------------------------------------------------------
 
                     addBar = {
-                        order = 2,
+                        order = 3,
                         type = "execute",
                         width = "full",
                         name = L["Add Bar"],
@@ -421,7 +459,7 @@ function addon:GetBarConfigOptions(barID)
                 inline = true,
                 name = L["Manage"],
                 args = {
-                    SetBarDisabled = {
+                    RemoveBar = {
                         order = 1,
                         type = "execute",
                         name = L["Remove Bar"],
@@ -429,7 +467,7 @@ function addon:GetBarConfigOptions(barID)
                             return format(L.ConfirmRemoveBar, barID)
                         end,
                         func = function()
-                            self:SetBarDisabled(barID)
+                            self:RemoveBar(barID)
                         end,
                     },
                 },

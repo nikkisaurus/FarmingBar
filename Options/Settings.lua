@@ -28,10 +28,10 @@ function addon:GetSettingsOptions()
                             inline = true,
                             name = L["Tooltips"],
                             get = function(info)
-                                return self:GetDBValue("global", "tooltips."..info[#info])
+                                return self:GetDBValue("global", "settings.tooltips."..info[#info])
                             end,
                             set = function(info, value)
-                                self:SetDBValue("global", "tooltips."..info[#info], value)
+                                self:SetDBValue("global", "settings.tooltips."..info[#info], value)
                             end,
                             args = {
                                 bar = {
@@ -69,10 +69,10 @@ function addon:GetSettingsOptions()
                             inline = true,
                             name = L["Hints"],
                             get = function(info)
-                                return self:GetDBValue("global", "hints."..info[#info])
+                                return self:GetDBValue("global", "settings.hints."..info[#info])
                             end,
                             set = function(info, value)
-                                self:SetDBValue("global", "hints."..info[#info], value)
+                                self:SetDBValue("global", "settings.hints."..info[#info], value)
                             end,
                             args = {
                                 bars = {
@@ -138,10 +138,10 @@ function addon:GetSettingsOptions()
                             type = "group",
                             inline = true,
                             get = function(info)
-                                return self:GetDBValue("global", "settings."..info[#info])
+                                return self:GetDBValue("global", "settings.misc."..info[#info])
                             end,
                             set = function(info, value)
-                                self:SetDBValue("global", "settings."..info[#info], value)
+                                self:SetDBValue("global", "settings.misc."..info[#info], value)
                             end,
                             name = L["Templates"],
                             args = {
@@ -218,36 +218,15 @@ function addon:GetSettingsOptions()
                             type = "group",
                             inline = true,
                             get = function(info)
-                                return self:GetDBValue("global", "settings."..info[#info])
+                                return self:GetDBValue("global", "settings.misc."..info[#info])
                             end,
                             set = function(info, value)
-                                self:SetDBValue("global", "settings."..info[#info], value)
+                                self:SetDBValue("global", "settings.misc."..info[#info], value)
                             end,
                             name = L["Miscellaneous"],
                             args = {
-                                newQuickObjectives = {
-                                    order = 1,
-                                    type = "select",
-                                    style = "dropdown",
-                                    name = L["New Quick Objectives"],
-                                    desc = L.Options_settings_global_misc_newQuickObjectives,
-                                    values = function(info)
-                                        local info = {
-                                            NEW = L["CREATE NEW"],
-                                            OVERWRITE = L["OVERWRITE"],
-                                            USEEXISTING = L["USE EXISTING"],
-                                            PROMPT = L["PROMPT"],
-                                        }
-
-                                        return info
-                                    end,
-                                    sorting = {"NEW", "OVERWRITE", "USEEXISTING", "PROMPT"},
-                                },
-
-                                ------------------------------------------------------------
-
                                 autoLootOnUse = {
-                                    order = 4,
+                                    order = 1,
                                     type = "toggle",
                                     width = "full",
                                     disabled = true, -- ! temporary until implemented
@@ -265,10 +244,10 @@ function addon:GetSettingsOptions()
                             inline = true,
                             name = L["Slash Commands"],
                             get = function(info)
-                                return self:GetDBValue("global", "commands."..info[#info])
+                                return self:GetDBValue("global", "settings.commands."..info[#info])
                             end,
                             set = function(info, value)
-                                self:SetDBValue("global", "commands."..info[#info], value)
+                                self:SetDBValue("global", "settings.commands."..info[#info], value)
                                 self:RegisterSlashCommands()
                             end,
                             args = {
@@ -320,10 +299,10 @@ function addon:GetSettingsOptions()
                             inline = true,
                             name = L["Debug"],
                             get = function(info)
-                                return self:GetDBValue("global", "debug."..info[#info])
+                                return self:GetDBValue("global", "settings.debug."..info[#info])
                             end,
                             set = function(info, value)
-                                self:SetDBValue("global", "debug."..info[#info], value)
+                                self:SetDBValue("global", "settings.debug."..info[#info], value)
                             end,
                             args = {},
                         },
@@ -552,13 +531,15 @@ function addon:GetSettingsOptions()
     ------------------------------------------------------------
 
     for k, v in pairs(addon.db.global.settings.debug) do
-        options.global.args.general.args.debug.args[k] = {
-            type = "toggle",
-            name = k,
-        }
+        if k ~= "enabled" then
+            options.global.args.general.args.debug.args[k] = {
+                type = "toggle",
+                name = k,
+            }
+        end
     end
 
-    if not addon.db.global.settings.debugMode then
+    if not self:GetDBValue("global", "settings.debug.enabled") then
          options.global.args.general.args.debug = nil
     end
 

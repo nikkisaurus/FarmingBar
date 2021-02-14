@@ -235,6 +235,13 @@ end
 
 function addon:SetBarDisabled(barID, enabled)
     local bars = self:GetDBValue("profile", "bars")
+    if enabled == "_TOGGLE_" then
+        if bars[barID].enabled then
+            enabled = false
+        else
+            enabled = true
+        end
+    end
     bars[barID].enabled = enabled
     if not enabled then
         self.bars[barID]:Release()
