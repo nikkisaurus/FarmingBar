@@ -192,7 +192,9 @@ function addon:GetButtonTooltip(widget, tooltip)
             GameTooltip:AddLine(format("%s:", L["Hints"]))
             for k, v in self.pairs(addon.db.global.settings.keybinds.button, function(a, b) return buttonCommandSort[a] < buttonCommandSort[b] end) do
                 if buttonDB or v.showOnEmpty then
-                    GameTooltip:AddLine(L.ButtonHints(k, v), unpack(self.tooltip_description))
+                    if not (k == "includeBank" and self.tcount(buttonDB.trackers) > 1) then -- Don't show hint to include bank if there's more than 1 tracker
+                        GameTooltip:AddLine(L.ButtonHints(k, v), unpack(self.tooltip_description))
+                    end
                 end
             end
         else
