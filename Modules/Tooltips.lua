@@ -36,6 +36,7 @@ local buttonCommandSort = {
 
 --*------------------------------------------------------------------------
 
+local FarmingBar_Tooltip = CreateFrame("GameTooltip", "FarmingBar_Tooltip", UIParent, "GameTooltipTemplate")
 local tooltipScanner = CreateFrame("Frame")
 
 local showTooltip
@@ -45,14 +46,14 @@ tooltipScanner:SetScript("OnUpdate", function(self)
     local tooltip = widget and widget.GetUserData and widget:GetUserData("tooltip")
     if tooltip and addon[tooltip] and not addon.DragFrame:GetObjective() then
         showTooltip = true
-        GameTooltip:ClearLines()
-        GameTooltip:SetOwner(frame, "ANCHOR_BOTTOMRIGHT", 0, 0)
-        addon[tooltip](addon, widget, GameTooltip)
-        GameTooltip:Show()
+        FarmingBar_Tooltip:ClearLines()
+        FarmingBar_Tooltip:SetOwner(frame, "ANCHOR_BOTTOMRIGHT", 0, 0)
+        addon[tooltip](addon, widget, FarmingBar_Tooltip)
+        FarmingBar_Tooltip:Show()
     elseif showTooltip then
         showTooltip = false
-        GameTooltip:ClearLines()
-        GameTooltip:Hide()
+        FarmingBar_Tooltip:ClearLines()
+        FarmingBar_Tooltip:Hide()
     end
 end)
 
@@ -88,11 +89,11 @@ function addon:GetBarTooltip(widget, tooltip)
     tooltip:AddDoubleLine(L["Movable"], barDB.movable and L["TRUE"] or L["FALSE"], unpack(self.tooltip_keyvalue))
 
     if addon.db.global.settings.hints.bars then
-        GameTooltip_AddBlankLinesToTooltip(GameTooltip, 1)
+        GameTooltip_AddBlankLinesToTooltip(FarmingBar_Tooltip, 1)
         if self:IsTooltipMod() then
-            GameTooltip:AddLine(format("%s:", L["Hints"]))
+            FarmingBar_Tooltip:AddLine(format("%s:", L["Hints"]))
             for k, v in self.pairs(addon.db.global.settings.keybinds.bar, function(a, b) return barCommandSort[a] < barCommandSort[b] end) do
-                GameTooltip:AddLine(L.BarHints(k, v), unpack(self.tooltip_description))
+                FarmingBar_Tooltip:AddLine(L.BarHints(k, v), unpack(self.tooltip_description))
             end
         else
             tooltip:AddDoubleLine(L["Show Hints"]..":", L[addon.db.global.settings.hints.modifier], unpack(self.tooltip_keyvalue))
@@ -117,9 +118,9 @@ function addon:GetButtonTooltip(widget, tooltip)
             tooltip:SetHyperlink(format("%s:%s", string.lower(buttonDB.action), buttonDB.actionInfo))
 
             -- Divider
-            GameTooltip_AddBlankLinesToTooltip(GameTooltip, 1)
-            GameTooltip_AddBlankLinesToTooltip(GameTooltip, 1)
-            GameTooltip:AddTexture(389194, {width = 200, height = 10})
+            GameTooltip_AddBlankLinesToTooltip(FarmingBar_Tooltip, 1)
+            GameTooltip_AddBlankLinesToTooltip(FarmingBar_Tooltip, 1)
+            FarmingBar_Tooltip:AddTexture(389194, {width = 200, height = 10})
         end
 
         tooltip:AddLine(objectiveTitle, 0, 1, 0, 1)
@@ -143,7 +144,12 @@ function addon:GetButtonTooltip(widget, tooltip)
 
             tooltip:AddDoubleLine(L["Count"], self.iformat(count, 1), unpack(self.tooltip_keyvalue))
 
-            tooltip:AddDoubleLine(L["Objective"], objective or L["FALSE"], unpack(self.tooltip_description))
+            if numTrackers == 1 then
+                tooltip:AddDoubleLine(L["Include All Characters"], buttonDB.trackers[self:GetFirstTracker(widget)].includeAllChars and L["TRUE"] or L["FALSE"], unpack(self.tooltip_description))
+                tooltip:AddDoubleLine(L["Include Bank"], buttonDB.trackers[self:GetFirstTracker(widget)].includeBank and L["TRUE"] or L["FALSE"], unpack(self.tooltip_description))
+            end
+
+            tooltip:AddDoubleLine(L["Objective"], objective or L["FALSE"], unpack(self.tooltip_keyvalue))
 
             if objective then
                 tooltip:AddDoubleLine(L["Objective Complete"], count >= objective and floor(count / objective).."x" or L["FALSE"], unpack(self.tooltip_description))
@@ -188,13 +194,13 @@ function addon:GetButtonTooltip(widget, tooltip)
     tooltip:AddDoubleLine("Button ID", widget:GetButtonID(), unpack(self.tooltip_keyvalue))
 
     if addon.db.global.settings.hints.buttons then
-        GameTooltip_AddBlankLinesToTooltip(GameTooltip, 1)
+        GameTooltip_AddBlankLinesToTooltip(FarmingBar_Tooltip, 1)
         if self:IsTooltipMod() then
-            GameTooltip:AddLine(format("%s:", L["Hints"]))
+            FarmingBar_Tooltip:AddLine(format("%s:", L["Hints"]))
             for k, v in self.pairs(addon.db.global.settings.keybinds.button, function(a, b) return buttonCommandSort[a] < buttonCommandSort[b] end) do
                 if buttonDB or v.showOnEmpty then
                     if not (k == "includeBank" and self.tcount(buttonDB.trackers) > 1) then -- Don't show hint to include bank if there's more than 1 tracker
-                        GameTooltip:AddLine(L.ButtonHints(k, v), unpack(self.tooltip_description))
+                        FarmingBar_Tooltip:AddLine(L.ButtonHints(k, v), unpack(self.tooltip_description))
                     end
                 end
             end
@@ -222,8 +228,8 @@ end
 function addon:GetFilterAutoItemsTooltip(widget, tooltip)
     if addon.db.global.settings.hints.ObjectiveBuilder then
         if self:IsTooltipMod() then
-            GameTooltip:AddLine(format("%s:", L["Hint"]))
-            GameTooltip:AddLine(L.FilterAutoItemsHint, unpack(self.tooltip_description))
+            FarmingBar_Tooltip:AddLine(format("%s:", L["Hint"]))
+            FarmingBar_Tooltip:AddLine(L.FilterAutoItemsHint, unpack(self.tooltip_description))
         else
             tooltip:AddDoubleLine(L["Show Hints"]..":", L[addon.db.global.settings.hints.modifier], unpack(self.tooltip_keyvalue))
         end

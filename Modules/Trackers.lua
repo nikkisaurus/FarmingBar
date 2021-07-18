@@ -328,33 +328,33 @@ end
 
 ------------------------------------------------------------
 
--- function addon:GetTrackerDataTable(...)
---     local dataType = select(1, ...)
---     local dataID = select(2, ...)
---     local callback = select(3, ...)
+function addon:GetTrackerDataTable(...)
+    local dataType = select(1, ...)
+    local dataID = select(2, ...)
+    local callback = select(3, ...)
 
---     if dataType == "ITEM" then
---         self:CacheItem(dataID, function(dataType, dataID, callback)
---             local name, _, _, _, _, _, _, _, _, icon = GetItemInfo(dataID)
---             local data = {name = (not name or name == "") and L["Invalid Tracker"] or name, icon = icon or 134400, label = addon:GetTrackerTypeLabel(dataType), trackerType = dataType, trackerID = dataID}
+    if dataType == "ITEM" then
+        self:CacheItem(dataID, function(dataType, dataID, callback)
+            local name, _, _, _, _, _, _, _, _, icon = GetItemInfo(dataID)
+            local data = {name = (not name or name == "") and L["Invalid Tracker"] or name, icon = icon or 134400, label = addon:GetTrackerTypeLabel(dataType), trackerType = dataType, trackerID = dataID}
 
---             if callback then
---                 callback(data)
---             else
---                 return data
---             end
---         end, ...)
---     elseif dataType == "CURRENCY" then
---         local currency = GetCurrencyInfo(tonumber(dataID) or 0)
---         local data = {name = currency and currency.name or L["Invalid Tracker"], icon = currency and currency.iconFileID or 134400, label = addon:GetTrackerTypeLabel(dataType), trackerType = dataType, trackerID = dataID}
+            if callback then
+                callback(data)
+            else
+                return data
+            end
+        end, ...)
+    elseif dataType == "CURRENCY" then
+        local currency = GetCurrencyInfo(tonumber(dataID) or 0)
+        local data = {name = currency and currency.name or L["Invalid Tracker"], icon = currency and currency.iconFileID or 134400, label = addon:GetTrackerTypeLabel(dataType), trackerType = dataType, trackerID = dataID}
 
---         if callback then
---             callback(data)
---         else
---             return data
---         end
---     end
--- end
+        if callback then
+            callback(data)
+        else
+            return data
+        end
+    end
+end
 
 -- ------------------------------------------------------------
 
@@ -376,16 +376,16 @@ end
 --     return addon.db.global.objectives[objectiveTitle] and addon.db.global.objectives[objectiveTitle].trackers[tracker]
 -- end
 
--- ------------------------------------------------------------
+------------------------------------------------------------
 
--- function addon:GetTrackerTypeLabel(trackerType)
---     --@retail@
---     return trackerType == "ITEM" and L["Item ID/Name/Link"] or L["Currency ID/Link"]
---     --@end-retail@
---     --[===[@non-retail@
---     return L["Item ID/Name/Link"]
---     --@end-non-retail@]===]
--- end
+function addon:GetTrackerTypeLabel(trackerType)
+    --@retail@
+    return trackerType == "ITEM" and L["Item ID/Name/Link"] or L["Currency ID/Link"]
+    --@end-retail@
+    --[===[@non-retail@
+    return L["Item ID/Name/Link"]
+    --@end-non-retail@]===]
+end
 
 -- ------------------------------------------------------------
 

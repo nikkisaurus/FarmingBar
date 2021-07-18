@@ -5,6 +5,7 @@
 - Saving and loading templates is now enabled
 - You can now toggle bank inclusion for single tracker objectives
 - You can now toggle account counts for single tracker objectives
+- Fixed tooltip errors from missing tracker information
 
 ## 3.0-alpha8
 - Restructured database
