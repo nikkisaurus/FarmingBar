@@ -126,16 +126,23 @@ end
 function addon:ReindexButtons(barID)
     local bar = self.bars[barID]
     local buttons = bar:GetButtons()
+    local charButtons = self:GetDBValue("char").bars[barID].objectives
     local objectives = {}
 
     ------------------------------------------------------------
 
+    -- Enable all buttons to make sure we don't miss hidden objectives
+    local numVisibleButtons = bar:GetBarDB().numVisibleButtons
+    self:SetBarDBValue("numVisibleButtons", self.maxButtons, barID)
+    bar:UpdateVisibleButtons()
+
+    ------------------------------------------------------------
+
     -- Sort objectives
-    local counter = 1
-    for buttonID, button in pairs(buttons) do
-        if not button:IsEmpty() then
-            objectives[counter] = self:CloneTable(button:GetButtonDB())
-            counter = counter + 1
+    for buttonID = 1, self.maxButtons do
+        local button = buttons[buttonID]
+        if button and not button:IsEmpty() then
+            tinsert(objectives, self:CloneTable(button:GetButtonDB()))
             button:ClearObjective()
         end
     end
@@ -152,6 +159,10 @@ function addon:ReindexButtons(barID)
     end
 
     ------------------------------------------------------------
+
+    -- Restore numVisibleButtons
+    self:SetBarDBValue("numVisibleButtons", numVisibleButtons, barID)
+    bar:UpdateVisibleButtons()
 
     -- Return #objectives for SizeBarToButtons
     return self.tcount(objectives)
