@@ -1,6 +1,6 @@
 # Farming Bar
 ## Version 3.0
-## 3.0-alpha9
+### 3.0-alpha9
 - Reimplemented quick add editbox
 - Keybinds:
   - -- Restored keybind to open Objective Builder
@@ -15,7 +15,7 @@
   - -- Removed forgotten print statement when creating new template
   - -- Added a check for bar tooltips to ensure barDB exists
 
-## 3.0-alpha8
+### 3.0-alpha8
 - Restructured database
 - Restructured behavior of objectives
   - -- Bars and buttons have been rewritten to incorporate this change
@@ -33,7 +33,7 @@
   - -- Fixed bug where clearing objectives did not reset the objective text
   - -- Fixed bug where objectives weren't highlighted when opening button objective editbox
 
-## 3.0-alpha7
+### 3.0-alpha7
 - Bug fixes:
   - Fix issue where item name can't be cached for trackers and causes Options to break
 - Adjusted tooltip tracker counts to be more clear
