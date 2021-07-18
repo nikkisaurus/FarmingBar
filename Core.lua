@@ -83,6 +83,30 @@ end
 
 --*------------------------------------------------------------------------
 
+function addon:RefreshConfig(...)
+    local profile = self:GetDBValue("profile")
+    local bars = profile.bars
+
+    for barID, bar in pairs(self.bars) do
+        bar:Release()
+    end
+
+    wipe(self.bars)
+
+    if self.tcount(bars, nil, "enabled") == 0 and profile.enabled then
+        self:CreateBar()
+    else
+        for barID, barDB in pairs(bars) do
+            if barDB.enabled then
+                self:LoadBar(barID)
+            end
+        end
+    end
+end
+
+
+--*------------------------------------------------------------------------
+
 function addon:RegisterSlashCommands()
     for command, enabled in pairs(self:GetDBValue("global", "settings.commands")) do
         if enabled then

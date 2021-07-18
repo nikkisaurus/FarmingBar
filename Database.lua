@@ -343,6 +343,10 @@ function addon:InitializeDB()
     self.db = LibStub("AceDB-3.0"):New("FarmingBarDB", defaults)
     self.db.global.version = currentVersion
     if backup then self.db.global.db_backup = backup end
+
+    self.db.RegisterCallback(self, "OnProfileChanged", "RefreshConfig")
+    self.db.RegisterCallback(self, "OnProfileCopied", "RefreshConfig")
+    self.db.RegisterCallback(self, "OnProfileReset", "RefreshConfig")
 end
 
 ------------------------------------------------------------

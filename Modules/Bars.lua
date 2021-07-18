@@ -160,24 +160,20 @@ end
 ------------------------------------------------------------
 
 function addon:RemoveAllBars()
-    -- for key, button in addon.pairs(self.Config:GetUserData("barList").children, function(a, b) return b < a end) do
-    --     self:SetBarDisabled(button:GetBarID())
-    --     if key == 2 then return end
-    -- end
+    for barID, bar in pairs(self.bars) do
+        self:RemoveBar(barID)
+    end
 end
 
 ------------------------------------------------------------
 
 function addon:RemoveBar(barID)
-    -- Clear bar
-    self:ClearBar(barID)
-
     -- Release widget
     self.bars[barID]:Release()
 
     -- Remove bar
     tremove(self.db.profile.bars, barID)
-    tremove(self.db.char.bars, barID)
+    -- tremove(self.db.char.bars, barID)
     tremove(self.bars, barID)
 
     -- Update bars for existing widgets

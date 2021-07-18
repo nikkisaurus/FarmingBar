@@ -781,7 +781,6 @@ function addon:SaveTemplate(barID, templateName, overwrite)
             dialog.data2 = templateName
         end
     else
-        print("New")
         addon.db.global.templates[templateName] = {}
 
         -- Add items from bar to the template

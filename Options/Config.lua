@@ -412,6 +412,9 @@ function addon:GetBarConfigOptions(barID)
                         order = 2,
                         type = "select",
                         name = L["Load User Template"],
+                        disabled = function()
+                            return self.tcount(addon.db.global.templates) == 0
+                        end,
                         values = function()
                             local values = {}
 

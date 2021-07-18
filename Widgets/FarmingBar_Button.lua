@@ -597,7 +597,7 @@ local methods = {
         self.Count:SetFont(LSM:Fetch("font", fontDB.face), fontDB.size, fontDB.outline)
         self.Objective:SetFont(LSM:Fetch("font", fontDB.face), fontDB.size, fontDB.outline)
 
-        if not self:GetUserData("barDB") then return end
+        if not self:GetUserData("barDB") or not self:GetUserData("barDB").button then return end
         local db = self:GetUserData("barDB").button.fontStrings[strlower(fontString)]
 
         self[fontString]:ClearAllPoints()

@@ -137,6 +137,7 @@ local methods = {
     ------------------------------------------------------------
 
     OnRelease = function(self)
+        if not self:GetUserData("buttons") then return end
         for _, button in pairs(self:GetUserData("buttons")) do
             button:Release()
         end

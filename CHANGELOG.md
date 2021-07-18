@@ -1,5 +1,11 @@
 # Farming Bar
 ## Version 3.0
+## 3.0-alpha9
+- Bug fixes:
+  - -- Fixed bug where user template dropdown was enabled with no templates
+  - -- Fixed bug where switching or copying profiles would not apply profile specific settings
+  - -- Removed forgotten print statement when creating new template
+
 ## 3.0-alpha8
 - Restructured database
 - Restructured behavior of objectives
@@ -12,11 +18,11 @@
 - You can now toggle account counts for single tracker objectives
 - Button tooltips no longer utilize GameTooltip and won't show information from other addons
 - Tooltip tracker counts have been revised to be more clear: amount toward objective (total item count / amount toward tracker objective)
-  - For example, if you have 400 total of an item, but your tracker counts 2 of the item as 1 for the objective, it will say: 200 (400 / 2)
+  - -- For example, if you have 400 total of an item, but your tracker counts 2 of the item as 1 for the objective, it will say: 200 (400 / 2)
 - Bug fixes:
-  - Fixed tooltip errors from missing tracker information
-  - Fixed bug where clearing objectives did not reset the objective text
-  - Fixed bug where objectives weren't highlighted when opening button objective editbox
+  - -- Fixed tooltip errors from missing tracker information
+  - -- Fixed bug where clearing objectives did not reset the objective text
+  - -- Fixed bug where objectives weren't highlighted when opening button objective editbox
 
 ## 3.0-alpha7
 - Bug fixes:
