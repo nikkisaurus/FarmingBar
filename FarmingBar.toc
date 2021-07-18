@@ -1,9 +1,4 @@
-#@retail@
 ## Interface: 90100
-#@end-retail@
-#@non-retail@
-## Interface: 11304
-#@end-non-retail@
 ## Title: FarmingBar
 ## Author: Nikketa-Hyjal-US
 ## Notes: Action bar to display and track objective goals.

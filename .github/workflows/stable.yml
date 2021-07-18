@@ -24,7 +24,12 @@ jobs:
       - name: Package and release for Classic
         uses: BigWigsMods/packager@master
         with:
-          args: -g 1.13.5
+          args: -g classic
+
+      - name: Package and release for BCC
+        uses: BigWigsMods/packager@master
+        with:
+          args: -g bcc
 
       - name: Package and release for Retail
         uses: BigWigsMods/packager@master
