@@ -499,7 +499,7 @@ local methods = {
             self:SetUserData("count", addon:GetObjectiveCount(self))
         end
 
-        self.Count:SetText(not isEmpty and addon.iformat(self:GetCount(), 2) or "")
+        self.Count:SetText(not isEmpty and addon.iformat(self:GetCount(), 2, true) or "")
         self:UpdateObjective()
 
         if isEmpty then return end
