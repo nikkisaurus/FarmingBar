@@ -713,8 +713,8 @@ addon.templates = {
 --*------------------------------------------------------------------------
 
 function addon:DeleteTemplate(templateName)
-    addon.db.global.templates[templateName] = nil
-    FarmingBar:Print(format(L.TemplateDeleted, templateName))
+    self.db.global.templates[templateName] = nil
+    self:Print(format(L.TemplateDeleted, templateName))
 end
 
 ------------------------------------------------------------

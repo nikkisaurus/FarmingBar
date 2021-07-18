@@ -158,7 +158,9 @@ function addon:CreateObjectiveFromUserTemplate(widget, template, withData)
             for trackerID, trackerInfo in pairs(v) do
                 buttonDB.trackers[trackerID] = {}
                 for key, value in pairs(trackerInfo) do
-                    buttonDB.trackers[trackerID][key] = value
+                    if withData or (key ~= "includeAllChars" and key ~= "includeBank") then -- Only import data if withData is enabled
+                        buttonDB.trackers[trackerID][key] = value
+                    end
                 end
             end
         elseif withData or k ~= "objective" then
