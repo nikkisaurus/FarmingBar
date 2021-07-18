@@ -742,7 +742,6 @@ function addon:GetButtonConfigOptions(barID)
                         order = 3,
                         type = "execute",
                         name = "**"..L["Size Bar to Buttons"],
-                        disabled = true,
                         func = function()
                             self:SizeBarToButtons(barID)
                         end,

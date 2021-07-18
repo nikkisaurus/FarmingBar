@@ -147,20 +147,14 @@ function addon:ReindexButtons(barID)
     ------------------------------------------------------------
 
     -- Add objectives back to bar
-    for k, v in pairs(objectives) do
-        addon:CreateObjectiveFromUserTemplate(buttons[k], v, true)
+    for buttonID, buttonDB in pairs(objectives) do
+        addon:CreateObjectiveFromUserTemplate(buttons[buttonID], buttonDB, true)
     end
-    -- for i = 1, #objectives do
-    --     -- print(objectives[i])
-    --     addon:CreateObjectiveFromUserTemplate(buttons[i], objectives[i], true)
-    --     -- buttons[i]:SetObjectiveID(objectives[i].objectiveTitle, objectives[i].objective)
-    -- end
 
-    -- ------------------------------------------------------------
+    ------------------------------------------------------------
 
-    -- -- Return #objectives for SizeBarToButtons
-    -- return #objectives
-    TESTOBJECTIVES = objectives
+    -- Return #objectives for SizeBarToButtons
+    return self.tcount(objectives)
 end
 
 ------------------------------------------------------------
@@ -224,9 +218,9 @@ end
 ------------------------------------------------------------
 
 function addon:SizeBarToButtons(barID)
-    -- local numObjectives = self:ReindexButtons(barID)
-    -- self:SetBarDBValue("numVisibleButtons", numObjectives, barID)
-    -- self.bars[barID]:UpdateVisibleButtons()
+    local numObjectives = self:ReindexButtons(barID)
+    self:SetBarDBValue("numVisibleButtons", numObjectives, barID)
+    self.bars[barID]:UpdateVisibleButtons()
 end
 
 ------------------------------------------------------------

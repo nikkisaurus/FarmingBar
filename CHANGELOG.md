@@ -7,6 +7,7 @@
 - Objective counts are now rounded down instead of up
 - You can now save and load templates
 - You can now reindex buttons
+- You can now size bar to buttons
 - You can now toggle bank inclusion for single tracker objectives
 - You can now toggle account counts for single tracker objectives
 - Button tooltips no longer utilize GameTooltip and won't show information from other addons
