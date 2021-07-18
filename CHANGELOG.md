@@ -9,6 +9,7 @@
 - You can now toggle bank inclusion for single tracker objectives
 - You can now toggle account counts for single tracker objectives
 - Button tooltips no longer utilize GameTooltip and won't show information from other addons
+- Revised tooltip tracker counts to be even more clear
 - Bug fixes:
   - Fixed tooltip errors from missing tracker information
   - Fixed bug where clearing objectives did not reset the objective text
