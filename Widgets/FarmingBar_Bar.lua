@@ -44,6 +44,13 @@ local postClickMethods = {
 
     ------------------------------------------------------------
 
+    showObjectiveBuilder = function(self, ...)
+        ACD:SelectGroup(addonName, "objectiveBuilder")
+        ACD:Open(addonName)
+    end,
+
+    ------------------------------------------------------------
+
     openHelp = function(self, ...)
         ACD:SelectGroup(addonName, "help")
         ACD:Open(addonName)

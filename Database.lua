@@ -198,6 +198,11 @@ function addon:InitializeDB()
                             button = "RightButton",
                             modifier = "",
                         },
+
+                        showObjectiveBuilder = {
+                            button = "RightButton",
+                            modifier = "ctrl",
+                        },
                     },
 
                     button = {
@@ -216,9 +221,24 @@ function addon:InitializeDB()
                             modifier = "alt",
                         },
 
+                        includeGuildBank = {
+                            button = "LeftButton",
+                            modifier = "alt-shift",
+                        },
+
                         moveObjective = {
                             button = "LeftButton",
                             modifier = "",
+                        },
+
+                        moveObjectiveToBank = {
+                            button = "RightButton",
+                            modifier = "alt-ctrl",
+                        },
+
+                        moveAllToBank = {
+                            button = "LeftButton",
+                            modifier = "alt-ctrl",
                         },
 
                         dragObjective = {
@@ -229,6 +249,11 @@ function addon:InitializeDB()
 
                         showObjectiveEditBox = {
                             button = "LeftButton",
+                            modifier = "ctrl",
+                        },
+
+                        showQuickAddEditBox = {
+                            button = "RightButton",
                             modifier = "ctrl",
                         },
 

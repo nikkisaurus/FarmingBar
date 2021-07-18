@@ -17,20 +17,25 @@ local GetCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo
 
 local barCommandSort = {
     moveBar = 1,
-    configBar = 2,
-    toggleMovable = 3,
-    openSettings = 4,
-    openHelp = 5,
+    toggleMovable = 2,
+    configBar = 3,
+    showObjectiveBuilder = 4,
+    openSettings = 5,
+    openHelp = 6,
 }
 
 local buttonCommandSort = {
-    useItem = 1,
-    clearObjective = 2,
-    moveObjective = 3,
-    dragObjective = 4,
-    includeBank = 5,
-    includeAllChars = 6,
-    showObjectiveEditBox = 7,
+    useItem = 1, -- right
+    clearObjective = 2, -- shift+right
+    moveObjective = 3, -- left
+    dragObjective = 4, -- shift+left drag
+    showObjectiveEditBox = 5, -- ctrl+left
+    showQuickAddEditBox = 6, -- ctrl+right
+    includeAllChars = 7, -- alt+right
+    includeBank = 8, -- alt+left
+    includeGuildBank = 9, -- alt+shift+left
+    moveObjectiveToBank = 10, -- alt+ctrl+right
+    moveAllToBank = 11, -- alt+ctrl+left
 }
 
 --*------------------------------------------------------------------------
@@ -196,10 +201,14 @@ function addon:GetButtonTooltip(widget, tooltip)
         GameTooltip_AddBlankLinesToTooltip(FarmingBar_Tooltip, 1)
         if self:IsTooltipMod() then
             FarmingBar_Tooltip:AddLine(format("%s:", L["Hints"]))
-            for k, v in self.pairs(addon.db.global.settings.keybinds.button, function(a, b) return buttonCommandSort[a] < buttonCommandSort[b] end) do
-                if buttonDB or v.showOnEmpty then
-                    if not ((k == "includeBank" or k == "includeAllChars") and self.tcount(buttonDB.trackers) > 1) then -- Don't show hint to include bank or account counts if there's more than 1 tracker
-                        FarmingBar_Tooltip:AddLine(L.ButtonHints(k, v), unpack(self.tooltip_description))
+            if widget:IsEmpty() then
+                FarmingBar_Tooltip:AddLine(L.ButtonHints("showQuickAddEditBox", addon.db.global.settings.keybinds.button.showQuickAddEditBox), unpack(self.tooltip_description))
+            else
+                for k, v in self.pairs(addon.db.global.settings.keybinds.button, function(a, b) return buttonCommandSort[a] < buttonCommandSort[b] end) do
+                    if buttonDB or v.showOnEmpty then
+                        if not ((k == "includeBank" or k == "includeAllChars") and self.tcount(buttonDB.trackers) > 1) then -- Don't show hint to include bank or account counts if there's more than 1 tracker
+                            FarmingBar_Tooltip:AddLine(L.ButtonHints(k, v), unpack(self.tooltip_description))
+                        end
                     end
                 end
             end

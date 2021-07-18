@@ -26,24 +26,6 @@ local postClickMethods = {
 
     ------------------------------------------------------------
 
-    includeAllChars = function(self, ...)
-        local widget = self.obj
-        if not widget:IsEmpty() then
-            widget:ToggleTrackerValue("includeAllChars")
-        end
-    end,
-
-    ------------------------------------------------------------
-
-    includeBank = function(self, ...)
-        local widget = self.obj
-        if not widget:IsEmpty() then
-            widget:ToggleTrackerValue("includeBank")
-        end
-    end,
-
-    ------------------------------------------------------------
-
     moveObjective = function(self, ...)
         local widget = self.obj
 
@@ -64,18 +46,51 @@ local postClickMethods = {
             widget.objectiveEditBox:Show()
         end
     end,
+
+    ------------------------------------------------------------
+
+    showQuickAddEditBox = function(self, ...)
+        self.obj.quickAddEditBox:Show()
+    end,
+
+    ------------------------------------------------------------
+
+    includeAllChars = function(self, ...)
+        local widget = self.obj
+        if not widget:IsEmpty() then
+            widget:ToggleTrackerValue("includeAllChars")
+        end
+    end,
+
+    ------------------------------------------------------------
+
+    includeBank = function(self, ...)
+        local widget = self.obj
+        if not widget:IsEmpty() then
+            widget:ToggleTrackerValue("includeBank")
+        end
+    end,
+
+    ------------------------------------------------------------
+
+    includeGuildBank = function(self, ...)
+        print("Keybind in maintenenance.")
+    end,
+
+    ------------------------------------------------------------
+
+    moveObjectiveToBank = function(self, ...)
+        print("Keybind in maintenenance.")
+    end,
+
+    ------------------------------------------------------------
+
+    moveAllToBank = function(self, ...)
+        print("Keybind in maintenenance.")
+    end,
 }
 
 --*------------------------------------------------------------------------
-
-local function EditBox_OnEditFocusGained(self)
-    self:SetText(self.obj:GetObjective() or "")
-    C_Timer.After(.001, function()
-        self:HighlightText()
-    end)
-end
-
-------------------------------------------------------------
 
 local function EditBox_OnEscapePressed(self)
     self:ClearFocus()
@@ -300,6 +315,15 @@ local function objectiveEditBox_OnEnterPressed(self)
 
     self:ClearFocus()
     self:Hide()
+end
+
+------------------------------------------------------------
+
+local function objectiveEditBox_OnEditFocusGained(self)
+    self:SetText(self.obj:GetObjective() or "")
+    C_Timer.After(.001, function()
+        self:HighlightText()
+    end)
 end
 
 ------------------------------------------------------------
@@ -900,7 +924,7 @@ local function Constructor()
 
     objectiveEditBox:SetScript("OnEnterPressed", objectiveEditBox_OnEnterPressed)
     objectiveEditBox:SetScript("OnEscapePressed", EditBox_OnEscapePressed)
-    objectiveEditBox:SetScript("OnEditFocusGained", EditBox_OnEditFocusGained)
+    objectiveEditBox:SetScript("OnEditFocusGained", objectiveEditBox_OnEditFocusGained)
     objectiveEditBox:SetScript("OnEditFocusLost", EditBox_OnEscapePressed)
     objectiveEditBox:SetScript("OnShow", EditBox_OnShow)
     objectiveEditBox:SetScript("OnTextChanged", EditBox_OnTextChanged)
@@ -920,7 +944,6 @@ local function Constructor()
 
     quickAddEditBox:SetScript("OnEnterPressed", quickAddEditBox_OnEnterPressed)
     quickAddEditBox:SetScript("OnEscapePressed", EditBox_OnEscapePressed)
-    quickAddEditBox:SetScript("OnEditFocusGained", EditBox_OnEditFocusGained)
     quickAddEditBox:SetScript("OnEditFocusLost", EditBox_OnEscapePressed)
     quickAddEditBox:SetScript("OnShow", EditBox_OnShow)
     quickAddEditBox:SetScript("OnTextChanged", EditBox_OnTextChanged)

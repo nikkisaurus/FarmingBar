@@ -78,6 +78,7 @@ L.BarHints = function(command, commandInfo)
         toggleMovable = format("%s to lock or unlock this bar.", GetCommandString(commandInfo)),
         openHelp = format("%s to open the help documentation.", GetCommandString(commandInfo)),
         openSettings = format("%s to configure addon settings.", GetCommandString(commandInfo)),
+        showObjectiveBuilder = format("%s to open the Objective Builder.", GetCommandString(commandInfo)),
     }
 
     return commands[command] or ""
@@ -89,9 +90,13 @@ L.ButtonHints = function(command, commandInfo)
         moveObjective = format("%s to move this objective.", GetCommandString(commandInfo)),
         dragObjective =  format("%s to move this objective.", GetCommandString(commandInfo)),
         clearObjective = format("%s to clear this objective.", GetCommandString(commandInfo)),
-        includeBank = format("%s to toggle bank inclusion.", GetCommandString(commandInfo)),
-        includeAllChars = format("%s to toggle account counts.", GetCommandString(commandInfo)),
         showObjectiveEditBox = format("%s to show the objective editbox.", GetCommandString(commandInfo)),
+        showQuickAddEditBox = format("%s to show the quick add editbox.", GetCommandString(commandInfo)),
+        includeAllChars = format("%s to toggle account counts.", GetCommandString(commandInfo)),
+        includeBank = format("%s to toggle bank inclusion.", GetCommandString(commandInfo)),
+        includeGuildBank = format("%s to toggle account guild bank counts.", GetCommandString(commandInfo)),
+        moveObjectiveToBank = format("%s to move all items until the objective to your bank..", GetCommandString(commandInfo)),
+        moveAllToBank = format("%s to move all items to your bank.", GetCommandString(commandInfo)),
     }
 
     return commands[command] or ""
