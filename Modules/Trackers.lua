@@ -142,7 +142,7 @@ function addon:GetTrackerCount(widget, trackerKey)
     --     end
     -- end
 
-    count = floor(count / trackerInfo.objective)
+    count = floor(count / (trackerInfo.objective or 1))
 
     -- -- If objective is excluded, get max objective
     -- -- If count > max objective while excluded, return max objective

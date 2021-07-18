@@ -403,7 +403,7 @@ function addon:GetBarConfigOptions(barID)
                             return sorting
                         end,
                         set = function(_, templateName)
-                            self:LoadTemplate(barID, templateName)
+                            self:LoadTemplate(nil, barID, templateName)
                         end,
                     },
 
@@ -432,19 +432,19 @@ function addon:GetBarConfigOptions(barID)
                             return sorting
                         end,
                         set = function(_, templateName)
-                            if addon.db.global.settings.preserveTemplateData == "PROMPT" then
+                            if addon.db.global.settings.misc.preserveTemplateData == "PROMPT" then
                                 local dialog = StaticPopup_Show("FARMINGBAR_INCLUDE_TEMPLATE_DATA", templateName)
                                 if dialog then
                                     dialog.data = {barID, templateName}
                                 end
                             else
-                                if addon.db.global.settings.preserveTemplateOrder == "PROMPT" then
+                                if addon.db.global.settings.misc.preserveTemplateOrder == "PROMPT" then
                                     local dialog = StaticPopup_Show("FARMINGBAR_SAVE_TEMPLATE_ORDER", templateName)
                                     if dialog then
-                                        dialog.data = {barID, templateName, addon.db.global.settings.preserveTemplateData == "ENABLED"}
+                                        dialog.data = {barID, templateName, addon.db.global.settings.misc.preserveTemplateData == "ENABLED"}
                                     end
                                 else
-                                    addon:LoadTemplate("user", barID, templateName, addon.db.global.settings.preserveTemplateData == "ENABLED", addon.db.global.settings.preserveTemplateOrder == "ENABLED")
+                                    addon:LoadTemplate("user", barID, templateName, addon.db.global.settings.misc.preserveTemplateData == "ENABLED", addon.db.global.settings.misc.preserveTemplateOrder == "ENABLED")
                                 end
                             end
                         end,

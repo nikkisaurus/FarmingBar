@@ -2,6 +2,7 @@
 ## Version 3.0
 ## 3.0-alpha9
 - Changed counts to round down
+- Saving and loading templates is now enabled
 
 ## 3.0-alpha8
 - Restructured database

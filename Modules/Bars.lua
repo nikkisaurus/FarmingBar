@@ -91,8 +91,12 @@ function addon:ClearBar(barID)
     local bar = self.bars[barID]
     local buttons = bar:GetUserData("buttons")
 
-    for _, button in pairs(buttons) do
-        button:ClearObjective()
+    for buttonID, _ in pairs(self:GetBarDBValue(nil, barID, true).objectives) do
+        if buttons[buttonID] then
+            buttons[buttonID]:ClearObjective()
+        else
+            self.db.char.bars[barID].objectives[buttonID] = nil
+        end
     end
 end
 

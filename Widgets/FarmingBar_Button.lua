@@ -418,9 +418,9 @@ local methods = {
 
     ------------------------------------------------------------
 
-    GetObjectiveTitle = function(self)
-        return self:GetUserData("objectiveTitle")
-    end,
+    -- GetObjectiveTitle = function(self)
+    --     return self:GetUserData("objectiveTitle")
+    -- end,
 
     ------------------------------------------------------------
 

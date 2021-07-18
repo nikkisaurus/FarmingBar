@@ -137,23 +137,23 @@ StaticPopupDialogs["FARMINGBAR_INCLUDE_TEMPLATE_DATA"] = {
     button2 = NO,
     button3 = CANCEL,
     OnAccept = function(_, data)
-        if addon.db.global.settings.preserveTemplateOrder == "PROMPT" then
+        if addon.db.global.settings.misc.preserveTemplateOrder == "PROMPT" then
             local dialog = StaticPopup_Show("FARMINGBAR_SAVE_TEMPLATE_ORDER", data[2])
             if dialog then
                 dialog.data = {data[1], data[2], true}
             end
         else
-            addon:LoadTemplate("user", data[1], data[2], true, addon.db.global.settings.preserveTemplateOrder == "ENABLED")
+            addon:LoadTemplate("user", data[1], data[2], true, addon.db.global.settings.misc.preserveTemplateOrder == "ENABLED")
         end
     end,
     OnCancel = function(_, data)
-        if addon.db.global.settings.preserveTemplateOrder == "PROMPT" then
+        if addon.db.global.settings.misc.preserveTemplateOrder == "PROMPT" then
             local dialog = StaticPopup_Show("FARMINGBAR_SAVE_TEMPLATE_ORDER", data[2])
             if dialog then
                 dialog.data = {data[1], data[2], false}
             end
         else
-            addon:LoadTemplate("user", data[1], data[2], false, addon.db.global.settings.preserveTemplateOrder == "ENABLED")
+            addon:LoadTemplate("user", data[1], data[2], false, addon.db.global.settings.misc.preserveTemplateOrder == "ENABLED")
         end
     end,
     timeout = 0,

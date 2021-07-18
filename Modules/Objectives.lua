@@ -150,6 +150,27 @@ end
 
 ------------------------------------------------------------
 
+function addon:CreateObjectiveFromUserTemplate(widget, template, withData)
+    local buttonDB = widget:GetButtonDB()
+
+    for k, v in pairs(template) do
+        if k == "trackers" then
+            for trackerID, trackerInfo in pairs(v) do
+                buttonDB.trackers[trackerID] = {}
+                for key, value in pairs(trackerInfo) do
+                    buttonDB.trackers[trackerID][key] = value
+                end
+            end
+        elseif withData or k ~= "objective" then
+            buttonDB[k] = v
+        end
+    end
+
+    widget:UpdateLayers()
+end
+
+------------------------------------------------------------
+
 function addon:CreateObjectiveTemplate(objectiveTitle, overwrite, supressSelect)
     local defaultTitle, newObjectiveTitle = L["New"]
     if self:ObjectiveTemplateExists(objectiveTitle or defaultTitle) and not overwrite then
