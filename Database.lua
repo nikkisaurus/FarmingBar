@@ -25,7 +25,7 @@ function addon:InitializeDB()
 
                     objectives = {
                         ["**"] = { -- buttonID
-                            template = false, -- global objective template
+                            -- template = false, -- global objective template
 
                             -- Template
                             title = "",
@@ -85,12 +85,12 @@ function addon:InitializeDB()
                         },
                     },
 
-                    links = {
-                        ["**"] = {},
-                        -- profileKey = {
-                        --     buttonID, ...
-                        -- }
-                    },
+                    -- links = {
+                    --     ["**"] = {},
+                    --     -- profileKey = {
+                    --     --     buttonID, ...
+                    --     -- }
+                    -- },
                 },
             },
 

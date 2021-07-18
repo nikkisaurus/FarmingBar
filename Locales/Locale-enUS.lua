@@ -242,7 +242,6 @@ L["Enable Modifier"] = true
 L["Enabled"] = true
 L["ENABLED"] = true
 L["Face"] = true
-L["Filter quick objectives"] = true
 L["Fonts"] = true
 L["General"] = true
 L["Global"] = true
@@ -255,7 +254,6 @@ L["Miscellaneous"] = true
 L["Modifier"] = true
 L["Modules"] = true
 L["MONOCHROME"] = true
-L["New Quick Objectives"] = true
 L["NONE"] = true
 L["Objectives"] = true
 L["Open"] = true
@@ -285,7 +283,6 @@ L.Options_settings_global_general_hints_enableModifier = "Allows tooltip hints t
 L.Options_settings_global_general_hints_modifier = "Sets the modifier key used to show tooltip hints."
 L.Options_settings_global_misc_autoLootOnUse = "Temporarily enables auto loot when using an item"
 L.Options_settings_global_misc_filterQuickObjectives = "Hides automatically created item objectives from the Objective Builder list"
-L.Options_settings_global_misc_newQuickObjectives = "Sets the behavior when quick objectives are added to a button (create a new objective, overwrite existing objectives, use existing objectives, or prompt)."
 L.Options_settings_global_templates_deleteTemplate = "Permanently deletes a user-defined template."
 L.Options_settings_global_templates_deleteTemplateConfirm = [[Are you sure you want to permanently delete the template "%s"?]]
 L.Options_settings_global_templates_preserveTemplateData = "Includes objective data when loading user-defined templates."
@@ -398,10 +395,8 @@ end
 
 L.Options_ObjectiveBuilder = function(widget)
     local strings = {
-        ["cleanup"] = "Permanently deletes unused quick objectives.",
-        ["cleanup_confirm"] = "Are you sure you want to cleanup quick objectives? This process is irreversible.",
         ["objective.dropper"] = "Click to place this objective onto a bar.",
-        ["objective.manage.DeleteObjectiveTemplate_confirm"] = [[Are you sure you want to delete the objective template "%s"? Doing so will remove any template links on your bars globally.]],
+        ["objective.manage.DeleteObjectiveTemplate_confirm"] = [[Are you sure you want to delete the objective template "%s"?]],
         ["tracker.deleteTracker"] = [[Are you sure you want to permanently delete this tracker?]],
     }
 

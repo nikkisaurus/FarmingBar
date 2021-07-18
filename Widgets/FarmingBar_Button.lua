@@ -414,13 +414,13 @@ local methods = {
     ------------------------------------------------------------
 
     GetObjective = function(self)
-        return self:GetButtonDB().objective
+        return not self:IsEmpty() and self:GetButtonDB().objective
     end,
 
     ------------------------------------------------------------
 
     GetObjectiveTitle = function(self)
-        return self:GetButtonDB().title
+        return not self:IsEmpty() and self:GetButtonDB().title
     end,
 
     ------------------------------------------------------------

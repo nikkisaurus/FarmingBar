@@ -781,6 +781,7 @@ function addon:SaveTemplate(barID, templateName, overwrite)
             dialog.data2 = templateName
         end
     else
+        print("New")
         addon.db.global.templates[templateName] = {}
 
         -- Add items from bar to the template
@@ -788,7 +789,7 @@ function addon:SaveTemplate(barID, templateName, overwrite)
 
         for buttonID, button in pairs(buttons) do
             if not button:IsEmpty() then
-                addon.db.global.templates[templateName][tostring(buttonID)] = button:GetButtonDB()
+                addon.db.global.templates[templateName][tostring(buttonID)] = self:CloneTable(button:GetButtonDB())
             end
         end
 

@@ -71,17 +71,6 @@ StaticPopupDialogs["FARMINGBAR_CONFIRM_DELETE_OBJECTIVE_USED_IN_TEMPLATE"] = {
     preferredIndex = 3,
 }
 
-------------------------------------------------------------
-
-StaticPopupDialogs["FARMINGBAR_OBJECTIVE_CLEANUP_FINISHED"] = {
-    text = "Cleanup finished! %d quick objective(s) processed.",
-    button1 = OKAY,
-    timeout = 0,
-    whileDead = true,
-    hideOnEscape = true,
-    preferredIndex = 3
-}
-
 --*------------------------------------------------------------------------
 
 StaticPopupDialogs["FARMINGBAR_CONFIRM_REMOVE_ALL_BARS"] = {

@@ -84,7 +84,7 @@ function addon:CreateObjectiveFromDragFrame(widget, objectiveInfo)
     local buttonDB = widget:GetButtonDB()
 
     for k, v in pairs(objectiveInfo) do
-        if k ~= "links" then
+        -- if k ~= "links" then
             if k == "trackers" then
                 for key, value in pairs(v) do
                    buttonDB.trackers[key]  = nil
@@ -98,14 +98,14 @@ function addon:CreateObjectiveFromDragFrame(widget, objectiveInfo)
             else
                 buttonDB[k] = objectiveInfo[k]
             end
-        end
+        -- end
     end
 
-    if buttonDB.template then
-        local charKey = UnitName("player").." - "..GetRealmName()
-        local templateLinks = self:GetDBValue("global", "objectives")[buttonDB.template].links
-        tinsert(templateLinks[charKey], widget:GetButtonID())
-    end
+    -- if buttonDB.template then
+    --     local charKey = UnitName("player").." - "..GetRealmName()
+    --     local templateLinks = self:GetDBValue("global", "objectives")[buttonDB.template].links
+    --     tinsert(templateLinks[charKey], widget:GetButtonID())
+    -- end
 
     -- for k, v in pairs(buttonDB) do
     --     if k ~= "template" and k ~= "links" then
