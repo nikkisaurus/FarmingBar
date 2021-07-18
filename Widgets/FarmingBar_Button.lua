@@ -52,13 +52,6 @@ local postClickMethods = {
 
     ------------------------------------------------------------
 
-    showObjectiveBuilder = function(self, ...)
-        -- ACD:SelectGroup(addonName, "objectiveBuilder", self.obj:GetObjectiveTitle())
-        -- ACD:Open(addonName)
-    end,
-
-    ------------------------------------------------------------
-
     showObjectiveEditBox = function(self, ...)
         local widget = self.obj
         if not widget:IsEmpty() then
@@ -70,9 +63,10 @@ local postClickMethods = {
 --*------------------------------------------------------------------------
 
 local function EditBox_OnEditFocusGained(self)
-    self:SetText(self.obj:GetUserData("objective") or "")
-    self:HighlightText()
-    self:SetCursorPosition(strlen(self:GetText()))
+    self:SetText(self.obj:GetObjective() or "")
+    C_Timer.After(.001, function()
+        self:HighlightText()
+    end)
 end
 
 ------------------------------------------------------------
@@ -414,14 +408,14 @@ local methods = {
     ------------------------------------------------------------
 
     GetObjective = function(self)
-        return tonumber(self:GetUserData("objective"))
+        return self:GetButtonDB().objective
     end,
 
     ------------------------------------------------------------
 
-    -- GetObjectiveTitle = function(self)
-    --     return self:GetUserData("objectiveTitle")
-    -- end,
+    GetObjectiveTitle = function(self)
+        return self:GetButtonDB().title
+    end,
 
     ------------------------------------------------------------
 
@@ -758,9 +752,7 @@ local methods = {
     UpdateObjective = function(self)
         local buttonDB = self:GetButtonDB()
 
-        if self:IsEmpty() or buttonDB.objective == 0 then
-            self.Objective:SetText("")
-        elseif buttonDB.objective then
+        if buttonDB and buttonDB.objective and buttonDB.objective > 0 then
             local formattedObjective, objective = addon.iformat(buttonDB.objective, 2)
             self.Objective:SetText(formattedObjective)
 
@@ -774,6 +766,8 @@ local methods = {
             else
                 self.Objective:SetTextColor(1, .82, 0, 1)
             end
+        else
+            self.Objective:SetText("")
         end
     end,
 }

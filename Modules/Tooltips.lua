@@ -31,7 +31,6 @@ local buttonCommandSort = {
     includeBank = 5,
     includeAllChars = 6,
     showObjectiveEditBox = 7,
-    showObjectiveBuilder = 8,
 }
 
 --*------------------------------------------------------------------------

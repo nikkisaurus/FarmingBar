@@ -6,6 +6,8 @@
 - You can now toggle bank inclusion for single tracker objectives
 - You can now toggle account counts for single tracker objectives
 - Fixed tooltip errors from missing tracker information
+- Fixed bug where clearing objectives did not reset the objective text
+- Fixed bug where objectives weren't highlighted when opening button objective editbox
 
 ## 3.0-alpha8
 - Restructured database

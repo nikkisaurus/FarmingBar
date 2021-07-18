@@ -207,8 +207,8 @@ function addon:InitializeDB()
                         },
 
                         includeAllChars = {
-                            button = "LeftButton",
-                            modifier = "alt-shift",
+                            button = "RightButton",
+                            modifier = "alt",
                         },
 
                         includeBank = {
@@ -225,12 +225,6 @@ function addon:InitializeDB()
                             type = "drag",
                             button = "LeftButton",
                             modifier = "shift",
-                        },
-
-                        showObjectiveBuilder = {
-                            showOnEmpty = true,
-                            button = "RightButton",
-                            modifier = "ctrl",
                         },
 
                         showObjectiveEditBox = {

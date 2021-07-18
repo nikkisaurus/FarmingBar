@@ -91,7 +91,6 @@ L.ButtonHints = function(command, commandInfo)
         clearObjective = format("%s to clear this objective.", GetCommandString(commandInfo)),
         includeBank = format("%s to toggle bank inclusion.", GetCommandString(commandInfo)),
         includeAllChars = format("%s to toggle account counts.", GetCommandString(commandInfo)),
-        showObjectiveBuilder = format("%s to show the Objective Builder.", GetCommandString(commandInfo)),
         showObjectiveEditBox = format("%s to show the objective editbox.", GetCommandString(commandInfo)),
     }
 
