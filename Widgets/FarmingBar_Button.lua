@@ -678,7 +678,7 @@ local methods = {
 
             for k, v in pairs(self:GetButtonDB().trackers) do
                 local trackerType, trackerID = addon:ParseTrackerKey(k)
-                itemQuality = trackerType == "ITEM" and max(itemQuality, C_Item.GetItemQualityByID(trackerID)) or itemQuality
+                itemQuality = trackerType == "ITEM" and max(itemQuality, C_Item.GetItemQualityByID(trackerID) or 0) or itemQuality
             end
 
             if itemQuality > 1 then
