@@ -719,74 +719,105 @@ end
 
 ------------------------------------------------------------
 
-function addon:LoadTemplate(templateType, barID, templateName, withData, saveOrder)
-    -- Get template table
-    local template = {}
-    if templateType == "user" then
-        template = addon.db.global.templates[strupper(templateName)]
-    else
-        -- This removes invalid itemIDs (from different game versions) but preserves the actual template.
-        -- It shouldn't be a problem anymore since templates are restructured, but I'll keep this here just in case something gets through.
-        for buttonID, objective in pairs(self.templates[strupper(templateName)]) do
-            if GetItemInfoInstant(objective.itemID) then
-                tinsert(template, objective)
-            else
-                FarmingBar:Print(format(L.InvalidItemID, objective.itemID))
-            end
-        end
-    end
 
-    ------------------------------------------------------------
+------------------------------------------------------------
 
+function addon:LoadTemplate(barID, templateName)
     -- Clear items off the bar
     self:ClearBar(barID)
 
     ------------------------------------------------------------
 
     -- Make sure we have enough visible buttons for the template
-    local bar = self.bars[barID]
-    local buttons = bar:GetUserData("buttons")
-    local numVisibleButtons = bar:GetUserData("barDB").numVisibleButtons
+    local template = self.templates[strupper(templateName)]
     local numTemplateButtons = addon.tcount(template)
+    local bar = self.bars[barID]
 
-    if saveOrder then
-        -- Get the key for the last template item
-        for buttonID, _ in addon.pairs(template) do
-            numTemplateButtons = tonumber(buttonID)
-        end
-    end
-
-    if numVisibleButtons < numTemplateButtons then
+    if bar:GetBarDB().numVisibleButtons < numTemplateButtons then
         self:SetBarDBValue("numVisibleButtons", numTemplateButtons, barID)
         bar:UpdateVisibleButtons()
     end
 
     ------------------------------------------------------------
 
-    -- Add template items to the bar
-    local i = 0
+    -- Add templates to bar
+    local buttons = bar:GetButtons()
     for buttonID, objective in pairs(template) do
-        i = saveOrder and tonumber(buttonID) or (i + 1)
-        local objectiveTitle = objective.objectiveTitle
-
-        if not self:GetObjectiveInfo(objectiveTitle) then
-            if objective.itemID then
-                objectiveTitle = self:CreateObjectiveFromID(objectiveTitle, objective.itemID, nil, true)
-                buttons[i]:SetObjectiveID(objective.objectiveTitle, withData and objective.objective)
-            else
-                self:ReportError(string.format(L.TemplateObjectiveMissing, objectiveTitle))
-            end
-        else
-            buttons[i]:SetObjectiveID(objective.objectiveTitle, withData and objective.objective)
-        end
+        self:CreateObjectiveFromTemplate(buttons[buttonID], objective)
     end
 
     ------------------------------------------------------------
 
     -- Reindex bars
-    if not saveOrder then
-        self:ReindexButtons(barID)
-    end
+    self:ReindexButtons(barID)
+
+    -- -- Get template table
+    -- local template = {}
+    -- if templateType == "user" then
+    --     template = addon.db.global.templates[strupper(templateName)]
+    -- else
+    --     -- This removes invalid itemIDs (from different game versions) but preserves the actual template.
+    --     -- It shouldn't be a problem anymore since templates are restructured, but I'll keep this here just in case something gets through.
+    --     for buttonID, objective in pairs(self.templates[strupper(templateName)]) do
+    --         if GetItemInfoInstant(objective.itemID) then
+    --             tinsert(template, objective)
+    --         else
+    --             FarmingBar:Print(format(L.InvalidItemID, objective.itemID))
+    --         end
+    --     end
+    -- end
+
+    -- ------------------------------------------------------------
+
+    -- -- Clear items off the bar
+    -- self:ClearBar(barID)
+
+    -- ------------------------------------------------------------
+
+    -- -- Make sure we have enough visible buttons for the template
+    -- local bar = self.bars[barID]
+    -- local buttons = bar:GetUserData("buttons")
+    -- local numVisibleButtons = bar:GetUserData("barDB").numVisibleButtons
+    -- local numTemplateButtons = addon.tcount(template)
+
+    -- if saveOrder then
+    --     -- Get the key for the last template item
+    --     for buttonID, _ in addon.pairs(template) do
+    --         numTemplateButtons = tonumber(buttonID)
+    --     end
+    -- end
+
+    -- if numVisibleButtons < numTemplateButtons then
+    --     self:SetBarDBValue("numVisibleButtons", numTemplateButtons, barID)
+    --     bar:UpdateVisibleButtons()
+    -- end
+
+    -- ------------------------------------------------------------
+
+    -- -- Add template items to the bar
+    -- local i = 0
+    -- for buttonID, objective in pairs(template) do
+    --     i = saveOrder and tonumber(buttonID) or (i + 1)
+    --     local objectiveTitle = objective.objectiveTitle
+
+    --     if not self:GetObjectiveInfo(objectiveTitle) then
+    --         if objective.itemID then
+    --             objectiveTitle = self:CreateObjectiveFromID(objectiveTitle, objective.itemID, nil, true)
+    --             buttons[i]:SetObjectiveID(objective.objectiveTitle, withData and objective.objective)
+    --         else
+    --             self:ReportError(string.format(L.TemplateObjectiveMissing, objectiveTitle))
+    --         end
+    --     else
+    --         buttons[i]:SetObjectiveID(objective.objectiveTitle, withData and objective.objective)
+    --     end
+    -- end
+
+    -- ------------------------------------------------------------
+
+    -- -- Reindex bars
+    -- if not saveOrder then
+    --     self:ReindexButtons(barID)
+    -- end
 end
 
 ------------------------------------------------------------

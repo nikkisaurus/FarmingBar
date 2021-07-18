@@ -367,7 +367,7 @@ function addon:GetBarConfigOptions(barID)
                 inline = true,
                 width = "full",
                 name = "*"..L["Template"],
-                disabled = true,
+                -- disabled = true,
                 args = {
                     title = {
                         order = 1,
@@ -403,7 +403,7 @@ function addon:GetBarConfigOptions(barID)
                             return sorting
                         end,
                         set = function(_, templateName)
-                            self:LoadTemplate(nil, barID, templateName)
+                            self:LoadTemplate(barID, templateName)
                         end,
                     },
 

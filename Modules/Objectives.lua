@@ -134,6 +134,22 @@ end
 
 ------------------------------------------------------------
 
+function addon:CreateObjectiveFromTemplate(widget, template)
+    local buttonDB = widget:GetButtonDB()
+
+    buttonDB.title = template.objectiveTitle
+    buttonDB.icon = GetItemIconByID(template.itemID)
+    buttonDB.action = "ITEM"
+    buttonDB.actionInfo = template.itemID
+
+    local tracker =  buttonDB.trackers["ITEM:"..template.itemID]
+    tracker.order = 1
+
+    widget:UpdateLayers()
+end
+
+------------------------------------------------------------
+
 function addon:CreateObjectiveTemplate(objectiveTitle, overwrite, supressSelect)
     local defaultTitle, newObjectiveTitle = L["New"]
     if self:ObjectiveTemplateExists(objectiveTitle or defaultTitle) and not overwrite then
