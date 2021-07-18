@@ -27,15 +27,25 @@ local postClickMethods = {
     ------------------------------------------------------------
 
     includeBank = function(self, ...)
-        -- local widget = self.obj
-        -- local objectiveTitle = widget:GetUserData("objectiveTitle")
+        local widget = self.obj
+        local trackers = widget:GetButtonDB().trackers
 
-        -- if addon:IsObjectiveAutoItem(objectiveTitle) then
-        --     addon:SetTrackerDBValue(objectiveTitle, 1, "includeBank", "_TOGGLE_")
-        --     widget:UpdateLayers()
-        --     -- TODO: Update tracker frame if visible
-        --     -- TODO: Alert bar progress if changed
-        -- end
+        if addon.tcount(trackers) > 1 then
+            -- Toggle for multiple trackers is currently unimplemented
+            return
+        end
+
+        -- Get count before and after toggling bank inclusion to use for alerts
+        local oldCount = addon:GetObjectiveCount(widget)
+        for trackerID, _ in pairs(trackers) do
+            addon:SetTrackerDBValue(trackers, trackerID, "includeBank", "_TOGGLE_")
+        end
+        local newCount = addon:GetObjectiveCount(widget)
+
+        -- Send custom alert
+        self:GetScript("OnEvent")(self, "FARMINGBAR_INCLUDE_BANK", oldCount, newCount)
+
+        widget:UpdateLayers()
     end,
 
     ------------------------------------------------------------
@@ -132,9 +142,12 @@ local function frame_OnEvent(self, event, ...)
     local alerts = addon:GetBarDBValue("alerts", widget:GetBarID(), true)
     local buttonDB = widget:GetButtonDB()
 
-    if event == "BAG_UPDATE" or event == "BAG_UPDATE_COOLDOWN" or event == "CURRENCY_DISPLAY_UPDATE" then
-        local oldCount = widget:GetCount()
-        local newCount = addon:GetObjectiveCount(widget)
+    if event == "BAG_UPDATE" or event == "BAG_UPDATE_COOLDOWN" or event == "CURRENCY_DISPLAY_UPDATE" or event == "FARMINGBAR_INCLUDE_BANK" then
+        local oldCount, newCount = ...
+        if event ~= "FARMINGBAR_INCLUDE_BANK" then
+            oldCount = widget:GetCount()
+            newCount = addon:GetObjectiveCount(widget)
+        end
         local objective = widget:GetUserData("objective")
         local alert, soundID, barAlert
 
