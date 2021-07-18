@@ -13,7 +13,7 @@
   - -- Fixed bug where switching or copying profiles would not apply profile specific settings
   - -- Fixed bug where reindexing bars did not sort objectives on hidden buttons
   - -- Removed forgotten print statement when creating new template
-  - -- Add a check for bar tooltips to ensure barDB exists
+  - -- Added a check for bar tooltips to ensure barDB exists
 
 ## 3.0-alpha8
 - Restructured database
