@@ -354,10 +354,10 @@ end
 
 ------------------------------------------------------------
 
-function addon:IsObjectiveBankIncluded(widget)
+function addon:IsObjectiveAutoLayerIncluded(widget, layer)
     local total, included, notIncluded = 0, 0, 0
     for _, v in pairs(widget:GetButtonDB().trackers) do
-        if v.includeBank then
+        if v[layer] then
             included = included + 1
         else
             notIncluded = notIncluded + 1

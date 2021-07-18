@@ -388,10 +388,12 @@ function addon:GetSettingsOptions()
                             desc = L.Options_settings_profile_count_style,
                             values = {
                                 ["CUSTOM"] = L["CUSTOM"],
+                                ["INCLUDEAUTOLAYERS"] = L["INCLUDE ACCOUNT AND BANK"],
+                                ["INCLUDEALLCHARS"] = L["ACCOUNT COUNTS"],
                                 ["INCLUDEBANK"] = L["BANK INCLUSION"],
                                 ["ITEMQUALITY"] = L["ITEM QUALITY"],
                             },
-                            sorting = {"CUSTOM", "INCLUDEBANK", "ITEMQUALITY"},
+                            sorting = {"CUSTOM", "INCLUDEAUTOLAYERS", "INCLUDEALLCHARS", "INCLUDEBANK", "ITEMQUALITY"},
                             get = function(info)
                                 return self:GetDBValue("profile", "style.font.fontStrings.count.style")
                             end,
@@ -435,6 +437,15 @@ function addon:GetSettingsOptions()
                         self:UpdateBars()
                     end,
                     args = {
+                        AccountOverlay = {
+                            order = 1,
+                            type = "toggle",
+                            name = L["Account Counts Overlay"],
+                            desc = L.Options_settings_profile_buttonLayers_AccountOverlay,
+                        },
+
+                        ------------------------------------------------------------
+
                         AutoCastable = {
                             order = 1,
                             type = "toggle",

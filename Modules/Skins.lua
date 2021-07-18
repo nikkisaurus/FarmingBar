@@ -99,6 +99,15 @@ addon.skins = {
                     anchor = "Icon",
                 },
 
+                AccountOverlay = {
+                    texture = [[INTERFACE\ADDONS\FARMINGBAR\MEDIA\4POINTDIAMOND]],
+                    texCoords = {0.1, 0.9, 0.1, 0.9},
+                    color = {1, 33/51, 0, 1},
+                    blendMode = "BLEND",
+                    insets = {-2, -2, -2, -2},
+                    anchor = "Icon",
+                },
+
                 AutoCastable = {
                     texture = "INTERFACE\\BUTTONS\\UI-AUTOCASTABLEOVERLAY",
                     texCoords = {14/64, 49/64, 14/64, 49/64},
@@ -182,6 +191,15 @@ addon.skins = {
                     color = {1, 1, 1, 1},
                     blendMode = "BLEND",
                     insets = {0, 0, 0, 0},
+                    anchor = "Icon",
+                },
+
+                AccountOverlay = {
+                    texture = [[INTERFACE\ADDONS\FARMINGBAR\MEDIA\4POINTDIAMOND]],
+                    texCoords = {0.1, 0.9, 0.1, 0.9},
+                    color = {1, 33/51, 0, 1},
+                    blendMode = "BLEND",
+                    insets = {-2, -2, -2, -2},
                     anchor = "Icon",
                 },
 

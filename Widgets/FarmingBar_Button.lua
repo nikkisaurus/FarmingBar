@@ -27,13 +27,19 @@ local postClickMethods = {
     ------------------------------------------------------------
 
     includeAllChars = function(self, ...)
-        self.obj:ToggleTrackerValue("includeAllChars")
+        local widget = self.obj
+        if not widget:IsEmpty() then
+            widget:ToggleTrackerValue("includeAllChars")
+        end
     end,
 
     ------------------------------------------------------------
 
     includeBank = function(self, ...)
-        self.obj:ToggleTrackerValue("includeBank")
+        local widget = self.obj
+        if not widget:IsEmpty() then
+            widget:ToggleTrackerValue("includeBank")
+        end
     end,
 
     ------------------------------------------------------------
@@ -512,8 +518,57 @@ local methods = {
                 local r, g, b = GetItemQualityColor(itemQuality)
                 self.Count:SetTextColor(r, g, b, 1)
             end
+        elseif style.style == "INCLUDEAUTOLAYERS" then
+            local total_char, included_char, notIncluded_char = addon:IsObjectiveAutoLayerIncluded(self, "includeAllChars")
+            local total_bank, included_bank, notIncluded_bank = addon:IsObjectiveAutoLayerIncluded(self, "includeBank")
+
+            if notIncluded_char == total_char and notIncluded_bank == total_bank then
+                -- Neither includeAllChars or includeBank
+                self.Count:SetTextColor(1, 1, 1, 1)
+            elseif included_char == total_char then
+                if included_bank == total_bank then
+                    -- includeAllChars and includeBank
+                    self.Count:SetTextColor(64/255, 224/255, 208/255, 1)
+                else
+                    -- includeAllChars
+                    self.Count:SetTextColor(1, 31/51, 0, 1)
+                end
+            elseif included_bank == total_bank then
+                -- includeBank
+                self.Count:SetTextColor(1, .82, 0, 1)
+            else
+                -- Mixture
+                self.Count:SetTextColor(0.5, 0.5, 0.5, 1)
+            end
+
+            -- local total, included, notIncluded = addon:IsObjectiveAutoLayerIncluded(self, "includeAllChars")
+
+            -- if notIncluded == total  then
+            --     self.Count:SetTextColor(1, 1, 1, 1)
+            -- elseif included == total then
+            --     local total2, included2, notIncluded2 = addon:IsObjectiveAutoLayerIncluded(self, "includeBank")
+
+            --     if notIncluded == total  then
+            --         self.Count:SetTextColor(1, 31/51, 0, 1)
+            --     elseif included == total then
+            --         self.Count:SetTextColor(64/255, 224/255, 208/255, 1)
+            --     else
+            --         self.Count:SetTextColor(.5, .5, .5, 1)
+            --     end
+            -- else
+            --     self.Count:SetTextColor(.5, .5, .5, 1)
+            -- end
+        elseif style.style == "INCLUDEALLCHARS" then
+            local total, included, notIncluded = addon:IsObjectiveAutoLayerIncluded(self, "includeAllChars")
+            if notIncluded == total  then
+                self.Count:SetTextColor(1, 1, 1, 1)
+            elseif included == total then
+                self.Count:SetTextColor(1, 31/51, 0, 1)
+            else
+                self.Count:SetTextColor(.5, .5, .5, 1)
+            end
         elseif style.style == "INCLUDEBANK" then
-            local total, included, notIncluded = addon:IsObjectiveBankIncluded(self)
+            local total, included, notIncluded = addon:IsObjectiveAutoLayerIncluded(self, "includeBank")
             if notIncluded == total  then
                 self.Count:SetTextColor(1, 1, 1, 1)
             elseif included == total then
@@ -673,9 +728,23 @@ local methods = {
 
     ------------------------------------------------------------
 
-    UpdateAutoCastable = function(self)
+    UpdateAutoLayer = function(self)
+        -- AccountOverlay
+        if not self:IsEmpty() and addon:GetDBValue("profile", "style.buttonLayers.AccountOverlay") then
+            local total, included, notIncluded = addon:IsObjectiveAutoLayerIncluded(self, "includeAllChars")
+            if notIncluded == total  then
+                self.AccountOverlay:Hide()
+            else
+                self.AccountOverlay:SetDesaturated(included ~= total and 1)
+                self.AccountOverlay:Show()
+            end
+        else
+            self.AccountOverlay:Hide()
+        end
+
+        -- AutoCastable
         if not self:IsEmpty() and addon:GetDBValue("profile", "style.buttonLayers.AutoCastable") then
-            local total, included, notIncluded = addon:IsObjectiveBankIncluded(self)
+            local total, included, notIncluded = addon:IsObjectiveAutoLayerIncluded(self, "includeBank")
             if notIncluded == total  then
                 self.AutoCastable:Hide()
             else
@@ -740,7 +809,7 @@ local methods = {
         self:SetIcon()
         self:SetCount()
         self:UpdateObjective()
-        self:UpdateAutoCastable()
+        self:UpdateAutoLayer()
         self:UpdateBorder()
         self:UpdateCooldown()
         self:SetAttribute()
@@ -803,12 +872,15 @@ local function Constructor()
     Border:SetAllPoints(frame)
     Border:Hide()
 
-    local AutoCastable = frame:CreateTexture("$parentAutoCastable", "OVERLAY", nil, 2)
+    local AccountOverlay = frame:CreateTexture("$parentAccountOverlay", "OVERLAY", nil, 2)
+    AccountOverlay:SetAllPoints(frame)
+
+    local AutoCastable = frame:CreateTexture("$parentAutoCastable", "OVERLAY", nil, 3)
     AutoCastable:SetAllPoints(frame)
 
-    local Count = frame:CreateFontString(nil, "OVERLAY", nil, 3)
+    local Count = frame:CreateFontString(nil, "OVERLAY", nil, 4)
 
-    local Objective = frame:CreateFontString(nil, "OVERLAY", nil, 3)
+    local Objective = frame:CreateFontString(nil, "OVERLAY", nil, 4)
 
     local Cooldown = CreateFrame("Cooldown", "$parentCooldown", frame, "CooldownFrameTemplate")
     Cooldown:SetAllPoints(frame)
@@ -863,6 +935,7 @@ local function Constructor()
         Icon = Icon,
         Flash = Flash,
         Border = Border,
+        AccountOverlay = AccountOverlay,
         AutoCastable = AutoCastable,
         Count = Count,
         Objective = Objective,

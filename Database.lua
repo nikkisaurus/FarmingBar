@@ -321,7 +321,7 @@ function addon:InitializeDB()
 
                     fontStrings = {
                         count = {
-                            style = "CUSTOM", -- "CUSTOM", "INCLUDEBANK", "ITEMQUALITY" --profile.style.count.type
+                            style = "CUSTOM", -- "CUSTOM", "INCLUDEAUTOLAYERS", "INCLUDEALLCHARS", "INCLUDEBANK", "ITEMQUALITY" --profile.style.count.type
                             color = {1, 1, 1, 1}, --profile.style.count.color
                         },
                     },
@@ -329,6 +329,7 @@ function addon:InitializeDB()
 
                 buttonLayers = {
                     AutoCastable = true, --bank overlay
+                    AccountOverlay = true, -- account overlay
                     Border = true, --item quality
                     Cooldown = true,
                     CooldownEdge = false,

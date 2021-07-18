@@ -219,6 +219,8 @@ L["Remove Bar"] = true
 ------------------------------------------------------------
 
 -- Options\Options.lua
+L["ACCOUNT COUNTS"] = true
+L["Account Counts Overlay"] = true
 L["Alt"] = true
 L["Auto loot items on use"] = true
 L["BANK INCLUSION"] = true
@@ -245,6 +247,7 @@ L["Fonts"] = true
 L["General"] = true
 L["Global"] = true
 L["Hide Objective Info"] = true
+L["INCLUDE ACCOUNT AND BANK"] = true
 L["Item Quality"] = true
 L["ITEM QUALITY"] = true
 L["Keybinds"] = true
@@ -289,6 +292,7 @@ L.Options_settings_global_templates_preserveTemplateData = "Includes objective d
 L.Options_settings_global_templates_preserveTemplateOrder = "Saves the order of objectives loaded onto a bar from user-defined templates."
 
 L.Options_settings_profile_skin = "Sets the skin for bars and buttons."
+L.Options_settings_profile_buttonLayers_AccountOverlay = "Enables the four-point orange diamond border indicating account counts on buttons."
 L.Options_settings_profile_buttonLayers_AutoCastable = "Enables the four-point gold border indicating bank inclusion on buttons."
 L.Options_settings_profile_buttonLayers_Border = "Enables the item quality border on buttons."
 L.Options_settings_profile_buttonLayers_Cooldown = "Enables the item cooldown swipe on buttons."
