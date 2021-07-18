@@ -1,6 +1,7 @@
 # Farming Bar
 ## Version 3.0
 ## 3.0-alpha9
+- Reimplemented quick add editbox
 - Keybinds:
   - Restored keybind to open Objective Builder
   - Restored keybind to open quick add editbox

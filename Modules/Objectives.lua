@@ -134,6 +134,24 @@ end
 
 ------------------------------------------------------------
 
+function addon:CreateObjectiveFromItemID(widget, itemID)
+    local buttonDB = widget:GetButtonDB()
+
+    buttonDB.icon = GetItemIconByID(itemID)
+    buttonDB.action = "ITEM"
+    buttonDB.actionInfo = itemID
+
+    local tracker =  buttonDB.trackers["ITEM:"..itemID]
+    tracker.order = 1
+
+    self:CacheItem(itemID, function(widget, buttonDB, itemID)
+        buttonDB.title = (GetItemInfo(itemID))
+        widget:UpdateLayers()
+    end, widget, buttonDB, itemID)
+end
+
+------------------------------------------------------------
+
 function addon:CreateObjectiveFromTemplate(widget, template)
     local buttonDB = widget:GetButtonDB()
 
