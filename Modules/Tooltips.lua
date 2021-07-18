@@ -75,7 +75,8 @@ end
 
 function addon:GetBarTooltip(widget, tooltip)
     if not addon.db.global.settings.tooltips.bar then return end
-    local barDB = widget:GetUserData("barDB")
+    local barDB = widget:GetBarDB()
+    if not barDB then return end
 
     tooltip:AddLine(self:GetBarTitle(widget:GetBarID()), 0, 1, 0, 1)
 
