@@ -29,8 +29,9 @@ local buttonCommandSort = {
     moveObjective = 3,
     dragObjective = 4,
     includeBank = 5,
-    showObjectiveEditBox = 6,
-    showObjectiveBuilder = 7,
+    includeAllChars = 6,
+    showObjectiveEditBox = 7,
+    showObjectiveBuilder = 8,
 }
 
 --*------------------------------------------------------------------------

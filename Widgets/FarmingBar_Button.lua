@@ -26,26 +26,14 @@ local postClickMethods = {
 
     ------------------------------------------------------------
 
+    includeAllChars = function(self, ...)
+        self.obj:ToggleTrackerValue("includeAllChars")
+    end,
+
+    ------------------------------------------------------------
+
     includeBank = function(self, ...)
-        local widget = self.obj
-        local trackers = widget:GetButtonDB().trackers
-
-        if addon.tcount(trackers) > 1 then
-            -- Toggle for multiple trackers is currently unimplemented
-            return
-        end
-
-        -- Get count before and after toggling bank inclusion to use for alerts
-        local oldCount = addon:GetObjectiveCount(widget)
-        for trackerID, _ in pairs(trackers) do
-            addon:SetTrackerDBValue(trackers, trackerID, "includeBank", "_TOGGLE_")
-        end
-        local newCount = addon:GetObjectiveCount(widget)
-
-        -- Send custom alert
-        self:GetScript("OnEvent")(self, "FARMINGBAR_INCLUDE_BANK", oldCount, newCount)
-
-        widget:UpdateLayers()
+        self.obj:ToggleTrackerValue("includeBank")
     end,
 
     ------------------------------------------------------------
@@ -142,9 +130,9 @@ local function frame_OnEvent(self, event, ...)
     local alerts = addon:GetBarDBValue("alerts", widget:GetBarID(), true)
     local buttonDB = widget:GetButtonDB()
 
-    if event == "BAG_UPDATE" or event == "BAG_UPDATE_COOLDOWN" or event == "CURRENCY_DISPLAY_UPDATE" or event == "FARMINGBAR_INCLUDE_BANK" then
+    if event == "BAG_UPDATE" or event == "BAG_UPDATE_COOLDOWN" or event == "CURRENCY_DISPLAY_UPDATE" or event == "FARMINGBAR_UPDATE_COUNT" then
         local oldCount, newCount = ...
-        if event ~= "FARMINGBAR_INCLUDE_BANK" then
+        if event ~= "FARMINGBAR_UPDATE_COUNT" then
             oldCount = widget:GetCount()
             newCount = addon:GetObjectiveCount(widget)
         end
@@ -664,6 +652,29 @@ local methods = {
         self:UpdateLayers()
         moveButton[1]:UpdateLayers()
         addon.moveButton = nil
+    end,
+
+    ------------------------------------------------------------
+
+    ToggleTrackerValue = function(self, value)
+        local trackers = self:GetButtonDB().trackers
+
+        if addon.tcount(trackers) > 1 then
+            -- Toggle for multiple trackers is currently unimplemented
+            return
+        end
+
+        -- Get count before and after toggling value to use for alerts
+        local oldCount = addon:GetObjectiveCount(self)
+        for trackerID, _ in pairs(trackers) do
+            addon:SetTrackerDBValue(trackers, trackerID, value, "_TOGGLE_")
+        end
+        local newCount = addon:GetObjectiveCount(self)
+
+        -- Send custom alert
+        self.frame:GetScript("OnEvent")(self.frame, "FARMINGBAR_UPDATE_COUNT", oldCount, newCount)
+
+        self:UpdateLayers()
     end,
 
     ------------------------------------------------------------

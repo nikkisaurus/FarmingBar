@@ -206,6 +206,11 @@ function addon:InitializeDB()
                             modifier = "shift",
                         },
 
+                        includeAllChars = {
+                            button = "LeftButton",
+                            modifier = "alt-shift",
+                        },
+
                         includeBank = {
                             button = "LeftButton",
                             modifier = "alt",

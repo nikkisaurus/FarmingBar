@@ -4,6 +4,7 @@
 - Changed counts to round down
 - Saving and loading templates is now enabled
 - You can now toggle bank inclusion for single tracker objectives
+- You can now toggle account counts for single tracker objectives
 
 ## 3.0-alpha8
 - Restructured database

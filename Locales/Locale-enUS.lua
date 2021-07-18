@@ -62,7 +62,7 @@ L.TrackerContextMenuHint = format("%sRight-click|r this button to delete or move
 -- Modules\Tooltips.lua
 local function GetCommandString(commandInfo)
     -- Ctrl+right-click
-    local mods = strupper(strsub(commandInfo.modifier, 1, 1))..strlower(strsub(commandInfo.modifier, 2))
+    local mods = gsub(strupper(strsub(commandInfo.modifier, 1, 1))..strlower(strsub(commandInfo.modifier, 2)), "-", "+") -- Put in title case and replace - with +
     local button = gsub(commandInfo.button, "Button", "")
     button = mods == "" and button or format("+%s", strlower(button))
     local clickType = commandInfo.type and "drag" or "click"
@@ -90,6 +90,7 @@ L.ButtonHints = function(command, commandInfo)
         dragObjective =  format("%s to move this objective.", GetCommandString(commandInfo)),
         clearObjective = format("%s to clear this objective.", GetCommandString(commandInfo)),
         includeBank = format("%s to toggle bank inclusion.", GetCommandString(commandInfo)),
+        includeAllChars = format("%s to toggle account counts.", GetCommandString(commandInfo)),
         showObjectiveBuilder = format("%s to show the Objective Builder.", GetCommandString(commandInfo)),
         showObjectiveEditBox = format("%s to show the objective editbox.", GetCommandString(commandInfo)),
     }
