@@ -3,11 +3,11 @@
 ## 3.0-alpha9
 - Reimplemented quick add editbox
 - Keybinds:
-  - Restored keybind to open Objective Builder
-  - Restored keybind to open quick add editbox
-  - Added include account guild bank counts (in maintenance)
-  - Added move items up to objective to bank (in maintenance)
-  - Added move items to bank (in maintenance)
+  - -- Restored keybind to open Objective Builder
+  - -- Restored keybind to open quick add editbox
+  - -- Added include account guild bank counts (in maintenance)
+  - -- Added move items up to objective to bank (in maintenance)
+  - -- Added move items to bank (in maintenance)
 - Bug fixes:
   - -- Fixed bug where user template dropdown was enabled with no templates
   - -- Fixed bug where switching or copying profiles would not apply profile specific settings
