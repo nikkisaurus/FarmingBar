@@ -1,5 +1,8 @@
 # Farming Bar
 ## Version 3.0
+## 3.0-alpha9
+- Changed counts to round down
+
 ## 3.0-alpha8
 - Restructured database
 - Restructured behavior of objectives
