@@ -531,12 +531,14 @@ end
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 
 function FarmingBarBarTemplateButtonIDEditBox_OnEnterPressed(self, ...)
-    local buttonID = tonumber(self:GetText()) > addon.maxButtons and addon.maxButtons or tonumber(self:GetText())
-    addon.ObjectiveBuilder:Load(self:GetParent():GetParent().buttons[buttonID])
+    if self:GetText() and self:GetText() ~= "" then
+        local buttonID = tonumber(self:GetText()) > addon.maxButtons and addon.maxButtons or tonumber(self:GetText())
+        addon.ObjectiveBuilder:Load(self:GetParent():GetParent().buttons[buttonID])
 
-    self:SetText("")
-    self:ClearFocus()
-    self:Hide()
+        self:SetText("")
+        self:ClearFocus()
+        self:Hide()
+    end
 end
 
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
