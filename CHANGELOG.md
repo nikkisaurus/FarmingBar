@@ -1,18 +1,18 @@
 # Farming Bar
 ## Version 3.0
-## 3.0-alpha9
-- Changed counts to round down
-- Saving and loading templates is now enabled
-- You can now toggle bank inclusion for single tracker objectives
-- You can now toggle account counts for single tracker objectives
-- Fixed tooltip errors from missing tracker information
-- Fixed bug where clearing objectives did not reset the objective text
-- Fixed bug where objectives weren't highlighted when opening button objective editbox
-
 ## 3.0-alpha8
 - Restructured database
 - Restructured behavior of objectives
   - -- Bars and buttons have been rewritten to incorporate this change
+- Changed objective counts to round down
+- Saving and loading templates is now enabled
+- You can now toggle bank inclusion for single tracker objectives
+- You can now toggle account counts for single tracker objectives
+- Button tooltips no longer utilize GameTooltip and won't show information from other addons
+- Bug fixes:
+  - Fixed tooltip errors from missing tracker information
+  - Fixed bug where clearing objectives did not reset the objective text
+  - Fixed bug where objectives weren't highlighted when opening button objective editbox
 
 ## 3.0-alpha7
 - Bug fixes:
