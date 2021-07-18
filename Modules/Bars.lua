@@ -124,36 +124,43 @@ end
 ------------------------------------------------------------
 
 function addon:ReindexButtons(barID)
-    -- local bar = self.bars[barID]
-    -- local buttons = bar:GetUserData("buttons")
-    -- local objectives = {}
+    local bar = self.bars[barID]
+    local buttons = bar:GetButtons()
+    local objectives = {}
 
-    -- ------------------------------------------------------------
+    ------------------------------------------------------------
 
-    -- -- Sort objectives
-    -- for buttonID, button in pairs(buttons) do
-    --     local objectiveTitle = button:GetObjectiveTitle()
-    --     if objectiveTitle then
-    --         tinsert(objectives, self.db.char.bars[barID].objectives[buttonID])
-    --         button:ClearObjective()
-    --     end
-    -- end
+    -- Sort objectives
+    local counter = 1
+    for buttonID, button in pairs(buttons) do
+        if not button:IsEmpty() then
+            objectives[counter] = self:CloneTable(button:GetButtonDB())
+            counter = counter + 1
+            button:ClearObjective()
+        end
+    end
 
-    -- sort(objectives, function(a, b)
-    --     return a.objectiveTitle == b.objectiveTitle and ((b.objective or 0) < (a.objective or 0)) or (a.objectiveTitle < b.objectiveTitle)
-    -- end)
+    sort(objectives, function(a, b)
+        return a.title == b.title and ((b.objective or 0) < (a.objective or 0)) or (a.title < b.title)
+    end)
 
-    -- ------------------------------------------------------------
+    ------------------------------------------------------------
 
-    -- -- Add objectives back to bar
+    -- Add objectives back to bar
+    for k, v in pairs(objectives) do
+        addon:CreateObjectiveFromUserTemplate(buttons[k], v, true)
+    end
     -- for i = 1, #objectives do
-    --     buttons[i]:SetObjectiveID(objectives[i].objectiveTitle, objectives[i].objective)
+    --     -- print(objectives[i])
+    --     addon:CreateObjectiveFromUserTemplate(buttons[i], objectives[i], true)
+    --     -- buttons[i]:SetObjectiveID(objectives[i].objectiveTitle, objectives[i].objective)
     -- end
 
     -- ------------------------------------------------------------
 
     -- -- Return #objectives for SizeBarToButtons
     -- return #objectives
+    TESTOBJECTIVES = objectives
 end
 
 ------------------------------------------------------------

@@ -4,12 +4,14 @@
 - Restructured database
 - Restructured behavior of objectives
   - -- Bars and buttons have been rewritten to incorporate this change
-- Changed objective counts to round down
-- Saving and loading templates is now enabled
+- Objective counts are now rounded down instead of up
+- You can now save and load templates
+- You can now reindex buttons
 - You can now toggle bank inclusion for single tracker objectives
 - You can now toggle account counts for single tracker objectives
 - Button tooltips no longer utilize GameTooltip and won't show information from other addons
-- Revised tooltip tracker counts to be even more clear
+- Tooltip tracker counts have been revised to be more clear: amount toward objective (total item count / amount toward tracker objective)
+  - For example, if you have 400 total of an item, but your tracker counts 2 of the item as 1 for the objective, it will say: 200 (400 / 2)
 - Bug fixes:
   - Fixed tooltip errors from missing tracker information
   - Fixed bug where clearing objectives did not reset the objective text

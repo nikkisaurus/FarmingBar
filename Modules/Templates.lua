@@ -747,18 +747,18 @@ function addon:LoadTemplate(templateType, barID, templateName, withData, saveOrd
     ------------------------------------------------------------
 
     -- Add templates to bar
-        local buttons = bar:GetButtons()
-        i = 1
-        for buttonID, objective in pairs(template) do
-            if templateType == "user" then
-                id = saveOrder and tonumber(buttonID) or i
-                i = i + 1
+    local buttons = bar:GetButtons()
+    i = 1
+    for buttonID, objective in pairs(template) do
+        if templateType == "user" then
+            id = saveOrder and tonumber(buttonID) or i
+            i = i + 1
 
-                self:CreateObjectiveFromUserTemplate(buttons[id], objective, withData)
-            else
-                self:CreateObjectiveFromTemplate(buttons[buttonID], objective)
-            end
+            self:CreateObjectiveFromUserTemplate(buttons[id], objective, withData)
+        else
+            self:CreateObjectiveFromTemplate(buttons[buttonID], objective)
         end
+    end
 
     ------------------------------------------------------------
 
