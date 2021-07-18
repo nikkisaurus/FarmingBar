@@ -150,7 +150,7 @@ function addon:GetButtonTooltip(widget, tooltip)
 
             tooltip:AddDoubleLine(L["Objective"], objective or L["FALSE"], unpack(self.tooltip_keyvalue))
 
-            if objective then
+            if objective and objective > 0 then
                 tooltip:AddDoubleLine(L["Objective Complete"], count >= objective and floor(count / objective).."x" or L["FALSE"], unpack(self.tooltip_description))
             end
 
@@ -198,7 +198,7 @@ function addon:GetButtonTooltip(widget, tooltip)
             FarmingBar_Tooltip:AddLine(format("%s:", L["Hints"]))
             for k, v in self.pairs(addon.db.global.settings.keybinds.button, function(a, b) return buttonCommandSort[a] < buttonCommandSort[b] end) do
                 if buttonDB or v.showOnEmpty then
-                    if not (k == "includeBank" and self.tcount(buttonDB.trackers) > 1) then -- Don't show hint to include bank if there's more than 1 tracker
+                    if not ((k == "includeBank" or k == "includeAllChars") and self.tcount(buttonDB.trackers) > 1) then -- Don't show hint to include bank or account counts if there's more than 1 tracker
                         FarmingBar_Tooltip:AddLine(L.ButtonHints(k, v), unpack(self.tooltip_description))
                     end
                 end
