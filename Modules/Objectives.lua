@@ -270,42 +270,95 @@ function addon:GetObjectiveCount(widget, objectiveTitle)
         -- The first nested tables will use item counts before following tables; this means the order matters!
         -- E.g. if you want to make as many of your least material required, put that first and then any remaining mats can go toward the following table
         -- Nested tables should be key value pairs where key is in the format t%d, where %d is the tracker number, and value is the required count
+        -- Alternatively, keys may be an equivalency in the format %dt%d:%dt%d, such that, for example, 10t1:1t2 represents the equivalency between 10 of tracker 1 and 1 of tracker 2
+        -- return {
+        --     {
+        --         t1 = 1,
+        --         ["1t2:1t6"] = 5,
+        --         t3 = 5,
+        --         t4 = 5,
+        --         t5 = 5,
+        --     }
+        -- }
+
+        -- Distribute equivalency evenly among multiple trackers:
+        -- return {
+        --     {
+        --         t1 = 1,
+        --         ["(10t2, 10t3, 10t4, 10t5):1t6"] = 5,
+        --     }
+        -- }
+
+        -- Distribute equivalency evenly among multiple trackers:
+        -- return {
+        --     {
+        --         t1 = 1,
+        --         ["(10t2, 10t3, 10t4, 10t5):1t6"] = 5,
+        --     }
+        -- }
+
+        -- Usage example: 1 Blood of Sargeras is equal to 10 Dreamleaf, Fjarnskaggl, Foxflower, or Aethril
+        -- To
         -- Objective saved in trackerInfo will not be used in custom conditions
+
+        -- Validate custom condition
         local customCondition = addon:ValidateCustomCondition(buttonDB.conditionInfo)
-
         if customCondition and customCondition ~= "" then
-            local countsUsed = {}
+            local countsUsed = {} -- Keeps track of items already counted toward the objective
+
             for key, objectiveGroup in pairs(customCondition) do
-                local pendingCount
-                for trackerID, objective in pairs(objectiveGroup) do
-                    -- Get the trackerKey from the sort position
-                    local trackerKey = self:GetTrackerKey(widget, tonumber(strmatch(trackerID, "^t(%d+)$")))
+                local pendingCount -- Count to be added to running total
 
-                    local trackerInfo = buttonDB.trackers[trackerKey]
-                    if trackerInfo then
-                        local info = {}
-                        for k, v in pairs(trackerInfo) do
-                            if k ~= "objective" then
-                                info[k] = v
-                            end
-                        end
+                for trackerKey, overrideObjective in self.pairs(objectiveGroup) do
+                    local ratio1, key1, ratio2, key2 = strmatch(trackerKey, "^(%d+)t(%d+):(%d+)t(%d+)$")
+                    key1 = self:GetTrackerKey(widget, tonumber(key1) or tonumber(strmatch(trackerKey, "^t(%d+)$")))
 
-                        local trackerCount = addon:GetTrackerCount(widget, trackerKey, objective)
-                        local used = countsUsed[trackerKey]
+                    -- Get the count for key1, which is the initial tracker
+                    local trackerCount = addon:GetTrackerCount(widget, key1, overrideObjective)
 
-                        if used then
-                            trackerCount = ((trackerCount * objective) - used) / objective
-                            trackerCount = trackerCount > 0 and trackerCount or 0
-                        end
-
-                        if not pendingCount then
-                            pendingCount = trackerCount
-                        else
-                            pendingCount = min(pendingCount, trackerCount)
-                        end
-
-                        countsUsed[trackerKey] = (used or 0) + (pendingCount * objective)
+                    -- Track in countsUsed so we don't double dip:
+                    -- Get the current count, if it exists
+                    local used = countsUsed[key1]
+                    -- If it does exist, subtract the amount already used
+                    if used then
+                        trackerCount = ((trackerCount * overrideObjective) - used) / overrideObjective
+                        trackerCount = trackerCount > 0 and trackerCount or 0
                     end
+
+                    -- Check if there's an equivalence set and if so, get the additional counts
+                    local equivPending = 0
+                    if ratio1 then
+                        key2 = self:GetTrackerKey(widget, tonumber(key2))
+                        -- Get the count for key2
+                        local key2Count = addon:GetTrackerCount(widget, key2)
+
+                        -- Track in countsUsed so we don't double dip:
+                        -- Get the current count, if it exists
+                        local used = countsUsed[key2]
+                        -- If it does exist, subtract the amount already used
+                        if used then
+                            key2Count = key2Count - used
+                            key2Count = key2Count > 0 and key2Count or 0
+                        end
+
+                        -- Get the scaled amount
+                        local key1Count = key2Count  * (ratio1 / ratio2)
+
+                        -- Find out how many can go toward key
+                        equivPending = key1Count / overrideObjective
+
+                        countsUsed[key2] = (used or 0) + key2Count
+                    end
+
+                    -- Add count to the pendingCount
+                    if not pendingCount then
+                        pendingCount = trackerCount + equivPending
+                    else
+                        pendingCount = min(pendingCount, trackerCount + equivPending)
+                    end
+
+                    -- Add the counts we just used to the countsUsed table
+                    countsUsed[key1] = (used or 0) + (pendingCount * overrideObjective)
                 end
                 count = count + (pendingCount or 0)
             end
@@ -646,6 +699,7 @@ end
 
 function addon:ValidateCustomCondition(condition)
     -- return {{t1 = 10, t2 = 2, t3 = 3}, {t1 = 5}}
+    -- return {{t1 = 10, ["10t1:1t2"] = 2, t3 = 3}, {t1 = 5}}
 
     if condition == "" then
         -- Clearing custom condition; return blank table to prevent errors in GetObjectiveCount
@@ -673,8 +727,9 @@ function addon:ValidateCustomCondition(condition)
             return false, L.InvalidCustomConditionTable
         else
             for trackerID, objective in pairs(trackerGroup) do
-                local validKey = tonumber(strmatch(trackerID, "^t(%d+)$"))
-                if not validKey then
+                local equivKey = strmatch(trackerID, "^(%d+)t(%d+):(%d+)t(%d+)$")
+
+                if not equivKey and not tonumber(strmatch(trackerID, "^t(%d+)$")) then
                     -- trackerID is not properly formatted
                     return false, L.InvalidCustomConditionID
                 elseif type(objective) ~= "number" or not objective or objective < 1 then

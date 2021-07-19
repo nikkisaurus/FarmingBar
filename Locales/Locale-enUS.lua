@@ -27,7 +27,7 @@ L["Tracked"] = true
 L.InvalidCustomCondition = "Invalid custom condition:"
 L.InvalidCustomConditionReturn = [[Custom conditions must return a table with nested "trackerGroup" tables.]]
 L.InvalidCustomConditionTable = "Nested trackerGroups must be tables."
-L.InvalidCustomConditionID = [[Nested trackerGroup keys must be in the format "t%d", where %d is the tracker ID.]]
+L.InvalidCustomConditionID = [[Nested trackerGroup keys must be in the format "t%d", where %d is the tracker ID or "%dt%d:%dt%d" expressing a ration between two tracker IDs, such that 10t1:1t2 represents the equivalency between 10 of tracker 1 and 1 of tracker 2.]]
 L.InvalidCustomConditionObjective = "Nested trackerGroup values must be an integer >= 0 representing the tracker objective."
 L.InvalidObjectiveTitle = "Invalid objective title."
 L.InvalidTrackerExclusion = "Cannot exclude parent objective."

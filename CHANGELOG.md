@@ -1,6 +1,7 @@
 # Farming Bar
 ## Version 3.0
 ### 3.0-alpha11
+- Added equivalency custom tracker keys
 - Bug fixes:
   - -- Fixed typo in Objective Editor tile
 

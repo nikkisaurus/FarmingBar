@@ -254,7 +254,7 @@ end
 function addon:GetObjectiveButtonTooltip(widget, tooltip)
     local buttonDB = widget:GetButtonDB()
     if not buttonDB then return end
-    local numTrackers = #buttonDB.trackers
+    local numTrackers = self.tcount(buttonDB.trackers)
 
     ------------------------------------------------------------
 
