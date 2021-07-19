@@ -58,7 +58,13 @@ local postClickMethods = {
     includeAllChars = function(self, ...)
         local widget = self.obj
         if not widget:IsEmpty() then
-            widget:ToggleTrackerValue("includeAllChars")
+            if addon.tcount(widget:GetButtonDB().trackers) > 1 then
+                addon:InitializeObjectiveEditorOptions(widget)
+                ACD:SelectGroup(addonName.."ObjectiveEditor", "includeAllChars")
+                ACD:Open(addonName.."ObjectiveEditor")
+            else
+                widget:ToggleTrackerValue("includeAllChars")
+            end
         end
     end,
 
@@ -67,7 +73,13 @@ local postClickMethods = {
     includeBank = function(self, ...)
         local widget = self.obj
         if not widget:IsEmpty() then
-            widget:ToggleTrackerValue("includeBank")
+            if addon.tcount(widget:GetButtonDB().trackers) > 1 then
+                addon:InitializeObjectiveEditorOptions(widget)
+                ACD:SelectGroup(addonName.."ObjectiveEditor", "includeBank")
+                ACD:Open(addonName.."ObjectiveEditor")
+            else
+                widget:ToggleTrackerValue("includeBank")
+            end
         end
     end,
 
@@ -743,11 +755,6 @@ local methods = {
 
     ToggleTrackerValue = function(self, value)
         local trackers = self:GetButtonDB().trackers
-
-        if addon.tcount(trackers) > 1 then
-            -- Toggle for multiple trackers is currently unimplemented
-            return
-        end
 
         -- Get count before and after toggling value to use for alerts
         local oldCount = addon:GetObjectiveCount(self)

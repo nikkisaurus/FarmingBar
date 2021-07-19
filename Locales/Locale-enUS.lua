@@ -63,7 +63,7 @@ L.TrackerContextMenuHint = format("%sRight-click|r this button to delete or move
 local function GetCommandString(commandInfo)
     -- Ctrl+right-click
     local mods = gsub(strupper(strsub(commandInfo.modifier, 1, 1))..strlower(strsub(commandInfo.modifier, 2)), "-", "+") -- Put in title case and replace - with +
-    local button = gsub(commandInfo.button, "Button", "")
+    local button = (button == "LeftButton" or button == "RightButton") and gsub(commandInfo.button, "Button", "") or commandInfo.button
     button = mods == "" and button or format("+%s", strlower(button))
     local clickType = commandInfo.type and "drag" or "click"
 
@@ -158,6 +158,7 @@ L["Help"] = true
 L["Import"] = true
 L["Include All Characters"] = true
 L["Include Bank"] = true
+L["Include Guild Bank"] = true
 L["Invalid Tracker"] = true
 L["Item"] = true
 L["Macrotext"] = true
@@ -168,6 +169,7 @@ L["New Tracker"] = true
 L["None"] = true
 L["Objective"] = true
 L["Objective Builder"] = true
+L["Objective Editor"] = true
 L["Order"] = true
 L["Rename"] = true
 L["Condition"] = true

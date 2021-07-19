@@ -52,7 +52,7 @@ function addon:SetTrackerDBValue(trackers, trackerKey, key, value)
         path[keys[#keys]] = value
     end
 
-    self:RefreshObjectiveBuilderOptions()
+    self:RefreshOptions()
     -- addon:UpdateButtons(objectiveTitle)
 end
 

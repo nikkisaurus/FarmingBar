@@ -31,11 +31,11 @@ local buttonCommandSort = {
     dragObjective = 4, -- shift+left drag
     showObjectiveEditBox = 5, -- ctrl+left
     showQuickAddEditBox = 6, -- ctrl+right
-    includeAllChars = 7, -- alt+right
-    includeBank = 8, -- alt+left
-    includeGuildBank = 9, -- alt+shift+left
-    moveObjectiveToBank = 10, -- alt+ctrl+right
-    moveAllToBank = 11, -- alt+ctrl+left
+    includeAllChars = 8, -- alt+right
+    includeBank = 9, -- alt+left
+    includeGuildBank = 10, -- alt+shift+left
+    moveObjectiveToBank = 11, -- alt+ctrl+right
+    moveAllToBank = 12, -- alt+ctrl+left
 }
 
 --*------------------------------------------------------------------------
@@ -211,9 +211,9 @@ function addon:GetButtonTooltip(widget, tooltip)
             else
                 for k, v in self.pairs(addon.db.global.settings.keybinds.button, function(a, b) return buttonCommandSort[a] < buttonCommandSort[b] end) do
                     if buttonDB or v.showOnEmpty then
-                        if not ((k == "includeBank" or k == "includeAllChars") and self.tcount(buttonDB.trackers) > 1) then -- Don't show hint to include bank or account counts if there's more than 1 tracker
-                            FarmingBar_Tooltip:AddLine(L.ButtonHints(k, v), unpack(self.tooltip_description))
-                        end
+                        FarmingBar_Tooltip:AddLine(L.ButtonHints(k, v), unpack(self.tooltip_description))
+                        -- if not ((k == "includeBank" or k == "includeAllChars") and self.tcount(buttonDB.trackers) > 1) then -- Don't show hint to include bank or account counts if there's more than 1 tracker
+                        -- end
                     end
                 end
             end

@@ -1,6 +1,7 @@
 # Farming Bar
 ## Version 3.0
 ### 3.0-alpha10
+- Implmented objective editor to toggle includeBank and includeAllChars for multi-tracker objectives
 - Bug fixes:
   - -- Fixed error when adding an objective with no trackers to a bar
   - -- Fixed errors preventing custom conditions from being set and used (may be reworked in the future)
