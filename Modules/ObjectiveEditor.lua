@@ -79,7 +79,7 @@ function addon:GetObjectiveEditorIncludeAllCharsOptions()
             order = 0,
             type = "description",
             width = "full",
-            name = format(L.MissingIncludeAllCharsDependecies, red..strjoin("|r, "..red, unpack(missingDependencies)))
+            name = format(L.MissingIncludeAllCharsDependecies, red..strjoin("|r, "..red, unpack(missingDependencies))),
         }
     end
 
