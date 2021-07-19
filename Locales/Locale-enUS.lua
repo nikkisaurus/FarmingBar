@@ -383,6 +383,7 @@ L.ObjectiveExists = "Objectives exists"
 L.TemplateSaved = "All items on bar %d saved as farming template: %s"
 L.TemplateDeleted = [[Template "%s" deleted.]]
 L.InvalidItemID = "Invalid itemID: %d"
+L.MissingIncludeAllCharsDependecies = "The following addons are missing and required for this feature: %s"
 
 L.TemplateObjectiveMissing = [[Missing template objective "%s" not loaded.]]
 

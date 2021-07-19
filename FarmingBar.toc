@@ -9,7 +9,7 @@
 ## Author: Nikketa-Hyjal-US
 
 ## SavedVariables: FarmingBarDB
-## OptionalDeps: DataStore, DataStore_Auctions, DataStore_Containers, DataStore_Inventory, DataStore_Mails
+## OptionalDeps: DataStore, DataStore_Auctions, DataStore_Characters, DataStore_Containers, DataStore_Currency, DataStore_Inventory, DataStore_Mails
 
 ## X-Curse-Project-ID: 351688
 ## X-WoWI-ID: 25440

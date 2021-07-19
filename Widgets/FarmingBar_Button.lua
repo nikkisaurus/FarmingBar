@@ -754,6 +754,18 @@ local methods = {
     ------------------------------------------------------------
 
     ToggleTrackerValue = function(self, value)
+        if value == "includeAllChars" then
+            local missingDependencies = self:IsDataStoreLoaded()
+            if #missingDependencies > 0 then
+                options["missingDependencies"] = {
+                    order = 0,
+                    type = "description",
+                    width = "full",
+                    name = format(L.MissingIncludeAllCharsDependecies, strjoin(", ", unpack(missingDependencies)))
+                }
+            end
+        end
+
         local trackers = self:GetButtonDB().trackers
 
         -- Get count before and after toggling value to use for alerts

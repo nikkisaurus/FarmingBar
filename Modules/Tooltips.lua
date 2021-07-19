@@ -178,7 +178,7 @@ function addon:GetButtonTooltip(widget, tooltip)
 
                         local trackerRawCount
                         if trackerType == "ITEM" then
-                            trackerRawCount = GetItemCount(trackerID, trackerInfo.includeBank)
+                            trackerRawCount = trackerInfo.includeAllChars and self:GetDataStoreItemCount(trackerID, trackerInfo.includeBank) or GetItemCount(trackerID, trackerInfo.includeBank)
                         elseif trackerType == "CURRENCY" and trackerID ~= "" then
                             trackerRawCount = GetCurrencyInfo(trackerID) and GetCurrencyInfo(trackerID).quantity
                         end

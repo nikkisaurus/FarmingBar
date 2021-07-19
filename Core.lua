@@ -160,6 +160,17 @@ function addon:IsDataStoreLoaded()
         tinsert(missing, "DataStore_Containers")
     end
 
+    if not IsAddOnLoaded("DataStore_Characters") then
+        tinsert(missing, "DataStore_Characters")
+    end
+
+    -- Unimplemented
+    --@retail@
+    if not IsAddOnLoaded("DataStore_Currencies") then
+        tinsert(missing, "DataStore_Currencies")
+    end
+    --@end-retail@
+
     if not IsAddOnLoaded("DataStore_Inventory") then
         tinsert(missing, "DataStore_Inventory")
     end
@@ -173,7 +184,7 @@ end
 
 ------------------------------------------------------------
 
-function addon:GetDataStoreCount(itemID, includeBank)
+function addon:GetDataStoreItemCount(itemID, includeBank)
     if #self:IsDataStoreLoaded() > 0 then return end
 
     local count = 0

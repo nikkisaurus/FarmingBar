@@ -76,6 +76,7 @@ end
 ------------------------------------------------------------
 
 function addon:RefreshOptions()
+    self:RefreshObjectiveBuilderOptions()
     LibStub("AceConfigRegistry-3.0"):NotifyChange(addonName)
     LibStub("AceConfigRegistry-3.0"):NotifyChange(addonName.."ObjectiveEditor")
 end

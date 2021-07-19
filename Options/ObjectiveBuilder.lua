@@ -679,5 +679,4 @@ end
 function addon:RefreshObjectiveBuilderOptions()
     if not self.options then return end
     self.options.args.objectiveBuilder.args = self:GetObjectiveBuilderOptions()
-    self:RefreshOptions()
 end

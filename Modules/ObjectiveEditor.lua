@@ -5,6 +5,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 ------------------------------------------------------------
 
 local widget
+local format = string.format
 
 --*------------------------------------------------------------------------
 
@@ -68,7 +69,19 @@ end
 --*------------------------------------------------------------------------
 
 function addon:GetObjectiveEditorIncludeAllCharsOptions()
-    local options = {}
+    local options = {
+    }
+
+    local missingDependencies = self:IsDataStoreLoaded()
+    if #missingDependencies > 0 then
+        local red = LibStub("LibAddonUtils-1.0").ChatColors["RED"]
+        options["missingDependencies"] = {
+            order = 0,
+            type = "description",
+            width = "full",
+            name = format(L.MissingIncludeAllCharsDependecies, red..strjoin("|r, "..red, unpack(missingDependencies)))
+        }
+    end
 
     if widget then
         local buttonDB = widget:GetButtonDB()
