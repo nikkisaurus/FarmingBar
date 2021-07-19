@@ -63,6 +63,7 @@ local postClickMethods = {
                 ACD:SelectGroup(addonName.."ObjectiveEditor", "includeAllChars")
                 ACD:Open(addonName.."ObjectiveEditor")
             else
+                ACD:Close(addonName.."ObjectiveEditor")
                 widget:ToggleTrackerValue("includeAllChars")
             end
         end
@@ -78,6 +79,7 @@ local postClickMethods = {
                 ACD:SelectGroup(addonName.."ObjectiveEditor", "includeBank")
                 ACD:Open(addonName.."ObjectiveEditor")
             else
+                ACD:Close(addonName.."ObjectiveEditor")
                 widget:ToggleTrackerValue("includeBank")
             end
         end
@@ -755,7 +757,7 @@ local methods = {
 
     ToggleTrackerValue = function(self, value)
         if value == "includeAllChars" then
-            local missingDependencies = self:IsDataStoreLoaded()
+            local missingDependencies = addon:IsDataStoreLoaded()
             if #missingDependencies > 0 then
                 options["missingDependencies"] = {
                     order = 0,
