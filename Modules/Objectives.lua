@@ -265,46 +265,51 @@ function addon:GetObjectiveCount(widget, objectiveTitle)
         end
         count = count + (pendingCount or 0)
     elseif buttonDB.condition == "CUSTOM" then
-        -- -- Custom conditions should be a table with nested tables inside
-        -- -- Each nested table is an objectiveGroup which will be evaluated like an objective with an ALL condition
-        -- -- The first nested tables will use item counts before following tables; this means the order matters!
-        -- -- E.g. if you want to make as many of your least material required, put that first and then any remaining mats can go toward the following table
-        -- -- Nested tables should be key value pairs where key is in the format t%d, where %d is the tracker number, and value is the required count
-        -- -- Objective saved in trackerInfo will not be used in custom conditions
-        -- local customCondition = addon:ValidateCustomCondition(buttonDB.customCondition)
+        -- Custom conditions should be a table with nested tables inside
+        -- Each nested table is an objectiveGroup which will be evaluated like an objective with an ALL condition
+        -- The first nested tables will use item counts before following tables; this means the order matters!
+        -- E.g. if you want to make as many of your least material required, put that first and then any remaining mats can go toward the following table
+        -- Nested tables should be key value pairs where key is in the format t%d, where %d is the tracker number, and value is the required count
+        -- Objective saved in trackerInfo will not be used in custom conditions
+        local customCondition = addon:ValidateCustomCondition(buttonDB.conditionInfo)
 
-        -- if customCondition and customCondition ~= "" then
-        --     local countsUsed = {}
-        --     for key, objectiveGroup in pairs(customCondition) do
-        --         local pendingCount
-        --         for trackerID, objective in pairs(objectiveGroup) do
-        --             trackerID = tonumber(strmatch(trackerID, "^t(%d+)$"))
-        --             local trackerInfo = buttonDB.trackers[trackerID]
-        --             if trackerInfo then
-        --                 local info = {}
-        --                 for k, v in pairs(trackerInfo) do
-        --                     info[k] = k ~= "objective" and v or objective
-        --                 end
-        --                 local trackerCount = addon:GetTrackerCount(objectiveTitle, info)
-        --                 local used = countsUsed[trackerID]
+        if customCondition and customCondition ~= "" then
+            local countsUsed = {}
+            for key, objectiveGroup in pairs(customCondition) do
+                local pendingCount
+                for trackerID, objective in pairs(objectiveGroup) do
+                    -- Get the trackerKey from the sort position
+                    local trackerKey = self:GetTrackerKey(widget, tonumber(strmatch(trackerID, "^t(%d+)$")))
 
-        --                 if used then
-        --                     trackerCount = ((trackerCount * objective) - used) / objective
-        --                     trackerCount = trackerCount > 0 and trackerCount or 0
-        --                 end
+                    local trackerInfo = buttonDB.trackers[trackerKey]
+                    if trackerInfo then
+                        local info = {}
+                        for k, v in pairs(trackerInfo) do
+                            if k ~= "objective" then
+                                info[k] = v
+                            end
+                        end
 
-        --                 if not pendingCount then
-        --                     pendingCount = trackerCount
-        --                 else
-        --                     pendingCount = min(pendingCount, trackerCount)
-        --                 end
+                        local trackerCount = addon:GetTrackerCount(widget, trackerKey, objective)
+                        local used = countsUsed[trackerKey]
 
-        --                 countsUsed[trackerID] = (used or 0) + (pendingCount * objective)
-        --             end
-        --         end
-        --         count = count + (pendingCount or 0)
-        --     end
-        -- end
+                        if used then
+                            trackerCount = ((trackerCount * objective) - used) / objective
+                            trackerCount = trackerCount > 0 and trackerCount or 0
+                        end
+
+                        if not pendingCount then
+                            pendingCount = trackerCount
+                        else
+                            pendingCount = min(pendingCount, trackerCount)
+                        end
+
+                        countsUsed[trackerKey] = (used or 0) + (pendingCount * objective)
+                    end
+                end
+                count = count + (pendingCount or 0)
+            end
+        end
     end
 
     return count > 0 and count or 0
@@ -639,46 +644,46 @@ end
 
 ------------------------------------------------------------
 
--- function addon:ValidateCustomCondition(condition)
---     -- return {{t1 = 10, t2 = 2, t3 = 3}, {t1 = 5}}
+function addon:ValidateCustomCondition(condition)
+    -- return {{t1 = 10, t2 = 2, t3 = 3}, {t1 = 5}}
 
---     if condition == "" then
---         -- Clearing custom condition; return blank table to prevent errors in GetObjectiveCount
---         return {}
---     elseif not strfind(condition, "return") then
---         -- Invalid format, missing return
---         return false, L.InvalidCustomConditionReturn
---     end
+    if condition == "" then
+        -- Clearing custom condition; return blank table to prevent errors in GetObjectiveCount
+        return {}
+    elseif not strfind(condition, "return") then
+        -- Invalid format, missing return
+        return false, L.InvalidCustomConditionReturn
+    end
 
---     local func, err = loadstring(condition)
---     -- Syntax error
---     if err then
---         return false, L.invalidSyntax(err)
---     end
+    local func, err = loadstring(condition)
+    -- Syntax error
+    if err then
+        return false, L.invalidSyntax(err)
+    end
 
---     local tbl = func()
---     -- Return isn't a table
---     if type(tbl) ~= "table" then
---         return false, L.InvalidCustomConditionReturn
---     end
+    local tbl = func()
+    -- Return isn't a table
+    if type(tbl) ~= "table" then
+        return false, L.InvalidCustomConditionReturn
+    end
 
---     for _, trackerGroup in pairs(tbl) do
---         if type(trackerGroup) ~= "table" then
---             -- trackerGroup is not a table
---             return false, L.InvalidCustomConditionTable
---         else
---             for trackerID, objective in pairs(trackerGroup) do
---                 local validKey = tonumber(strmatch(trackerID, "^t(%d+)$"))
---                 if not validKey then
---                     -- trackerID is not properly formatted
---                     return false, L.InvalidCustomConditionID
---                 elseif type(objective) ~= "number" or not objective or objective < 1 then
---                     -- objective is not a number
---                     return false, L.InvalidCustomConditionObjective
---                 end
---             end
---         end
---     end
+    for _, trackerGroup in pairs(tbl) do
+        if type(trackerGroup) ~= "table" then
+            -- trackerGroup is not a table
+            return false, L.InvalidCustomConditionTable
+        else
+            for trackerID, objective in pairs(trackerGroup) do
+                local validKey = tonumber(strmatch(trackerID, "^t(%d+)$"))
+                if not validKey then
+                    -- trackerID is not properly formatted
+                    return false, L.InvalidCustomConditionID
+                elseif type(objective) ~= "number" or not objective or objective < 1 then
+                    -- objective is not a number
+                    return false, L.InvalidCustomConditionObjective
+                end
+            end
+        end
+    end
 
---     return tbl
--- end
+    return tbl
+end

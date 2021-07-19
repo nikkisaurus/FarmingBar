@@ -107,7 +107,7 @@ end
 
 ------------------------------------------------------------
 
-function addon:GetTrackerCount(widget, trackerKey)
+function addon:GetTrackerCount(widget, trackerKey, overrideObjective)
     local trackerType, trackerID = self:ParseTrackerKey(trackerKey)
     local trackerInfo = widget:GetButtonDB().trackers[trackerKey]
     local count
@@ -142,13 +142,13 @@ function addon:GetTrackerCount(widget, trackerKey)
     --     end
     -- end
 
-    count = floor(count / (trackerInfo.objective or 1))
+    count = floor(count / (overrideObjective or trackerInfo.objective or 1))
 
     -- -- If objective is excluded, get max objective
     -- -- If count > max objective while excluded, return max objective
     -- -- Surplus above objective goes toward the objective excluding this one
     -- -- Ex: if A has an objective of 20 and a count of 25 and B excludes A, A will show a count of 20 with objective complete and B will show a count of 5
-    -- local objective
+    local objective
     -- for _, eObjectiveInfo in pairs(addon.db.global.objectives) do
     --     for _, eTrackerInfo in pairs(eObjectiveInfo.trackers) do
     --         if self:ObjectiveIsExcluded(eTrackerInfo.exclude, objectiveTitle) then
@@ -161,6 +161,18 @@ function addon:GetTrackerCount(widget, trackerKey)
     count = (count > 0 and count or 0) * (trackerInfo.countsFor or 1)
 
     return objective and min(count, objective) or count
+end
+
+------------------------------------------------------------
+
+function addon:GetTrackerKey(widget, trackerSort)
+    local trackers = widget:GetButtonDB().trackers
+
+    for trackerKey, trackerInfo in pairs(trackers) do
+        if trackerInfo.order == trackerSort then
+            return trackerKey
+        end
+    end
 end
 
 ------------------------------------------------------------
@@ -329,14 +341,15 @@ end
 ------------------------------------------------------------
 
 function addon:GetTrackerDataTable(...)
-    local dataType = select(1, ...)
-    local dataID = select(2, ...)
-    local callback = select(3, ...)
+    local buttonDB = select(1, ...)
+    local dataType = select(2, ...)
+    local dataID = select(3, ...)
+    local callback = select(4, ...)
 
     if dataType == "ITEM" then
-        self:CacheItem(dataID, function(dataType, dataID, callback)
+        self:CacheItem(dataID, function(buttonDB, dataType, dataID, callback)
             local name, _, _, _, _, _, _, _, _, icon = GetItemInfo(dataID)
-            local data = {name = (not name or name == "") and L["Invalid Tracker"] or name, icon = icon or 134400, label = addon:GetTrackerTypeLabel(dataType), trackerType = dataType, trackerID = dataID}
+            local data = {conditionInfo = buttonDB.conditionInfo, name = (not name or name == "") and L["Invalid Tracker"] or name, icon = icon or 134400, label = addon:GetTrackerTypeLabel(dataType), trackerType = dataType, trackerID = dataID}
 
             if callback then
                 callback(data)
@@ -346,7 +359,7 @@ function addon:GetTrackerDataTable(...)
         end, ...)
     elseif dataType == "CURRENCY" then
         local currency = GetCurrencyInfo(tonumber(dataID) or 0)
-        local data = {name = currency and currency.name or L["Invalid Tracker"], icon = currency and currency.iconFileID or 134400, label = addon:GetTrackerTypeLabel(dataType), trackerType = dataType, trackerID = dataID}
+        local data = {conditionInfo = buttonDB.conditionInfo, name = currency and currency.name or L["Invalid Tracker"], icon = currency and currency.iconFileID or 134400, label = addon:GetTrackerTypeLabel(dataType), trackerType = dataType, trackerID = dataID}
 
         if callback then
             callback(data)

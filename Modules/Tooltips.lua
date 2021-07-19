@@ -135,7 +135,7 @@ function addon:GetButtonTooltip(widget, tooltip)
                 if  buttonDB.action == "MACROTEXT" then
                     tooltip:AddDoubleLine(L["Action"], strsub(buttonDB.actionInfo, 1, 15)..(strlen(buttonDB.actionInfo) > 15 and "..." or ""), unpack(self.tooltip_keyvalue))
                 else
-                    self:GetTrackerDataTable(buttonDB.action, buttonDB.actionInfo, function(data)
+                    self:GetTrackerDataTable(buttonDB, buttonDB.action, buttonDB.actionInfo, function(data)
                         tooltip:AddDoubleLine(L["Action"],  strsub(data.name, 1, 15)..(strlen(data.name) > 15 and "..." or ""), unpack(self.tooltip_keyvalue))
                     end)
                 end
@@ -173,7 +173,7 @@ function addon:GetButtonTooltip(widget, tooltip)
                     break
                 else
                     local trackerType, trackerID = self:ParseTrackerKey(key)
-                    self:GetTrackerDataTable(trackerType, trackerID, function(data)
+                    self:GetTrackerDataTable(buttonDB, trackerType, trackerID, function(data)
                         local trackerCount = self:GetTrackerCount(widget, key)
 
                         local trackerRawCount
@@ -183,7 +183,11 @@ function addon:GetButtonTooltip(widget, tooltip)
                             trackerRawCount = GetCurrencyInfo(trackerID) and GetCurrencyInfo(trackerID).quantity
                         end
 
-                        tooltip:AddDoubleLine(data.name, format("%d (%d / %d)", trackerCount, trackerRawCount, trackerInfo.objective and trackerInfo.objective > 0 and trackerInfo.objective or 1), unpack(self.tooltip_description))
+                        if data.conditionInfo == "" then
+                            tooltip:AddDoubleLine(data.name, format("%d (%d / %d)", trackerCount, trackerRawCount, trackerInfo.objective and trackerInfo.objective > 0 and trackerInfo.objective or 1), unpack(self.tooltip_description))
+                        else
+                            tooltip:AddDoubleLine(data.name, trackerRawCount, unpack(self.tooltip_description))
+                        end
                         tooltip:AddTexture(data.icon or 134400)
                     end)
                 end
@@ -262,7 +266,7 @@ function addon:GetObjectiveButtonTooltip(widget, tooltip)
         if  buttonDB.action == "MACROTEXT" then
             tooltip:AddDoubleLine(L["Action"], strsub(buttonDB.actionInfo, 1, 15)..(strlen(buttonDB.actionInfo) > 15 and "..." or ""), unpack(self.tooltip_keyvalue))
         else
-            self:GetTrackerDataTable(buttonDB.action, buttonDB.actionInfo, function(data)
+            self:GetTrackerDataTable(buttonDB, buttonDB.action, buttonDB.actionInfo, function(data)
                 tooltip:AddDoubleLine(L["Action"],  strsub(data.name, 1, 15)..(strlen(data.name) > 15 and "..." or ""), unpack(self.tooltip_keyvalue))
             end)
         end
@@ -283,7 +287,7 @@ function addon:GetObjectiveButtonTooltip(widget, tooltip)
             tooltip:AddTexture(134400)
             break
         else
-            self:GetTrackerDataTable(trackerType, trackerID, function(data)
+            self:GetTrackerDataTable(buttonDB, trackerType, trackerID, function(data)
                 tooltip:AddDoubleLine(data.name, trackerInfo.objective, unpack(self.tooltip_description))
                 tooltip:AddTexture(data.icon or 134400)
             end)
