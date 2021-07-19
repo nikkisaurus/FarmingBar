@@ -1,5 +1,9 @@
 # Farming Bar
 ## Version 3.0
+### 3.0-alpha11
+- Bug fixes:
+  - -- Fixed typo in Objective Editor tile
+
 ### 3.0-alpha10
 - Implemented objective editor to toggle includeBank and includeAllChars for multi-tracker objectives
 - Bug fixes:

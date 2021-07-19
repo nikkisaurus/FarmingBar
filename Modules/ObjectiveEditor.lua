@@ -20,7 +20,7 @@ end
 function addon:GetObjectiveEditorOptions()
     self.options = {
         type = "group",
-        name = L.addon..L["Objective Editor"],
+        name = L.addon.." "..L["Objective Editor"],
         args = {
             includeAllChars = {
                 order = 1,
