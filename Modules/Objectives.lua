@@ -263,7 +263,7 @@ function addon:GetObjectiveCount(widget, objectiveTitle)
                 pendingCount = min(pendingCount, addon:GetTrackerCount(widget, trackerKey))
             end
         end
-        count = count + pendingCount
+        count = count + (pendingCount or 0)
     elseif buttonDB.condition == "CUSTOM" then
         -- -- Custom conditions should be a table with nested tables inside
         -- -- Each nested table is an objectiveGroup which will be evaluated like an objective with an ALL condition

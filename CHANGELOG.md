@@ -1,5 +1,9 @@
 # Farming Bar
 ## Version 3.0
+### 3.0-alpha10
+- Bug fixes:
+  - -- Fixed error when adding an objective with no trackers to a bar
+
 ### 3.0-alpha9
 - Reimplemented quick add editbox
 - Keybinds:
