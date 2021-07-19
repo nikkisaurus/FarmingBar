@@ -761,7 +761,7 @@ local methods = {
         if value == "includeAllChars" then
             local missingDependencies = addon:IsDataStoreLoaded()
             if #missingDependencies > 0 then
-                addon:ReportError(format(format(L.MissingIncludeAllCharsDependecies, strjoin(", ", unpack(missingDependencies))))
+                addon:ReportError(format(L.MissingIncludeAllCharsDependecies, strjoin(", ", unpack(missingDependencies))))
             end
         end
 
