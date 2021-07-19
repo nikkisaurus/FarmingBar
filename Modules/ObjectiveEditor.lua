@@ -11,7 +11,7 @@ local widget
 function addon:InitializeObjectiveEditorOptions(...)
     widget = ...
     LibStub("AceConfig-3.0"):RegisterOptionsTable(addonName.."ObjectiveEditor", self:GetObjectiveEditorOptions())
-    LibStub("AceConfigDialog-3.0"):SetDefaultSize(addonName.."ObjectiveEditor", 850, 600)
+    LibStub("AceConfigDialog-3.0"):SetDefaultSize(addonName.."ObjectiveEditor", 425, 300)
 end
 
 --*------------------------------------------------------------------------
