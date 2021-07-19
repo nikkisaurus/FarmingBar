@@ -4,6 +4,7 @@
 - Implmented objective editor to toggle includeBank and includeAllChars for multi-tracker objectives
 - Bug fixes:
   - -- Fixed error when adding an objective with no trackers to a bar
+  - -- Fixed bug where adding an item via the quick add editbox did not clear previous button objective
   - -- Fixed errors preventing custom conditions from being set and used (may be reworked in the future)
   - -- Added missing optional dependencies for includeAllChars: DataStore_Character, DataStore_Currencies
 

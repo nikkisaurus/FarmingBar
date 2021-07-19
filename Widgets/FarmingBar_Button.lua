@@ -343,11 +343,13 @@ end
 ------------------------------------------------------------
 
 local function quickAddEditBox_OnEnterPressed(self)
+    local widget = self.obj
     local itemID = tonumber(self:GetText())
 
     if itemID then
         if GetItemInfoInstant(itemID) then
-            addon:CreateObjectiveFromItemID(self.obj, itemID)
+            widget:ClearObjective()
+            addon:CreateObjectiveFromItemID(widget, itemID)
         else
             addon:ReportError(format(L.InvalidItemID, itemID))
         end
