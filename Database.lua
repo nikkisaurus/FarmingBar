@@ -2,12 +2,12 @@ local addonName = ...
 local addon = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
 local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 
-------------------------------------------------------------
-
-local currentVersion = 4
 
 --*------------------------------------------------------------------------
+-- Initialize db
 
+
+local currentVersion = 4
 function addon:InitializeDB()
     local backup = self:ValidateDB()
 
@@ -363,36 +363,24 @@ function addon:InitializeDB()
         },
     }
 
-    ------------------------------------------------------------
 
+    -- Register db with AceDB
     self.db = LibStub("AceDB-3.0"):New("FarmingBarDB", defaults)
+    -- Update db version
     self.db.global.version = currentVersion
+    -- Save backup db
     if backup then self.db.global.db_backup = backup end
 
+    -- Register profile callbacks
     self.db.RegisterCallback(self, "OnProfileChanged", "OnProfile_")
     self.db.RegisterCallback(self, "OnProfileCopied", "OnProfile_")
     self.db.RegisterCallback(self, "OnProfileReset", "OnProfile_")
 end
 
-------------------------------------------------------------
-
-function addon:ValidateDB()
-    local backup
-
-    if FarmingBarDB then
-        local version = FarmingBarDB.global.version
-        if version == currentVersion then
-            return
-        else
-            backup = self:CloneTable(FarmingBarDB)
-            FarmingBarDB = nil
-        end
-    end
-
-    return backup
-end
 
 --*------------------------------------------------------------------------
+-- Methods
+
 
 function addon:GetDBValue(scope, key)
     local path = self.db[scope]
@@ -408,7 +396,6 @@ function addon:GetDBValue(scope, key)
     return path[keys[#keys]]
 end
 
-------------------------------------------------------------
 
 function addon:SetDBValue(scope, key, value)
     local keys = {strsplit(".", key)}
@@ -429,4 +416,22 @@ function addon:SetDBValue(scope, key, value)
     end
 
     path[keys[#keys]] = value
+end
+
+
+function addon:ValidateDB()
+    -- Get backup db before upgrading to new version
+    local backup
+
+    if FarmingBarDB then
+        local version = FarmingBarDB.global.version
+        if version == currentVersion then
+            return
+        else
+            backup = self:CloneTable(FarmingBarDB)
+            FarmingBarDB = nil
+        end
+    end
+
+    return backup
 end

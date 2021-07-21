@@ -126,7 +126,7 @@ end
 
 
 --*------------------------------------------------------------------------
--- Core functions
+-- Methods
 
 
 function addon:CloneTable(orig)
