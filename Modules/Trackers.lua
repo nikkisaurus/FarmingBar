@@ -70,8 +70,10 @@ function addon:GetFirstTracker(widget, isTemplate)
 
     local firstOrder, firstTracker = 0
     for k, v in pairs(buttonDB.trackers) do
-        firstOrder = firstTracker and min(v.order, firstOrder) or v.order
-        firstTracker = firstTracker and (firstOrder == v.order and k or firstTracker) or k
+        if v.order ~= 0 then
+            firstOrder = firstTracker and min(v.order, firstOrder) or v.order
+            firstTracker = firstTracker and (firstOrder == v.order and k or firstTracker) or k
+        end
     end
 
     return firstTracker
