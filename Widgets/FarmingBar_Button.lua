@@ -2,29 +2,25 @@ local addonName = ...
 local addon = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
 local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 
+
+-- Optional libraries
 local ACD = LibStub("AceConfigDialog-3.0")
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 local LSM = LibStub("LibSharedMedia-3.0")
 
-------------------------------------------------------------
-
-local _G = _G
-local fmod, floor = math.fmod, math.floor
-local format, strlower, tonumber = string.format, string.lower, tonumber
-
-------------------------------------------------------------
 
 local Type = "FarmingBar_Button"
 local Version = 1
 
+
 --*------------------------------------------------------------------------
+-- Keybinds
+
 
 local postClickMethods = {
     clearObjective = function(self, ...)
         self.obj:ClearObjective()
     end,
-
-    ------------------------------------------------------------
 
     moveObjective = function(self, ...)
         local widget = self.obj
@@ -38,8 +34,6 @@ local postClickMethods = {
         end
     end,
 
-    ------------------------------------------------------------
-
     showObjectiveEditBox = function(self, ...)
         local widget = self.obj
         if not widget:IsEmpty() then
@@ -47,13 +41,9 @@ local postClickMethods = {
         end
     end,
 
-    ------------------------------------------------------------
-
     showQuickAddEditBox = function(self, ...)
         self.obj.quickAddEditBox:Show()
     end,
-
-    ------------------------------------------------------------
 
     includeAllChars = function(self, ...)
         local widget = self.obj
@@ -69,8 +59,6 @@ local postClickMethods = {
         end
     end,
 
-    ------------------------------------------------------------
-
     includeBank = function(self, ...)
         local widget = self.obj
         if not widget:IsEmpty() then
@@ -85,33 +73,29 @@ local postClickMethods = {
         end
     end,
 
-    ------------------------------------------------------------
-
     includeGuildBank = function(self, ...)
         print("Keybind in maintenenance.")
     end,
 
-    ------------------------------------------------------------
-
     moveObjectiveToBank = function(self, ...)
         print("Keybind in maintenenance.")
     end,
-
-    ------------------------------------------------------------
 
     moveAllToBank = function(self, ...)
         print("Keybind in maintenenance.")
     end,
 }
 
+
 --*------------------------------------------------------------------------
+-- Frame methods
+
 
 local function EditBox_OnEscapePressed(self)
     self:ClearFocus()
     self:Hide()
 end
 
-------------------------------------------------------------
 
 local function EditBox_OnShow(self)
     local widget = self.obj
@@ -120,13 +104,11 @@ local function EditBox_OnShow(self)
     self:SetFocus()
 end
 
-------------------------------------------------------------
 
 local function EditBox_OnTextChanged(self)
     self:SetText(string.gsub(self:GetText(), "[%s%c%p%a]", ""))
 end
 
-------------------------------------------------------------
 
 local function frame_OnDragStart(self, buttonClicked, ...)
     local widget = self.obj
@@ -145,13 +127,11 @@ local function frame_OnDragStart(self, buttonClicked, ...)
     end
 end
 
-------------------------------------------------------------
 
 local function frame_OnDragStop(self)
     self.obj:SetUserData("isDragging")
 end
 
-------------------------------------------------------------
 
 local function frame_OnEvent(self, event, ...)
     local widget = self.obj
@@ -252,7 +232,6 @@ local function frame_OnEvent(self, event, ...)
     end
 end
 
-------------------------------------------------------------
 
 local function frame_OnReceiveDrag(self)
     local widget = self.obj
@@ -274,7 +253,6 @@ local function frame_OnReceiveDrag(self)
     addon.DragFrame:Clear()
 end
 
-------------------------------------------------------------
 
 local function frame_PostClick(self, buttonClicked, ...)
     local widget = self.obj
@@ -298,8 +276,6 @@ local function frame_PostClick(self, buttonClicked, ...)
 
     ClearCursor()
 
-    ------------------------------------------------------------
-
     local keybinds = addon:GetDBValue("global", "settings.keybinds.button")
 
     for keybind, keybindInfo in pairs(keybinds) do
@@ -316,7 +292,6 @@ local function frame_PostClick(self, buttonClicked, ...)
     end
 end
 
-------------------------------------------------------------
 
 local function objectiveEditBox_OnEnterPressed(self)
     local objective = tonumber(self:GetText())
@@ -331,7 +306,6 @@ local function objectiveEditBox_OnEnterPressed(self)
     self:Hide()
 end
 
-------------------------------------------------------------
 
 local function objectiveEditBox_OnEditFocusGained(self)
     self:SetText(self.obj:GetObjective() or "")
@@ -340,7 +314,6 @@ local function objectiveEditBox_OnEditFocusGained(self)
     end)
 end
 
-------------------------------------------------------------
 
 local function quickAddEditBox_OnEnterPressed(self)
     local widget = self.obj
@@ -360,7 +333,10 @@ local function quickAddEditBox_OnEnterPressed(self)
     self:Hide()
 end
 
+
 --*------------------------------------------------------------------------
+-- Widget methods
+
 
 local methods = {
     OnAcquire = function(self)
@@ -374,8 +350,6 @@ local methods = {
 
         self:UpdateLayers()
     end,
-
-    ------------------------------------------------------------
 
     Anchor = function(self)
         local barDB = self:GetUserData("barDB")
@@ -399,14 +373,10 @@ local methods = {
         end
     end,
 
-    ------------------------------------------------------------
-
     ApplySkin = function(self)
         addon:SkinButton(self, self:GetDBValue("profile", "style.skin"))
         self:UpdateLayers()
     end,
-
-    ------------------------------------------------------------
 
     ClearObjective = function(self)
         self:SetUserData("objective")
@@ -431,25 +401,17 @@ local methods = {
         addon:UpdateButtons()
     end,
 
-    ------------------------------------------------------------
-
     GetBarDB = function(self)
         return self:GetUserData("barDB")
     end,
-
-    ------------------------------------------------------------
 
     GetBarID = function(self)
         return self:GetUserData("barID")
     end,
 
-    ------------------------------------------------------------
-
     GetButtonDB = function(self)
         return self:GetBarID() and addon:GetBarDBValue("objectives", self:GetUserData("barID"), true)[self:GetUserData("buttonID")]
     end,
-
-    ------------------------------------------------------------
 
     GetButtonID = function(self)
         local barID = self:GetUserData("barID")
@@ -457,8 +419,6 @@ local methods = {
 
         return format("%d:%d", barID, buttonID)
     end,
-
-    ------------------------------------------------------------
 
     GetCount = function(self)
         return self:GetUserData("count") or 0
@@ -469,25 +429,17 @@ local methods = {
         return not self:IsEmpty() and self:GetButtonDB().objective
     end,
 
-    ------------------------------------------------------------
-
     GetObjectiveTitle = function(self)
         return not self:IsEmpty() and self:GetButtonDB().title
     end,
-
-    ------------------------------------------------------------
 
     IsEmpty = function(self)
         return not self:GetBarID() or self:GetButtonDB().title == ""
     end,
 
-    ------------------------------------------------------------
-
     SetAlpha = function(self)
         self.frame:SetAlpha(self:GetUserData("barDB").alpha)
     end,
-
-    ------------------------------------------------------------
 
     SetAttribute = function(self)
         local info = addon:GetDBValue("global", "settings.keybinds.button.useItem")
@@ -526,8 +478,6 @@ local methods = {
         end
     end,
 
-    ------------------------------------------------------------
-
     SetBar = function(self, bar, buttonID)
         self:SetUserData("bar", bar)
         self:SetUserData("barID", bar:GetUserData("barID"))
@@ -542,8 +492,6 @@ local methods = {
         self:SetHidden()
         self:UpdateLayers()
     end,
-
-    ------------------------------------------------------------
 
     SetCount = function(self)
         local style = addon:GetDBValue("profile", "style.font.fontStrings.count")
@@ -635,14 +583,10 @@ local methods = {
         end
     end,
 
-    ------------------------------------------------------------
-
     SetDBValue = function(self, key, value)
         -- addon:SetBarDBValue(key, value, self:GetBarID(), isCharDB)
         addon:SetButtonDBValues(key, value, self:GetBarID(), self:GetUserData("buttonID"))
     end,
-
-    ------------------------------------------------------------
 
     SetFontStringSettings = function(self, fontString)
         local fontDB = addon:GetDBValue("profile", "style.font")
@@ -659,8 +603,6 @@ local methods = {
         self[fontString]:SetJustifyH((db.anchor:find("RIGHT") and "RIGHT") or (db.anchor:find("LEFT") and "LEFT") or "CENTER")
     end,
 
-    ------------------------------------------------------------
-
     SetHidden = function(self)
         if self:GetUserData("barDB").hidden then
             self.frame:Hide()
@@ -669,13 +611,9 @@ local methods = {
         end
     end,
 
-    ------------------------------------------------------------
-
     SetIcon = function(self)
         self.Icon:SetTexture(self:IsEmpty() and "" or addon:GetObjectiveIcon(self))
     end,
-
-    ------------------------------------------------------------
 
     SetObjective = function(self, objective)
         objective = tonumber(objective)
@@ -685,27 +623,19 @@ local methods = {
         addon:UpdateButtons()
     end,
 
-    ------------------------------------------------------------
-
     SetPoint = function(self, ...) --point, anchor, relpoint, x, y
         self.frame:SetPoint(...)
     end,
 
-    ------------------------------------------------------------
-
     SetScale = function(self)
         self.frame:SetScale(self:GetUserData("barDB").scale)
     end,
-
-    ------------------------------------------------------------
 
     SetSize = function(self, width, height)
         self.frame:SetSize(width, height)
         self.Count:SetWidth(width)
         self.Objective:SetWidth(width)
     end,
-
-    ------------------------------------------------------------
 
     SwapButtons = function(self, movingButton)
         local buttonDB = {trackers = {}}
@@ -755,8 +685,6 @@ local methods = {
         addon.movingButton = nil
     end,
 
-    ------------------------------------------------------------
-
     ToggleTrackerValue = function(self, value)
         if value == "includeAllChars" then
             local missingDependencies = addon:IsDataStoreLoaded()
@@ -779,8 +707,6 @@ local methods = {
 
         self:UpdateLayers()
     end,
-
-    ------------------------------------------------------------
 
     UpdateAutoLayer = function(self)
         -- AccountOverlay
@@ -810,8 +736,6 @@ local methods = {
         end
     end,
 
-    ------------------------------------------------------------
-
     UpdateBorder = function(self)
         self.Border:Hide()
         if not self:IsEmpty() and addon:GetDBValue("profile", "style.buttonLayers.Border") then
@@ -830,13 +754,9 @@ local methods = {
         end
     end,
 
-    ------------------------------------------------------------
-
     UpdateCooldown = function(self)
         self.Cooldown:SetDrawEdge(addon:GetDBValue("profile", "style.buttonLayers.CooldownEdge"))
     end,
-
-    ------------------------------------------------------------
 
     UpdateEvents = function(self)
         if self:IsEmpty() then
@@ -854,8 +774,6 @@ local methods = {
         end
     end,
 
-    ------------------------------------------------------------
-
     UpdateLayers = function(self)
         addon:SkinButton(self, addon:GetDBValue("profile", "style.skin"))
         self:SetFontStringSettings("Count")
@@ -869,8 +787,6 @@ local methods = {
         self:SetAttribute()
         self:UpdateEvents()
     end,
-
-    ------------------------------------------------------------
 
     UpdateObjective = function(self)
         local buttonDB = self:GetButtonDB()
@@ -895,7 +811,10 @@ local methods = {
     end,
 }
 
+
 --*------------------------------------------------------------------------
+-- Constructor
+
 
 local function Constructor()
     local frame = CreateFrame("Button", Type.. AceGUI:GetNextWidgetNum(Type), UIParent, "SecureActionButtonTemplate, SecureHandlerDragTemplate")
@@ -979,8 +898,6 @@ local function Constructor()
     quickAddEditBox:SetScript("OnTextChanged", EditBox_OnTextChanged)
 
 
-    ------------------------------------------------------------
-
     local widget = {
 		type  = Type,
         frame = frame,
@@ -1005,5 +922,6 @@ local function Constructor()
 
 	return AceGUI:RegisterAsWidget(widget)
 end
+
 
 AceGUI:RegisterWidgetType(Type, Constructor, Version)
