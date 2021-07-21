@@ -26,6 +26,8 @@ function addon:CreateTracker(trackers, trackerType, trackerID)
     ------------------------------------------------------------
     if tracker.order == lastIndex + 1 then
         print(format("DEBUG: Tracker successfully created: %s", trackerKey))
+    else
+        print(format("DEBUG: There was an error creating: %s", trackerKey))
     end
     ------------------------------------------------------------
     ------------------------------------------------------------

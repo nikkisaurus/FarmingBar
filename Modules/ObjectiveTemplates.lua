@@ -34,6 +34,8 @@ function addon:CreateObjectiveTemplate(objectiveTitle, overwrite, supressSelect)
     ------------------------------------------------------------
     if objectiveTemplate.title == newObjectiveTitle then
         print(format("DEBUG: Template successfully created: %s", newObjectiveTitle))
+    else
+        print(format("DEBUG: There was an error creating: %s", newObjectiveTitle))
     end
     ------------------------------------------------------------
     ------------------------------------------------------------
