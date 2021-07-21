@@ -33,9 +33,9 @@ end)
 -- Methods
 
 function addon:IsTooltipMod()
-    if not addon.db.global.settings.hints.enableModifier then
+    if not self:GetDBValue("global", "settings.hints.enableModifier") then
         return true
     else
-        return _G["Is" .. addon.db.global.settings.hints.modifier .. "KeyDown"]()
+        return _G["Is" .. self:GetDBValue("global", "settings.hints.modifier") .. "KeyDown"]()
     end
 end

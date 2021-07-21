@@ -126,12 +126,12 @@ function addon:GetSettingsOptions()
                                     desc = L.Options_settings_global_templates_deleteTemplate,
                                     confirm = function(_, value) return format(L.Options_settings_global_templates_deleteTemplateConfirm, value) end,
                                     disabled = function()
-                                        return self.tcount(addon.db.global.templates) == 0
+                                        return self.tcount(addon:GetDBValue("global", "templates")) == 0
                                     end,
                                     values = function(info)
                                         local info = {}
 
-                                        for templateName, _ in pairs(addon.db.global.templates) do
+                                        for templateName, _ in pairs(addon:GetDBValue("global", "templates")) do
                                             info[templateName] = templateName
                                         end
 
@@ -286,7 +286,7 @@ function addon:GetSettingsOptions()
                             FarmingBar_Minimal = "FarmingBar_Minimal",
                         }
 
-                        for k, _ in pairs(addon.db.global.skins) do
+                        for k, _ in pairs(addon:GetDBValue("global", "skins")) do
                             info[k] = k
                         end
 
@@ -295,7 +295,7 @@ function addon:GetSettingsOptions()
                     sorting = function(info)
                         local info = {"FarmingBar_Default", "FarmingBar_Minimal"}
 
-                        for k, _ in self.pairs(addon.db.global.skins) do
+                        for k, _ in self.pairs(addon:GetDBValue("global", "skins")) do
                             tinsert(info, k)
                         end
 
@@ -446,7 +446,7 @@ function addon:GetSettingsOptions()
         },
     }
 
-    for k, v in pairs(addon.db.global.settings.debug) do
+    for k, v in pairs(self:GetDBValue("global", "settings.debug")) do
         if k ~= "enabled" then
             options.global.args.general.args.debug.args[k] = {
                 type = "toggle",

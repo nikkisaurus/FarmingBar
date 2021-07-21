@@ -44,7 +44,7 @@ function addon:GetOptions()
                 name = L["Styles"],
                 args = self:GetStyleEditorOptions(),
             },
-            profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(addon.db),
+            profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db),
             help = {
                 order = 6,
                 type = "group",

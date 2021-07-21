@@ -291,7 +291,7 @@ function addon:GetBarConfigOptions(barID)
                             return addon:GetBarDBValue("grow", barID)[1]
                         end,
                         set = function(info, value)
-                            addon.db.profile.bars[barID].grow[1] = value
+                            addon:GetDBValue("profile", "bars")[barID].grow[1] = value
                             bar:AnchorButtons()
                         end,
 
@@ -309,7 +309,7 @@ function addon:GetBarConfigOptions(barID)
                             return addon:GetBarDBValue("grow", barID)[2]
                         end,
                         set = function(info, value)
-                            addon.db.profile.bars[barID].grow[2] = value
+                            addon:GetDBValue("profile", "bars")[barID].grow[2] = value
                             bar:AnchorButtons()
                         end,
 
@@ -410,12 +410,12 @@ function addon:GetBarConfigOptions(barID)
                         type = "select",
                         name = L["Load User Template"],
                         disabled = function()
-                            return self.tcount(addon.db.global.templates) == 0
+                            return self.tcount(addon:GetDBValue("global", "templates")) == 0
                         end,
                         values = function()
                             local values = {}
 
-                            for templateName, _ in self.pairs(addon.db.global.templates) do
+                            for templateName, _ in self.pairs(addon:GetDBValue("global", "templates")) do
                                 values[templateName] = templateName
                             end
 
@@ -424,26 +424,26 @@ function addon:GetBarConfigOptions(barID)
                         sorting = function()
                             local sorting = {}
 
-                            for templateName, _ in self.pairs(addon.db.global.templates) do
+                            for templateName, _ in self.pairs(addon:GetDBValue("global", "templates")) do
                                 tinsert(sorting, templateName)
                             end
 
                             return sorting
                         end,
                         set = function(_, templateName)
-                            if addon.db.global.settings.misc.preserveTemplateData == "PROMPT" then
+                            if addon:GetDBValue("global", "settings.misc.preserveTemplateData") == "PROMPT" then
                                 local dialog = StaticPopup_Show("FARMINGBAR_INCLUDE_TEMPLATE_DATA", templateName)
                                 if dialog then
                                     dialog.data = {barID, templateName}
                                 end
                             else
-                                if addon.db.global.settings.misc.preserveTemplateOrder == "PROMPT" then
+                                if addon:GetDBValue("global", "settings.misc.preserveTemplateOrder") == "PROMPT" then
                                     local dialog = StaticPopup_Show("FARMINGBAR_SAVE_TEMPLATE_ORDER", templateName)
                                     if dialog then
-                                        dialog.data = {barID, templateName, addon.db.global.settings.misc.preserveTemplateData == "ENABLED"}
+                                        dialog.data = {barID, templateName, addon:GetDBValue("global", "settings.misc.preserveTemplateData") == "ENABLED"}
                                     end
                                 else
-                                    addon:LoadTemplate("user", barID, templateName, addon.db.global.settings.misc.preserveTemplateData == "ENABLED", addon.db.global.settings.misc.preserveTemplateOrder == "ENABLED")
+                                    addon:LoadTemplate("user", barID, templateName, addon:GetDBValue("global", "settings.misc.preserveTemplateData") == "ENABLED", addon:GetDBValue("global", "settings.misc.preserveTemplateOrder") == "ENABLED")
                                 end
                             end
                         end,

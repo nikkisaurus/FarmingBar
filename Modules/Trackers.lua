@@ -79,7 +79,7 @@ function addon:GetTrackerDataTable(...)
         end, ...)
     elseif dataType == "CURRENCY" then
         local currency = C_CurrencyInfo.GetCurrencyInfo(tonumber(dataID) or 0)
-        local data = {conditionInfo = buttonDB.conditionInfo, name = currency and currency.name or L["Invalid Tracker"], icon = currency and currency.iconFileID or 134400, label = addon:GetTrackerTypeLabel(dataType), trackerType = dataType, trackerID = dataID}
+        local data = {conditionInfo = buttonDB.conditionInfo, name = currency and currency.name or L["Invalid Tracker"], icon = currency and currency.iconFileID or 134400, label = self:GetTrackerTypeLabel(dataType), trackerType = dataType, trackerID = dataID}
 
         if callback then
             callback(data)

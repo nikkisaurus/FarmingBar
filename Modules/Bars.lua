@@ -120,7 +120,7 @@ end
 
 function addon:ClearBar(barID)
     local bar = self.bars[barID]
-    local objectives = self:GetBarDBValue(nil, barID, true).objectives
+    local objectives = self:GetBarDBValue("objectives", barID, true)
     local buttons = bar:GetUserData("buttons")
 
     for buttonID, _ in pairs(objectives) do
@@ -136,7 +136,7 @@ end
 function addon:ReindexButtons(barID)
     local bar = self.bars[barID]
     local buttons = bar:GetButtons()
-    local charButtons = self:GetBarDBValue(nil, barID, true).objectives
+    local charButtons = self:GetBarDBValue("objectives", barID, true)
     local objectives = {}
 
     -- Enable all buttons to make sure we don't miss hidden objectives
@@ -159,7 +159,7 @@ function addon:ReindexButtons(barID)
 
     -- Add objectives back to bar
     for buttonID, buttonDB in pairs(objectives) do
-        addon:CreateObjectiveFromUserTemplate(buttons[buttonID], buttonDB, true)
+        self:CreateObjectiveFromUserTemplate(buttons[buttonID], buttonDB, true)
     end
 
     -- Restore numVisibleButtons

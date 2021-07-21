@@ -30,15 +30,15 @@ function addon:GetObjectiveCount(widget, objectiveTitle)
     local count = 0
     if buttonDB.condition == "ANY" then
         for trackerKey, _ in pairs(buttonDB.trackers) do
-            count = count + addon:GetTrackerCount(widget, trackerKey)
+            count = count + self:GetTrackerCount(widget, trackerKey)
         end
     elseif buttonDB.condition == "ALL" then
         local pendingCount
         for trackerKey, _ in pairs(buttonDB.trackers) do
             if not pendingCount then
-                pendingCount = addon:GetTrackerCount(widget, trackerKey)
+                pendingCount = self:GetTrackerCount(widget, trackerKey)
             else
-                pendingCount = min(pendingCount, addon:GetTrackerCount(widget, trackerKey))
+                pendingCount = min(pendingCount, self:GetTrackerCount(widget, trackerKey))
             end
         end
         count = count + (pendingCount or 0)
@@ -80,7 +80,7 @@ function addon:GetObjectiveCount(widget, objectiveTitle)
         -- Objective saved in trackerInfo will not be used in custom conditions
 
         -- Validate custom condition
-        local customCondition = addon:ValidateCustomCondition(buttonDB.conditionInfo)
+        local customCondition = self:ValidateCustomCondition(buttonDB.conditionInfo)
         if customCondition and customCondition ~= "" then
             local countsUsed = {} -- Keeps track of items already counted toward the objective
 
@@ -92,7 +92,7 @@ function addon:GetObjectiveCount(widget, objectiveTitle)
                     key1 = self:GetTrackerKey(widget, tonumber(key1) or tonumber(strmatch(trackerKey, "^t(%d+)$")))
 
                     -- Get the count for key1, which is the initial tracker
-                    local trackerCount = addon:GetTrackerCount(widget, key1, overrideObjective)
+                    local trackerCount = self:GetTrackerCount(widget, key1, overrideObjective)
 
                     -- Track in countsUsed so we don't double dip:
                     -- Get the current count, if it exists
@@ -108,7 +108,7 @@ function addon:GetObjectiveCount(widget, objectiveTitle)
                     if ratio1 then
                         key2 = self:GetTrackerKey(widget, tonumber(key2))
                         -- Get the count for key2
-                        local key2Count = addon:GetTrackerCount(widget, key2)
+                        local key2Count = self:GetTrackerCount(widget, key2)
 
                         -- Track in countsUsed so we don't double dip:
                         -- Get the current count, if it exists
@@ -164,15 +164,15 @@ function addon:GetTrackerCount(widget, trackerKey, overrideObjective)
 
     -- if #trackerInfo.exclude > 0 then
     --     for _, eObjectiveTitle in pairs(trackerInfo.exclude) do
-    --         local eObjectiveInfo = addon:GetObjectiveInfo(eObjectiveTitle)
-    --         local eObjective, eObjectiveButton = addon:GetMaxTrackerObjective(eObjectiveTitle)
+    --         local eObjectiveInfo = self:GetObjectiveInfo(eObjectiveTitle)
+    --         local eObjective, eObjectiveButton = self:GetMaxTrackerObjective(eObjectiveTitle)
 
     --         -- Only exclude if an objective is set (otherwise, how do we know how many to exclude?)
     --         if eObjective then
     --             for _, eTrackerInfo in pairs(eObjectiveInfo.trackers) do
     --                 if eTrackerInfo.trackerID == trackerInfo.trackerID then
     --                     -- Get the max amount used for the objective: either the objective itself or the count
-    --                     local maxCount = min(addon:GetObjectiveCount(eObjectiveButton, eObjectiveTitle), eObjective)
+    --                     local maxCount = min(self:GetObjectiveCount(eObjectiveButton, eObjectiveTitle), eObjective)
     --                     -- The number of of this tracker required for the objective is the tracker objective x max
     --                     count = count - maxCount
     --                 end
@@ -188,10 +188,10 @@ function addon:GetTrackerCount(widget, trackerKey, overrideObjective)
     -- -- Surplus above objective goes toward the objective excluding this one
     -- -- Ex: if A has an objective of 20 and a count of 25 and B excludes A, A will show a count of 20 with objective complete and B will show a count of 5
     local objective
-    -- for _, eObjectiveInfo in pairs(addon.db.global.objectives) do
+    -- for _, eObjectiveInfo in pairs(self:GetDBValue("global", "objectives")) do
     --     for _, eTrackerInfo in pairs(eObjectiveInfo.trackers) do
     --         if self:ObjectiveIsExcluded(eTrackerInfo.exclude, objectiveTitle) then
-    --             objective = addon:GetMaxTrackerObjective(objectiveTitle)
+    --             objective = self:GetMaxTrackerObjective(objectiveTitle)
     --             break
     --         end
     --     end

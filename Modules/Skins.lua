@@ -257,7 +257,7 @@ end
 function addon:SkinBar(bar, skin)
     self:StripBarTextures(bar)
 
-    skin = (strmatch(skin, "^FarmingBar_") and addon.skins[skin] or addon.db.global.skins[skin]).bar
+    skin = (strmatch(skin, "^FarmingBar_") and self.skins[skin] or self:GetDBValue("global", "skins")[skin]).bar
     local frame = bar.anchor
 
     if frame:GetNormalTexture() then
@@ -278,7 +278,7 @@ end
 function addon:SkinButton(button, skin)
     self:StripButtonTextures(button)
 
-    skin = (strmatch(skin, "^FarmingBar_") and addon.skins[skin] or addon.db.global.skins[skin]).button
+    skin = (strmatch(skin, "^FarmingBar_") and addon.skins[skin] or self:GetDBValue("global", "skins")[skin]).button
     local frame = button.frame
 
     for layerName, layer in pairs(skin) do

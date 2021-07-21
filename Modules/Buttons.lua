@@ -47,7 +47,7 @@ end
 
 
 function addon:GetRelativeAnchorPoints(grow)
-    return addon:GetAnchorPoints(anchors[grow[1]][grow[2]])
+    return self:GetAnchorPoints(anchors[grow[1]][grow[2]])
 end
 
 

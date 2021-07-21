@@ -448,3 +448,7 @@ L.Options_Help_Templates = [[|cffffcc00Templates|r
 
 This is a description.
 ]]
+
+L.FARMINGBAR_CONFIRM_OVERWRITE_TEMPLATE = [[Template "%s" already exists. Do you want to overwrite this template?]]
+L.FARMINGBAR_INCLUDE_TEMPLATE_DATA = [[Do you want to include objective data while loading templates "%s"]]
+L.FARMINGBAR_SAVE_TEMPLATE_ORDER = [[Do you want to save the objective order while loading template "%s"?]]

@@ -22,7 +22,7 @@ local buttonCommandSort = {
 
 
 function addon:GetButtonTooltip(widget, tooltip)
-    if not addon.db.global.settings.tooltips.button then return end
+    if not self:GetDBValue("global", "settings.tooltips.button") then return end
 
     local buttonDB = widget:GetButtonDB()
     if not buttonDB then return end
@@ -44,7 +44,7 @@ function addon:GetButtonTooltip(widget, tooltip)
         tooltip:AddLine(objectiveTitle, 0, 1, 0, 1)
 
         -- Only show if hideObjectiveInfo is disabled
-        if not addon.db.global.settings.tooltips.hideObjectiveInfo then
+        if not self:GetDBValue("global", "settings.tooltips.hideObjectiveInfo") then
             self:GetButtonObjectiveInfo(widget, tooltip, buttonDB)
         end
 
@@ -56,7 +56,7 @@ function addon:GetButtonTooltip(widget, tooltip)
     tooltip:AddDoubleLine("Button ID", widget:GetButtonID(), unpack(self.tooltip_keyvalue))
 
     -- Hints
-    if addon.db.global.settings.hints.buttons then
+    if self:GetDBValue("global", "settings.hints.buttons") then
         -- Spacer
         GameTooltip_AddBlankLinesToTooltip(FarmingBar_Tooltip, 1)
 
@@ -65,16 +65,16 @@ function addon:GetButtonTooltip(widget, tooltip)
 
             -- Button doesn't have objective
             if widget:IsEmpty() then
-                FarmingBar_Tooltip:AddLine(L.ButtonHints("showQuickAddEditBox", addon.db.global.settings.keybinds.button.showQuickAddEditBox), unpack(self.tooltip_description))
+                FarmingBar_Tooltip:AddLine(L.ButtonHints("showQuickAddEditBox", self:GetDBValue("global", "settings.keybinds.button.showQuickAddEditBox")), unpack(self.tooltip_description))
             else
-                for k, v in self.pairs(addon.db.global.settings.keybinds.button, function(a, b) return buttonCommandSort[a] < buttonCommandSort[b] end) do
+                for k, v in self.pairs(self:GetDBValue("global", "settings.keybinds.button"), function(a, b) return buttonCommandSort[a] < buttonCommandSort[b] end) do
                     if buttonDB or v.showOnEmpty then --! Not sure why we're checking for v.showOnEmpty?
                         FarmingBar_Tooltip:AddLine(L.ButtonHints(k, v), unpack(self.tooltip_description))
                     end
                 end
             end
         else
-            tooltip:AddDoubleLine(L["Show Hints"]..":", L[addon.db.global.settings.hints.modifier], unpack(self.tooltip_keyvalue))
+            tooltip:AddDoubleLine(L["Show Hints"]..":", L[self:GetDBValue("global", "settings.hints.modifier")], unpack(self.tooltip_keyvalue))
         end
     end
 end

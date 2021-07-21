@@ -414,7 +414,7 @@ end
 
 
 function addon:GetButtonDBValue(key, barID, buttonID)
-    local path = self:GetDBValue("char", "bars")[barID].objectives[buttonID]
+    local path = self:GetBarDBValue("objectives", barID, true)[buttonID]
     if not key then return path end
     local keys = {strsplit(".", key)}
 
@@ -430,7 +430,7 @@ end
 
 function addon:SetButtonDBValues(key, value, barID, buttonID)
     local keys = {strsplit(".", key)}
-    local path = self:GetDBValue("char", "bars")[barID].objectives[buttonID]
+    local path = self:GetBarDBValue("objectives", barID, true)[buttonID]
 
     for k, key in pairs(keys) do
         if k < #keys then

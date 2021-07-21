@@ -329,7 +329,7 @@ local methods = {
         self.removeButton:SetPoint("TOPRIGHT", -paddingSize, -paddingSize)
 
 
-        local fontDB = addon.db.profile.style.font
+        local fontDB = addon:GetDBValue("profile", "style.font")
         self.barID:SetFont(LSM:Fetch("font", fontDB.face), fontSize, fontDB.outline)
         self.barID:SetPoint("BOTTOM", 0, paddingSize)
 

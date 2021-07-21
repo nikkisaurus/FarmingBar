@@ -300,7 +300,7 @@ local function frame_PostClick(self, buttonClicked, ...)
 
     ------------------------------------------------------------
 
-    local keybinds = addon.db.global.settings.keybinds.button
+    local keybinds = addon:GetDBValue("global", "settings.keybinds.button")
 
     for keybind, keybindInfo in pairs(keybinds) do
         if buttonClicked == keybindInfo.button then
@@ -417,7 +417,7 @@ local methods = {
                     buttonDB.trackers[trackerKey] = nil
                 end
             else
-                buttonDB[k] = addon.db.char.bars[0].objectives[0][k]
+                buttonDB[k] = addon:GetBarDBValue("objectives", 0, true)[0][k]
             end
         end
 
@@ -446,7 +446,7 @@ local methods = {
     ------------------------------------------------------------
 
     GetButtonDB = function(self)
-        return self:GetBarID() and addon:GetBarDBValue(nil, self:GetUserData("barID"), true).objectives[self:GetUserData("buttonID")]
+        return self:GetBarID() and addon:GetBarDBValue("objectives", self:GetUserData("barID"), true)[self:GetUserData("buttonID")]
     end,
 
     ------------------------------------------------------------

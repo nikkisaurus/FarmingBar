@@ -62,11 +62,11 @@ end
 
 
 function addon:OnEnable()
-    -- addon:Initialize_Masque()
-    addon:InitializeBars()
-    addon:InitializeDragFrame()
-    addon:InitializeOptions()
-    -- addon:ClearDeletedObjectives()
+    -- self:Initialize_Masque()
+    self:InitializeBars()
+    self:InitializeDragFrame()
+    self:InitializeOptions()
+    -- self:ClearDeletedObjectives()
 end
 
 
@@ -98,11 +98,11 @@ function addon:SlashCommandFunc(input)
         addon.ObjectiveBuilder:Load()
     elseif cmd == "BAR" then
         if arg == "ADD" then
-            addon:CreateBar()
+            self:CreateBar()
         elseif arg == "REMOVE" then
             local arg2 = tonumber(arg2)
             if addon.bars[arg2] then
-                addon:SetBarDisabled(arg2)
+                self:SetBarDisabled(arg2)
             end
         end
     elseif cmd == "CONFIG" then
@@ -118,7 +118,7 @@ end
 
 function addon:ReportError(error)
     PlaySound(846) -- "sound/interface/igquestfailed.ogg" classic?
-    addon:Print(string.format("%s %s", self.ColorFontString(L["Error"], "red"), error))
+    self:Print(string.format("%s %s", self.ColorFontString(L["Error"], "red"), error))
 end
 
 

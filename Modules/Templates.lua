@@ -698,7 +698,7 @@ addon.templates = {
 function addon:SaveTemplate(barID, templateName, overwrite)
     templateName = strupper(templateName)
 
-    if addon.db.global.templates[templateName] and not overwrite then
+    if self:GetDBValue("global", "templates")[templateName] and not overwrite then
         -- Confirm overwrite
         local dialog = StaticPopup_Show("FARMINGBAR_CONFIRM_OVERWRITE_TEMPLATE", templateName)
         if dialog then
@@ -706,14 +706,14 @@ function addon:SaveTemplate(barID, templateName, overwrite)
             dialog.data2 = templateName
         end
     else
-        addon.db.global.templates[templateName] = {}
+        self:GetDBValue("global", "templates")[templateName] = {}
 
         -- Add items from bar to the template
         local buttons = self.bars[barID]:GetButtons()
 
         for buttonID, button in pairs(buttons) do
             if not button:IsEmpty() then
-                addon.db.global.templates[templateName][tostring(buttonID)] = self:CloneTable(button:GetButtonDB())
+                self:GetDBValue("global", "templates")[templateName][tostring(buttonID)] = self:CloneTable(button:GetButtonDB())
             end
         end
 
@@ -733,7 +733,7 @@ end
 
 
 function addon:LoadTemplate(templateType, barID, templateName, withData, saveOrder)
-    local template = templateType == "user" and addon.db.global.templates[strupper(templateName)] or self.templates[strupper(templateName)]
+    local template = templateType == "user" and self:GetDBValue("global", "templates")[strupper(templateName)] or self.templates[strupper(templateName)]
     local bar = self.bars[barID]
 
     -- Clear items off the bar

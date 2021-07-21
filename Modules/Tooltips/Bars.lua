@@ -17,7 +17,7 @@ local barCommandSort = {
 
 
 function addon:GetBarTooltip(widget, tooltip)
-    if not addon.db.global.settings.tooltips.bar then return end
+    if not self:GetDBValue("global", "settings.tooltips.bar") then return end
 
     local barDB = widget:GetBarDB()
     if not barDB then return end
@@ -41,18 +41,18 @@ function addon:GetBarTooltip(widget, tooltip)
     tooltip:AddDoubleLine(L["Movable"], barDB.movable and L["TRUE"] or L["FALSE"], unpack(self.tooltip_keyvalue))
 
     -- Hints
-    if addon.db.global.settings.hints.bars then
+    if self:GetDBValue("global", "settings.hints.bars") then
         -- Spacer
         GameTooltip_AddBlankLinesToTooltip(FarmingBar_Tooltip, 1)
 
         if self:IsTooltipMod() then
             FarmingBar_Tooltip:AddLine(format("%s:", L["Hints"]))
 
-            for k, v in self.pairs(addon.db.global.settings.keybinds.bar, function(a, b) return barCommandSort[a] < barCommandSort[b] end) do
+            for k, v in self.pairs(self:GetDBValue("global", "settings.keybinds.bar"), function(a, b) return barCommandSort[a] < barCommandSort[b] end) do
                 FarmingBar_Tooltip:AddLine(L.BarHints(k, v), unpack(self.tooltip_description))
             end
         else
-            tooltip:AddDoubleLine(L["Show Hints"]..":", L[addon.db.global.settings.hints.modifier], unpack(self.tooltip_keyvalue))
+            tooltip:AddDoubleLine(L["Show Hints"]..":", L[self:GetDBValue("global", "settings.hints.modifier")], unpack(self.tooltip_keyvalue))
         end
     end
 end

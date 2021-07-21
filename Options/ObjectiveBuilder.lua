@@ -102,7 +102,7 @@ function addon:GetObjectiveBuilderOptions()
         },
     }
 
-    for objectiveTitle, objectiveInfo in self.pairs(addon.db.global.objectives) do
+    for objectiveTitle, objectiveInfo in self.pairs(self:GetDBValue("global", "objectives")) do
         local autoFilterEnabled = self:GetDBValue("global", "settings.filterQuickObjectives")
         local autoFiltered = autoFilterEnabled and self:IsObjectiveAutoItem(objectiveTitle)
 
@@ -207,7 +207,7 @@ function addon:GetObjectiveBuilderOptions()
                 },
             }
 
-            for tracker, trackerInfo in pairs(addon.db.global.objectives[objectiveTitle].trackers) do
+            for tracker, trackerInfo in pairs(self:GetDBValue("global", "objectives")[objectiveTitle].trackers) do
                 options[objectiveTitle].args.trackers.args[tracker] = self:GetObjectiveBuilderOptions_Trackers(objectiveTitle, tracker)
             end
         end
@@ -365,7 +365,7 @@ function addon:GetObjectiveBuilderOptions_Objective(objectiveTitle)
                     name = L["Duplicate Objective"],
                     disabled = true,
                     func = function()
-                        self:CreateObjectiveTemplate(objectiveTitle, self:GetObjectiveInfo(objectiveTitle))
+                        self:CreateObjectiveTemplate(objectiveTitle, self:GetObjectiveInfo(objectiveTitle)) --! self:GetObjectiveInfo(objectiveTitle) doesn't exist anymore.
                     end,
                 },
                 exportObjective = {
