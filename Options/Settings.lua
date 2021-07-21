@@ -2,12 +2,9 @@ local addonName = ...
 local addon = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
 local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 
-------------------------------------------------------------
-
-local pairs, tinsert, unpack = pairs, table.insert, unpack
-local format = string.format
 
 --*------------------------------------------------------------------------
+
 
 function addon:GetSettingsOptions()
     local options = {
@@ -40,18 +37,12 @@ function addon:GetSettingsOptions()
                                     name = L["Bar"],
                                     desc = L.Options_settings_global_general_tooltips_bar,
                                 },
-
-                                ------------------------------------------------------------
-
                                 button = {
                                     order = 1,
                                     type = "toggle",
                                     name = L["Button"],
                                     desc = L.Options_settings_global_general_tooltips_button,
                                 },
-
-                                ------------------------------------------------------------
-
                                 hideObjectiveInfo = {
                                     order = 1,
                                     type = "toggle",
@@ -60,9 +51,6 @@ function addon:GetSettingsOptions()
                                 },
                             },
                         },
-
-                        ------------------------------------------------------------
-
                         hints = {
                             order = 2,
                             type = "group",
@@ -81,36 +69,24 @@ function addon:GetSettingsOptions()
                                     name = L["Bars"],
                                     desc = L.Options_settings_global_general_hints_bars,
                                 },
-
-                                ------------------------------------------------------------
-
                                 buttons = {
                                     order = 2,
                                     type = "toggle",
                                     name = L["Buttons"],
                                     desc = L.Options_settings_global_general_hints_buttons,
                                 },
-
-                                ------------------------------------------------------------
-
                                 ObjectiveBuilder = {
                                     order = 3,
                                     type = "toggle",
                                     name = L["Objective Builder"],
                                     desc = L.Options_settings_global_general_hints_ObjectiveBuilder,
                                 },
-
-                                ------------------------------------------------------------
-
                                 enableModifier = {
                                     order = 4,
                                     type = "toggle",
                                     name = L["Enable Modifier"],
                                     desc = L.Options_settings_global_general_hints_enableModifier,
                                 },
-
-                                ------------------------------------------------------------
-
                                 modifier = {
                                     order = 5,
                                     type = "select",
@@ -130,9 +106,6 @@ function addon:GetSettingsOptions()
                                 },
                             },
                         },
-
-                        ------------------------------------------------------------
-
                         templates = {
                             order = 3,
                             type = "group",
@@ -168,9 +141,6 @@ function addon:GetSettingsOptions()
                                         self:DeleteTemplate(value)
                                     end,
                                 },
-
-                                ------------------------------------------------------------
-
                                 preserveTemplateData = {
                                     order = 2,
                                     type = "select",
@@ -188,9 +158,6 @@ function addon:GetSettingsOptions()
                                     end,
                                     sorting = {"ENABLED", "DISABLED", "PROMPT"},
                                 },
-
-                                ------------------------------------------------------------
-
                                 preserveTemplateOrder = {
                                     order = 3,
                                     type = "select",
@@ -210,9 +177,6 @@ function addon:GetSettingsOptions()
                                 },
                             },
                         },
-
-                        ------------------------------------------------------------
-
                         misc = {
                             order = 4,
                             type = "group",
@@ -235,9 +199,6 @@ function addon:GetSettingsOptions()
                                 },
                             },
                         },
-
-                        ------------------------------------------------------------
-
                         commands = {
                             order = 5,
                             type = "group",
@@ -256,33 +217,21 @@ function addon:GetSettingsOptions()
                                     type = "toggle",
                                     name = "/farmingbar",
                                 },
-
-                                ------------------------------------------------------------
-
                                 farmbar = {
                                     order = 2,
                                     type = "toggle",
                                     name = "/farmbar",
                                 },
-
-                                ------------------------------------------------------------
-
                                 farm = {
                                     order = 3,
                                     type = "toggle",
                                     name = "/farm",
                                 },
-
-                                ------------------------------------------------------------
-
                                 fbar = {
                                     order = 4,
                                     type = "toggle",
                                     name = "/fbar",
                                 },
-
-                                ------------------------------------------------------------
-
                                 fb = {
                                     order = 5,
                                     type = "toggle",
@@ -290,9 +239,6 @@ function addon:GetSettingsOptions()
                                 },
                             },
                         },
-
-                        ------------------------------------------------------------
-
                         debug = {
                             order = 99,
                             type = "group",
@@ -308,18 +254,12 @@ function addon:GetSettingsOptions()
                         },
                     },
                 },
-
-                ------------------------------------------------------------
-
                 alerts = {
                     order = 2,
                     type = "group",
                     name = L["Alerts"],
                     args = {},
                 },
-
-                ------------------------------------------------------------
-
                 keybinds = {
                     order = 3,
                     type = "group",
@@ -328,9 +268,6 @@ function addon:GetSettingsOptions()
                 },
             },
         },
-
-        ------------------------------------------------------------
-
         profile = {
             order = 2,
             type = "group",
@@ -372,9 +309,6 @@ function addon:GetSettingsOptions()
                         self:UpdateBars()
                     end,
                 },
-
-                ------------------------------------------------------------
-
                 count = {
                     order = 2,
                     type = "group",
@@ -402,9 +336,6 @@ function addon:GetSettingsOptions()
                                 self:UpdateBars()
                             end,
                         },
-
-                        ------------------------------------------------------------
-
                         color = {
                             order = 2,
                             type = "color",
@@ -421,9 +352,6 @@ function addon:GetSettingsOptions()
                         },
                     },
                 },
-
-                ------------------------------------------------------------
-
                 buttonLayers = {
                     order = 3,
                     type = "group",
@@ -443,36 +371,24 @@ function addon:GetSettingsOptions()
                             name = L["Account Counts Overlay"],
                             desc = L.Options_settings_profile_buttonLayers_AccountOverlay,
                         },
-
-                        ------------------------------------------------------------
-
                         AutoCastable = {
                             order = 1,
                             type = "toggle",
                             name = L["Bank Overlay"],
                             desc = L.Options_settings_profile_buttonLayers_AutoCastable,
                         },
-
-                        ------------------------------------------------------------
-
                         Border = {
                             order = 2,
                             type = "toggle",
                             name = L["Item Quality"],
                             desc = L.Options_settings_profile_buttonLayers_Border,
                         },
-
-                        ------------------------------------------------------------
-
                         Cooldown = {
                             order = 3,
                             type = "toggle",
                             name = L["Cooldown"],
                             desc = L.Options_settings_profile_buttonLayers_Cooldown,
                         },
-
-                        ------------------------------------------------------------
-
                         CooldownEdge = {
                             order = 4,
                             type = "toggle",
@@ -481,9 +397,6 @@ function addon:GetSettingsOptions()
                         },
                     },
                 },
-
-                ------------------------------------------------------------
-
                 fonts = {
                     order = 4,
                     type = "group",
@@ -505,9 +418,6 @@ function addon:GetSettingsOptions()
                             dialogControl = "LSM30_Font",
                             values = AceGUIWidgetLSMlists.font,
                         },
-
-                        ------------------------------------------------------------
-
                         outline = {
                             order = 2,
                             type = "select",
@@ -521,9 +431,6 @@ function addon:GetSettingsOptions()
                             },
                             sorting = {"MONOCHROME", "OUTLINE", "THICKOUTLINE", "NONE"},
                         },
-
-                        ------------------------------------------------------------
-
                         size = {
                             order = 3,
                             type = "range",
@@ -539,8 +446,6 @@ function addon:GetSettingsOptions()
         },
     }
 
-    ------------------------------------------------------------
-
     for k, v in pairs(addon.db.global.settings.debug) do
         if k ~= "enabled" then
             options.global.args.general.args.debug.args[k] = {
@@ -553,8 +458,6 @@ function addon:GetSettingsOptions()
     if not self:GetDBValue("global", "settings.debug.enabled") then
          options.global.args.general.args.debug = nil
     end
-
-    ------------------------------------------------------------
 
     return options
 end
