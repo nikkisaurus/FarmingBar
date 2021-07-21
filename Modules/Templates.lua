@@ -2,13 +2,9 @@ local addonName = ...
 local addon = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
 local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 
-------------------------------------------------------------
-
-local pairs, sort, tinsert = pairs, table.sort, table.insert
-local format, strupper = string.format, string.upper
-local GetItemInfoInstant, StaticPopup_Show = GetItemInfoInstant, StaticPopup_Show
 
 --*------------------------------------------------------------------------
+-- Built-in templates
 
 addon.templates = {
     ["CLOTH"] = {
@@ -82,8 +78,6 @@ addon.templates = {
     },
     --@end-retail@
 
-    ------------------------------------------------------------
-
     ["ELEMENTAL"] = {
         {itemID = 7080, objectiveTitle = "item:Essence of Water"},
         {itemID = 12808, objectiveTitle = "item:Essence of Undeath"},
@@ -96,8 +90,6 @@ addon.templates = {
         {itemID = 7082, objectiveTitle = "item:Essence of Air"},
         {itemID = 7069, objectiveTitle = "item:Elemental Air"},
     },
-
-    ------------------------------------------------------------
 
     ["ENCHANTING"] = {
         {itemID = 10938, objectiveTitle = "item:Lesser Magic Essence"},
@@ -182,8 +174,6 @@ addon.templates = {
         {itemID = 172231, objectiveTitle = "item:Sacred Shard"},
     },
     --@end-retail@
-
-    ------------------------------------------------------------
 
     ["FISHING"] = {
         {itemID = 21071, objectiveTitle = "item:Raw Sagefish"},
@@ -345,8 +335,6 @@ addon.templates = {
     },
     --@end-retail@
 
-    ------------------------------------------------------------
-
     ["LOCKBOXES"] = {
         {itemID = 16883, objectiveTitle = "item:Worn Junkbox"},
         {itemID = 4636, objectiveTitle = "item:Strong Iron Lockbox"},
@@ -399,8 +387,6 @@ addon.templates = {
         {itemID = 180532, objectiveTitle = "item:Laestrite Lockbox"},
     },
     --@end-retail@
-
-    ------------------------------------------------------------
 
     ["HERBALISM"] = {
         {itemID = 2453, objectiveTitle = "item:Bruiseweed"},
@@ -512,8 +498,6 @@ addon.templates = {
     },
     --@end-retail@
 
-    ------------------------------------------------------------
-
     --@retail@
     ["MECHAGON (BFA)"] = {
         {itemID = 167562, objectiveTitle = "item:Ionized Minnow"},
@@ -532,8 +516,6 @@ addon.templates = {
         {itemID = 168327, objectiveTitle = "item:Chain Ignitercoil"},
     },
     --@end-retail@
-
-    ------------------------------------------------------------
 
     ["MINING"] = {
         {itemID = 2835, objectiveTitle = "item:Rough Stone"},
@@ -615,8 +597,6 @@ addon.templates = {
         {itemID = 171833, objectiveTitle = "item:Elethium Ore"},
     },
     --@end-retail@
-
-    ------------------------------------------------------------
 
     ["SKINNING"] = {
         {itemID = 2318, objectiveTitle = "item:Light Leather"},
@@ -710,65 +690,10 @@ addon.templates = {
     --@end-retail@
 }
 
+
 --*------------------------------------------------------------------------
+-- Create template
 
-function addon:DeleteTemplate(templateName)
-    self.db.global.templates[templateName] = nil
-    self:Print(format(L.TemplateDeleted, templateName))
-end
-
-------------------------------------------------------------
-
-function addon:LoadTemplate(templateType, barID, templateName, withData, saveOrder)
-    local template = templateType == "user" and addon.db.global.templates[strupper(templateName)] or self.templates[strupper(templateName)]
-    local bar = self.bars[barID]
-
-    ------------------------------------------------------------
-
-    -- Clear items off the bar
-    self:ClearBar(barID)
-
-    ------------------------------------------------------------
-
-    -- Make sure we have enough visible buttons for the template
-    local numTemplateButtons = addon.tcount(template)
-    if saveOrder then
-        -- Get the key for the last template item
-        for buttonID, _ in self.pairs(template, function(a, b) return tonumber(a) < tonumber(b) end) do
-            numTemplateButtons = tonumber(buttonID)
-        end
-    end
-
-    if bar:GetBarDB().numVisibleButtons < numTemplateButtons then
-        self:SetBarDBValue("numVisibleButtons", numTemplateButtons, barID)
-        bar:UpdateVisibleButtons()
-    end
-
-    ------------------------------------------------------------
-
-    -- Add templates to bar
-    local buttons = bar:GetButtons()
-    i = 1
-    for buttonID, objective in pairs(template) do
-        if templateType == "user" then
-            id = saveOrder and tonumber(buttonID) or i
-            i = i + 1
-
-            self:CreateObjectiveFromUserTemplate(buttons[id], objective, withData)
-        else
-            self:CreateObjectiveFromTemplate(buttons[buttonID], objective)
-        end
-    end
-
-    ------------------------------------------------------------
-
-    -- Reindex bars
-    if not saveOrder then
-        self:ReindexButtons(barID)
-    end
-end
-
-------------------------------------------------------------
 
 function addon:SaveTemplate(barID, templateName, overwrite)
     templateName = strupper(templateName)
@@ -796,16 +721,54 @@ function addon:SaveTemplate(barID, templateName, overwrite)
     end
 end
 
-------------------------------------------------------------
 
-function addon:TemplateContainsObjective(objectiveTitle)
-    local count = 0
-    for templateName, template in pairs(addon.db.global.templates) do
-        for buttonID, objective in pairs(template) do
-            if objective.objectiveTitle == objectiveTitle then
-                count = count + 1
-            end
+--*------------------------------------------------------------------------
+-- Manage
+
+
+function addon:DeleteTemplate(templateName)
+    self.db.global.templates[templateName] = nil
+    self:Print(format(L.TemplateDeleted, templateName))
+end
+
+
+function addon:LoadTemplate(templateType, barID, templateName, withData, saveOrder)
+    local template = templateType == "user" and addon.db.global.templates[strupper(templateName)] or self.templates[strupper(templateName)]
+    local bar = self.bars[barID]
+
+    -- Clear items off the bar
+    self:ClearBar(barID)
+
+    -- Make sure we have enough visible buttons for the template
+    local numTemplateButtons = addon.tcount(template)
+    if saveOrder then
+        -- Get the key for the last template item
+        for buttonID, _ in self.pairs(template, function(a, b) return tonumber(a) < tonumber(b) end) do
+            numTemplateButtons = tonumber(buttonID)
         end
     end
-    return count
+
+    if bar:GetBarDB().numVisibleButtons < numTemplateButtons then
+        self:SetBarDBValue("numVisibleButtons", numTemplateButtons, barID)
+        bar:UpdateVisibleButtons()
+    end
+
+    -- Add templates to bar
+    local buttons = bar:GetButtons()
+    i = 1
+    for buttonID, objective in pairs(template) do
+        if templateType == "user" then
+            id = saveOrder and tonumber(buttonID) or i
+            i = i + 1
+
+            self:CreateObjectiveFromUserTemplate(buttons[id], objective, withData)
+        else
+            self:CreateObjectiveFromTemplate(buttons[buttonID], objective)
+        end
+    end
+
+    -- Reindex bars
+    if not saveOrder then
+        self:ReindexButtons(barID)
+    end
 end
