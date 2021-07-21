@@ -2,79 +2,76 @@ local addonName = ...
 local addon = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
 local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 
-------------------------------------------------------------
-
-local widget
-local format = string.format
 
 --*------------------------------------------------------------------------
+-- Initialize
 
+
+local widget
 function addon:InitializeObjectiveEditorOptions(...)
     widget = ...
     LibStub("AceConfig-3.0"):RegisterOptionsTable(addonName.."ObjectiveEditor", self:GetObjectiveEditorOptions())
     LibStub("AceConfigDialog-3.0"):SetDefaultSize(addonName.."ObjectiveEditor", 425, 300)
 end
 
---*------------------------------------------------------------------------
 
 function addon:GetObjectiveEditorOptions()
-    self.options = {
+    return {
         type = "group",
-        name = L.addon.." "..L["Objective Editor"],
+        name = format("%s %s", L.addon, L["Objective Editor"]),
         args = {
             includeAllChars = {
                 order = 1,
                 type = "group",
                 name = L["Include All Characters"],
                 childGroups = "select",
-                args = self:GetObjectiveEditorIncludeAllCharsOptions(),
+                args = self:GetObjectiveEditorOptions_IncludeAllChars(),
             },
-
-            ------------------------------------------------------------
-
             includeBank = {
                 order = 2,
                 type = "group",
                 name = L["Include Bank"],
                 childGroups = "select",
-                args = self:GetObjectiveEditorIncludeBankOptions(),
+                args = self:GetObjectiveEditorOptions_IncludeBank(),
             },
-
-            ------------------------------------------------------------
-
             includeGuildBank = {
                 order = 3,
                 type = "group",
                 name = L["Include Guild Bank"],
                 childGroups = "select",
                 disabled = true,
-                args = self:GetObjectiveEditorIncludeGuildBankOptions(),
+                args = self:GetObjectiveEditorOptions_IncludeGuildBank(),
             },
-
-            ------------------------------------------------------------
-
             excluded = {
                 order = 4,
                 type = "group",
                 name = L["Excluded"],
                 disabled = true,
-                args = self:GetObjectiveEditorExcludedOptions(),
+                args = self:GetObjectiveEditorOptions_Excluded(),
             },
         },
     }
-
-    return self.options
 end
 
---*------------------------------------------------------------------------
 
-function addon:GetObjectiveEditorIncludeAllCharsOptions()
+--*------------------------------------------------------------------------
+-- Load options
+
+
+function addon:GetObjectiveEditorOptions_Excluded()
+    return {}
+end
+
+
+function addon:GetObjectiveEditorOptions_IncludeAllChars()
     local options = {
     }
 
+    -- Check for missing DataStore dependencies
     local missingDependencies = self:IsDataStoreLoaded()
     if #missingDependencies > 0 then
         local red = LibStub("LibAddonUtils-1.0").ChatColors["RED"]
+
         options["missingDependencies"] = {
             order = 0,
             type = "description",
@@ -83,12 +80,14 @@ function addon:GetObjectiveEditorIncludeAllCharsOptions()
         }
     end
 
+    -- Load trackers
     if widget then
         local buttonDB = widget:GetButtonDB()
         local trackers = buttonDB.trackers
 
         for trackerKey, trackerInfo in pairs(trackers) do
             local trackerType, trackerID = self:ParseTrackerKey(trackerKey)
+
             self:GetTrackerDataTable(buttonDB, trackerType, trackerID, function(data)
                 options[trackerKey] = {
                     order = trackerInfo.order,
@@ -112,11 +111,11 @@ function addon:GetObjectiveEditorIncludeAllCharsOptions()
     return options
 end
 
-------------------------------------------------------------
 
-function addon:GetObjectiveEditorIncludeBankOptions()
+function addon:GetObjectiveEditorOptions_IncludeBank()
     local options = {}
 
+    -- Load trackers
     if widget then
         local buttonDB = widget:GetButtonDB()
         local trackers = buttonDB.trackers
@@ -146,22 +145,7 @@ function addon:GetObjectiveEditorIncludeBankOptions()
     return options
 end
 
-------------------------------------------------------------
 
-function addon:GetObjectiveEditorIncludeGuildBankOptions()
-    local options = {
-
-    }
-
-    return options
-end
-
-------------------------------------------------------------
-
-function addon:GetObjectiveEditorExcludedOptions()
-    local options = {
-
-    }
-
-    return options
+function addon:GetObjectiveEditorOptions_IncludeGuildBank()
+    return {}
 end
