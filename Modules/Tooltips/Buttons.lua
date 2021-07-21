@@ -38,13 +38,12 @@ function addon:GetButtonTooltip(widget, tooltip)
             GameTooltip_AddBlankLinesToTooltip(FarmingBar_Tooltip, 1)
             GameTooltip_AddBlankLinesToTooltip(FarmingBar_Tooltip, 1)
             FarmingBar_Tooltip:AddTexture(389194, {width = 200, height = 10})
-        else
-            -- Title
-            tooltip:AddDoubleLine("Title", buttonDB.title, unpack(self.tooltip_keyvalue))
         end
 
         -- Objective title
-        tooltip:AddLine(objectiveTitle, 0, 1, 0, 1)
+        tooltip:AddDoubleLine(L["Title"], buttonDB.title, unpack(self.tooltip_keyvalue))
+        -- Template
+        tooltip:AddDoubleLine(L["Template"], buttonDB.template or L["NONE"], unpack(self.tooltip_keyvalue))
 
         -- Only show if hideObjectiveInfo is disabled
         if not self:GetDBValue("global", "settings.tooltips.hideObjectiveInfo") then

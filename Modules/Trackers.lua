@@ -33,6 +33,11 @@ function addon:CreateTracker(objectiveInfo, trackerType, trackerID)
     ------------------------------------------------------------
     ------------------------------------------------------------
 
+    -- Update objective template links
+    self:UpdateObjectiveTemplateLinks(objectiveInfo.instances, function(_, buttonDB)
+        buttonDB.trackers[trackerKey] = self:CloneTable(tracker)
+    end)
+
     self:RefreshOptions()
 
     return trackerKey
@@ -133,7 +138,7 @@ end
 
 function addon:TrackerExists(objectiveInfo, trackerID)
     for key, tracker in pairs(objectiveInfo.trackers) do
-        if key == trackerID then
+        if key == trackerID and tracker.order ~= 0 then
             return true
         end
     end
@@ -145,6 +150,10 @@ end
 
 
 function addon:DeleteTracker(trackers, trackerKey)
+    -- Delete tracker from template
     trackers[trackerKey] = nil
     self:RefreshOptions()
+
+    -- Delete tracker from instances
+    self:UpdateButtons()
 end

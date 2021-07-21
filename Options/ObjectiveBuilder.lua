@@ -135,6 +135,7 @@ function addon:GetObjectiveBuilderOptions()
                                 end,
                                 set = function(info, value)
                                     self:SetObjectiveDBValue(info[#info], value, objectiveTitle)
+                                    addon:UpdateButtons()
                                 end,
                             },
                             conditionInfo = {
@@ -161,7 +162,8 @@ function addon:GetObjectiveBuilderOptions()
                                     end
                                 end,
                                 set = function(info, value)
-                                    return self:SetObjectiveDBValue(info[#info], value, objectiveTitle)
+                                    self:SetObjectiveDBValue(info[#info], value, objectiveTitle)
+                                    addon:UpdateButtons()
                                 end,
                             },
                             --@retail@
@@ -202,6 +204,7 @@ function addon:GetObjectiveBuilderOptions()
                                     local trackerKey = addon:CreateTracker(self:GetDBValue("global", "objectives")[objectiveTitle], newTrackerType, validTrackerID)
                                     if trackerKey then
                                         ACD:SelectGroup(addonName, "objectiveBuilder", objectiveTitle, "trackers", trackerKey)
+                                        addon:UpdateButtons()
                                     end
                                 end,
                             },
@@ -211,7 +214,9 @@ function addon:GetObjectiveBuilderOptions()
             }
 
             for tracker, trackerInfo in pairs(self:GetDBValue("global", "objectives")[objectiveTitle].trackers) do
-                options[objectiveTitle].args.trackers.args[tracker] = self:GetObjectiveBuilderOptions_Trackers(objectiveTitle, tracker)
+                if trackerInfo.order ~= 0 then
+                    options[objectiveTitle].args.trackers.args[tracker] = self:GetObjectiveBuilderOptions_Trackers(objectiveTitle, tracker)
+                end
             end
         end
     end
@@ -406,7 +411,8 @@ end
 
 
 function addon:GetObjectiveBuilderOptions_Trackers(objectiveTitle, trackerKey)
-    local trackers = self:GetDBValue("global", "objectives")[objectiveTitle].trackers
+    local objectiveInfo = self:GetDBValue("global", "objectives")[objectiveTitle]
+    local trackers = objectiveInfo.trackers
     local trackerInfo = trackers[trackerKey]
     local trackerType, trackerID = self:ParseTrackerKey(trackerKey)
 
@@ -441,6 +447,7 @@ function addon:GetObjectiveBuilderOptions_Trackers(objectiveTitle, trackerKey)
                 end,
                 set = function(info, value)
                     self:SetTrackerDBValue(trackers, trackerKey, info[#info], tonumber(value))
+                    addon:UpdateButtons()
                 end,
             },
 
@@ -458,6 +465,7 @@ function addon:GetObjectiveBuilderOptions_Trackers(objectiveTitle, trackerKey)
                 end,
                 set = function(info, value)
                     self:SetTrackerDBValue(trackers, trackerKey, info[#info], tonumber(value))
+                    addon:UpdateButtons()
                 end,
             },
             countsFor = {
@@ -474,6 +482,7 @@ function addon:GetObjectiveBuilderOptions_Trackers(objectiveTitle, trackerKey)
                 end,
                 set = function(info, value)
                     self:SetTrackerDBValue(trackers, trackerKey, info[#info], tonumber(value))
+                    addon:UpdateButtons()
                 end,
             },
             deleteTracker = {
@@ -482,7 +491,7 @@ function addon:GetObjectiveBuilderOptions_Trackers(objectiveTitle, trackerKey)
                 width = "full",
                 name = L["Delete Tracker"],
                 func = function()
-                    self:DeleteTracker(trackers, trackerKey)
+                    self:DeleteTracker(trackers, trackerKey, objectiveInfo.instances)
                 end,
                 confirm = function(...)
                     return L.Options_ObjectiveBuilder("tracker.deleteTracker")

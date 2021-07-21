@@ -781,18 +781,30 @@ local methods = {
 
         local template = buttonDB.template
         if template then
-            print("Checking for template updates")
-            for k, v in pairs(addon:GetDBValue("global", "objectives")[template]) do
+            local template_ref = addon:GetDBValue("global", "objectives")[template]
+            -- Check for changes in template
+            for k, v in pairs(template_ref) do
                 if k ~= "instances" then
                     if k == "trackers" then
-                        print("check trackers")
+                        for key, value in pairs(v) do
+                            for K, V in pairs(value) do
+                                if buttonDB.trackers[key][K] ~= V then
+                                    buttonDB.trackers[key][K] = V
+                                    self:UpdateLayers()
+                                end
+                            end
+                        end
                     else
-                        print(k, v, buttonDB[k])
                         if buttonDB[k] ~= v then
                             buttonDB[k] = v
                             self:UpdateLayers()
                         end
                     end
+                end
+            end
+            for k, v in pairs(buttonDB.trackers) do
+                if not template_ref.trackers[k] or template_ref.trackers[k].order == 0 then
+                    buttonDB.trackers[k] = nil
                 end
             end
         end

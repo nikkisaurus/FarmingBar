@@ -99,13 +99,23 @@ end
 
 
 function addon:CreateObjectiveTemplateInstance(template, buttonID)
-    print(format("Created instance from %s on %s", template, buttonID))
     local templateLinks = self:GetObjectiveTemplateLinks(template)
     templateLinks[self:GetCharKey()][buttonID] = true
 end
 
 
 function addon:DeleteObjectiveTemplate(objectiveTitle, confirmed)
+    -- Update objective template links
+    self:UpdateObjectiveTemplateLinks(self:GetDBValue("global", "objectives")[objectiveTitle].instances, function(instances, buttonDB)
+        buttonDB.template = false
+
+        for k, v in pairs(instances) do
+            if k ~= "instances" then
+                buttonDB[k] = v
+            end
+        end
+    end)
+
     self:GetDBValue("global", "objectives")[objectiveTitle] = nil
     -- self:UpdateExclusions(objectiveTitle)
     -- self:ClearDeletedObjectives(objectiveTitle)
@@ -114,7 +124,6 @@ end
 
 
 function addon:RemoveObjectiveTemplateInstance(template, buttonID)
-    print(format("Removed instance from %s on %s", template, buttonID))
     local templateLinks = self:GetObjectiveTemplateLinks(template)
     templateLinks[self:GetCharKey()][buttonID] = nil
 end
@@ -127,33 +136,26 @@ function addon:RenameObjectiveTemplate(objectiveTitle, newObjectiveTitle)
     objectives[objectiveTitle] = nil
 
     -- Update objective template links
-    for key, _ in pairs(objectives[newObjectiveTitle].instances[self:GetCharKey()]) do
-        local barID, buttonID = strsplit(":", key)
-        barID, buttonID = tonumber(barID), tonumber(buttonID)
-
-        local bar = self.bars[barID]
-        local button, setButton, setDB
-        if bar and bar:GetButtons() then
-            button = bar:GetButtons()[buttonID]
-            if button then
-                setButton = true
-            else
-                setDB = true
-            end
-        else
-            setDB = true
-        end
-
-        if setButton then
-            button:GetButtonDB().template = newObjectiveTitle
-            button:GetButtonDB().title = newObjectiveTitle
-        elseif setDB then
-            self:SetButtonDBValues("template", newObjectiveTitle, barID, buttonID)
-            self:SetButtonDBValues("title", newObjectiveTitle, barID, buttonID)
-        end
-    end
+    self:UpdateObjectiveTemplateLinks(objectives[newObjectiveTitle].instances, function(_, buttonDB)
+        buttonDB.template = newObjectiveTitle
+        buttonDB.title = newObjectiveTitle
+    end)
 
     -- self:UpdateExclusions(objectiveTitle, newObjectiveTitle)
 
     self:RefreshOptions()
+end
+
+
+function addon:UpdateObjectiveTemplateLinks(instances, callback)
+    for profileKey, buttonIDs in pairs(instances) do
+        for key, _ in pairs(buttonIDs) do
+            local barID, buttonID = strsplit(":", key)
+            barID, buttonID = tonumber(barID), tonumber(buttonID)
+
+            callback(instances, FarmingBarDB.char[profileKey].bars[barID].objectives[buttonID])
+        end
+    end
+
+    self:UpdateButtons()
 end

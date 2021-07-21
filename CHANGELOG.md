@@ -1,9 +1,11 @@
 # Farming Bar
 ## Version 3.0
 ### 3.0-alpha11
-- Added equivalency custom tracker keys
-- Added debug lines when creating a new objective template and new tracker
 - Cleanup code
+- Reimplemented link between objective templates and instances
+- Added equivalency custom tracker keys
+- Added temporary debug lines when creating a new objective template and new tracker
+  - If you come across an error where new objectives or trackers do not load into the config UI, please reference the debug message in your issue ticket.
 - Bug fixes:
   - -- Fixed typo in Objective Editor tile
   - -- Fixed bug where existing trackers could be recreated
