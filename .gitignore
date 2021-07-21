@@ -1,4 +1,5 @@
 .release/
+.test/
 Libs/
 Media/png
 TODO.md
