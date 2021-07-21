@@ -29,12 +29,12 @@ local postClickMethods = {
     moveObjective = function(self, ...)
         local widget = self.obj
 
-        if not widget:IsEmpty() and not addon.moveButton then
+        if not widget:IsEmpty() and not addon.movingButton then
             widget.Flash:Show()
             UIFrameFlash(widget.Flash, 0.5, 0.5, -1)
-            addon.moveButton = {widget, addon:CloneTable(widget:GetButtonDB())}
-        elseif addon.moveButton then
-            widget:SwapButtons(addon.moveButton)
+            addon.movingButton = {widget, addon:CloneTable(widget:GetButtonDB())}
+        elseif addon.movingButton then
+            widget:SwapButtons(addon.movingButton)
         end
     end,
 
@@ -138,7 +138,7 @@ local function frame_OnDragStart(self, buttonClicked, ...)
 
         if mod == keybinds.modifier then
             widget:SetUserData("isDragging", true)
-            addon.moveButton = {widget, addon:CloneTable(widget:GetButtonDB())}
+            addon.movingButton = {widget, addon:CloneTable(widget:GetButtonDB())}
             addon.DragFrame:LoadObjective(widget)
             -- widget:ClearObjective()
         end
@@ -258,11 +258,11 @@ local function frame_OnReceiveDrag(self)
     local widget = self.obj
     local objectiveTitle, objectiveInfo = addon.DragFrame:GetObjective()
 
-    if addon.moveButton then
-        if addon.moveButton[1] == self.obj then
-            addon.moveButton = nil
+    if addon.movingButton then
+        if addon.movingButton[1] == self.obj then
+            addon.movingButton = nil
         else
-            widget:SwapButtons(addon.moveButton)
+            widget:SwapButtons(addon.movingButton)
         end
     elseif objectiveTitle then
         addon:CreateObjectiveFromDragFrame(widget, objectiveInfo)
@@ -287,8 +287,8 @@ local function frame_PostClick(self, buttonClicked, ...)
         addon:CreateObjectiveFromCursor(widget)
         return
     elseif objectiveTitle then
-        if addon.moveButton then
-            widget:SwapButtons(addon.moveButton)
+        if addon.movingButton then
+            widget:SwapButtons(addon.movingButton)
         else
             addon:CreateObjectiveFromDragFrame(widget, objectiveInfo)
         end
@@ -707,10 +707,10 @@ local methods = {
 
     ------------------------------------------------------------
 
-    SwapButtons = function(self, moveButton)
+    SwapButtons = function(self, movingButton)
         local buttonDB = {trackers = {}}
         local currentButtonDB = self:GetButtonDB()
-        local moveButtonDB = moveButton[1]:GetButtonDB()
+        local moveButtonDB = movingButton[1]:GetButtonDB()
 
         for k, v in pairs(moveButtonDB) do
             if k == "trackers" then
@@ -747,12 +747,12 @@ local methods = {
             end
         end
 
-        UIFrameFlashStop(moveButton[1].Flash)
-        moveButton[1].Flash:Hide()
+        UIFrameFlashStop(movingButton[1].Flash)
+        movingButton[1].Flash:Hide()
 
         self:UpdateLayers()
-        moveButton[1]:UpdateLayers()
-        addon.moveButton = nil
+        movingButton[1]:UpdateLayers()
+        addon.movingButton = nil
     end,
 
     ------------------------------------------------------------

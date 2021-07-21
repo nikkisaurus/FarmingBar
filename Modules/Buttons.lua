@@ -55,6 +55,7 @@ end
 
 
 function addon:UpdateButtons(objectiveTitle)
+    -- Updates visual layers of all buttons on all bars
     for _, bar in pairs(self.bars) do
         local buttons = bar:GetUserData("buttons")
         if buttons then
