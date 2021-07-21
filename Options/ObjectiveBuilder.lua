@@ -673,10 +673,3 @@ function addon:GetTrackersObjectiveBuilderOptions(objectiveTitle, trackerKey)
 
     return options
 end
-
-------------------------------------------------------------
-
-function addon:RefreshObjectiveBuilderOptions()
-    if not self.options or not self.options.args.objectiveBuilder then return end
-    self.options.args.objectiveBuilder.args = self:GetObjectiveBuilderOptions()
-end

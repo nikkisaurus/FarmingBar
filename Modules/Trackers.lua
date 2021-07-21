@@ -66,7 +66,7 @@ function addon:CreateTracker(trackers, trackerType, trackerID)
         lastIndex = max(v.order, lastIndex)
     end
     tracker.order = lastIndex + 1
-    self:RefreshObjectiveBuilderOptions()
+    self:RefreshOptions()
     return trackerKey
 end
 
@@ -74,7 +74,7 @@ end
 
 function addon:DeleteTracker(trackers, trackerKey)
     trackers[trackerKey] = nil
-    self:RefreshObjectiveBuilderOptions()
+    self:RefreshOptions()
 end
 
 --*------------------------------------------------------------------------
@@ -258,7 +258,7 @@ end
 --     ------------------------------------------------------------
 
 --     self:UpdateButtons(objectiveTitle)
---     self:RefreshObjectiveBuilderOptions(objectiveTitle)
+--     self:RefreshOptions(objectiveTitle)
 -- end
 
 -- ------------------------------------------------------------
@@ -266,7 +266,7 @@ end
 -- function addon:DeleteTracker(objectiveTitle, tracker)
 --     addon.db.global.objectives[objectiveTitle].trackers[tracker] = nil
 --     self:UpdateButtons(objectiveTitle)
---     self:RefreshObjectiveBuilderOptions()
+--     self:RefreshOptions()
 
 --     -- local ObjectiveBuilder = self.ObjectiveBuilder
 --     -- local trackerList = ObjectiveBuilder:GetUserData("trackerList")

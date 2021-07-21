@@ -834,11 +834,3 @@ function addon:GetConfigOptions()
 
     return options
 end
-
-------------------------------------------------------------
-
-function addon:RefreshConfigOptions()
-    if not self.options then return end
-    self.options.args.config.args = self:GetConfigOptions()
-    addon:RefreshOptions()
-end

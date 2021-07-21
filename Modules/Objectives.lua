@@ -211,7 +211,7 @@ function addon:CreateObjectiveTemplate(objectiveTitle, overwrite, supressSelect)
     local objectiveTemplate = self:GetDBValue("global", "objectives")[newObjectiveTitle]
     objectiveTemplate.title = newObjectiveTitle
 
-    self:RefreshObjectiveBuilderOptions()
+    self:RefreshOptions()
     if not supressSelect then
         LibStub("AceConfigDialog-3.0"):SelectGroup(addonName, "objectiveBuilder", newObjectiveTitle)
     end
@@ -227,7 +227,7 @@ function addon:DeleteObjectiveTemplate(objectiveTitle, confirmed)
     self:GetDBValue("global", "objectives")[objectiveTitle] = nil
     -- self:UpdateExclusions(objectiveTitle)
     -- self:ClearDeletedObjectives(objectiveTitle)
-    self:RefreshObjectiveBuilderOptions()
+    self:RefreshOptions()
 end
 
 ------------------------------------------------------------
@@ -241,7 +241,7 @@ function addon:RenameObjectiveTemplate(objectiveTitle, newObjectiveTitle)
     -- self:UpdateExclusions(objectiveTitle, newObjectiveTitle)
     -- self:UpdateRenamedObjectiveButtons(objectiveTitle, newObjectiveTitle)
 
-    self:RefreshObjectiveBuilderOptions()
+    self:RefreshOptions()
 end
 
 --*------------------------------------------------------------------------
@@ -501,7 +501,7 @@ end
 --     ------------------------------------------------------------
 
 --     self:UpdateButtons()
---     self:RefreshObjectiveBuilderOptions()
+--     self:RefreshOptions()
 --     if not supressSelect then
 --         LibStub("AceConfigDialog-3.0"):SelectGroup(addonName, "objectiveBuilder", newObjectiveTitle) -- TODO: reenable add suppress
 --     end
@@ -572,7 +572,7 @@ end
 --     addon.db.global.objectives[objectiveTitle] = nil
 --     self:UpdateExclusions(objectiveTitle)
 --     self:ClearDeletedObjectives(objectiveTitle)
---     self:RefreshObjectiveBuilderOptions()
+--     self:RefreshOptions()
 -- end
 
 ------------------------------------------------------------
@@ -692,7 +692,7 @@ end
 --     self:UpdateExclusions(objectiveTitle, newObjectiveTitle)
 --     self:UpdateRenamedObjectiveButtons(objectiveTitle, newObjectiveTitle)
 
---     self:RefreshObjectiveBuilderOptions()
+--     self:RefreshOptions()
 -- end
 
 ------------------------------------------------------------

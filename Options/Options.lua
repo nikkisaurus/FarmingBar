@@ -76,7 +76,18 @@ end
 ------------------------------------------------------------
 
 function addon:RefreshOptions()
-    self:RefreshObjectiveBuilderOptions()
+    if not self.options then return end
+
+    -- Update config options
+    if self.options.args.config then
+        self.options.args.config.args = self:GetConfigOptions()
+    end
+
+    -- Update objective builder options
+    if self.options.args.objectiveBuilder then
+        self.options.args.objectiveBuilder.args = self:GetObjectiveBuilderOptions()
+    end
+
     LibStub("AceConfigRegistry-3.0"):NotifyChange(addonName)
     LibStub("AceConfigRegistry-3.0"):NotifyChange(addonName.."ObjectiveEditor")
 end

@@ -8,6 +8,7 @@ local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 
 
 --*------------------------------------------------------------------------
+-- Bar initialization
 
 function addon:InitializeBars()
     local profile = self:GetDBValue("profile")
@@ -23,8 +24,10 @@ function addon:InitializeBars()
     ------------------------------------------------------------
 
     if self.tcount(bars, nil, "enabled") == 0 and profile.enabled then
+        -- New profile; create first bar
         self:CreateBar()
     else
+        -- Load enabled bars
         for barID, barDB in pairs(bars) do
             if barDB.enabled then
                 self:LoadBar(barID)
@@ -33,141 +36,36 @@ function addon:InitializeBars()
     end
 end
 
-------------------------------------------------------------
-
-function addon:GetBarDBValue(key, barID, isCharDB)
-    local path = self:GetDBValue(isCharDB and "char" or "profile", "bars")[barID]
-    if not key then return path end
-    local keys = {strsplit(".", key)}
-
-    for k, key in pairs(keys) do
-        if k < #keys then
-            path = path[key]
-        end
-    end
-
-    return path[keys[#keys]]
-end
-
-------------------------------------------------------------
-
-function addon:SetBarDBValue(key, value, barID, isCharDB)
-    local keys = {strsplit(".", key)}
-    local path = self:GetDBValue(isCharDB and "char" or "profile", "bars")[barID]
-
-    for k, key in pairs(keys) do
-        if k < #keys then
-            path = path[key]
-        end
-    end
-
-    if value == "_TOGGLE_" then
-        if path[keys[#keys]] then
-            value = false
-        else
-            value = true
-        end
-    end
-
-    path[keys[#keys]] = value
-end
-
---*------------------------------------------------------------------------
 
 function addon:CreateBar()
     local bars = self:GetDBValue("profile", "bars")
     local numBars = #bars
 
+    -- Keeps track of whether the profile is disabled because all bars were deleted
+    self:SetDBValue("profile", "enabled", true)
+
+    -- Create and load the bar
     bars[numBars + 1].enabled = true
     self:LoadBar(numBars + 1)
-    self:SetDBValue("profile", "enabled", true)
-    self:RefreshConfigOptions()
+
+    self:RefreshOptions()
 end
 
-------------------------------------------------------------
-
-function addon:ClearBar(barID)
-    local bar = self.bars[barID]
-    local buttons = bar:GetUserData("buttons")
-
-    for buttonID, _ in pairs(self:GetBarDBValue(nil, barID, true).objectives) do
-        if buttons[buttonID] then
-            buttons[buttonID]:ClearObjective()
-        else
-            self.db.char.bars[barID].objectives[buttonID] = nil
-        end
-    end
-end
-
-------------------------------------------------------------
-
-function addon:GetBarTitle(barID)
-    if barID == 0 then return L["All Bars"] end
-
-    local barDB = self:GetDBValue("char", "bars")[barID]
-    if not barDB then return end
-
-    local title = L["Bar"].." "..barID..(barDB.title ~= "" and (" ("..barDB.title..")") or "")
-    return title
-end
-
-------------------------------------------------------------
 
 function addon:LoadBar(barID)
-    if barID == 0 then return end
+    if barID == 0 then return end -- barID == 0 is used in config to config all bars
+
     local bar = AceGUI:Create("FarmingBar_Bar")
     bar:SetBarDB(barID)
+
+    -- Add to bar container
     self.bars[barID] = bar
 end
 
-------------------------------------------------------------
 
-function addon:ReindexButtons(barID)
-    local bar = self.bars[barID]
-    local buttons = bar:GetButtons()
-    local charButtons = self:GetDBValue("char").bars[barID].objectives
-    local objectives = {}
+--*------------------------------------------------------------------------
+-- Remove bars
 
-    ------------------------------------------------------------
-
-    -- Enable all buttons to make sure we don't miss hidden objectives
-    local numVisibleButtons = bar:GetBarDB().numVisibleButtons
-    self:SetBarDBValue("numVisibleButtons", self.maxButtons, barID)
-    bar:UpdateVisibleButtons()
-
-    ------------------------------------------------------------
-
-    -- Sort objectives
-    for buttonID = 1, self.maxButtons do
-        local button = buttons[buttonID]
-        if button and not button:IsEmpty() then
-            tinsert(objectives, self:CloneTable(button:GetButtonDB()))
-            button:ClearObjective()
-        end
-    end
-
-    sort(objectives, function(a, b)
-        return a.title == b.title and ((b.objective or 0) < (a.objective or 0)) or (a.title < b.title)
-    end)
-
-    ------------------------------------------------------------
-
-    -- Add objectives back to bar
-    for buttonID, buttonDB in pairs(objectives) do
-        addon:CreateObjectiveFromUserTemplate(buttons[buttonID], buttonDB, true)
-    end
-
-    ------------------------------------------------------------
-
-    -- Restore numVisibleButtons
-    self:SetBarDBValue("numVisibleButtons", numVisibleButtons, barID)
-    bar:UpdateVisibleButtons()
-
-    -- Return #objectives for SizeBarToButtons
-    return self.tcount(objectives)
-end
-
-------------------------------------------------------------
 
 function addon:ReleaseAllBars()
     for _, bar in pairs(self.bars) do
@@ -177,7 +75,6 @@ function addon:ReleaseAllBars()
     wipe(self.bars)
 end
 
-------------------------------------------------------------
 
 function addon:RemoveBar(barID)
     -- Release widget
@@ -185,7 +82,6 @@ function addon:RemoveBar(barID)
 
     -- Remove bar
     tremove(self.db.profile.bars, barID)
-    -- tremove(self.db.char.bars, barID)
     tremove(self.bars, barID)
 
     -- Update bars for existing widgets
@@ -200,13 +96,85 @@ function addon:RemoveBar(barID)
     -- If all bars were manually deleted, be sure to disable profile
     self:SetDBValue("profile", "enabled", self.tcount(self:GetDBValue("profile", "bars")) > 0)
 
-    self:RefreshConfigOptions()
+    self:RefreshOptions()
 end
 
-------------------------------------------------------------
+
+--*------------------------------------------------------------------------
+-- Bar info
+
+
+function addon:GetBarTitle(barID)
+    if barID == 0 then return L["All Bars"] end
+
+    local barDB = self:GetDBValue("char", "bars")[barID]
+    if not barDB then return end
+
+    return format("%s %d%s", L["Bar"], barID, barDB.title ~= "" and format(" (%s)", barDB.title) or "")
+end
+
+
+--*------------------------------------------------------------------------
+-- Methods
+
+
+function addon:ClearBar(barID)
+    local bar = self.bars[barID]
+    local objectives = self:GetBarDBValue(nil, barID, true).objectives
+    local buttons = bar:GetUserData("buttons")
+
+    for buttonID, _ in pairs(objectives) do
+        if buttons[buttonID] then
+            buttons[buttonID]:ClearObjective()
+        else -- Button is hidden with an objective on it
+            objectives[buttonID] = nil
+        end
+    end
+end
+
+
+function addon:ReindexButtons(barID)
+    local bar = self.bars[barID]
+    local buttons = bar:GetButtons()
+    local charButtons = self:GetBarDBValue(nil, barID, true).objectives
+    local objectives = {}
+
+    -- Enable all buttons to make sure we don't miss hidden objectives
+    local numVisibleButtons = bar:GetBarDB().numVisibleButtons
+    self:SetBarDBValue("numVisibleButtons", self.maxButtons, barID)
+    bar:UpdateVisibleButtons()
+
+    -- Sort objectives
+    for buttonID = 1, self.maxButtons do
+        local button = buttons[buttonID]
+        if button and not button:IsEmpty() then
+            tinsert(objectives, self:CloneTable(button:GetButtonDB()))
+            button:ClearObjective()
+        end
+    end
+
+    sort(objectives, function(a, b)
+        return a.title == b.title and ((b.objective or 0) < (a.objective or 0)) or (a.title < b.title)
+    end)
+
+    -- Add objectives back to bar
+    for buttonID, buttonDB in pairs(objectives) do
+        addon:CreateObjectiveFromUserTemplate(buttons[buttonID], buttonDB, true)
+    end
+
+    -- Restore numVisibleButtons
+    self:SetBarDBValue("numVisibleButtons", numVisibleButtons, barID)
+    bar:UpdateVisibleButtons()
+
+    -- Return #objectives for SizeBarToButtons
+    return self.tcount(objectives)
+end
+
 
 function addon:SetBarDisabled(barID, enabled)
     local bars = self:GetDBValue("profile", "bars")
+
+    -- Get toggle value
     if enabled == "_TOGGLE_" then
         if bars[barID].enabled then
             enabled = false
@@ -214,26 +182,32 @@ function addon:SetBarDisabled(barID, enabled)
             enabled = true
         end
     end
+
     bars[barID].enabled = enabled
+
+    -- Release or load bar
     if not enabled then
         self.bars[barID]:Release()
     else
         self:LoadBar(barID)
     end
-    self:RefreshConfigOptions()
+
+    self:RefreshOptions()
 end
 
-------------------------------------------------------------
 
 function addon:SizeBarToButtons(barID)
+    -- Reindex button and get numObjectives
     local numObjectives = self:ReindexButtons(barID)
+
+    -- Update visible buttons
     self:SetBarDBValue("numVisibleButtons", numObjectives, barID)
     self.bars[barID]:UpdateVisibleButtons()
 end
 
-------------------------------------------------------------
 
 function addon:UpdateBars()
+    -- Update bar visuals
     for _, bar in pairs(self.bars) do
         bar:ApplySkin()
         bar:SetSize()

@@ -366,3 +366,44 @@ function addon:ValidateDB()
 
     return backup
 end
+
+
+--*------------------------------------------------------------------------
+-- Bar methods
+
+
+function addon:GetBarDBValue(key, barID, isCharDB)
+    local path = self:GetDBValue(isCharDB and "char" or "profile", "bars")[barID]
+    if not key then return path end
+    local keys = {strsplit(".", key)}
+
+    for k, key in pairs(keys) do
+        if k < #keys then
+            path = path[key]
+        end
+    end
+
+    return path[keys[#keys]]
+end
+
+
+function addon:SetBarDBValue(key, value, barID, isCharDB)
+    local keys = {strsplit(".", key)}
+    local path = self:GetDBValue(isCharDB and "char" or "profile", "bars")[barID]
+
+    for k, key in pairs(keys) do
+        if k < #keys then
+            path = path[key]
+        end
+    end
+
+    if value == "_TOGGLE_" then
+        if path[keys[#keys]] then
+            value = false
+        else
+            value = true
+        end
+    end
+
+    path[keys[#keys]] = value
+end
