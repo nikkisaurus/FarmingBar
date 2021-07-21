@@ -2,22 +2,22 @@ local addonName = ...
 local addon = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
 local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 
-------------------------------------------------------------
 
-LibStub("LibAddonUtils-1.0"):Embed(addon)
+-- Optional libraries
 local ACD = LibStub("AceConfigDialog-3.0")
 local LSM = LibStub("LibSharedMedia-3.0")
+LibStub("LibAddonUtils-1.0"):Embed(addon)
 
-------------------------------------------------------------
-
-local pairs, wipe = pairs, table.wipe
-local strjoin, strsplit, gsub, strupper = string.join, string.split, string.gsub, string.upper
 
 --*------------------------------------------------------------------------
+-- Addon functions
+
 
 function addon:OnInitialize()
+    -- Create bar container
     self.bars = {}
 
+    -- Set addon defaults
     self.maxButtons = 108
     self.maxButtonPadding = 20
     self.maxButtonSize = 60
@@ -38,8 +38,8 @@ function addon:OnInitialize()
     self.withObjective = "%if(%p>=100 and %C<%o,Objective complete!,Farming update:)if% %t %progressColor%%c/%o%color% (%if(%O>1,x%O ,)if%%diffColor%%d%color%)"
     self.withoutObjective = "Farming update: %t x%c (%diffColor%%d%color%)"
 
-    ------------------------------------------------------------
 
+    -- Register sounds
     --@retail@
     LSM:Register("sound", L["Auction Open"], 567482) -- id:5274
     LSM:Register("sound", L["Auction Close"], 567499) -- id:5275
@@ -48,7 +48,6 @@ function addon:OnInitialize()
     LSM:Register("sound", L["Quest Complete"], 567439) -- id:878
     LSM:Register("sound", L["Quest Failed"], 567459) -- id:846
     --@end-retail@
-
     --[===[@non-retail@
     LSM:Register("sound", L["Auction Open"], "sound/interface/auctionwindowopen.ogg") -- id:5274
     LSM:Register("sound", L["Auction Close"], "sound/interface/auctionwindowclose.ogg") -- id:5275
@@ -59,13 +58,11 @@ function addon:OnInitialize()
     --@end-non-retail@]===]
 
 
-    ------------------------------------------------------------
-
+    -- Initialize database and slash commands
     self:InitializeDB()
     self:RegisterSlashCommands()
 end
 
-------------------------------------------------------------
 
 function addon:OnEnable()
     -- addon:Initialize_Masque()
@@ -73,39 +70,19 @@ function addon:OnEnable()
     addon:InitializeDragFrame()
     addon:InitializeOptions()
     -- addon:ClearDeletedObjectives()
-    -- TODO: addon:Initialize_Options()
 end
 
-------------------------------------------------------------
 
 function addon:OnDisable()
-end
 
---*------------------------------------------------------------------------
-
-function addon:RefreshConfig(...)
-    local profile = self:GetDBValue("profile")
-    local bars = profile.bars
-
-    for barID, bar in pairs(self.bars) do
-        bar:Release()
-    end
-
-    wipe(self.bars)
-
-    if self.tcount(bars, nil, "enabled") == 0 and profile.enabled then
-        self:CreateBar()
-    else
-        for barID, barDB in pairs(bars) do
-            if barDB.enabled then
-                self:LoadBar(barID)
-            end
-        end
-    end
 end
 
 
---*------------------------------------------------------------------------
+function addon:OnProfile_(...)
+     self:ReleaseAllBars()
+     self:InitializeBars()
+end
+
 
 function addon:RegisterSlashCommands()
     for command, enabled in pairs(self:GetDBValue("global", "settings.commands")) do
@@ -117,7 +94,6 @@ function addon:RegisterSlashCommands()
     end
 end
 
-------------------------------------------------------------
 
 function addon:SlashCommandFunc(input)
     local cmd, arg, arg2 = strsplit(" ", strupper(input))
@@ -142,75 +118,19 @@ function addon:SlashCommandFunc(input)
     end
 end
 
---*------------------------------------------------------------------------
-
-local missing = {}
-function addon:IsDataStoreLoaded()
-    wipe(missing)
-
-    if not IsAddOnLoaded("DataStore") then
-        tinsert(missing, "DataStore")
-    end
-
-    if not IsAddOnLoaded("DataStore_Auctions") then
-        tinsert(missing, "DataStore_Auctions")
-    end
-
-    if not IsAddOnLoaded("DataStore_Containers") then
-        tinsert(missing, "DataStore_Containers")
-    end
-
-    if not IsAddOnLoaded("DataStore_Characters") then
-        tinsert(missing, "DataStore_Characters")
-    end
-
-    -- Unimplemented
-    --@retail@
-    if not IsAddOnLoaded("DataStore_Currencies") then
-        tinsert(missing, "DataStore_Currencies")
-    end
-    --@end-retail@
-
-    if not IsAddOnLoaded("DataStore_Inventory") then
-        tinsert(missing, "DataStore_Inventory")
-    end
-
-    if not IsAddOnLoaded("DataStore_Mails") then
-        tinsert(missing, "DataStore_Mails")
-    end
-
-    return missing
-end
-
-------------------------------------------------------------
-
-function addon:GetDataStoreItemCount(itemID, includeBank)
-    if #self:IsDataStoreLoaded() > 0 then return end
-
-    local count = 0
-    for k, character in pairs(DataStore:GetCharacters(GetRealmName(), "Default")) do
-        local bags, bank = DataStore:GetContainerItemCount(character, itemID)
-        local mail = DataStore:GetMailItemCount(character, itemID) or 0
-        local auction = DataStore:GetAuctionHouseItemCount(character, itemID) or 0
-        local inventory = DataStore:GetInventoryItemCount(character, itemID) or 0
-        count = count + bags + (includeBank and bank or 0) + mail + auction + inventory
-    end
-
-    return count
-end
-
-------------------------------------------------------------
 
 function addon:ReportError(error)
     PlaySound(846) -- "sound/interface/igquestfailed.ogg" classic?
     addon:Print(string.format("%s %s", self.ColorFontString(L["Error"], "red"), error))
 end
 
+
 --*------------------------------------------------------------------------
+-- Core functions
 
 
--- https://forum.cockos.com/showthread.php?t=221712
 function addon:CloneTable(orig)
+    -- https://forum.cockos.com/showthread.php?t=221712
     local copy
     if type(orig) == 'table' then
         copy = {}
@@ -224,7 +144,6 @@ function addon:CloneTable(orig)
     return copy
 end
 
-------------------------------------------------------------
 
 function addon:GetModifierString()
     local mod = ""

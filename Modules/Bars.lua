@@ -170,10 +170,12 @@ end
 
 ------------------------------------------------------------
 
-function addon:RemoveAllBars()
-    for barID, bar in pairs(self.bars) do
-        self:RemoveBar(barID)
+function addon:ReleaseAllBars()
+    for _, bar in pairs(self.bars) do
+        bar:Release()
     end
+
+    wipe(self.bars)
 end
 
 ------------------------------------------------------------

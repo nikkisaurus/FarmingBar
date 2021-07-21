@@ -369,9 +369,9 @@ function addon:InitializeDB()
     self.db.global.version = currentVersion
     if backup then self.db.global.db_backup = backup end
 
-    self.db.RegisterCallback(self, "OnProfileChanged", "RefreshConfig")
-    self.db.RegisterCallback(self, "OnProfileCopied", "RefreshConfig")
-    self.db.RegisterCallback(self, "OnProfileReset", "RefreshConfig")
+    self.db.RegisterCallback(self, "OnProfileChanged", "OnProfile_")
+    self.db.RegisterCallback(self, "OnProfileCopied", "OnProfile_")
+    self.db.RegisterCallback(self, "OnProfileReset", "OnProfile_")
 end
 
 ------------------------------------------------------------

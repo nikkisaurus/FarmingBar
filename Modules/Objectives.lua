@@ -742,3 +742,85 @@ function addon:ValidateCustomCondition(condition)
 
     return tbl
 end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+local missing = {}
+function addon:IsDataStoreLoaded()
+    wipe(missing)
+
+    if not IsAddOnLoaded("DataStore") then
+        tinsert(missing, "DataStore")
+    end
+
+    if not IsAddOnLoaded("DataStore_Auctions") then
+        tinsert(missing, "DataStore_Auctions")
+    end
+
+    if not IsAddOnLoaded("DataStore_Containers") then
+        tinsert(missing, "DataStore_Containers")
+    end
+
+    if not IsAddOnLoaded("DataStore_Characters") then
+        tinsert(missing, "DataStore_Characters")
+    end
+
+    -- Unimplemented
+    --@retail@
+    if not IsAddOnLoaded("DataStore_Currencies") then
+        tinsert(missing, "DataStore_Currencies")
+    end
+    --@end-retail@
+
+    if not IsAddOnLoaded("DataStore_Inventory") then
+        tinsert(missing, "DataStore_Inventory")
+    end
+
+    if not IsAddOnLoaded("DataStore_Mails") then
+        tinsert(missing, "DataStore_Mails")
+    end
+
+    return missing
+end
+
+
+function addon:GetDataStoreItemCount(itemID, includeBank)
+    if #self:IsDataStoreLoaded() > 0 then return end
+
+    local count = 0
+    for k, character in pairs(DataStore:GetCharacters(GetRealmName(), "Default")) do
+        local bags, bank = DataStore:GetContainerItemCount(character, itemID)
+        local mail = DataStore:GetMailItemCount(character, itemID) or 0
+        local auction = DataStore:GetAuctionHouseItemCount(character, itemID) or 0
+        local inventory = DataStore:GetInventoryItemCount(character, itemID) or 0
+        count = count + bags + (includeBank and bank or 0) + mail + auction + inventory
+    end
+
+    return count
+end
