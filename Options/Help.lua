@@ -2,11 +2,9 @@ local addonName = ...
 local addon = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
 local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 
-------------------------------------------------------------
-
-local strsub, strupper = string.sub, string.upper
 
 --*------------------------------------------------------------------------
+
 
 local categories = {
     alerts = L["Alerts"],
@@ -15,7 +13,6 @@ local categories = {
     templates = L["Templates"],
 }
 
---*------------------------------------------------------------------------
 
 function addon:GetHelpOptions()
     local options = {}

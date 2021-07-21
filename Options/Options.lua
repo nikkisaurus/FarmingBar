@@ -2,14 +2,15 @@ local addonName = ...
 local addon = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
 local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 
+
 --*------------------------------------------------------------------------
+-- Initialize options
 
 function addon:InitializeOptions()
     LibStub("AceConfig-3.0"):RegisterOptionsTable(addonName, self:GetOptions())
     LibStub("AceConfigDialog-3.0"):SetDefaultSize(addonName, 850, 600)
 end
 
---*------------------------------------------------------------------------
 
 function addon:GetOptions()
     self.options = {
@@ -23,9 +24,6 @@ function addon:GetOptions()
                 childGroups = "select",
                 args = self:GetConfigOptions(),
             },
-
-            ------------------------------------------------------------
-
             objectiveBuilder = {
                 order = 2,
                 type = "group",
@@ -33,9 +31,6 @@ function addon:GetOptions()
                 childGroups = "select",
                 args = self:GetObjectiveBuilderOptions(),
             },
-
-            ------------------------------------------------------------
-
             settings = {
                 order = 3,
                 type = "group",
@@ -43,22 +38,13 @@ function addon:GetOptions()
                 childGroups = "select",
                 args = self:GetSettingsOptions(),
             },
-
-            ------------------------------------------------------------
-
             styleEditor = {
                 order = 4,
                 type = "group",
                 name = L["Styles"],
                 args = self:GetStyleEditorOptions(),
             },
-
-            ------------------------------------------------------------
-
             profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(addon.db),
-
-            ------------------------------------------------------------
-
             help = {
                 order = 6,
                 type = "group",
@@ -73,7 +59,6 @@ function addon:GetOptions()
     return self.options
 end
 
-------------------------------------------------------------
 
 function addon:RefreshOptions()
     if not self.options then return end
