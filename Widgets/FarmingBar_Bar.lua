@@ -2,21 +2,17 @@ local addonName = ...
 local addon = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
 local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 
+-- Optional libraries
 local ACD = LibStub("AceConfigDialog-3.0")
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 local LSM = LibStub("LibSharedMedia-3.0")
 
-------------------------------------------------------------
-
-local abs = math.abs
-local CreateFrame, UIParent = CreateFrame, UIParent
-
-------------------------------------------------------------
 
 local Type = "FarmingBar_Bar"
 local Version = 2
 
 --*------------------------------------------------------------------------
+-- Keybinds
 
 local postClickMethods = {
     configBar = function(self, ...)
@@ -24,8 +20,6 @@ local postClickMethods = {
         ACD:SelectGroup(addonName, "config", "bar"..barID)
         ACD:Open(addonName)
     end,
-
-    ------------------------------------------------------------
 
     toggleMovable = function(self, ...)
         local widget = self.obj
@@ -35,21 +29,15 @@ local postClickMethods = {
         addon:Print(L.ToggleMovable(widget:GetBarTitle(), widget:GetUserData("barDB").movable))
     end,
 
-    ------------------------------------------------------------
-
     openSettings = function(self, ...)
         ACD:SelectGroup(addonName, "settings")
         ACD:Open(addonName)
     end,
 
-    ------------------------------------------------------------
-
     showObjectiveBuilder = function(self, ...)
         ACD:SelectGroup(addonName, "objectiveBuilder")
         ACD:Open(addonName)
     end,
-
-    ------------------------------------------------------------
 
     openHelp = function(self, ...)
         ACD:SelectGroup(addonName, "help")
@@ -57,7 +45,10 @@ local postClickMethods = {
     end,
 }
 
+
 --*------------------------------------------------------------------------
+-- Frame methods
+
 
 local function addButton_OnClick(self)
     local widget = self.obj
@@ -70,7 +61,6 @@ local function addButton_OnClick(self)
     end
 end
 
-------------------------------------------------------------
 
 local function anchor_OnDragStart(self)
     local frame = self.obj.frame
@@ -78,7 +68,6 @@ local function anchor_OnDragStart(self)
     frame:StartMoving()
 end
 
-------------------------------------------------------------
 
 local function anchor_OnDragStop(self)
     local widget = self.obj
@@ -88,7 +77,6 @@ local function anchor_OnDragStop(self)
     widget:SetDBValue("point", {frame:GetPoint()})
 end
 
-------------------------------------------------------------
 
 local function anchor_PostClick(self, buttonClicked, ...)
     ClearCursor()
@@ -108,7 +96,6 @@ local function anchor_PostClick(self, buttonClicked, ...)
     end
 end
 
-------------------------------------------------------------
 
 local function frame_OnEvent(self, event)
     local widget = self.obj
@@ -120,7 +107,6 @@ local function frame_OnEvent(self, event)
     end
 end
 
-------------------------------------------------------------
 
 local function removeButton_OnClick(self)
     local widget = self.obj
@@ -133,15 +119,16 @@ local function removeButton_OnClick(self)
     end
 end
 
+
 --*------------------------------------------------------------------------
+-- Widget methods
+
 
 local methods = {
     OnAcquire = function(self)
         self:SetUserData("tooltip", "GetBarTooltip")
         self:SetUserData("buttons", {})
     end,
-
-    ------------------------------------------------------------
 
     OnRelease = function(self)
         if not self:GetUserData("buttons") then return end
@@ -150,8 +137,6 @@ local methods = {
         end
     end,
 
-    ------------------------------------------------------------
-
     AddButton = function(self, buttonID)
         local button = AceGUI:Create("FarmingBar_Button")
         tinsert(self:GetUserData("buttons"), button)
@@ -159,45 +144,31 @@ local methods = {
         self:SetQuickButtonStates()
     end,
 
-    ------------------------------------------------------------
-
     AnchorButtons = function(self)
         for _, button in pairs(self:GetUserData("buttons")) do
             button:Anchor()
         end
     end,
 
-    ------------------------------------------------------------
-
     ApplySkin = function(self)
         addon:SkinBar(self, addon:GetDBValue("profile", "style.skin"))
     end,
-
-    ------------------------------------------------------------
 
     GetBarID = function(self)
         return self:GetUserData("barID")
     end,
 
-    ------------------------------------------------------------
-
     GetBarDB = function(self)
         return self:GetUserData("barDB")
     end,
-
-    ------------------------------------------------------------
 
     GetBarTitle = function(self)
         return addon:GetBarTitle(self:GetBarID())
     end,
 
-    ------------------------------------------------------------
-
     GetButtons = function(self)
         return self:GetUserData("buttons")
     end,
-
-    ------------------------------------------------------------
 
     RemoveButton = function(self)
         local buttons = self:GetUserData("buttons")
@@ -208,8 +179,6 @@ local methods = {
         self:SetQuickButtonStates()
     end,
 
-    ------------------------------------------------------------
-
     SetAlpha = function(self)
         self.frame:SetAlpha(self:GetUserData("barDB").alpha)
         for _, button in pairs(self:GetUserData("buttons")) do
@@ -217,24 +186,16 @@ local methods = {
         end
     end,
 
-    ------------------------------------------------------------
-
     SetBarDB = function(self, barID)
         self:SetUserData("barID", barID)
         self.barID:SetText(barID or "")
 
-        ------------------------------------------------------------
-
         local barDB = addon:GetDBValue("profile", "bars")[barID]
         self:SetUserData("barDB", barDB)
-
-        ------------------------------------------------------------
 
         for i = 1, barDB.numVisibleButtons do
             self:AddButton(i)
         end
-
-        ------------------------------------------------------------
 
         self:ApplySkin()
         self:SetAlpha()
@@ -246,13 +207,9 @@ local methods = {
         self:SetQuickButtonStates()
     end,
 
-    ------------------------------------------------------------
-
     SetDBValue = function(self, key, value, isCharDB)
         addon:SetBarDBValue(key, value, self:GetBarID(), isCharDB)
     end,
-
-    ------------------------------------------------------------
 
     SetHidden = function(self)
         if self:GetUserData("barDB").hidden then
@@ -266,21 +223,15 @@ local methods = {
         end
     end,
 
-    ------------------------------------------------------------
-
     SetMovable = function(self)
         self.frame:SetMovable(self:GetUserData("barDB").movable)
         addon:RefreshOptions()
     end,
 
-    ------------------------------------------------------------
-
     SetPoint = function(self, ...) --point, anchor, relpoint, x, y
         self.frame:ClearAllPoints()
         self.frame:SetPoint(...)
     end,
-
-    ------------------------------------------------------------
 
     SetQuickButtonStates = function(self)
         local addButton = self.addButton
@@ -303,16 +254,12 @@ local methods = {
         end
     end,
 
-    ------------------------------------------------------------
-
     SetScale = function(self)
         self.frame:SetScale(self:GetUserData("barDB").scale)
         for _, button in pairs(self:GetUserData("buttons")) do
             button:SetScale()
         end
     end,
-
-    ------------------------------------------------------------
 
     SetSize = function(self)
         local frameSize = self:GetUserData("barDB").button.size
@@ -338,8 +285,6 @@ local methods = {
         end
     end,
 
-    ------------------------------------------------------------
-
     UpdateVisibleButtons = function(self)
         local buttons = self:GetUserData("buttons")
         local difference = self:GetUserData("barDB").numVisibleButtons - #buttons
@@ -356,7 +301,10 @@ local methods = {
     end,
 }
 
+
 --*------------------------------------------------------------------------
+-- Constructor
+
 
 local function Constructor()
     local frame = CreateFrame("Frame", Type..AceGUI:GetNextWidgetNum(Type), UIParent)
@@ -368,12 +316,8 @@ local function Constructor()
 
     frame:SetScript("OnEvent", frame_OnEvent)
 
-    ------------------------------------------------------------
-
     local backdrop = CreateFrame("Frame", nil, frame, BackdropTemplateMixin and "BackdropTemplate")
     backdrop:EnableMouse(true)
-
-    ------------------------------------------------------------
 
     local anchor = CreateFrame("Button", "$parentAnchor", frame)
     anchor:SetAllPoints(frame)
@@ -389,12 +333,8 @@ local function Constructor()
 
     anchor:SetFrameStrata("MEDIUM")
 
-    ------------------------------------------------------------
-
     local FloatingBG = anchor:CreateTexture("$parentFloatingBG", "BACKGROUND")
     FloatingBG:SetAllPoints(anchor)
-
-    ------------------------------------------------------------
 
     local addButton = CreateFrame("Button", nil, anchor)
     addButton:SetNormalTexture([[INTERFACE\ADDONS\FARMINGBAR\MEDIA\PLUS]])
@@ -402,20 +342,15 @@ local function Constructor()
 
     addButton:SetScript("OnClick", addButton_OnClick)
 
-    ------------------------------------------------------------
-
     local removeButton = CreateFrame("Button", nil, anchor)
     removeButton:SetNormalTexture([[INTERFACE\ADDONS\FARMINGBAR\MEDIA\MINUS]])
     removeButton:SetDisabledTexture([[INTERFACE\ADDONS\FARMINGBAR\MEDIA\MINUS-DISABLED]])
 
     removeButton:SetScript("OnClick", removeButton_OnClick)
 
-    ------------------------------------------------------------
-
     local barID = anchor:CreateFontString(nil, "OVERLAY")
     barID:SetFont([[Fonts\FRIZQT__.TTF]], 12, "NORMAL")
 
-    ------------------------------------------------------------
 
     local widget = {
 		type  = Type,
@@ -430,13 +365,12 @@ local function Constructor()
 
     frame.obj, anchor.obj, addButton.obj, removeButton.obj = widget, widget, widget, widget
 
-    ------------------------------------------------------------
-
     for method, func in pairs(methods) do
         widget[method] = func
     end
 
 	return AceGUI:RegisterAsWidget(widget)
 end
+
 
 AceGUI:RegisterWidgetType(Type, Constructor, Version)
