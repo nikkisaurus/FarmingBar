@@ -2,17 +2,13 @@ local addonName = ...
 local addon = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
 local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 
+-- Optional libraries
 local ACD = LibStub("AceConfigDialog-3.0")
 
-------------------------------------------------------------
-
-local format, tonumber, tostring = string.format, tonumber, tostring
-local GetItemIconByID = C_Item.GetItemIconByID
---@retail@
-local GetCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo
---@end-retail@
 
 --*------------------------------------------------------------------------
+-- Tables and sorts
+
 
 local actions =  {
     ITEM = L["Item"],
@@ -23,7 +19,6 @@ local actions =  {
     RECIPE = L["Recipe"],
     NONE = L["None"],
 }
-
 --@retail@
 local actionSort = {"ITEM", "CURRENCY", "MACROTEXT", "RECIPE", "NONE"}
 --@end-retail@
@@ -31,30 +26,28 @@ local actionSort = {"ITEM", "CURRENCY", "MACROTEXT", "RECIPE", "NONE"}
 local actionSort = {"ITEM", "MACROTEXT", "RECIPE", "NONE"}
 --@end-non-retail@]===]
 
-------------------------------------------------------------
 
 local newTrackerType, newTrackerID = "ITEM"
-
 --@retail@
 local trackers = {
     ITEM = L["Item"],
     CURRENCY = L["Currency"],
 }
-
 local trackerSort = {"ITEM", "CURRENCY"}
 --@end-retail@
 
-------------------------------------------------------------
 
 local trackerConditions = {
     ANY = L["Any"],
     ALL = L["All"],
     CUSTOM = L["Custom"],
 }
-
 local trackerConditionSort = {"ANY", "ALL", "CUSTOM"}
 
+
 --*------------------------------------------------------------------------
+-- Methods
+
 
 local function GetActionInfoLabel(objectiveTitle)
     local trackerType = addon:GetDBValue("global", "objectives")[objectiveTitle].action
@@ -72,7 +65,6 @@ local function GetActionInfoLabel(objectiveTitle)
     end
 end
 
-------------------------------------------------------------
 
 local function GetTrackerIDLabel()
     if newTrackerType == "ITEM" then
@@ -84,7 +76,10 @@ local function GetTrackerIDLabel()
     end
 end
 
+
 --*------------------------------------------------------------------------
+-- Initialize objective builder options
+
 
 function addon:GetObjectiveBuilderOptions()
     local options = {
@@ -96,9 +91,6 @@ function addon:GetObjectiveBuilderOptions()
                 self:CreateObjectiveTemplate()
             end,
         },
-
-        ------------------------------------------------------------
-
         import = {
             order = 2,
             type = "execute",
@@ -125,11 +117,8 @@ function addon:GetObjectiveBuilderOptions()
                         order = 1,
                         type = "group",
                         name = L["Objective"],
-                        args = self:GetObjectiveObjectiveBuilderOptions(objectiveTitle),
+                        args = self:GetObjectiveBuilderOptions_Objective(objectiveTitle),
                     },
-
-                    ------------------------------------------------------------
-
                     trackers = {
                         order = 2,
                         type = "group",
@@ -148,9 +137,6 @@ function addon:GetObjectiveBuilderOptions()
                                     self:SetObjectiveDBValue(info[#info], value, objectiveTitle)
                                 end,
                             },
-
-                            ------------------------------------------------------------
-
                             conditionInfo = {
                                 order = 2,
                                 type = "input",
@@ -178,9 +164,6 @@ function addon:GetObjectiveBuilderOptions()
                                     return self:SetObjectiveDBValue(info[#info], value, objectiveTitle)
                                 end,
                             },
-
-                            ------------------------------------------------------------
-
                             --@retail@
                             type = {
                                 order = 4,
@@ -196,9 +179,6 @@ function addon:GetObjectiveBuilderOptions()
                                 end,
                             },
                             --@end-retail@
-
-                            ------------------------------------------------------------
-
                             newTrackerID = {
                                 order = 5,
                                 type = "input",
@@ -219,8 +199,6 @@ function addon:GetObjectiveBuilderOptions()
                                 set = function(info, value)
                                     local validTrackerID = self:ValidateTrackerData(newTrackerType, value)
                                     local trackerKey = addon:CreateTracker(self:GetDBValue("global", "objectives")[objectiveTitle].trackers, newTrackerType, validTrackerID)
-                                    -- local validTrackerID = self:ValidateTrackerData(newTrackerType, value)
-                                    -- self:CreateTracker(objectiveTitle, {trackerType = newTrackerType, trackerID = validTrackerID})
                                     ACD:SelectGroup(addonName, "objectiveBuilder", objectiveTitle, "trackers", trackerKey)
                                 end,
                             },
@@ -230,7 +208,7 @@ function addon:GetObjectiveBuilderOptions()
             }
 
             for tracker, trackerInfo in pairs(addon.db.global.objectives[objectiveTitle].trackers) do
-                options[objectiveTitle].args.trackers.args[tracker] = self:GetTrackersObjectiveBuilderOptions(objectiveTitle, tracker)
+                options[objectiveTitle].args.trackers.args[tracker] = self:GetObjectiveBuilderOptions_Trackers(objectiveTitle, tracker)
             end
         end
     end
@@ -238,9 +216,12 @@ function addon:GetObjectiveBuilderOptions()
     return options
 end
 
-------------------------------------------------------------
 
-function addon:GetObjectiveObjectiveBuilderOptions(objectiveTitle)
+--*------------------------------------------------------------------------
+-- Load objective builder
+
+
+function addon:GetObjectiveBuilderOptions_Objective(objectiveTitle)
     local options = {
         dropper = {
             order = 0,
@@ -255,9 +236,6 @@ function addon:GetObjectiveObjectiveBuilderOptions(objectiveTitle)
                 self.DragFrame:LoadObjectiveTemplate(objectiveTitle)
             end,
         },
-
-        ------------------------------------------------------------
-
         title = {
             order = 1,
             type = "input",
@@ -276,9 +254,6 @@ function addon:GetObjectiveObjectiveBuilderOptions(objectiveTitle)
                 ACD:SelectGroup(addonName, "objectiveBuilder", value)
             end,
         },
-
-        ------------------------------------------------------------
-
         autoIcon = {
             order = 2,
             type = "toggle",
@@ -290,9 +265,6 @@ function addon:GetObjectiveObjectiveBuilderOptions(objectiveTitle)
                 self:SetObjectiveDBValue(info[#info], value, objectiveTitle)
             end,
         },
-
-        ------------------------------------------------------------
-
         icon = {
             order = 3,
             type = "input",
@@ -307,9 +279,6 @@ function addon:GetObjectiveObjectiveBuilderOptions(objectiveTitle)
                 self:SetObjectiveDBValue(info[#info], value, objectiveTitle)
             end,
         },
-
-        ------------------------------------------------------------
-
         iconSelector = {
             order = 4,
             type = "execute",
@@ -321,9 +290,6 @@ function addon:GetObjectiveObjectiveBuilderOptions(objectiveTitle)
 
             end,
         },
-
-        ------------------------------------------------------------
-
         action = {
             order = 5,
             type = "group",
@@ -343,9 +309,6 @@ function addon:GetObjectiveObjectiveBuilderOptions(objectiveTitle)
                         self:SetObjectiveDBValue("action", value, objectiveTitle)
                     end,
                 },
-
-                ------------------------------------------------------------
-
                 actionInfo = {
                     order = 2,
                     type = "input",
@@ -390,9 +353,6 @@ function addon:GetObjectiveObjectiveBuilderOptions(objectiveTitle)
                 },
             },
         },
-
-        ------------------------------------------------------------
-
         manage = {
             order = 6,
             type = "group",
@@ -408,9 +368,6 @@ function addon:GetObjectiveObjectiveBuilderOptions(objectiveTitle)
                         self:CreateObjectiveTemplate(objectiveTitle, self:GetObjectiveInfo(objectiveTitle))
                     end,
                 },
-
-                ------------------------------------------------------------
-
                 exportObjective = {
                     order = 2,
                     type = "execute",
@@ -420,9 +377,6 @@ function addon:GetObjectiveObjectiveBuilderOptions(objectiveTitle)
 
                     end,
                 },
-
-                ------------------------------------------------------------
-
                 DeleteObjectiveTemplate = {
                     order = 3,
                     type = "execute",
@@ -441,9 +395,8 @@ function addon:GetObjectiveObjectiveBuilderOptions(objectiveTitle)
     return options
 end
 
-------------------------------------------------------------
 
-function addon:GetTrackersObjectiveBuilderOptions(objectiveTitle, trackerKey)
+function addon:GetObjectiveBuilderOptions_Trackers(objectiveTitle, trackerKey)
     local trackers = self:GetDBValue("global", "objectives")[objectiveTitle].trackers
     local trackerInfo = trackers[trackerKey]
     local trackerType, trackerID = self:ParseTrackerKey(trackerKey)
@@ -465,9 +418,6 @@ function addon:GetTrackersObjectiveBuilderOptions(objectiveTitle, trackerKey)
                 imageHeight = 20,
                 fontSize = "medium",
             },
-
-            ------------------------------------------------------------
-
             order = {
                 order = 2,
                 type = "input",
@@ -485,9 +435,6 @@ function addon:GetTrackersObjectiveBuilderOptions(objectiveTitle, trackerKey)
                 end,
             },
 
-            ------------------------------------------------------------
-
-
             objective = {
                 order = 3,
                 type = "input",
@@ -504,9 +451,6 @@ function addon:GetTrackersObjectiveBuilderOptions(objectiveTitle, trackerKey)
                     self:SetTrackerDBValue(trackers, trackerKey, info[#info], tonumber(value))
                 end,
             },
-
-            ------------------------------------------------------------
-
             countsFor = {
                 order = 4,
                 type = "input",
@@ -523,124 +467,6 @@ function addon:GetTrackersObjectiveBuilderOptions(objectiveTitle, trackerKey)
                     self:SetTrackerDBValue(trackers, trackerKey, info[#info], tonumber(value))
                 end,
             },
-
-            -- ------------------------------------------------------------
-
-            -- includeBank = {
-            --     order = 4,
-            --     type = "toggle",
-            --     width = "full",
-            --     name = L["Include Bank"],
-            --     get = function(info)
-            --         -- return self:GetTrackerDBInfo(objectiveTitle, trackerKey, info[#info])
-            --     end,
-            --     set = function(info, value)
-            --         -- self:SetTrackerDBValue(objectiveTitle, trackerKey, info[#info], value)
-            --         -- self:UpdateButtons(objectiveTitle)
-            --     end,
-            -- },
-
-            -- ------------------------------------------------------------
-
-            -- includeAllChars = {
-            --     order = 4,
-            --     type = "toggle",
-            --     width = "full",
-            --     name = L["Include All Characters"],
-            --     get = function(info)
-            --         -- return self:GetTrackerDBInfo(objectiveTitle, trackerKey, info[#info])
-            --     end,
-            --     set = function(info, value)
-            --         -- self:SetTrackerDBValue(objectiveTitle, trackerKey, info[#info], value)
-            --     end,
-            -- },
-
-            -- ------------------------------------------------------------
-
-            -- exclude = {
-            --     order = 5,
-            --     type = "select",
-            --     width = "full",
-            --     name = L["Exclude Objective"],
-            --     values = function()
-            --         local values = {}
-
-            --         for eObjectiveTitle, _ in self.pairs(addon.db.global.objectives, function(a, b) return strupper(a) < strupper(b) end) do
-            --             if eObjectiveTitle ~= objectiveTitle and not self:ObjectiveIsExcluded(trackerInfo.exclude, eObjectiveTitle) then
-            --                 values[eObjectiveTitle] = eObjectiveTitle
-            --             end
-            --         end
-
-            --         return values
-            --     end,
-            --     sorting = function()
-            --         local sorting = {}
-
-            --         for eObjectiveTitle, _ in self.pairs(addon.db.global.objectives, function(a, b) return strupper(a) < strupper(b) end) do
-            --             if eObjectiveTitle ~= objectiveTitle and not self:ObjectiveIsExcluded(trackerInfo.exclude, eObjectiveTitle) then
-            --                 tinsert(sorting, eObjectiveTitle)
-            --             end
-            --         end
-
-            --         return sorting
-            --     end,
-            --     disabled = function(info)
-            --         local count = 0
-
-            --         for eObjectiveTitle, _ in self.pairs(addon.db.global.objectives, function(a, b) return strupper(a) < strupper(b) end) do
-            --             if eObjectiveTitle ~= objectiveTitle and not self:ObjectiveIsExcluded(trackerInfo.exclude, eObjectiveTitle) then
-            --                 count = count + 1
-            --             end
-            --         end
-
-            --         return count == 0
-            --     end,
-            --     set = function(_, value)
-            --         tinsert(addon.db.global.objectives[objectiveTitle].trackers[trackerKey].exclude, value)
-            --         self:UpdateButtons()
-            --     end,
-            -- },
-
-            -- ------------------------------------------------------------
-
-            -- excluded = {
-            --     order = 6,
-            --     type = "select",
-            --     width = "full",
-            --     name = L["Remove Excluded Objective"],
-            --     values = function()
-            --         local values = {}
-
-            --         for _, eObjectiveTitle in self.pairs(trackerInfo.exclude, function(a, b) return strupper(a) < strupper(b) end) do
-            --             values[eObjectiveTitle] = eObjectiveTitle
-            --         end
-
-            --         return values
-            --     end,
-            --     sorting = function()
-            --         local sorting = {}
-
-            --         for _, eObjectiveTitle in self.pairs(trackerInfo.exclude, function(a, b) return strupper(a) < strupper(b) end) do
-            --             tinsert(sorting, eObjectiveTitle)
-            --         end
-
-            --         return sorting
-            --     end,
-            --     disabled = function(info)
-            --         return self.tcount(trackerInfo.exclude) == 0
-            --     end,
-            --     set = function(_, value)
-            --         for key, eObjectiveTitle in pairs(trackerInfo.exclude) do
-            --             if eObjectiveTitle == value then
-            --                 tremove(trackerInfo.exclude, key)
-            --             end
-            --         end
-            --         self:UpdateButtons()
-            --     end,
-            -- },
-
-            ------------------------------------------------------------
-
             deleteTracker = {
                 order = 5,
                 type = "execute",
@@ -661,10 +487,10 @@ function addon:GetTrackersObjectiveBuilderOptions(objectiveTitle, trackerKey)
             options.name = GetItemInfo(itemID)
             options.args.title.name = self.ColorFontString(GetItemInfo(itemID), "gold")
         end, trackerID)
-        options.icon = GetItemIconByID(trackerID)
-        options.args.title.image = GetItemIconByID(trackerID)
+        options.icon = C_Item.GetItemIconByID(trackerID)
+        options.args.title.image = C_Item.GetItemIconByID(trackerID)
     else
-        local currency = GetCurrencyInfo(trackerID)
+        local currency = C_CurrencyInfo.GetCurrencyInfo(trackerID)
         options.name = currency.name
         options.args.title.name = self.ColorFontString(currency.name, "gold")
         options.icon = currency.iconFileID
