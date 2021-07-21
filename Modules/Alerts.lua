@@ -2,18 +2,17 @@ local addonName = ...
 local addon = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
 local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 
-------------------------------------------------------------
-
-local floor = math.floor
-local gsub = string.gsub
 
 --*------------------------------------------------------------------------
+-- Parse alerts
 
 function addon:ParseAlert(alert, alertInfo)
+    -- Info
     local objectiveReps = alertInfo.objective and floor(alertInfo.newCount / alertInfo.objective) or ""
     local percent = alertInfo.objective and (floor((alertInfo.newCount / alertInfo.objective) * 100)) or ""
     local remainder =  alertInfo.objective and (alertInfo.objective - alertInfo.newCount) or ""
 
+    -- Colors
     local diffColor = alertInfo.difference > 0 and "|cff00ff00" or "|cffff0000"
     local progressColor = alertInfo.objective and (alertInfo.newCount >= alertInfo.objective and "|cff00ff00" or "|cffffcc00") or ""
 
@@ -30,12 +29,12 @@ function addon:ParseAlert(alert, alertInfo)
     alert = gsub(alert, "%%r", remainder)
     alert = gsub(alert, "%%t", alertInfo.objectiveTitle or "")
 
+    -- If statements
     alert = self:ParseIfStatement(alert)
 
     return alert
 end
 
-------------------------------------------------------------
 
 function addon:ParseIfStatement(alert)
     -- Loop checks for multiple if statements
