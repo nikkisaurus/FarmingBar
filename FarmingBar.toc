@@ -45,7 +45,9 @@ Widgets\Widgets.xml
 # Modules
 Modules\Skins.lua
 Modules\Counts.lua
-Modules\Tooltips.lua
+Modules\Tooltips\Tooltips.lua
+Modules\Tooltips\Bars.lua
+Modules\Tooltips\Buttons.lua
 Modules\Alerts.lua
 Modules\Bars.lua
 Modules\Buttons.lua

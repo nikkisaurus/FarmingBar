@@ -23,6 +23,7 @@ function addon:OnInitialize()
     self.maxButtonSize = 60
     self.maxFontSize = 32
     self.maxScale = 5
+    self.maxTooltipTrackers = 10
     self.minButtonPadding = -3
     self.minButtonSize = 15
     self.minFontSize = 4
