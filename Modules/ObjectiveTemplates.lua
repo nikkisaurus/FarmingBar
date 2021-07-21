@@ -100,9 +100,8 @@ end
 
 function addon:CreateObjectiveTemplateInstance(template, buttonID)
     print(format("Created instance from %s on %s", template, buttonID))
-    local charKey = self:GetCharKey()
     local templateLinks = self:GetObjectiveTemplateLinks(template)
-    templateLinks[charKey][buttonID] = true
+    templateLinks[self:GetCharKey()][buttonID] = true
 end
 
 
@@ -116,9 +115,8 @@ end
 
 function addon:RemoveObjectiveTemplateInstance(template, buttonID)
     print(format("Removed instance from %s on %s", template, buttonID))
-    local charKey = self:GetCharKey()
     local templateLinks = self:GetObjectiveTemplateLinks(template)
-    templateLinks[charKey][buttonID] = nil
+    templateLinks[self:GetCharKey()][buttonID] = nil
 end
 
 
@@ -128,8 +126,39 @@ function addon:RenameObjectiveTemplate(objectiveTitle, newObjectiveTitle)
     objectives[newObjectiveTitle].title = newObjectiveTitle
     objectives[objectiveTitle] = nil
 
+    -- Update objective template links
+    for key, _ in pairs(objectives[newObjectiveTitle].instances[self:GetCharKey()]) do
+        local barID, buttonID = strsplit(":", key)
+        barID, buttonID = tonumber(barID), tonumber(buttonID)
+
+        local bar = self.bars[barID]
+        local setButton, setDB
+        if bar and bar:GetButtons() then
+            local button = bar:GetButtons()[buttonID]
+            if button then
+                setButton = true
+            else
+                setDB = true
+            end
+        else
+            setDB = true
+        end
+    end
+
+    if setButton then
+        button:GetButtonDB().template = newObjectiveTitle
+        button:GetButtonDB().title = newObjectiveTitle
+    elseif setDB then
+        self:SetButtonDBValues("template", newObjectiveTitle, barID, buttonID)
+        self:SetButtonDBValues("title", newObjectiveTitle, barID, buttonID)
+    end
+
     -- self:UpdateExclusions(objectiveTitle, newObjectiveTitle)
-    -- self:UpdateRenamedObjectiveButtons(objectiveTitle, newObjectiveTitle)
 
     self:RefreshOptions()
+end
+
+
+function addon:UpdateObjectiveTemplateLinks()
+
 end
