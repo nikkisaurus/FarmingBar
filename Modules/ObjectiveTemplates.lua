@@ -8,10 +8,13 @@ local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 
 function addon:CreateObjectiveTemplate(objectiveTitle, overwrite, supressSelect)
     local defaultTitle, newObjectiveTitle = L["New"]
+
+    -- Template exists, so we need to add a number to the end
     if self:ObjectiveTemplateExists(objectiveTitle or defaultTitle) and not overwrite then
         local i = 2
         while not newObjectiveTitle do
             local title = format("%s %d", objectiveTitle or defaultTitle, i)
+
             if not self:ObjectiveTemplateExists(title) then
                 newObjectiveTitle = title
             else
@@ -19,19 +22,27 @@ function addon:CreateObjectiveTemplate(objectiveTitle, overwrite, supressSelect)
             end
         end
     end
+
     newObjectiveTitle = newObjectiveTitle or objectiveTitle or defaultTitle
 
-    ------------------------------------------------------------
-
+    -- Create template
     local objectiveTemplate = self:GetDBValue("global", "objectives")[newObjectiveTitle]
     objectiveTemplate.title = newObjectiveTitle
 
+    ------------------------------------------------------------
+    --Debug-----------------------------------------------------
+    ------------------------------------------------------------
+    if objectiveTemplate.title == newObjectiveTitle then
+        print(format("DEBUG: Template successfully created: %s", newObjectiveTitle))
+    end
+    ------------------------------------------------------------
+    ------------------------------------------------------------
+
+    -- Refresh options
     self:RefreshOptions()
     if not supressSelect then
         LibStub("AceConfigDialog-3.0"):SelectGroup(addonName, "objectiveBuilder", newObjectiveTitle)
     end
-
-    ------------------------------------------------------------
 
     return newObjectiveTitle
 end

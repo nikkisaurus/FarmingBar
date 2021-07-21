@@ -14,11 +14,21 @@ function addon:CreateTracker(trackers, trackerType, trackerID)
     local trackerKey = strupper(trackerType)..":"..trackerID
     local tracker =  trackers[trackerKey]
 
+    -- Create tracker
     local lastIndex = 0
     for k, v in pairs(trackers) do
         lastIndex = max(v.order, lastIndex)
     end
     tracker.order = lastIndex + 1
+
+    ------------------------------------------------------------
+    --Debug-----------------------------------------------------
+    ------------------------------------------------------------
+    if tracker.order == lastIndex + 1 then
+        print(format("DEBUG: Tracker successfully created: %s", trackerKey))
+    end
+    ------------------------------------------------------------
+    ------------------------------------------------------------
 
     self:RefreshOptions()
 

@@ -2,6 +2,8 @@
 ## Version 3.0
 ### 3.0-alpha11
 - Added equivalency custom tracker keys
+- Added debug lines when creating a new objective template and new tracker
+- Cleanup code
 - Bug fixes:
   - -- Fixed typo in Objective Editor tile
 
