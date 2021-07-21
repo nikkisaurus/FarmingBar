@@ -364,7 +364,7 @@ local methods = {
         if buttonID == 1 then
             self:SetPoint(anchor, self:GetUserData("bar").frame, relativeAnchor, xOffset * barDB.button.padding, yOffset * barDB.button.padding)
         else
-            if fmod(buttonID, barDB.buttonWrap) == 1 or barDB.buttonWrap == 1 then
+            if math.fmod(buttonID, barDB.buttonWrap) == 1 or barDB.buttonWrap == 1 then
                 local anchor, relativeAnchor, xOffset, yOffset = addon:GetRelativeAnchorPoints(barDB.grow)
                 self:SetPoint(anchor, buttons[buttonID - barDB.buttonWrap].frame, relativeAnchor, xOffset * barDB.button.padding, yOffset * barDB.button.padding)
             else
