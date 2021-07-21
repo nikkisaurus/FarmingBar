@@ -2,13 +2,9 @@ local addonName = ...
 local addon = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
 local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 
-------------------------------------------------------------
-
-local pairs, tinsert = pairs, table.insert
-local format = string.format
-local StaticPopup_Show = StaticPopup_Show
 
 --*------------------------------------------------------------------------
+
 
 local anchors = {
     TOPLEFT = L["Topleft"],
@@ -24,13 +20,68 @@ local anchors = {
 
 local anchorSort = {"TOPLEFT", "TOP", "TOPRIGHT", "LEFT", "CENTER", "RIGHT", "BOTTOMLEFT", "BOTTOM", "BOTTOMRIGHT"}
 
+
 --*------------------------------------------------------------------------
+-- Get options
+
+function addon:GetConfigOptions()
+    local options = {
+        bar0 = {
+            order = 0,
+            type = "group",
+            name = L["All"],
+            childGroups = "tab",
+            args = {
+                bar = {
+                    order = 1,
+                    type = "group",
+                    name = L["Bar"],
+                    args = self:GetBarConfigOptions(0)
+                },
+                button = {
+                    order = 2,
+                    type = "group",
+                    name = L["Button"],
+                    args = self:GetButtonConfigOptions(0)
+                },
+            },
+        },
+    }
+
+    local bars = self:GetDBValue("profile", "bars")
+
+    for barID, _ in pairs(bars) do
+        options["bar"..barID] = {
+            order = barID,
+            type = "group",
+            name = L["Bar"].." "..barID,
+            childGroups = "tab",
+            args = {
+                bar = {
+                    order = 1,
+                    type = "group",
+                    name = L["Bar"],
+                    args = self:GetBarConfigOptions(barID),
+                },
+                button = {
+                    order = 2,
+                    type = "group",
+                    name = L["Button"],
+                    args = self:GetButtonConfigOptions(barID),
+                },
+            },
+        }
+    end
+
+    return options
+end
+
 
 function addon:GetBarConfigOptions(barID)
     local options
     local bar = barID > 0 and self.bars[barID]
 
-    if barID == 0 then
+    if barID == 0 then -- Config all bars
         options = {
             manage = {
                 order = 1,
@@ -70,9 +121,6 @@ function addon:GetBarConfigOptions(barID)
                             self:SetBarDisabled(barID, "_TOGGLE_")
                         end,
                     },
-
-                    ------------------------------------------------------------
-
                     RemoveBar = {
                         order = 2,
                         type = "select",
@@ -108,9 +156,6 @@ function addon:GetBarConfigOptions(barID)
                             self:RemoveBar(barID)
                         end,
                     },
-
-                    ------------------------------------------------------------
-
                     addBar = {
                         order = 3,
                         type = "execute",
@@ -123,7 +168,7 @@ function addon:GetBarConfigOptions(barID)
                 },
             },
         }
-    else
+    else -- Config barID
         options = {
             enabled = {
                 order = 0,
@@ -138,9 +183,6 @@ function addon:GetBarConfigOptions(barID)
                     addon:SetBarDisabled(barID, value)
                 end,
             },
-
-            ------------------------------------------------------------
-
             title = {
                 order = 1,
                 type = "input",
@@ -153,9 +195,6 @@ function addon:GetBarConfigOptions(barID)
                     addon:SetBarDBValue("title", value, barID, true)
                 end,
             },
-
-            ------------------------------------------------------------
-
             alerts = {
                 order = 2,
                 type = "group",
@@ -174,18 +213,12 @@ function addon:GetBarConfigOptions(barID)
                         type = "toggle",
                         name = L["Mute All"],
                     },
-
-                    ------------------------------------------------------------
-
                     barProgress = {
                         order = 2,
                         type = "toggle",
                         name = L["Bar Progress"],
                         disabled = true,
                     },
-
-                    ------------------------------------------------------------
-
                     completedObjectives = {
                         order = 3,
                         type = "toggle",
@@ -194,9 +227,6 @@ function addon:GetBarConfigOptions(barID)
                     },
                 },
             },
-
-            ------------------------------------------------------------
-
             visibility = {
                 order = 3,
                 type = "group",
@@ -219,27 +249,18 @@ function addon:GetBarConfigOptions(barID)
                             bar:SetHidden()
                         end,
                     },
-
-                    ------------------------------------------------------------
-
                     showEmpty = {
                         order = 2,
                         type = "toggle",
                         name = L["Show Empty Buttons"],
                         disabled = true,
                     },
-
-                    ------------------------------------------------------------
-
                     mouseover = {
                         order = 3,
                         type = "toggle",
                         name = L["Show on Mouseover"],
                         disabled = true,
                     },
-
-                    ------------------------------------------------------------
-
                     anchorMouseover = {
                         order = 4,
                         type = "toggle",
@@ -248,9 +269,6 @@ function addon:GetBarConfigOptions(barID)
                     },
                 },
             },
-
-            ------------------------------------------------------------
-
             point = {
                 order = 4,
                 type = "group",
@@ -278,9 +296,6 @@ function addon:GetBarConfigOptions(barID)
                         end,
 
                     },
-
-                    ------------------------------------------------------------
-
                     growthType = {
                         order = 2,
                         type = "select",
@@ -299,9 +314,6 @@ function addon:GetBarConfigOptions(barID)
                         end,
 
                     },
-
-                    ------------------------------------------------------------
-
                     movable = {
                         order = 3,
                         type = "toggle",
@@ -316,9 +328,6 @@ function addon:GetBarConfigOptions(barID)
                     },
                 },
             },
-
-            ------------------------------------------------------------
-
             style = {
                 order = 5,
                 type = "group",
@@ -341,9 +350,6 @@ function addon:GetBarConfigOptions(barID)
                             bar:SetScale()
                         end,
                     },
-
-                    ------------------------------------------------------------
-
                     alpha = {
                         order = 2,
                         type = "range",
@@ -358,9 +364,6 @@ function addon:GetBarConfigOptions(barID)
                     },
                 },
             },
-
-            ------------------------------------------------------------
-
             template = {
                 order = 6,
                 type = "group",
@@ -376,9 +379,6 @@ function addon:GetBarConfigOptions(barID)
                             self:SaveTemplate(barID, value)
                         end,
                     },
-
-                    ------------------------------------------------------------
-
                     builtinTemplate = {
                         order = 2,
                         type = "select",
@@ -405,9 +405,6 @@ function addon:GetBarConfigOptions(barID)
                             self:LoadTemplate(nil, barID, templateName)
                         end,
                     },
-
-                    ------------------------------------------------------------
-
                     userTemplate = {
                         order = 2,
                         type = "select",
@@ -453,9 +450,6 @@ function addon:GetBarConfigOptions(barID)
                     },
                 },
             },
-
-            ------------------------------------------------------------
-
             manage = {
                 order = 7,
                 type = "group",
@@ -475,9 +469,6 @@ function addon:GetBarConfigOptions(barID)
                     },
                 },
             },
-
-            ------------------------------------------------------------
-
             charSpecific = {
                 order = 8,
                 type = "description",
@@ -490,17 +481,16 @@ function addon:GetBarConfigOptions(barID)
     return options
 end
 
-------------------------------------------------------------
 
 function addon:GetButtonConfigOptions(barID)
     local options
     local bar = barID > 0 and self.bars[barID]
 
-    if barID == 0 then
+    if barID == 0 then -- Config all bars
         options = {
 
         }
-    else
+    else -- Config barID
         options = {
             buttons = {
                 order = 1,
@@ -524,9 +514,6 @@ function addon:GetButtonConfigOptions(barID)
                             bar:UpdateVisibleButtons()
                         end,
                     },
-
-                    ------------------------------------------------------------
-
                     buttonWrap = {
                         order = 2,
                         type = "range",
@@ -541,9 +528,6 @@ function addon:GetButtonConfigOptions(barID)
                     },
                 },
             },
-
-            ------------------------------------------------------------
-
             style = {
                 order = 2,
                 type = "group",
@@ -566,9 +550,6 @@ function addon:GetButtonConfigOptions(barID)
                             bar:SetSize()
                         end,
                     },
-
-                    ------------------------------------------------------------
-
                     padding = {
                         order = 2,
                         type = "range",
@@ -585,17 +566,11 @@ function addon:GetButtonConfigOptions(barID)
                             bar:AnchorButtons()
                         end,
                     },
-
-                    ------------------------------------------------------------
-
                     countHeader = {
                         order = 3,
                         type = "header",
                         name = L["Count Fontstring"]
                     },
-
-                    ------------------------------------------------------------
-
                     countAnchor = {
                         order = 4,
                         type = "select",
@@ -610,9 +585,6 @@ function addon:GetButtonConfigOptions(barID)
                             self:UpdateButtons()
                         end,
                     },
-
-                    ------------------------------------------------------------
-
                     countXOffset = {
                         order = 5,
                         type = "range",
@@ -628,9 +600,6 @@ function addon:GetButtonConfigOptions(barID)
                             self:UpdateButtons()
                         end,
                     },
-
-                    ------------------------------------------------------------
-
                     countYOffset = {
                         order = 6,
                         type = "range",
@@ -646,17 +615,11 @@ function addon:GetButtonConfigOptions(barID)
                             self:UpdateButtons()
                         end,
                     },
-
-                    ------------------------------------------------------------
-
                     objectiveHeader = {
                         order = 7,
                         type = "header",
                         name = L["Objective Fontstring"]
                     },
-
-                    ------------------------------------------------------------
-
                     objectiveAnchor = {
                         order = 8,
                         type = "select",
@@ -671,9 +634,6 @@ function addon:GetButtonConfigOptions(barID)
                             self:UpdateButtons()
                         end,
                     },
-
-                    ------------------------------------------------------------
-
                     objectiveXOffset = {
                         order = 9,
                         type = "range",
@@ -689,9 +649,6 @@ function addon:GetButtonConfigOptions(barID)
                             self:UpdateButtons()
                         end,
                     },
-
-                    ------------------------------------------------------------
-
                     objectiveYOffset = {
                         order = 10,
                         type = "range",
@@ -709,9 +666,6 @@ function addon:GetButtonConfigOptions(barID)
                     },
                 },
             },
-
-            ------------------------------------------------------------
-
             operations = {
                 order = 3,
                 type = "group",
@@ -727,9 +681,6 @@ function addon:GetButtonConfigOptions(barID)
                             self:ClearBar(barID)
                         end,
                     },
-
-                    ------------------------------------------------------------
-
                     reindexButtons = {
                         order = 2,
                         type = "execute",
@@ -738,9 +689,6 @@ function addon:GetButtonConfigOptions(barID)
                             self:ReindexButtons(barID)
                         end,
                     },
-
-                    ------------------------------------------------------------
-
                     sizeBarToButtons = {
                         order = 3,
                         type = "execute",
@@ -751,83 +699,17 @@ function addon:GetButtonConfigOptions(barID)
                     },
                 },
             },
-
-            ------------------------------------------------------------
-
             charSpecific = {
                 order = 4,
                 type = "description",
                 width = "full",
                 name = L.Options_Config("charSpecific"),
             },
-
-            ------------------------------------------------------------
-
             mixedSpecific = {
                 order = 4,
                 type = "description",
                 width = "full",
                 name = L.Options_Config("mixedSpecific"),
-            },
-        }
-    end
-
-    return options
-end
-
-------------------------------------------------------------
-
-function addon:GetConfigOptions()
-    local options = {
-        bar0 = {
-            order = 0,
-            type = "group",
-            name = L["All"],
-            childGroups = "tab",
-            args = {
-                bar = {
-                    order = 1,
-                    type = "group",
-                    name = L["Bar"],
-                    args = self:GetBarConfigOptions(0)
-                },
-
-                ------------------------------------------------------------
-
-                button = {
-                    order = 2,
-                    type = "group",
-                    name = L["Button"],
-                    args = self:GetButtonConfigOptions(0)
-                },
-            },
-        },
-    }
-
-    local bars = self:GetDBValue("profile", "bars")
-
-    for barID, _ in pairs(bars) do
-        options["bar"..barID] = {
-            order = barID,
-            type = "group",
-            name = L["Bar"].." "..barID,
-            childGroups = "tab",
-            args = {
-                bar = {
-                    order = 1,
-                    type = "group",
-                    name = L["Bar"],
-                    args = self:GetBarConfigOptions(barID),
-                },
-
-                ------------------------------------------------------------
-
-                button = {
-                    order = 2,
-                    type = "group",
-                    name = L["Button"],
-                    args = self:GetButtonConfigOptions(barID),
-                },
             },
         }
     end
