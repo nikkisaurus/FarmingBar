@@ -10,7 +10,8 @@ local AceGUI = LibStub("AceGUI-3.0", true)
 --*------------------------------------------------------------------------
 -- Create tracker
 
-function addon:CreateTracker(trackers, trackerType, trackerID)
+function addon:CreateTracker(objectiveInfo, trackerType, trackerID)
+    local trackers = objectiveInfo.trackers
     local trackerKey = strupper(trackerType)..":"..trackerID
     local tracker =  trackers[trackerKey]
 
@@ -131,8 +132,8 @@ end
 
 
 function addon:TrackerExists(objectiveInfo, trackerID)
-    for _, tracker in pairs(objectiveInfo.trackers) do
-        if tracker.trackerID == trackerID then
+    for key, tracker in pairs(objectiveInfo.trackers) do
+        if key == trackerID then
             return true
         end
     end

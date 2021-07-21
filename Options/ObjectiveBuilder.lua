@@ -198,7 +198,8 @@ function addon:GetObjectiveBuilderOptions()
                                 end,
                                 set = function(info, value)
                                     local validTrackerID = self:ValidateTrackerData(newTrackerType, value)
-                                    local trackerKey = addon:CreateTracker(self:GetDBValue("global", "objectives")[objectiveTitle].trackers, newTrackerType, validTrackerID)
+
+                                    local trackerKey = addon:CreateTracker(self:GetDBValue("global", "objectives")[objectiveTitle], newTrackerType, validTrackerID)
                                     ACD:SelectGroup(addonName, "objectiveBuilder", objectiveTitle, "trackers", trackerKey)
                                 end,
                             },

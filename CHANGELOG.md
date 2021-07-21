@@ -6,6 +6,7 @@
 - Cleanup code
 - Bug fixes:
   - -- Fixed typo in Objective Editor tile
+  - -- Fixed bug where existing trackers could be recreated
 
 ### 3.0-alpha10
 - Implemented objective editor to toggle includeBank and includeAllChars for multi-tracker objectives
