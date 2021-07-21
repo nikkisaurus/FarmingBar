@@ -55,7 +55,6 @@ function addon:InitializeDB()
             },
         },
 
-
         global = {
             skins = {},
             templates = {},
@@ -238,7 +237,6 @@ function addon:InitializeDB()
             },
         },
 
-
         profile = {
             enabled = true, --enables bar creation for new users/characters; disable when user deletes all bars
             bars = {
@@ -296,7 +294,6 @@ function addon:InitializeDB()
             },
         },
     }
-
 
     -- Register db with AceDB
     self.db = LibStub("AceDB-3.0"):New("FarmingBarDB", defaults)

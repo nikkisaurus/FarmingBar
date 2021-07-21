@@ -30,14 +30,11 @@ function addon:OnInitialize()
     self.moveDelay = .4
     self.OffsetX = 10
     self.OffsetY = 10
-
     self.tooltip_description = {1, 1, 1, 1, 1, 1, 1}
     self.tooltip_keyvalue = {1, .82, 0, 1, 1, 1, 1}
-
     self.barProgress = "%B progress: %progressColor%%c/%t%color%%if(%p>0, (%p%%),)if%"
     self.withObjective = "%if(%p>=100 and %C<%o,Objective complete!,Farming update:)if% %t %progressColor%%c/%o%color% (%if(%O>1,x%O ,)if%%diffColor%%d%color%)"
     self.withoutObjective = "Farming update: %t x%c (%diffColor%%d%color%)"
-
 
     -- Register sounds
     --@retail@
@@ -56,7 +53,6 @@ function addon:OnInitialize()
     LSM:Register("sound", L["Quest Complete"], "sound/interface/iquestcomplete.ogg") -- id:878
     LSM:Register("sound", L["Quest Failed"], "sound/interface/igquestfailed.ogg") -- id:846
     --@end-non-retail@]===]
-
 
     -- Initialize database and slash commands
     self:InitializeDB()
