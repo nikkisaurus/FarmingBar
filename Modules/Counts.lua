@@ -147,6 +147,61 @@ function addon:GetObjectiveCount(widget, objectiveTitle)
 end
 
 
+function addon:GetTrackerCount(widget, trackerKey, overrideObjective)
+    local trackerType, trackerID = self:ParseTrackerKey(trackerKey)
+    local trackerInfo = widget:GetButtonDB().trackers[trackerKey]
+    local count
+
+    if trackerType == "ITEM" then
+        count = trackerInfo.includeAllChars and self:GetDataStoreItemCount(trackerID, trackerInfo.includeBank) or GetItemCount(trackerID, trackerInfo.includeBank)
+    elseif trackerType == "CURRENCY" then
+        count = C_CurrencyInfo.GetCurrencyInfo(trackerID) and C_CurrencyInfo.GetCurrencyInfo(trackerID).quantity
+    end
+
+    if not count then
+        return 0
+    end
+
+    -- if #trackerInfo.exclude > 0 then
+    --     for _, eObjectiveTitle in pairs(trackerInfo.exclude) do
+    --         local eObjectiveInfo = addon:GetObjectiveInfo(eObjectiveTitle)
+    --         local eObjective, eObjectiveButton = addon:GetMaxTrackerObjective(eObjectiveTitle)
+
+    --         -- Only exclude if an objective is set (otherwise, how do we know how many to exclude?)
+    --         if eObjective then
+    --             for _, eTrackerInfo in pairs(eObjectiveInfo.trackers) do
+    --                 if eTrackerInfo.trackerID == trackerInfo.trackerID then
+    --                     -- Get the max amount used for the objective: either the objective itself or the count
+    --                     local maxCount = min(addon:GetObjectiveCount(eObjectiveButton, eObjectiveTitle), eObjective)
+    --                     -- The number of of this tracker required for the objective is the tracker objective x max
+    --                     count = count - maxCount
+    --                 end
+    --             end
+    --         end
+    --     end
+    -- end
+
+    count = floor(count / (overrideObjective or trackerInfo.objective or 1))
+
+    -- -- If objective is excluded, get max objective
+    -- -- If count > max objective while excluded, return max objective
+    -- -- Surplus above objective goes toward the objective excluding this one
+    -- -- Ex: if A has an objective of 20 and a count of 25 and B excludes A, A will show a count of 20 with objective complete and B will show a count of 5
+    local objective
+    -- for _, eObjectiveInfo in pairs(addon.db.global.objectives) do
+    --     for _, eTrackerInfo in pairs(eObjectiveInfo.trackers) do
+    --         if self:ObjectiveIsExcluded(eTrackerInfo.exclude, objectiveTitle) then
+    --             objective = addon:GetMaxTrackerObjective(objectiveTitle)
+    --             break
+    --         end
+    --     end
+    -- end
+
+    count = (count > 0 and count or 0) * (trackerInfo.countsFor or 1)
+
+    return objective and min(count, objective) or count
+end
+
 --*------------------------------------------------------------------------
 -- Validation
 

@@ -207,7 +207,7 @@ function addon:GetObjectiveBuilderOptions()
                                     return GetTrackerIDLabel(objectiveTitle)
                                 end,
                                 validate = function(_, value)
-                                    local validTrackerID = self:ValidateObjectiveData(newTrackerType, value)
+                                    local validTrackerID = self:ValidateTrackerData(newTrackerType, value)
                                     local trackerIDExists = validTrackerID and self:TrackerExists(self:GetDBValue("global", "objectives")[objectiveTitle], strupper(newTrackerType)..":"..validTrackerID)
 
                                     if trackerIDExists then
@@ -217,9 +217,9 @@ function addon:GetObjectiveBuilderOptions()
                                     end
                                 end,
                                 set = function(info, value)
-                                    local validTrackerID = self:ValidateObjectiveData(newTrackerType, value)
+                                    local validTrackerID = self:ValidateTrackerData(newTrackerType, value)
                                     local trackerKey = addon:CreateTracker(self:GetDBValue("global", "objectives")[objectiveTitle].trackers, newTrackerType, validTrackerID)
-                                    -- local validTrackerID = self:ValidateObjectiveData(newTrackerType, value)
+                                    -- local validTrackerID = self:ValidateTrackerData(newTrackerType, value)
                                     -- self:CreateTracker(objectiveTitle, {trackerType = newTrackerType, trackerID = validTrackerID})
                                     ACD:SelectGroup(addonName, "objectiveBuilder", objectiveTitle, "trackers", trackerKey)
                                 end,
@@ -362,7 +362,7 @@ function addon:GetObjectiveObjectiveBuilderOptions(objectiveTitle)
                         local action = self:GetObjectiveDBValue("action", objectiveTitle)
 
                         if action == "ITEM" or action == "CURRENCY" then
-                            return self:ValidateObjectiveData(action, value) or format(L.InvalidTrackerID, action, value)
+                            return self:ValidateTrackerData(action, value) or format(L.InvalidTrackerID, action, value)
                         elseif action == "RECIPE" then
                             -- TODO: validate recipe
                             return true
@@ -379,7 +379,7 @@ function addon:GetObjectiveObjectiveBuilderOptions(objectiveTitle)
                         local action = self:GetObjectiveDBValue("action", objectiveTitle)
 
                         if action == "ITEM" or action == "CURRENCY" then
-                            local validTrackerID = self:ValidateObjectiveData(action, value)
+                            local validTrackerID = self:ValidateTrackerData(action, value)
                             if validTrackerID then
                                 self:SetObjectiveDBValue(info[#info], validTrackerID, objectiveTitle)
                             end

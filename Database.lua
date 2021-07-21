@@ -488,3 +488,45 @@ function addon:SetObjectiveDBValue(key, value, objectiveTitle)
 
     path[keys[#keys]] = value
 end
+
+
+--*------------------------------------------------------------------------
+-- Tracker methods
+
+
+function addon:GetTrackerDBInfo(trackers, trackerKey, key)
+    local keys = {strsplit(".", key)}
+    local path = trackers[trackerKey]
+    for k, key in pairs(keys) do
+        if k < #keys then
+            path = path[key]
+        end
+    end
+
+    return path[keys[#keys]]
+end
+
+
+function addon:SetTrackerDBValue(trackers, trackerKey, key, value)
+    local keys = {strsplit(".", key)}
+    local path = trackers[trackerKey]
+
+    for k, key in pairs(keys) do
+        if k < #keys then
+            path = path[key]
+        end
+    end
+
+    if value == "_TOGGLE_" then
+        local val = path[keys[#keys]]
+        if val then
+            path[keys[#keys]] = false
+        else
+            path[keys[#keys]] = true
+        end
+    else
+        path[keys[#keys]] = value
+    end
+
+    self:RefreshOptions()
+end

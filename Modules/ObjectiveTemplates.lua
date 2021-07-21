@@ -50,7 +50,7 @@ function addon:GetObjectiveTemplateIcon(objectiveTitle)
         if objectiveInfo.action == "ITEM" or objectiveInfo.action == "CURRENCY" then
             trackerType, trackerID = objectiveInfo.action, objectiveInfo.actionInfo
         else
-            trackerType, trackerID = self:ParseTrackerKey(self:GetFirstTemplateTracker(objectiveTitle))
+            trackerType, trackerID = self:ParseTrackerKey(self:GetFirstTracker(objectiveTitle, true))
         end
 
         if trackerType == "ITEM" then

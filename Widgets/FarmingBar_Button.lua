@@ -236,7 +236,7 @@ local function frame_OnEvent(self, event, ...)
         -- TODO: print combat left
     elseif event == "COMBAT_LOG_EVENT_UNFILTERED" then
         local buttonDB = widget:GetButtonDB()
-        local validTrackerID, trackerType = addon:ValidateObjectiveData(buttonDB.action, buttonDB.actionInfo)
+        local validTrackerID, trackerType = addon:ValidateTrackerData(buttonDB.action, buttonDB.actionInfo)
 
         if addon:GetDBValue("profile", "style.buttonLayers.Cooldown") and trackerType == "ITEM" and validTrackerID then
             local fontDB = addon:GetDBValue("profile", "style.font")
