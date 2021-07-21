@@ -142,6 +142,11 @@ function addon:CloneTable(orig)
 end
 
 
+function addon:GetCharKey()
+    return format("%s - %s", UnitName("player"), GetRealmName())
+end
+
+
 function addon:GetModifierString()
     local mod = ""
     if IsShiftKeyDown() then

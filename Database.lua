@@ -76,7 +76,9 @@ function addon:InitializeDB()
                     },
                     instances = {
                         ["**"] = {
-                            -- ["profileKey"] = {buttonID1, buttonID2, ...},
+                            -- ["profileKey"] = {
+                            --     ["buttonID"] = bool,
+                            -- },
                         },
                     },
                 },

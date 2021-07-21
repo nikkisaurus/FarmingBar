@@ -84,6 +84,11 @@ function addon:GetObjectiveTemplateIcon(objectiveTitle)
 end
 
 
+function addon:GetObjectiveTemplateLinks(template)
+    return self:GetDBValue("global", "objectives")[template].instances
+end
+
+
 function addon:ObjectiveTemplateExists(objectiveTitle)
     return self:GetDBValue("global", "objectives")[objectiveTitle].title ~= ""
 end
@@ -93,11 +98,27 @@ end
 -- Manage
 
 
+function addon:CreateObjectiveTemplateInstance(template, buttonID)
+    print(format("Created instance from %s on %s", template, buttonID))
+    local charKey = self:GetCharKey()
+    local templateLinks = self:GetObjectiveTemplateLinks(template)
+    templateLinks[charKey][buttonID] = true
+end
+
+
 function addon:DeleteObjectiveTemplate(objectiveTitle, confirmed)
     self:GetDBValue("global", "objectives")[objectiveTitle] = nil
     -- self:UpdateExclusions(objectiveTitle)
     -- self:ClearDeletedObjectives(objectiveTitle)
     self:RefreshOptions()
+end
+
+
+function addon:RemoveObjectiveTemplateInstance(template, buttonID)
+    print(format("Removed instance from %s on %s", template, buttonID))
+    local charKey = self:GetCharKey()
+    local templateLinks = self:GetObjectiveTemplateLinks(template)
+    templateLinks[charKey][buttonID] = nil
 end
 
 

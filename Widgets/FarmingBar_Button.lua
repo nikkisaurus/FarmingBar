@@ -387,6 +387,9 @@ local methods = {
                     buttonDB.trackers[trackerKey] = nil
                 end
             else
+                if k == "template" and v then
+                    addon:RemoveObjectiveTemplateInstance(buttonDB.template, self:GetButtonID())
+                end
                 buttonDB[k] = addon:GetBarDBValue("objectives", 0, true)[0][k]
             end
         end
@@ -642,6 +645,19 @@ local methods = {
         local currentButtonDB = self:GetButtonDB()
         local moveButtonDB = movingButton[1]:GetButtonDB()
 
+        -- Update template links
+        local moveTemplate = moveButtonDB.template
+        local currentTemplate = currentButtonDB.template
+        if moveTemplate then
+            addon:RemoveObjectiveTemplateInstance(moveTemplate, movingButton[1]:GetButtonID())
+            addon:CreateObjectiveTemplateInstance(moveTemplate, self:GetButtonID())
+        end
+        if currentTemplate then
+            addon:RemoveObjectiveTemplateInstance(currentTemplate, self:GetButtonID())
+            addon:CreateObjectiveTemplateInstance(currentTemplate, movingButton[1]:GetButtonID())
+        end
+
+        -- Swap button data
         for k, v in pairs(moveButtonDB) do
             if k == "trackers" then
                 for trackerKey, trackerInfo in pairs(v) do
@@ -677,11 +693,12 @@ local methods = {
             end
         end
 
+        -- Update visuals
         UIFrameFlashStop(movingButton[1].Flash)
         movingButton[1].Flash:Hide()
-
         self:UpdateLayers()
         movingButton[1]:UpdateLayers()
+
         addon.movingButton = nil
     end,
 
