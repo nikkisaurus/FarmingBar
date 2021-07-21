@@ -132,9 +132,9 @@ function addon:RenameObjectiveTemplate(objectiveTitle, newObjectiveTitle)
         barID, buttonID = tonumber(barID), tonumber(buttonID)
 
         local bar = self.bars[barID]
-        local setButton, setDB
+        local button, setButton, setDB
         if bar and bar:GetButtons() then
-            local button = bar:GetButtons()[buttonID]
+            button = bar:GetButtons()[buttonID]
             if button then
                 setButton = true
             else
@@ -143,22 +143,17 @@ function addon:RenameObjectiveTemplate(objectiveTitle, newObjectiveTitle)
         else
             setDB = true
         end
-    end
 
-    if setButton then
-        button:GetButtonDB().template = newObjectiveTitle
-        button:GetButtonDB().title = newObjectiveTitle
-    elseif setDB then
-        self:SetButtonDBValues("template", newObjectiveTitle, barID, buttonID)
-        self:SetButtonDBValues("title", newObjectiveTitle, barID, buttonID)
+        if setButton then
+            button:GetButtonDB().template = newObjectiveTitle
+            button:GetButtonDB().title = newObjectiveTitle
+        elseif setDB then
+            self:SetButtonDBValues("template", newObjectiveTitle, barID, buttonID)
+            self:SetButtonDBValues("title", newObjectiveTitle, barID, buttonID)
+        end
     end
 
     -- self:UpdateExclusions(objectiveTitle, newObjectiveTitle)
 
     self:RefreshOptions()
-end
-
-
-function addon:UpdateObjectiveTemplateLinks()
-
 end
