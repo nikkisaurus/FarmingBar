@@ -16,18 +16,18 @@ function addon:InitializeDB()
             bars = {
                 ["**"] = { -- barID
                     title = "",
-
                     alerts = {
                         barProgress = false, --bar.trackProgress
                         completedObjectives = true, --bar.trackCompletedObjectives
                         muteAll = false, --bar.muteAlerts
                     },
-
                     objectives = {
                         ["**"] = { -- buttonID
-                            -- template = false, -- global objective template
+                            -- Char
+                            objective = 0,
 
                             -- Template
+                            template = false, -- global objective template
                             title = "",
                             autoIcon = true,
                             icon = 134400,
@@ -35,22 +35,18 @@ function addon:InitializeDB()
                             actionInfo = "", -- displayRef.trackerID
                             condition = "ALL", -- trackerCondition
                             conditionInfo = "", -- customCondition
-                            --
-
-                            objective = 0,
-
                             trackers = {
                                 ["**"] = { -- trackerID: "ITEM:1412", "CURRENCY:1803"
+                                    -- Char
+                                    includeAllChars = false,
+                                    includeBank = false,
+                                    exclude = {}, -- buttonIDs
+
                                     --Template
                                     order = 0,
                                     objective = 1,
                                     countsFor = 1,
-                                    --
 
-                                    --Char
-                                    includeAllChars = false,
-                                    includeBank = false,
-                                    exclude = {}, -- buttonIDs
                                 },
                             },
                         },
@@ -59,14 +55,10 @@ function addon:InitializeDB()
             },
         },
 
-        ------------------------------------------------------------
 
         global = {
             skins = {},
             templates = {},
-
-            ------------------------------------------------------------
-
             objectives = {
                 ["**"] = { -- objectiveTitle
                     title = "",
@@ -76,7 +68,6 @@ function addon:InitializeDB()
                     actionInfo = "",
                     condition = "ALL",
                     conditionInfo = "",
-
                     trackers = {
                         ["**"] = { -- trackerID: "ITEM:1412", "CURRENCY:1803"
                             order = 0,
@@ -84,18 +75,13 @@ function addon:InitializeDB()
                             countsFor = 1,
                         },
                     },
-
-                    -- links = {
-                    --     ["**"] = {},
-                    --     -- profileKey = {
-                    --     --     buttonID, ...
-                    --     -- }
-                    -- },
+                    instances = {
+                        ["**"] = {
+                            -- ["profileKey"] = {buttonID1, buttonID2, ...},
+                        },
+                    },
                 },
             },
-
-            ------------------------------------------------------------
-
             settings = {
                 commands = {
                     farmingbar = true,
@@ -104,9 +90,6 @@ function addon:InitializeDB()
                     fbar = true,
                     fb = false,
                 },
-
-                ------------------------------------------------------------
-
                 debug = {
                     enabled = false, -- ! Set false before releases; enables debug toggles in GUI
                     barDB = false, -- resets bar database on reload
@@ -117,9 +100,6 @@ function addon:InitializeDB()
                     ObjectiveBuilderTrackers = false, -- opens Objective Builder to trackers tab if Objective Builder enabled
                     StyleEditor = false, -- opens Style Editor on reload
                 },
-
-                ------------------------------------------------------------
-
                 alerts = {
                     bar = {
                         chat = true, --global.alerts.barChat
@@ -130,20 +110,15 @@ function addon:InitializeDB()
                             complete = "Auction Close", --global.sounds.barComplete
                             progress = "Auction Open", --global.sounds.barProgress
                         },
-
                         format = {
                             progress = self.barProgress, --global.alertFormats.barProgress
                         },
-
                         preview = {
                             count = 1, --global.alertFormats.barCountPreview
                             total = 5, --global.alertFormats.barTotalPreview
                             withTitle = true, --global.alertFormats.barTitlePreview
                         },
                     },
-
-                    ------------------------------------------------------------
-
                     button = {
                         chat = true, --global.alerts.chat
                         screen = true, --global.alerts.screen
@@ -155,12 +130,10 @@ function addon:InitializeDB()
                             objectiveSet = "Quest Activate", --global.sounds.objectiveSet
                             progress = "Loot Coin", --global.sounds.farmingProgress
                         },
-
                         format = {
                             withObjective = self.withObjective, --global.alertFormats.hasObjective
                             withoutObjective = self.withoutObjective, --global.alertFormats.noObjective
                         },
-
                         preview = {
                             oldCount = 20, --global.alertFormats.oldCountPreview
                             newCount = 25, --global.alertFormats.newCountPreview
@@ -168,9 +141,6 @@ function addon:InitializeDB()
                         },
                     },
                 },
-
-                ------------------------------------------------------------
-
                 keybinds = {
                     bar = {
                         moveBar = {
@@ -178,102 +148,80 @@ function addon:InitializeDB()
                             button = "LeftButton",
                             modifier = "",
                         },
-
                         configBar = {
                             button = "RightButton",
                             modifier = "shift",
                         },
-
                         toggleMovable = {
                             button = "LeftButton",
                             modifier = "shift",
                         },
-
                         openSettings = {
                             button = "LeftButton",
                             modifier = "ctrl",
                         },
-
                         openHelp = {
                             button = "RightButton",
                             modifier = "",
                         },
-
                         showObjectiveBuilder = {
                             button = "RightButton",
                             modifier = "ctrl",
                         },
                     },
-
                     button = {
                         clearObjective = {
                             button = "RightButton",
                             modifier = "shift",
                         },
-
                         includeAllChars = {
                             button = "RightButton",
                             modifier = "alt",
                         },
-
                         includeBank = {
                             button = "LeftButton",
                             modifier = "alt",
                         },
-
                         includeGuildBank = {
                             button = "LeftButton",
                             modifier = "alt-shift",
                         },
-
                         moveObjective = {
                             button = "LeftButton",
                             modifier = "",
                         },
-
                         moveObjectiveToBank = {
                             button = "RightButton",
                             modifier = "alt-ctrl",
                         },
-
                         moveAllToBank = {
                             button = "LeftButton",
                             modifier = "alt-ctrl",
                         },
-
                         dragObjective = {
                             type = "drag",
                             button = "LeftButton",
                             modifier = "shift",
                         },
-
                         showObjectiveEditBox = {
                             button = "LeftButton",
                             modifier = "ctrl",
                         },
-
                         showQuickAddEditBox = {
                             button = "RightButton",
                             modifier = "ctrl",
                         },
-
                         useItem = {
                             button = "RightButton",
                             modifier = "",
                         },
                     },
                 },
-
-                ------------------------------------------------------------
-
                 tooltips = {
                     bar = true,
                     button = true,
                     hideObjectiveInfo = false,
                 },
-
-                ------------------------------------------------------------
-
                 hints = {
                     enableModifier = false, --global.tooltips.enableMod
                     modifier = "Alt", --global.tooltips.mod
@@ -282,9 +230,6 @@ function addon:InitializeDB()
                     buttons = true, --global.tooltips.buttonTips
                     ObjectiveBuilder = true,
                 },
-
-                ------------------------------------------------------------
-
                 misc = {
                     autoLootOnUse = false, -- global.autoLootItems
                     preserveTemplateData = "DISABLED", -- PROMPT, ENABLED, DISABLED
@@ -293,7 +238,6 @@ function addon:InitializeDB()
             },
         },
 
-        ------------------------------------------------------------
 
         profile = {
             enabled = true, --enables bar creation for new users/characters; disable when user deletes all bars
@@ -301,31 +245,25 @@ function addon:InitializeDB()
                 ["**"] = { -- barID
                     enabled = false,
                     movable = true,
-
                     hidden = false,
                     anchorMouseover = false,
                     mouseover = false,
                     showEmpty = true,
-
                     alpha = 1,
                     scale = 1,
-
                     numVisibleButtons = 6,
                     buttonWrap = 12,
                     grow = {"RIGHT", "NORMAL"}, -- [1] = "RIGHT", "LEFT", "UP", "DOWN"; [2] = "NORMAL", "REVERSE"
                     point = {"TOP"},
-
                     button = {
                         size = 35, --bar.buttonSize
                         padding = 2, --bar.buttonPadding
-
                         fontStrings = {
                             count = {
                                 anchor = "BOTTOM",
                                 xOffset = -1,
                                 yOffset = 6,
                             },
-
                             objective = {
                                 anchor = "TOPLEFT",
                                 xOffset = 6,
@@ -335,15 +273,12 @@ function addon:InitializeDB()
                     },
                 },
             },
-
             style = {
                 skin = "FarmingBar_Default",
-
                 font = {
                     face = "Friz Quadrata TT",
                     outline = "OUTLINE",
                     size = 11,
-
                     fontStrings = {
                         count = {
                             style = "CUSTOM", -- "CUSTOM", "INCLUDEAUTOLAYERS", "INCLUDEALLCHARS", "INCLUDEBANK", "ITEMQUALITY" --profile.style.count.type
@@ -351,7 +286,6 @@ function addon:InitializeDB()
                         },
                     },
                 },
-
                 buttonLayers = {
                     AutoCastable = true, --bank overlay
                     AccountOverlay = true, -- account overlay
