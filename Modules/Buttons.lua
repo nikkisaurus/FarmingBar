@@ -3,6 +3,7 @@ local addon = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
 local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 
 --*------------------------------------------------------------------------
+-- Anchors
 
 local anchors = {
     RIGHT = {
@@ -39,93 +40,29 @@ local anchors = {
     },
 }
 
-------------------------------------------------------------
 
 function addon:GetAnchorPoints(grow)
     return anchors[grow].anchor, anchors[grow].relativeAnchor, anchors[grow].xOffset, anchors[grow].yOffset
 end
 
+
 function addon:GetRelativeAnchorPoints(grow)
     return addon:GetAnchorPoints(anchors[grow[1]][grow[2]])
 end
 
+
 --*------------------------------------------------------------------------
 
-function addon:ClearDeletedObjectives()
-    for _, bar in pairs(self.bars) do
-        for _, button in pairs(bar:GetUserData("buttons")) do
-            local objectiveTitle = button:GetUserData("objectiveTitle")
-            if objectiveTitle and not addon.db.global.objectives[objectiveTitle] then
-                addon.db.char.bars[bar:GetUserData("barID")].objectives[button:GetUserData("buttonID")] = nil
-                button:ClearObjective()
-            end
-        end
-    end
-end
-
-------------------------------------------------------------
-
-function addon:GetButtonDBValue(key, barID, buttonID)
-    local path = self:GetDBValue("char", "bars")[barID].objectives[buttonID]
-    if not key then return path end
-    local keys = {strsplit(".", key)}
-
-    for k, key in pairs(keys) do
-        if k < #keys then
-            path = path[key]
-        end
-    end
-
-    return path[keys[#keys]]
-end
-
-------------------------------------------------------------
-
-function addon:SetButtonDBValues(key, value, barID, buttonID)
-    local keys = {strsplit(".", key)}
-    local path = self:GetDBValue("char", "bars")[barID].objectives[buttonID]
-
-    for k, key in pairs(keys) do
-        if k < #keys then
-            path = path[key]
-        end
-    end
-
-    if value == "_TOGGLE_" then
-        if path[keys[#keys]] then
-            value = false
-        else
-            value = true
-        end
-    end
-
-    path[keys[#keys]] = value
-end
-
-------------------------------------------------------------
 
 function addon:UpdateButtons(objectiveTitle)
     for _, bar in pairs(self.bars) do
         local buttons = bar:GetUserData("buttons")
         if buttons then
             for _, button in pairs(buttons) do
-                local buttonObjectiveTitle = button:GetUserData("objectiveTitle")
+                local buttonObjectiveTitle = button:GetObjectiveTitle()
                 if buttonObjectiveTitle == objectiveTitle or not objectiveTitle then
                     button:UpdateLayers(objectiveTitle)
                 end
-            end
-        end
-    end
-end
-
-------------------------------------------------------------
-
-function addon:UpdateRenamedObjectiveButtons(oldObjectiveTitle, newObjectiveTitle)
-    for _, bar in pairs(self.bars) do
-        for _, button in pairs(bar:GetUserData("buttons")) do
-            local objectiveTitle = button:GetUserData("objectiveTitle")
-            if objectiveTitle == oldObjectiveTitle then
-                button:SetObjectiveID(newObjectiveTitle)
             end
         end
     end

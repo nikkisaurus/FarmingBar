@@ -407,3 +407,44 @@ function addon:SetBarDBValue(key, value, barID, isCharDB)
 
     path[keys[#keys]] = value
 end
+
+
+--*------------------------------------------------------------------------
+-- Button methods
+
+
+function addon:GetButtonDBValue(key, barID, buttonID)
+    local path = self:GetDBValue("char", "bars")[barID].objectives[buttonID]
+    if not key then return path end
+    local keys = {strsplit(".", key)}
+
+    for k, key in pairs(keys) do
+        if k < #keys then
+            path = path[key]
+        end
+    end
+
+    return path[keys[#keys]]
+end
+
+
+function addon:SetButtonDBValues(key, value, barID, buttonID)
+    local keys = {strsplit(".", key)}
+    local path = self:GetDBValue("char", "bars")[barID].objectives[buttonID]
+
+    for k, key in pairs(keys) do
+        if k < #keys then
+            path = path[key]
+        end
+    end
+
+    if value == "_TOGGLE_" then
+        if path[keys[#keys]] then
+            value = false
+        else
+            value = true
+        end
+    end
+
+    path[keys[#keys]] = value
+end
