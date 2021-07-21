@@ -266,6 +266,7 @@ function addon:GetObjectiveBuilderOptions_Objective(objectiveTitle)
             end,
             set = function(info, value)
                 self:SetObjectiveDBValue(info[#info], value, objectiveTitle)
+                addon:UpdateButtons()
             end,
         },
         icon = {
@@ -280,6 +281,7 @@ function addon:GetObjectiveBuilderOptions_Objective(objectiveTitle)
             end,
             set = function(info, value)
                 self:SetObjectiveDBValue(info[#info], value, objectiveTitle)
+                addon:UpdateButtons()
             end,
         },
         iconSelector = {
@@ -310,6 +312,7 @@ function addon:GetObjectiveBuilderOptions_Objective(objectiveTitle)
                     sorting = actionSort,
                     set = function(info, value)
                         self:SetObjectiveDBValue("action", value, objectiveTitle)
+                        addon:UpdateButtons()
                     end,
                 },
                 actionInfo = {
@@ -339,6 +342,7 @@ function addon:GetObjectiveBuilderOptions_Objective(objectiveTitle)
                     set = function(info, value)
                         if value == "" then
                             self:SetObjectiveDBValue(info[#info], value, objectiveTitle)
+                            addon:UpdateButtons()
                             return
                         end
 
@@ -352,6 +356,8 @@ function addon:GetObjectiveBuilderOptions_Objective(objectiveTitle)
                         else
                             self:SetObjectiveDBValue(info[#info], value, objectiveTitle)
                         end
+
+                        addon:UpdateButtons()
                     end,
                 },
             },

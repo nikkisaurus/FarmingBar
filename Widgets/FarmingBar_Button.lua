@@ -775,6 +775,29 @@ local methods = {
         self.Cooldown:SetDrawEdge(addon:GetDBValue("profile", "style.buttonLayers.CooldownEdge"))
     end,
 
+    UpdateDB = function(self)
+        local buttonDB = self:GetButtonDB()
+        if not buttonDB then return end
+
+        local template = buttonDB.template
+        if template then
+            print("Checking for template updates")
+            for k, v in pairs(addon:GetDBValue("global", "objectives")[template]) do
+                if k ~= "instances" then
+                    if k == "trackers" then
+                        print("check trackers")
+                    else
+                        print(k, v, buttonDB[k])
+                        if buttonDB[k] ~= v then
+                            buttonDB[k] = v
+                            self:UpdateLayers()
+                        end
+                    end
+                end
+            end
+        end
+    end,
+
     UpdateEvents = function(self)
         if self:IsEmpty() then
             self.frame:UnregisterEvent("BAG_UPDATE")
@@ -792,6 +815,7 @@ local methods = {
     end,
 
     UpdateLayers = function(self)
+        self:UpdateDB()
         addon:SkinButton(self, addon:GetDBValue("profile", "style.skin"))
         self:SetFontStringSettings("Count")
         self:SetFontStringSettings("Objective")
