@@ -44,12 +44,14 @@ Widgets\Widgets.xml
 
 # Modules
 Modules\Skins.lua
+Modules\Counts.lua
 Modules\Tooltips.lua
 Modules\Alerts.lua
 Modules\Bars.lua
 Modules\Buttons.lua
 Modules\DragFrame.lua
 Modules\Objectives.lua
+Modules\ObjectiveTemplates.lua
 Modules\ObjectiveEditor.lua
 Modules\Trackers.lua
 Modules\Templates.lua

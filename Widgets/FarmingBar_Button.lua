@@ -571,8 +571,8 @@ local methods = {
                 self.Count:SetTextColor(r, g, b, 1)
             end
         elseif style.style == "INCLUDEAUTOLAYERS" then
-            local total_char, included_char, notIncluded_char = addon:IsObjectiveAutoLayerIncluded(self, "includeAllChars")
-            local total_bank, included_bank, notIncluded_bank = addon:IsObjectiveAutoLayerIncluded(self, "includeBank")
+            local total_char, included_char, notIncluded_char = addon:GetObjectiveIncludedLayers(self, "includeAllChars")
+            local total_bank, included_bank, notIncluded_bank = addon:GetObjectiveIncludedLayers(self, "includeBank")
 
             if notIncluded_char == total_char and notIncluded_bank == total_bank then
                 -- Neither includeAllChars or includeBank
@@ -593,12 +593,12 @@ local methods = {
                 self.Count:SetTextColor(0.5, 0.5, 0.5, 1)
             end
 
-            -- local total, included, notIncluded = addon:IsObjectiveAutoLayerIncluded(self, "includeAllChars")
+            -- local total, included, notIncluded = addon:GetObjectiveIncludedLayers(self, "includeAllChars")
 
             -- if notIncluded == total  then
             --     self.Count:SetTextColor(1, 1, 1, 1)
             -- elseif included == total then
-            --     local total2, included2, notIncluded2 = addon:IsObjectiveAutoLayerIncluded(self, "includeBank")
+            --     local total2, included2, notIncluded2 = addon:GetObjectiveIncludedLayers(self, "includeBank")
 
             --     if notIncluded == total  then
             --         self.Count:SetTextColor(1, 31/51, 0, 1)
@@ -611,7 +611,7 @@ local methods = {
             --     self.Count:SetTextColor(.5, .5, .5, 1)
             -- end
         elseif style.style == "INCLUDEALLCHARS" then
-            local total, included, notIncluded = addon:IsObjectiveAutoLayerIncluded(self, "includeAllChars")
+            local total, included, notIncluded = addon:GetObjectiveIncludedLayers(self, "includeAllChars")
             if notIncluded == total  then
                 self.Count:SetTextColor(1, 1, 1, 1)
             elseif included == total then
@@ -620,7 +620,7 @@ local methods = {
                 self.Count:SetTextColor(.5, .5, .5, 1)
             end
         elseif style.style == "INCLUDEBANK" then
-            local total, included, notIncluded = addon:IsObjectiveAutoLayerIncluded(self, "includeBank")
+            local total, included, notIncluded = addon:GetObjectiveIncludedLayers(self, "includeBank")
             if notIncluded == total  then
                 self.Count:SetTextColor(1, 1, 1, 1)
             elseif included == total then
@@ -785,7 +785,7 @@ local methods = {
     UpdateAutoLayer = function(self)
         -- AccountOverlay
         if not self:IsEmpty() and addon:GetDBValue("profile", "style.buttonLayers.AccountOverlay") then
-            local total, included, notIncluded = addon:IsObjectiveAutoLayerIncluded(self, "includeAllChars")
+            local total, included, notIncluded = addon:GetObjectiveIncludedLayers(self, "includeAllChars")
             if notIncluded == total  then
                 self.AccountOverlay:Hide()
             else
@@ -798,7 +798,7 @@ local methods = {
 
         -- AutoCastable
         if not self:IsEmpty() and addon:GetDBValue("profile", "style.buttonLayers.AutoCastable") then
-            local total, included, notIncluded = addon:IsObjectiveAutoLayerIncluded(self, "includeBank")
+            local total, included, notIncluded = addon:GetObjectiveIncludedLayers(self, "includeBank")
             if notIncluded == total  then
                 self.AutoCastable:Hide()
             else

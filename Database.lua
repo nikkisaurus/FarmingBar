@@ -448,3 +448,43 @@ function addon:SetButtonDBValues(key, value, barID, buttonID)
 
     path[keys[#keys]] = value
 end
+
+
+--*------------------------------------------------------------------------
+-- Objective methods
+
+
+function addon:GetObjectiveDBValue(key, objectiveTitle)
+    local keys = {strsplit(".", key)}
+    local path = self:GetDBValue("global", "objectives")[objectiveTitle]
+
+    for k, key in pairs(keys) do
+        if k < #keys then
+            path = path[key]
+        end
+    end
+
+    return path[keys[#keys]]
+end
+
+
+function addon:SetObjectiveDBValue(key, value, objectiveTitle)
+    local keys = {strsplit(".", key)}
+    local path = self:GetDBValue("global", "objectives")[objectiveTitle]
+
+    for k, key in pairs(keys) do
+        if k < #keys then
+            path = path[key]
+        end
+    end
+
+    if value == "_TOGGLE_" then
+        if path[keys[#keys]] then
+            value = false
+        else
+            value = true
+        end
+    end
+
+    path[keys[#keys]] = value
+end
