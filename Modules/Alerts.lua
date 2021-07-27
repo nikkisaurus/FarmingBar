@@ -33,6 +33,7 @@ function addon:ParseAlert(alert, alertInfo)
     alert = gsub(alert, "%%r", remainder)
     alert = gsub(alert, "%%t", alertInfo.objectiveTitle or "")
     alert = gsub(alert, "%%T", alertInfo.trackerTitle or "")
+    alert = gsub(alert, "%%R", alertInfo.trackerObjective or "")
 
     -- If statements
     alert = self:ParseIfStatement(alert)

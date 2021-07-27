@@ -36,7 +36,7 @@ function addon:OnInitialize()
     self.barProgress = "%B progress: %progressColor%%c/%t%color%%if(%p>0, (%p%%),)if%"
     self.withObjective = "%if(%p>=100 and %C<%o,Objective complete!,Farming update:)if% %t %progressColor%%c/%o%color% (%if(%O>1,x%O ,)if%%diffColor%%d%color%)"
     self.withoutObjective = "Farming update: %t x%c (%diffColor%%d%color%)"
-    self.trackerProgress = "Tracker update: (%t) %T x%c (%diffColor%%d%color%)"
+    self.trackerProgress = "Tracker update: (%t) %T x%c/%o%if(%R>0, (%R),)if% (%diffColor%%d%color%)"
 
     -- Register sounds
     --@retail@

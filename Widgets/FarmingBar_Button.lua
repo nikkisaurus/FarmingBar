@@ -207,12 +207,19 @@ local function frame_OnEvent(self, event, ...)
                     alert = addon:GetDBValue("global", "settings.alerts.tracker.format.progress")
                     soundID = oldTrackerCount < trackerCount and "progress"
 
+                    objective = addon:GetTrackerDBInfo(buttonDB.trackers, trackerKey, "objective")
+
                     alertInfo = {
                         objectiveTitle = buttonDB.title,
+                        objective = objective,
                         oldCount = oldTrackerCount,
                         newCount = trackerCount,
                         difference = trackerCount - oldTrackerCount,
                     }
+
+                    if buttonDB.objective then
+                        alertInfo.trackerObjective = buttonDB.objective * objective
+                    end
 
                     if trackerType == "ITEM" then
                         addon.CacheItem(trackerID, function(itemID, alert, alertInfo, soundID)
