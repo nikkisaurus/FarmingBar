@@ -258,7 +258,137 @@ function addon:GetSettingsOptions()
                     order = 2,
                     type = "group",
                     name = L["Alerts"],
-                    args = {},
+                    args = {
+                        bar = {
+                            order = 1,
+                            type = "group",
+                            inline = true,
+                            name = L["Bar"],
+                            args = {
+                                toggle = {
+                                    order = 1,
+                                    type = "group",
+                                    name = L["Alerts"],
+                                    inline = true,
+                                    get = function(info)
+                                        return self:GetDBValue("global", "settings.alerts.bar."..info[#info])
+                                    end,
+                                    set = function(info, value)
+                                        self:SetDBValue("global", "settings.alerts.bar."..info[#info], value)
+                                    end,
+                                    args = {
+                                        chat = {
+                                            order = 1,
+                                            type = "toggle",
+                                            name = L["Chat"],
+                                        },
+                                        screen = {
+                                            order = 1,
+                                            type = "toggle",
+                                            name = L["Screen"],
+                                        },
+                                        sound = {
+                                            order = 1,
+                                            type = "toggle",
+                                            name = L["Sound"],
+                                            get = function(info)
+                                                return self:GetDBValue("global", "settings.alerts.bar.sound.enabled")
+                                            end,
+                                            set = function(info, value)
+                                                self:SetDBValue("global", "settings.alerts.bar.sound.enabled", value)
+                                            end,
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                        button = {
+                            order = 1,
+                            type = "group",
+                            inline = true,
+                            name = L["Button"],
+                            args = {
+                                toggle = {
+                                    order = 1,
+                                    type = "group",
+                                    name = L["Alerts"],
+                                    inline = true,
+                                    get = function(info)
+                                        return self:GetDBValue("global", "settings.alerts.button."..info[#info])
+                                    end,
+                                    set = function(info, value)
+                                        self:SetDBValue("global", "settings.alerts.button."..info[#info], value)
+                                    end,
+                                    args = {
+                                        chat = {
+                                            order = 1,
+                                            type = "toggle",
+                                            name = L["Chat"],
+                                        },
+                                        screen = {
+                                            order = 1,
+                                            type = "toggle",
+                                            name = L["Screen"],
+                                        },
+                                        sound = {
+                                            order = 1,
+                                            type = "toggle",
+                                            name = L["Sound"],
+                                            get = function(info)
+                                                return self:GetDBValue("global", "settings.alerts.button.sound.enabled")
+                                            end,
+                                            set = function(info, value)
+                                                self:SetDBValue("global", "settings.alerts.button.sound.enabled", value)
+                                            end,
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                        tracker = {
+                            order = 1,
+                            type = "group",
+                            inline = true,
+                            name = L["Tracker"],
+                            args = {
+                                toggle = {
+                                    order = 1,
+                                    type = "group",
+                                    name = L["Alerts"],
+                                    inline = true,
+                                    get = function(info)
+                                        return self:GetDBValue("global", "settings.alerts.tracker."..info[#info])
+                                    end,
+                                    set = function(info, value)
+                                        self:SetDBValue("global", "settings.alerts.tracker."..info[#info], value)
+                                    end,
+                                    args = {
+                                        chat = {
+                                            order = 1,
+                                            type = "toggle",
+                                            name = L["Chat"],
+                                        },
+                                        screen = {
+                                            order = 1,
+                                            type = "toggle",
+                                            name = L["Screen"],
+                                        },
+                                        sound = {
+                                            order = 1,
+                                            type = "toggle",
+                                            name = L["Sound"],
+                                            get = function(info)
+                                                return self:GetDBValue("global", "settings.alerts.tracker.sound.enabled")
+                                            end,
+                                            set = function(info, value)
+                                                self:SetDBValue("global", "settings.alerts.tracker.sound.enabled", value)
+                                            end,
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
                 },
                 keybinds = {
                     order = 3,

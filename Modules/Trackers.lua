@@ -25,11 +25,11 @@ function addon:CreateTracker(objectiveInfo, trackerType, trackerID)
     ------------------------------------------------------------
     --Debug-----------------------------------------------------
     ------------------------------------------------------------
-    if tracker.order == lastIndex + 1 then
-        print(format("DEBUG: Tracker successfully created: %s", trackerKey))
-    else
-        print(format("DEBUG: There was an error creating: %s", trackerKey))
-    end
+    -- if tracker.order == lastIndex + 1 then
+    --     print(format("DEBUG: Tracker successfully created: %s", trackerKey))
+    -- else
+    --     print(format("DEBUG: There was an error creating: %s", trackerKey))
+    -- end
     ------------------------------------------------------------
     ------------------------------------------------------------
 

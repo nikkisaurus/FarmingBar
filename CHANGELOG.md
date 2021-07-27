@@ -1,8 +1,10 @@
 # Farming Bar
 ## Version 3.0
 ### 3.0-alpha12
+- You can now enable or disable alerts (customization not yet implemented)
+- Alert formats have been changed and now accept a user defined function returning a string (customization not yet implemented)
 - Implemented tracker progress alerts for multi-tracker objectives
-- Alert formats have been changed and now accept a user defined function returning a string
+- Debug lines have been removed from creating new objectives or trackers until more reports of issues come in
 - Bug fixes:
   - -- Fixed error when deleting objective template
 
