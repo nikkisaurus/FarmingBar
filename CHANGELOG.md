@@ -2,6 +2,7 @@
 ## Version 3.0
 ### 3.0-alpha12
 - Implemented tracker progress alerts for multi-tracker objectives
+- Alert formats have been changed and now accept a user defined function returning a string
 
 ### 3.0-alpha11
 - Cleanup code

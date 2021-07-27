@@ -142,16 +142,17 @@ local function frame_OnEvent(self, event, ...)
     if event == "BAG_UPDATE" or event == "BAG_UPDATE_COOLDOWN" or event == "CURRENCY_DISPLAY_UPDATE" or event == "FARMINGBAR_UPDATE_COUNT" then
         local oldCount, newCount = ...
         local oldTrackerCounts, trackerCounts
+        local alertInfo, alert, soundID, barAlert
+
+        local objective = widget:GetObjective()
+
         if event ~= "FARMINGBAR_UPDATE_COUNT" then
             oldCount, oldTrackerCounts = widget:GetCount()
             newCount, trackerCounts = addon:GetObjectiveCount(widget)
         end
-        local objective = widget:GetUserData("objective")
-        local alert, soundID, barAlert
 
-        local alertInfo
         if newCount ~= oldCount then
-            if objective then
+            if objective > 0 then
                 if alerts.completedObjectives or (not alerts.completedObjectives and ((oldCount < objective) or (newCount < oldCount and newCount < objective))) then
                     alert = addon:GetDBValue("global", "settings.alerts.button.format.withObjective")
 
@@ -171,12 +172,21 @@ local function frame_OnEvent(self, event, ...)
                 soundID = oldCount < newCount and "progress"
             end
 
+            local difference = newCount - oldCount
+
             alertInfo = {
                 objectiveTitle = buttonDB.title,
-                objective = objective,
+                objective = {
+                    color = objective > 0 and (newCount >= objective and "|cff00ff00" or "|cffffcc00") or "",
+                    count = objective,
+                },
                 oldCount = oldCount,
                 newCount = newCount,
-                difference = newCount - oldCount,
+                difference = {
+                    sign = difference > 0 and "+" or difference < 0 and "",
+                    color =  difference > 0 and "|cff00ff00" or difference < 0 and "|cffff0000",
+                    count = difference,
+                },
             }
         end
 
@@ -199,27 +209,36 @@ local function frame_OnEvent(self, event, ...)
                 -- self:GetBar():AlertProgress(progressCount, progressTotal)
             end
         elseif trackerCounts then
-            for trackerKey, trackerCount in pairs(trackerCounts) do
+            for trackerKey, newTrackerCount in pairs(trackerCounts) do
                 oldTrackerCount = oldTrackerCounts[trackerKey]
-                if oldTrackerCount and oldTrackerCount ~= trackerCount then
-                    local trackerType, trackerID = addon:ParseTrackerKey(trackerKey)
-
+                if oldTrackerCount and oldTrackerCount ~= newTrackerCount then
                     alert = addon:GetDBValue("global", "settings.alerts.tracker.format.progress")
-                    soundID = oldTrackerCount < trackerCount and "progress"
+                    soundID = oldTrackerCount < newTrackerCount and "progress"
 
-                    objective = addon:GetTrackerDBInfo(buttonDB.trackers, trackerKey, "objective")
+                    local trackerObjective = addon:GetTrackerDBInfo(buttonDB.trackers, trackerKey, "objective")
+
+                    local difference, trackerDifference = newCount - oldCount, newTrackerCount - oldTrackerCount
 
                     alertInfo = {
                         objectiveTitle = buttonDB.title,
-                        objective = objective,
-                        oldCount = oldTrackerCount,
-                        newCount = trackerCount,
-                        difference = trackerCount - oldTrackerCount,
+                        objective = {
+                            color = objective > 0 and (newCount >= objective and "|cff00ff00" or "|cffffcc00") or "",
+                            count = objective,
+                        },
+                        trackerObjective = {
+                            color = trackerObjective and (newTrackerCount >= trackerObjective and "|cff00ff00" or "|cffffcc00") or "",
+                            count = trackerObjective,
+                        },
+                        oldTrackerCount = oldTrackerCount,
+                        newTrackerCount = newTrackerCount,
+                        trackerDifference = {
+                            sign = trackerDifference > 0 and "+" or trackerDifference < 0 and "",
+                            color =  trackerDifference > 0 and "|cff00ff00" or trackerDifference < 0 and "|cffff0000",
+                            count = trackerDifference,
+                        },
                     }
 
-                    if buttonDB.objective then
-                        alertInfo.trackerObjective = buttonDB.objective * objective
-                    end
+                    local trackerType, trackerID = addon:ParseTrackerKey(trackerKey)
 
                     if trackerType == "ITEM" then
                         addon.CacheItem(trackerID, function(itemID, alert, alertInfo, soundID)

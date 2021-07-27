@@ -33,10 +33,32 @@ function addon:OnInitialize()
     self.OffsetY = 10
     self.tooltip_description = {1, 1, 1, 1, 1, 1, 1}
     self.tooltip_keyvalue = {1, .82, 0, 1, 1, 1, 1}
-    self.barProgress = "%B progress: %progressColor%%c/%t%color%%if(%p>0, (%p%%),)if%"
-    self.withObjective = "%if(%p>=100 and %C<%o,Objective complete!,Farming update:)if% %t %progressColor%%c/%o%color% (%if(%O>1,x%O ,)if%%diffColor%%d%color%)"
-    self.withoutObjective = "Farming update: %t x%c (%diffColor%%d%color%)"
-    self.trackerProgress = "Tracker update: (%t) %T x%c/%o%if(%R>0, (%R),)if% (%diffColor%%d%color%)"
+    -- self.barProgress = "%B progress: %progressColor%%c/%t%color%%if(%p>0, (%p%%),)if%"
+    self.barProgress = [[function(info)
+        return ""
+    end]]
+    self.withObjective = [[function(info)
+        local percent = floor((info.newCount / info.objective.count) * 100)
+        local objectiveReps = floor(info.newCount / info.objective.count)
+
+        local status = format("%s", (percent >= 100 and info.oldCount < info.objective.count) and "Objective complete!" or "Farming update:")
+        local count = format("%s%d/%d|r", info.objective.color, info.newCount, info.objective.count)
+        local difference = format("%s%s%d|r", info.difference.color, info.difference.sign, info.difference.count)
+
+        return format("%s %s %s (%s%s)", status, info.objectiveTitle, count, objectiveReps > 1 and "x"..objectiveReps.." " or "", difference)
+    end]]
+    self.withoutObjective = [[function(info)
+        local difference = format("%s%s%d|r", info.difference.color, info.difference.sign, info.difference.count)
+
+        return format("Farming update: %s x%d (%s)", info.objectiveTitle, info.newCount, difference)
+    end]]
+    self.trackerProgress = [[function(info)
+        local title = format("(%s) %s", info.objectiveTitle, info.trackerTitle)
+        local count = format("%s%d/%d|r", info.trackerObjective.color, info.newTrackerCount, info.objective.count > 0 and info.objective.count * info.trackerObjective.count or info.trackerObjective.count)
+        local difference = format("(%s%s%d|r)", info.trackerDifference.color, info.trackerDifference.sign, info.trackerDifference.count)
+
+        return format("Tracker update: %s %s %s", title, count, difference)
+    end]]
 
     -- Register sounds
     --@retail@
