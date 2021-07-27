@@ -198,9 +198,7 @@ local function frame_OnEvent(self, event, ...)
 
                 -- self:GetBar():AlertProgress(progressCount, progressTotal)
             end
-        end
-
-        if trackerCounts and addon.tcount(trackerCounts) > 1 then -- Tracker alerts enabled only if a multi-tracker objective
+        elseif trackerCounts then
             for trackerKey, trackerCount in pairs(trackerCounts) do
                 oldTrackerCount = oldTrackerCounts[trackerKey]
                 if oldTrackerCount and oldTrackerCount ~= trackerCount then
