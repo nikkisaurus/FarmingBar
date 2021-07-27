@@ -107,6 +107,7 @@ end
 function addon:DeleteObjectiveTemplate(objectiveTitle, confirmed)
     -- Update objective template links
     self:UpdateObjectiveTemplateLinks(self:GetDBValue("global", "objectives")[objectiveTitle].instances, function(instances, buttonDB)
+        if not buttonDB then return end
         buttonDB.template = false
 
         for k, v in pairs(instances) do
