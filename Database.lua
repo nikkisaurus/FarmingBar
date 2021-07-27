@@ -141,6 +141,22 @@ function addon:InitializeDB()
                             objective = 200, --global.alertFormats.objectivePreview
                         },
                     },
+                    tracker = {
+                        chat = true,
+                        screen = true,
+                        sound = {
+                            enabled = true,
+
+                            progress = "Loot Coin",
+                        },
+                        format = {
+                            progress = self.trackerProgress,
+                        },
+                        preview = {
+                            oldCount = 20,
+                            newCount = 25,
+                        },
+                    },
                 },
                 keybinds = {
                     bar = {

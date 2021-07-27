@@ -3,6 +3,10 @@ local addon = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
 local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 
 
+-- Optional libraries
+local LSM = LibStub("LibSharedMedia-3.0")
+
+
 --*------------------------------------------------------------------------
 -- Parse alerts
 
@@ -28,6 +32,7 @@ function addon:ParseAlert(alert, alertInfo)
     alert = gsub(alert, "%%p", percent)
     alert = gsub(alert, "%%r", remainder)
     alert = gsub(alert, "%%t", alertInfo.objectiveTitle or "")
+    alert = gsub(alert, "%%T", alertInfo.trackerTitle or "")
 
     -- If statements
     alert = self:ParseIfStatement(alert)
@@ -50,4 +55,27 @@ function addon:ParseIfStatement(alert)
     end
 
     return alert
+end
+
+
+--*------------------------------------------------------------------------
+-- Send alerts
+
+
+function addon:SendAlert(alertType, alert, alertInfo, soundID)
+    if self:GetDBValue("global", "settings.alerts")[alertType].chat and alert then
+        self:Print(self:ParseAlert(alert, alertInfo))
+    end
+
+    if self:GetDBValue("global", "settings.alerts")[alertType].screen and alert then
+        -- if not self.CoroutineUpdater:IsVisible() then
+            UIErrorsFrame:AddMessage(self:ParseAlert(alert, alertInfo), 1, 1, 1)
+        -- else
+        --     self.CoroutineUpdater.alert:SetText(self:ParseAlert(alert, alertInfo))
+        -- end
+    end
+
+    if self:GetDBValue("global", "settings.alerts")[alertType].sound.enabled and soundID then
+        PlaySoundFile(LSM:Fetch("sound", self:GetDBValue("global", "settings.alerts.button.sound")[soundID]))
+    end
 end

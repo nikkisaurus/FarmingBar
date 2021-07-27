@@ -141,75 +141,96 @@ local function frame_OnEvent(self, event, ...)
 
     if event == "BAG_UPDATE" or event == "BAG_UPDATE_COOLDOWN" or event == "CURRENCY_DISPLAY_UPDATE" or event == "FARMINGBAR_UPDATE_COUNT" then
         local oldCount, newCount = ...
+        local oldTrackerCounts, trackerCounts
         if event ~= "FARMINGBAR_UPDATE_COUNT" then
-            oldCount = widget:GetCount()
-            newCount = addon:GetObjectiveCount(widget)
+            oldCount, oldTrackerCounts = widget:GetCount()
+            newCount, trackerCounts = addon:GetObjectiveCount(widget)
         end
         local objective = widget:GetUserData("objective")
         local alert, soundID, barAlert
 
+        local alertInfo
         if newCount ~= oldCount then
-            if not alerts.muteAll then
-                if objective then
-                    if alerts.completedObjectives or (not alerts.completedObjectives and ((oldCount < objective) or (newCount < oldCount and newCount < objective))) then
-                        alert = addon:GetDBValue("global", "settings.alerts.button.format.withObjective")
+            if objective then
+                if alerts.completedObjectives or (not alerts.completedObjectives and ((oldCount < objective) or (newCount < oldCount and newCount < objective))) then
+                    alert = addon:GetDBValue("global", "settings.alerts.button.format.withObjective")
 
-                        if oldCount < objective and newCount >= objective then
-                            soundID = "objectiveComplete"
-                            barAlert = "complete"
-                        else
-                            soundID = oldCount < newCount and "farmingProgress"
-                            -- Have to check if we lost an objective
-                            if oldCount >= objective and newCount < objective then
-                                barAlert = "lost"
-                            end
+                    if oldCount < objective and newCount >= objective then
+                        soundID = "objectiveComplete"
+                        barAlert = "complete"
+                    else
+                        soundID = oldCount < newCount and "progress"
+                        -- Have to check if we lost an objective
+                        if oldCount >= objective and newCount < objective then
+                            barAlert = "lost"
                         end
                     end
-                else
-                    alert = addon:GetDBValue("global", "settings.alerts.button.format.withoutObjective")
-                    soundID = oldCount < newCount and "progress"
                 end
-
-                local alertInfo = {
-                    objectiveTitle = buttonDB.title,
-                    objective = objective,
-                    oldCount = oldCount,
-                    newCount = newCount,
-                    difference = newCount - oldCount,
-                }
-
-                -- Play alerts
-                if addon:GetDBValue("global", "settings.alerts.button.chat") and alert then
-                    addon:Print(addon:ParseAlert(alert, alertInfo))
-                end
-
-                if addon:GetDBValue("global", "settings.alerts.button.screen") and alert then
-                    -- if not addon.CoroutineUpdater:IsVisible() then
-                        UIErrorsFrame:AddMessage(addon:ParseAlert(alert, alertInfo), 1, 1, 1)
-                    -- else
-                    --     addon.CoroutineUpdater.alert:SetText(addon:ParseAlert(alert, alertInfo))
-                    -- end
-                end
-
-                if addon:GetDBValue("global", "settings.alerts.button.sound.enabled") and soundID then
-                    PlaySoundFile(LSM:Fetch("sound", addon:GetDBValue("global", "settings.alerts.button.sound")[soundID]))
-                end
-
-                if barAlert then
-                    -- local progressCount, progressTotal = self:GetBar():GetProgress()
-
-                    -- if barAlert == "complete" then
-                    --     progressCount = progressCount - 1
-                    -- elseif barAlert == "lost" then
-                    --     progressCount = progressCount + 1
-                    -- end
-
-                    -- self:GetBar():AlertProgress(progressCount, progressTotal)
-                end
+            else
+                alert = addon:GetDBValue("global", "settings.alerts.button.format.withoutObjective")
+                soundID = oldCount < newCount and "progress"
             end
 
-            widget:UpdateLayers()
+            alertInfo = {
+                objectiveTitle = buttonDB.title,
+                objective = objective,
+                oldCount = oldCount,
+                newCount = newCount,
+                difference = newCount - oldCount,
+            }
         end
+
+        if alerts.muteAll then
+            return
+        end
+
+        if alertInfo then
+            addon:SendAlert("button", alert, alertInfo, soundID)
+
+            if barAlert then
+                -- local progressCount, progressTotal = self:GetBar():GetProgress()
+
+                -- if barAlert == "complete" then
+                --     progressCount = progressCount - 1
+                -- elseif barAlert == "lost" then
+                --     progressCount = progressCount + 1
+                -- end
+
+                -- self:GetBar():AlertProgress(progressCount, progressTotal)
+            end
+        end
+
+        if trackerCounts and addon.tcount(trackerCounts) > 1 then -- Tracker alerts enabled only if a multi-tracker objective
+            for trackerKey, trackerCount in pairs(trackerCounts) do
+                oldTrackerCount = oldTrackerCounts[trackerKey]
+                if oldTrackerCount and oldTrackerCount ~= trackerCount then
+                    local trackerType, trackerID = addon:ParseTrackerKey(trackerKey)
+
+                    alert = addon:GetDBValue("global", "settings.alerts.tracker.format.progress")
+                    soundID = oldTrackerCount < trackerCount and "progress"
+
+                    alertInfo = {
+                        objectiveTitle = buttonDB.title,
+                        oldCount = oldTrackerCount,
+                        newCount = trackerCount,
+                        difference = trackerCount - oldTrackerCount,
+                    }
+
+                    if trackerType == "ITEM" then
+                        addon.CacheItem(trackerID, function(itemID, alert, alertInfo, soundID)
+                            alertInfo.trackerTitle = (GetItemInfo(itemID))
+                            addon:SendAlert("tracker", alert, alertInfo, soundID)
+                        end, trackerID, alert, alertInfo, soundID)
+                    else
+                        alertInfo.trackerTitle = C_CurrencyInfo.GetCurrencyInfo(trackerID).name
+                        addon:SendAlert("tracker", alert, alertInfo, soundID)
+                    end
+                end
+            end
+            -- TODO: get old track count, get alerts
+        end
+
+        widget:UpdateLayers()
     elseif event == "PLAYER_REGEN_ENABLED" then
         widget:SetAttribute()
         self:UnregisterEvent(event)
@@ -356,8 +377,6 @@ local methods = {
         local buttons = self:GetUserData("buttons")
         local buttonID = self:GetUserData("buttonID")
 
-        ------------------------------------------------------------
-
         local anchor, relativeAnchor, xOffset, yOffset = addon:GetAnchorPoints(barDB.grow[1])
 
         self:ClearAllPoints()
@@ -424,9 +443,8 @@ local methods = {
     end,
 
     GetCount = function(self)
-        return self:GetUserData("count") or 0
+        return self:GetUserData("count") or 0, self:GetUserData("trackerCounts") or {}
     end,
-    ------------------------------------------------------------
 
     GetObjective = function(self)
         return not self:IsEmpty() and self:GetButtonDB().objective
@@ -500,7 +518,9 @@ local methods = {
         local style = addon:GetDBValue("profile", "style.font.fontStrings.count")
         local isEmpty = self:IsEmpty()
         if not isEmpty then
-            self:SetUserData("count", addon:GetObjectiveCount(self))
+            local count, trackerCounts = addon:GetObjectiveCount(self)
+            self:SetUserData("count", count)
+            self:SetUserData("trackerCounts", trackerCounts)
         end
 
         self.Count:SetText(not isEmpty and addon.iformat(self:GetCount(), 2, true) or "")

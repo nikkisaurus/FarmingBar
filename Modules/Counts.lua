@@ -26,20 +26,25 @@ end
 
 function addon:GetObjectiveCount(widget, objectiveTitle)
     local buttonDB = widget:GetButtonDB()
+    local trackers = {}
 
     local count = 0
     if buttonDB.condition == "ANY" then
         for trackerKey, _ in pairs(buttonDB.trackers) do
-            count = count + self:GetTrackerCount(widget, trackerKey)
+            trackerCount = self:GetTrackerCount(widget, trackerKey)
+            count = count + trackerCount
+            trackers[trackerKey] = self:GetTrackerCount(widget, trackerKey, 1)
         end
     elseif buttonDB.condition == "ALL" then
         local pendingCount
         for trackerKey, _ in pairs(buttonDB.trackers) do
+            trackerCount = self:GetTrackerCount(widget, trackerKey)
             if not pendingCount then
-                pendingCount = self:GetTrackerCount(widget, trackerKey)
+                pendingCount = trackerCount
             else
-                pendingCount = min(pendingCount, self:GetTrackerCount(widget, trackerKey))
+                pendingCount = min(pendingCount, trackerCount)
             end
+            trackers[trackerKey] = self:GetTrackerCount(widget, trackerKey, 1)
         end
         count = count + (pendingCount or 0)
     elseif buttonDB.condition == "CUSTOM" then
@@ -143,7 +148,7 @@ function addon:GetObjectiveCount(widget, objectiveTitle)
         end
     end
 
-    return count > 0 and count or 0
+    return count > 0 and count or 0, trackers
 end
 
 

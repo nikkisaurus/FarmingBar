@@ -1,5 +1,8 @@
 # Farming Bar
 ## Version 3.0
+### 3.0-alpha12
+- Implemented tracker progress alerts for multi-tracker objectives
+
 ### 3.0-alpha11
 - Cleanup code
 - Reimplemented link between objective templates and instances

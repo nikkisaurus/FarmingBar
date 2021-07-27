@@ -134,6 +134,7 @@ end
 function addon:ParseTrackerKey(trackerID)
     if not trackerID then return end
     local trackerType, trackerID = strsplit(":", trackerID)
+
     return trackerType, tonumber(trackerID)
 end
 
