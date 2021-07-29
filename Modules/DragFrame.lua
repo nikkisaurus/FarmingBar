@@ -10,7 +10,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 local function DragFrame_OnEvent(self, event, buttonClicked, ...)
     if event == "GLOBAL_MOUSE_DOWN" then
         -- Clear objective when right clicking or not dropping item on button
-        if buttonClicked == "RightButton" or (self:GetObjective() and not strfind(GetMouseFocus():GetName(), "^FarmingBar_Button%d")) then
+        if buttonClicked == "RightButton" or (self:GetObjective() and not strfind(GetMouseFocus():GetName() or "", "^FarmingBar_Button%d")) then
             self:Clear()
             addon.movingButton = nil
         end

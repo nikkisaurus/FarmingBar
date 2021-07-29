@@ -98,6 +98,7 @@ function addon:GetObjectiveCount(widget, objectiveTitle)
 
                     -- Get the count for key1, which is the initial tracker
                     local trackerCount = self:GetTrackerCount(widget, key1, overrideObjective)
+                    trackers[key1] = self:GetTrackerCount(widget, key1, 1)
 
                     -- Track in countsUsed so we don't double dip:
                     -- Get the current count, if it exists
@@ -114,6 +115,7 @@ function addon:GetObjectiveCount(widget, objectiveTitle)
                         key2 = self:GetTrackerKey(widget, tonumber(key2))
                         -- Get the count for key2
                         local key2Count = self:GetTrackerCount(widget, key2)
+                        trackers[key2] = self:GetTrackerCount(widget, key2, 1)
 
                         -- Track in countsUsed so we don't double dip:
                         -- Get the current count, if it exists

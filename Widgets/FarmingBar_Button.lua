@@ -139,7 +139,7 @@ local function frame_OnEvent(self, event, ...)
     local alerts = addon:GetBarDBValue("alerts", widget:GetBarID(), true)
     local buttonDB = widget:GetButtonDB()
 
-    if event == "BAG_UPDATE" or event == "BAG_UPDATE_COOLDOWN" or event == "CURRENCY_DISPLAY_UPDATE" or event == "FARMINGBAR_UPDATE_COUNT" then
+    if event == "BAG_UPDATE" or event == "CURRENCY_DISPLAY_UPDATE" or event == "FARMINGBAR_UPDATE_COUNT" then
         local oldCount, newCount = ...
         local oldTrackerCounts, trackerCounts
         local alertInfo, alert, soundID, barAlert
@@ -438,7 +438,6 @@ local methods = {
         end
 
         self.frame:UnregisterEvent("BAG_UPDATE")
-        self.frame:UnregisterEvent("BAG_UPDATE_COOLDOWN")
         --@retail@
         self.frame:UnregisterEvent("CURRENCY_DISPLAY_UPDATE")
         --@end-retail@
@@ -857,13 +856,11 @@ local methods = {
     UpdateEvents = function(self)
         if self:IsEmpty() then
             self.frame:UnregisterEvent("BAG_UPDATE")
-            self.frame:UnregisterEvent("BAG_UPDATE_COOLDOWN")
             --@retail@
             self.frame:UnregisterEvent("CURRENCY_DISPLAY_UPDATE")
             --@end-retail@
         else
             self.frame:RegisterEvent("BAG_UPDATE")
-            self.frame:RegisterEvent("BAG_UPDATE_COOLDOWN")
             --@retail@
             self.frame:RegisterEvent("CURRENCY_DISPLAY_UPDATE")
             --@end-retail@
