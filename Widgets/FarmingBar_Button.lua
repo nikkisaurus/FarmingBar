@@ -139,14 +139,15 @@ local function frame_OnEvent(self, event, ...)
     local alerts = addon:GetBarDBValue("alerts", widget:GetBarID(), true)
     local buttonDB = widget:GetButtonDB()
 
-    if event == "BAG_UPDATE" or event == "CURRENCY_DISPLAY_UPDATE" or event == "FARMINGBAR_UPDATE_COUNT" then
+    if event == "BAG_UPDATE_DELAYED" or event == "CURRENCY_DISPLAY_UPDATE" or event == "FARMINGBAR_UPDATE_COUNT" then
+        if true then return 0 end
         local oldCount, newCount = ...
         local oldTrackerCounts, trackerCounts
         local alertInfo, alert, soundID, barAlert
 
         local objective = widget:GetObjective()
 
-        if event ~= "FARMINGBAR_UPDATE_COUNT" then
+        if event ~= "FARMINGBAR_UPDATE_COUNT" or (not oldCount and not newCount) then
             oldCount, oldTrackerCounts = widget:GetCount()
             newCount, trackerCounts = addon:GetObjectiveCount(widget)
         end
@@ -196,6 +197,7 @@ local function frame_OnEvent(self, event, ...)
 
         if alertInfo then
             addon:SendAlert("button", alert, alertInfo, soundID)
+            widget:UpdateLayers()
 
             if barAlert then
                 -- local progressCount, progressTotal = self:GetBar():GetProgress()
@@ -244,17 +246,17 @@ local function frame_OnEvent(self, event, ...)
                         addon.CacheItem(trackerID, function(itemID, alert, alertInfo, soundID)
                             alertInfo.trackerTitle = (GetItemInfo(itemID))
                             addon:SendAlert("tracker", alert, alertInfo, soundID)
+                            widget:UpdateLayers()
                         end, trackerID, alert, alertInfo, soundID)
                     else
                         alertInfo.trackerTitle = C_CurrencyInfo.GetCurrencyInfo(trackerID).name
                         addon:SendAlert("tracker", alert, alertInfo, soundID)
+                        widget:UpdateLayers()
                     end
                 end
             end
             -- TODO: get old track count, get alerts
         end
-
-        widget:UpdateLayers()
     elseif event == "PLAYER_REGEN_ENABLED" then
         widget:SetAttribute()
         self:UnregisterEvent(event)
@@ -437,7 +439,7 @@ local methods = {
             end
         end
 
-        self.frame:UnregisterEvent("BAG_UPDATE")
+        self.frame:UnregisterEvent("BAG_UPDATE_DELAYED")
         --@retail@
         self.frame:UnregisterEvent("CURRENCY_DISPLAY_UPDATE")
         --@end-retail@
@@ -630,7 +632,6 @@ local methods = {
     end,
 
     SetDBValue = function(self, key, value)
-        -- addon:SetBarDBValue(key, value, self:GetBarID(), isCharDB)
         addon:SetButtonDBValues(key, value, self:GetBarID(), self:GetUserData("buttonID"))
     end,
 
@@ -830,6 +831,7 @@ local methods = {
                 if k ~= "instances" then
                     if k == "trackers" then
                         for key, value in pairs(v) do
+                            local trackerType, trackerID = addon:ParseTrackerKey(key)
                             for K, V in pairs(value) do
                                 if buttonDB.trackers[key][K] ~= V then
                                     buttonDB.trackers[key][K] = V
@@ -855,12 +857,12 @@ local methods = {
 
     UpdateEvents = function(self)
         if self:IsEmpty() then
-            self.frame:UnregisterEvent("BAG_UPDATE")
+            self.frame:UnregisterEvent("BAG_UPDATE_DELAYED")
             --@retail@
             self.frame:UnregisterEvent("CURRENCY_DISPLAY_UPDATE")
             --@end-retail@
         else
-            self.frame:RegisterEvent("BAG_UPDATE")
+            self.frame:RegisterEvent("BAG_UPDATE_DELAYED")
             --@retail@
             self.frame:RegisterEvent("CURRENCY_DISPLAY_UPDATE")
             --@end-retail@

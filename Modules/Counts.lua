@@ -6,6 +6,32 @@ local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 --*------------------------------------------------------------------------
 -- Counts
 
+function addon:InitializeTrackers()
+    self:RegisterEvent("BAG_UPDATE")
+    for barID, bar in pairs(self.bars) do
+        for buttonID, button in pairs(bar:GetButtons()) do
+            for trackerKey, tracker in pairs(button:GetButtonDB().trackers) do
+                local trackerType, trackerID = self:ParseTrackerKey(trackerKey)
+                self.trackers[trackerID] = self.trackers[trackerID] or {}
+                tinsert(self.trackers[trackerID], {barID, buttonID})
+            end
+        end
+    end
+end
+
+local buttons = {}
+function addon:BAG_UPDATE(...)
+    wipe(buttons)
+    for trackerID, buttonIDs in pairs(self.trackers) do
+        for _, buttonID in pairs(buttonIDs) do
+            if not buttons[buttonID[1]..":"..buttonID[2]] then
+                buttons[buttonID[1]..":"..buttonID[2]] = true
+                self.bars[buttonID[1]]:GetButtons()[buttonID[2]]:SetCount()
+            end
+        end
+    end
+end
+
 
 function addon:GetDataStoreItemCount(itemID, includeBank)
     if #self:IsDataStoreLoaded() > 0 then return end -- Missing dependencies
@@ -22,7 +48,6 @@ function addon:GetDataStoreItemCount(itemID, includeBank)
 
     return count
 end
-
 
 function addon:GetObjectiveCount(widget, objectiveTitle)
     local buttonDB = widget:GetButtonDB()

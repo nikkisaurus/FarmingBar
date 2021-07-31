@@ -16,6 +16,7 @@ LibStub("LibAddonUtils-1.0"):Embed(addon)
 function addon:OnInitialize()
     -- Create bar container
     self.bars = {}
+    self.trackers = {}
 
     -- Set addon defaults
     self.maxButtons = 108
@@ -83,10 +84,10 @@ function addon:OnInitialize()
     self:RegisterSlashCommands()
 end
 
-
 function addon:OnEnable()
     -- self:Initialize_Masque()
     self:InitializeBars()
+    self:InitializeTrackers()
     self:InitializeDragFrame()
     self:InitializeOptions()
     -- self:ClearDeletedObjectives()
