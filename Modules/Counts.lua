@@ -25,7 +25,7 @@ function addon:BAG_UPDATE_DELAYED(...)
 
                     -- Change in objective count
                     if oldCount ~= newCount then
-                        if objective > 0 then
+                        if objective and objective > 0 then
                             if alerts.completedObjectives or (not alerts.completedObjectives and ((oldCount < objective) or (newCount < oldCount and newCount < objective))) then
                                 alert = self:GetDBValue("global", "settings.alerts.button.format.withObjective")
 
@@ -51,7 +51,7 @@ function addon:BAG_UPDATE_DELAYED(...)
                     alertInfo = {
                         objectiveTitle = buttonDB.title,
                         objective = {
-                            color = objective > 0 and (newCount >= objective and "|cff00ff00" or "|cffffcc00") or "",
+                            color = (objective and objective > 0) and (newCount >= objective and "|cff00ff00" or "|cffffcc00") or "",
                             count = objective,
                         },
                         oldCount = oldCount,
@@ -91,12 +91,12 @@ function addon:BAG_UPDATE_DELAYED(...)
                             alertInfo = {
                                 objectiveTitle = buttonDB.title,
                                 objective = {
-                                    color = objective > 0 and (newCount >= objective and "|cff00ff00" or "|cffffcc00") or "",
+                                    color = (objective and objective > 0) and (newCount >= objective and "|cff00ff00" or "|cffffcc00") or "",
                                     count = objective,
                                 },
                                 trackerObjective = {
-                                    color = newTrackerCount >= (objective > 0 and objective * trackerObjective or trackerObjective) and "|cff00ff00" or "|cffffcc00",
-                                    count = objective > 0 and objective * trackerObjective or trackerObjective,
+                                    color = newTrackerCount >= ((objective and objective > 0) and objective * trackerObjective or trackerObjective) and "|cff00ff00" or "|cffffcc00",
+                                    count = (objective and objective > 0) and objective * trackerObjective or trackerObjective,
                                 },
                                 oldTrackerCount = oldTrackerCount,
                                 newTrackerCount = newTrackerCount,
