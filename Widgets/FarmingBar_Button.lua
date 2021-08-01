@@ -348,6 +348,20 @@ local methods = {
         return not self:GetBarID() or self:GetButtonDB().title == ""
     end,
 
+    RemoveObjectiveTemplateLink = function(self)
+        if self:IsEmpty() then return end
+        local instances = addon:GetDBValue("global", "objectives")[self:GetObjectiveTitle()].instances
+        if not instances then return end
+
+        local buttonDB = self:GetButtonDB()
+        for k, v in pairs(instances) do
+            if k ~= "instances" then
+                buttonDB[k] = v
+            end
+        end
+        buttonDB.template = false
+    end,
+
     SetAlpha = function(self)
         self.frame:SetAlpha(self:GetUserData("barDB").alpha)
     end,
@@ -757,8 +771,6 @@ local function Constructor()
     frame:SetScript("PostClick", frame_PostClick)
 
     frame:RegisterEvent("SPELL_UPDATE_COOLDOWN")
-    frame:RegisterEvent("BANKFRAME_OPENED")
-    frame:RegisterEvent("BANKFRAME_CLOSED")
 
     local FloatingBG = frame:CreateTexture("$parentFloatingBG", "BACKGROUND", nil, 1)
     FloatingBG:SetAllPoints(frame)

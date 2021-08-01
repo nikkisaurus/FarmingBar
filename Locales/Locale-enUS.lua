@@ -137,6 +137,7 @@ L["Choose"] = true
 L["Cleanup"] = true
 L["Close"] = true
 L["Condition"] = true
+L["Create Objective Template"] = true
 L["Currency"] = true
 L["Custom"] = true
 L["Custom"] = true

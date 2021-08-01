@@ -3,6 +3,10 @@ local addon = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
 local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 
 
+-- Optional libraries
+local ACD = LibStub("AceConfigDialog-3.0")
+
+
 --*------------------------------------------------------------------------
 -- Initialize
 
@@ -23,7 +27,7 @@ function addon:GetObjectiveEditorOptions()
             objective = {
                 order = 0,
                 type = "group",
-                name = widget and widget:GetObjectiveTitle() or "",
+                name = widget and format("[%s] %s", widget:GetButtonID(), widget:GetObjectiveTitle()) or "",
                 childGroups = "select",
                 args = self:GetObjectiveEditorOptions_Objective(),
             },
@@ -45,7 +49,7 @@ function addon:GetObjectiveEditorOptions()
                     order = trackerInfo.order,
                     type = "group",
                     name = data.name,
-                    args = self:GetObjectiveEditorOptions_Tracker(trackerKey, trackerInfo),
+                    args = self:GetObjectiveEditorOptions_Tracker(trackerKey, trackerInfo, data),
                 }
                 return options
             end)
@@ -146,6 +150,7 @@ end
 function addon:GetObjectiveEditorOptions_Objective()
     if not widget then return {} end
     local barID, buttonID = widget:GetBarID(), widget:GetUserData("buttonID")
+    local buttonDB = widget:GetButtonDB()
 
     return {
         mute = {
@@ -153,16 +158,96 @@ function addon:GetObjectiveEditorOptions_Objective()
             type = "toggle",
             name = L["Mute Alerts"],
             get = function()
-                return addon:GetButtonDBValue("mute", barID, buttonID)
+                return buttonDB.mute
             end,
             set = function(_, value)
-                addon:SetButtonDBValues("mute", value, barID, buttonID)
+                widget:SetDBValue("mute", value)
+            end,
+        },
+        template = {
+            order = 2,
+            type = "input",
+            name = L["Template"],
+            validate = function(_, value)
+                return value == "" or addon:ObjectiveTemplateExists(value)
+            end,
+            get = function(info)
+                return buttonDB.template
+            end,
+            set = function(_, value)
+                if not value or value == "" then
+                    -- Remove the template link, but don't delete the objective
+                    widget:RemoveObjectiveTemplateLink()
+                    return
+                end
+                -- Update template name
+                widget:SetDBValue("template", value)
+                -- Add template link
+                addon:CreateObjectiveTemplateInstance(value, widget:GetButtonID())
+                --  Update button to match template
+                widget:UpdateLayers()
+                -- Update objective editor
+                addon:InitializeObjectiveEditorOptions(widget)
+                ACD:Open(addonName.."ObjectiveEditor")
+            end,
+        },
+        createTemplate = {
+            order = 3,
+            type = "execute",
+            name = L["Create Objective Template"],
+            disabled = true,
+            func = function()
+
             end,
         },
     }
 end
 
 
-function addon:GetObjectiveEditorOptions_Tracker()
-    return {}
+function addon:GetObjectiveEditorOptions_Tracker(trackerKey, trackerInfo, data)
+    if not widget then return {} end
+    local trackerType, trackerID = self:ParseTrackerKey(trackerKey)
+    local trackers = widget:GetButtonDB().trackers
+
+    return {
+        includeAllChars = {
+            order = 1,
+            type = "toggle",
+            width = "full",
+            name = L["Include All Characters"],
+            get = function()
+                return addon:GetTrackerDBInfo(trackers, trackerKey, "includeAllChars")
+            end,
+            set = function(_, value)
+                addon:SetTrackerDBValue(trackers, trackerKey, "includeAllChars", value)
+                widget:SetCount()
+            end,
+        },
+        includeBank = {
+            order = 2,
+            type = "toggle",
+            width = "full",
+            name = L["Include Bank"],
+            get = function()
+                return addon:GetTrackerDBInfo(trackers, trackerKey, "includeBank")
+            end,
+            set = function(_, value)
+                addon:SetTrackerDBValue(trackers, trackerKey, "includeBank", value)
+                widget:SetCount()
+            end,
+        },
+        includeGuildBank = {
+            order = 3,
+            type = "toggle",
+            width = "full",
+            name = L["Include Guild Bank"],
+            get = function()
+                return addon:GetTrackerDBInfo(trackers, trackerKey, "includeGuildBank")
+            end,
+            set = function(_, value)
+                addon:SetTrackerDBValue(trackers, trackerKey, "includeGuildBank", value)
+                widget:SetCount()
+            end,
+        },
+    }
 end
