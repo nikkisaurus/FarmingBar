@@ -159,7 +159,8 @@ function addon:GetDataStoreItemCount(itemID, trackerInfo)
     local count = 0
 
     if trackerInfo.includeAllChars then
-        for k, character in pairs(DS:GetCharacters(DS.ThisRealm, DS.ThisAccount)) do
+        local characters = DS:HashValueToSortedArray(DS:GetCharacters())
+        for _, character in pairs(characters) do
             local bags, bank = DS:GetContainerItemCount(character, itemID)
             local mail = DS:GetMailItemCount(character, itemID) or 0
             local auction = DS:GetAuctionHouseItemCount(character, itemID) or 0
