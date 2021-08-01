@@ -12,12 +12,11 @@ local buttonCommandSort = {
     moveObjective = 3, -- left
     dragObjective = 4, -- shift+left drag
     showObjectiveEditBox = 5, -- ctrl+left
-    showQuickAddEditBox = 6, -- ctrl+right
-    includeAllChars = 8, -- alt+right
-    includeBank = 9, -- alt+left
-    includeGuildBank = 10, -- alt+shift+left
-    moveObjectiveToBank = 11, -- alt+ctrl+right
-    moveAllToBank = 12, -- alt+ctrl+left
+    showQuickAddEditBox = 6, -- alt+left
+    showQuickAddCurrencyEditBox = 7, -- alt+right
+    showObjectiveEditor = 8, -- ctrl+right
+    moveObjectiveToBank = 9, -- alt+ctrl+right
+    moveAllToBank = 10, -- alt+ctrl+left
 }
 
 

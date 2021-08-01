@@ -16,51 +16,48 @@ end
 
 
 function addon:GetObjectiveEditorOptions()
-    return {
+    local options = {
         type = "group",
         name = format("%s %s", L.addon, L["Objective Editor"]),
         args = {
-            includeAllChars = {
+            objective = {
+                order = 0,
+                type = "group",
+                name = widget:GetObjectiveTitle(),
+                childGroups = "select",
+                args = self:GetObjectiveEditorOptions_Objective(),
+            },
+            trackers = {
                 order = 1,
                 type = "group",
-                name = L["Include All Characters"],
-                childGroups = "select",
-                args = self:GetObjectiveEditorOptions_IncludeAllChars(),
-            },
-            includeBank = {
-                order = 2,
-                type = "group",
-                name = L["Include Bank"],
-                childGroups = "select",
-                args = self:GetObjectiveEditorOptions_IncludeBank(),
-            },
-            includeGuildBank = {
-                order = 3,
-                type = "group",
-                name = L["Include Guild Bank"],
-                childGroups = "select",
-                disabled = true,
-                args = self:GetObjectiveEditorOptions_IncludeGuildBank(),
-            },
-            excluded = {
-                order = 4,
-                type = "group",
-                name = L["Excluded"],
-                disabled = true,
-                args = self:GetObjectiveEditorOptions_Excluded(),
+                name = L["Trackers"],
+                args = {},
             },
         },
     }
+
+    if widget then
+        for trackerKey, trackerInfo in self.pairs(widget:GetButtonDB().trackers) do
+            local trackerType, trackerID = self:ParseTrackerKey(trackerKey)
+
+            self:GetTrackerDataTable(widget:GetButtonDB(), trackerType, trackerID, function(data)
+                options.args.trackers.args[trackerKey] = {
+                    order = trackerInfo.order,
+                    type = "group",
+                    name = data.name,
+                    args = self:GetObjectiveEditorOptions_Tracker(),
+                }
+                return options
+            end)
+        end
+    end
+
+    return options
 end
 
 
 --*------------------------------------------------------------------------
 -- Load options
-
-
-function addon:GetObjectiveEditorOptions_Excluded()
-    return {}
-end
 
 
 function addon:GetObjectiveEditorOptions_IncludeAllChars()
@@ -146,6 +143,11 @@ function addon:GetObjectiveEditorOptions_IncludeBank()
 end
 
 
-function addon:GetObjectiveEditorOptions_IncludeGuildBank()
+function addon:GetObjectiveEditorOptions_Objective()
+    return {}
+end
+
+
+function addon:GetObjectiveEditorOptions_Tracker()
     return {}
 end

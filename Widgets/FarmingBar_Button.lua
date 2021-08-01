@@ -42,39 +42,21 @@ local postClickMethods = {
     end,
 
     showQuickAddEditBox = function(self, ...)
+        self.obj:SetUserData("quickAddEditbox", "ITEM")
         self.obj.quickAddEditBox:Show()
     end,
 
-    includeAllChars = function(self, ...)
-        local widget = self.obj
-        if not widget:IsEmpty() then
-            if addon.tcount(widget:GetButtonDB().trackers) > 1 then
-                addon:InitializeObjectiveEditorOptions(widget)
-                ACD:SelectGroup(addonName.."ObjectiveEditor", "includeAllChars")
-                ACD:Open(addonName.."ObjectiveEditor")
-            else
-                ACD:Close(addonName.."ObjectiveEditor")
-                widget:ToggleTrackerValue("includeAllChars")
-            end
-        end
+    showQuickAddCurrencyEditBox = function(self, ...)
+        self.obj:SetUserData("quickAddEditbox", "CURRENCY")
+        self.obj.quickAddEditBox:Show()
     end,
 
-    includeBank = function(self, ...)
+    showObjectiveEditor = function(self, ...)
         local widget = self.obj
         if not widget:IsEmpty() then
-            if addon.tcount(widget:GetButtonDB().trackers) > 1 then
-                addon:InitializeObjectiveEditorOptions(widget)
-                ACD:SelectGroup(addonName.."ObjectiveEditor", "includeBank")
-                ACD:Open(addonName.."ObjectiveEditor")
-            else
-                ACD:Close(addonName.."ObjectiveEditor")
-                widget:ToggleTrackerValue("includeBank")
-            end
+            addon:InitializeObjectiveEditorOptions(widget)
+            ACD:Open(addonName.."ObjectiveEditor")
         end
-    end,
-
-    includeGuildBank = function(self, ...)
-        print("Keybind in maintenenance.")
     end,
 
     moveObjectiveToBank = function(self, ...)
@@ -247,11 +229,15 @@ local function quickAddEditBox_OnEnterPressed(self)
     local itemID = tonumber(self:GetText())
 
     if itemID then
-        if GetItemInfoInstant(itemID) then
-            widget:ClearObjective()
-            addon:CreateObjectiveFromItemID(widget, itemID)
+        if widget:GetUserData("quickAddEditbox") == "ITEM" then
+            if GetItemInfoInstant(itemID) then
+                widget:ClearObjective()
+                addon:CreateObjectiveFromItemID(widget, itemID)
+            else
+                addon:ReportError(format(L.InvalidItemID, itemID))
+            end
         else
-            addon:ReportError(format(L.InvalidItemID, itemID))
+            print("CURRENCY")
         end
     end
 

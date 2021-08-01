@@ -191,18 +191,6 @@ function addon:InitializeDB()
                             button = "RightButton",
                             modifier = "shift",
                         },
-                        includeAllChars = {
-                            button = "RightButton",
-                            modifier = "alt",
-                        },
-                        includeBank = {
-                            button = "LeftButton",
-                            modifier = "alt",
-                        },
-                        includeGuildBank = {
-                            button = "LeftButton",
-                            modifier = "alt-shift",
-                        },
                         moveObjective = {
                             button = "LeftButton",
                             modifier = "",
@@ -224,9 +212,17 @@ function addon:InitializeDB()
                             button = "LeftButton",
                             modifier = "ctrl",
                         },
-                        showQuickAddEditBox = {
+                        showObjectiveEditor = {
                             button = "RightButton",
                             modifier = "ctrl",
+                        },
+                        showQuickAddEditBox = {
+                            button = "LeftButton",
+                            modifier = "alt",
+                        },
+                        showQuickAddCurrencyEditBox = {
+                            button = "RightButton",
+                            modifier = "alt",
                         },
                         useItem = {
                             button = "RightButton",

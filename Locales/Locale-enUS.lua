@@ -92,9 +92,8 @@ L.ButtonHints = function(command, commandInfo)
         clearObjective = format("%s to clear this objective.", GetCommandString(commandInfo)),
         showObjectiveEditBox = format("%s to show the objective editbox.", GetCommandString(commandInfo)),
         showQuickAddEditBox = format("%s to show the quick add editbox.", GetCommandString(commandInfo)),
-        includeAllChars = format("%s to toggle account counts.", GetCommandString(commandInfo)),
-        includeBank = format("%s to toggle bank inclusion.", GetCommandString(commandInfo)),
-        includeGuildBank = format("%s to toggle account guild bank counts.", GetCommandString(commandInfo)),
+        showQuickAddCurrencyEditBox = format("%s to show the currency quick add editbox.", GetCommandString(commandInfo)),
+        showObjectiveEditor = format("%s to show the objective editbox.", GetCommandString(commandInfo)),
         moveObjectiveToBank = format("%s to move all items until the objective to your bank..", GetCommandString(commandInfo)),
         moveAllToBank = format("%s to move all items to your bank.", GetCommandString(commandInfo)),
     }
