@@ -115,8 +115,8 @@ function addon:GetButtonObjectiveInfo(widget, tooltip, buttonDB)
         -- number of trackers enabled / total number of trackers
     end
     -- Objective
-    tooltip:AddDoubleLine(L["Objective"], objective or L["FALSE"], unpack(self.tooltip_keyvalue))
     local objective = widget:GetObjective()
+    tooltip:AddDoubleLine(L["Objective"], objective > 0 and objective or L["FALSE"], unpack(self.tooltip_keyvalue))
     if objective and objective > 0 then
         tooltip:AddDoubleLine(L["Objective Complete"], count >= objective and floor(count / objective).."x" or L["FALSE"], unpack(self.tooltip_description))
     end
@@ -150,7 +150,7 @@ function addon:GetButtonObjectiveInfo(widget, tooltip, buttonDB)
 
                 -- If custom condition, display trackerRawCount instead of the default counter
                 if data.conditionInfo == "" then
-                    tooltip:AddDoubleLine(data.name, format("%d (%d / %d)", trackerCount, trackerRawCount, trackerInfo.objective and trackerInfo.objective > 0 and trackerInfo.objective or 1), unpack(self.tooltip_description))
+                    tooltip:AddDoubleLine(data.name, format("%d%s (%d / %d)", trackerCount, objective > 0 and " / "..(objective * trackerInfo.objective) or "", trackerRawCount, trackerInfo.objective and trackerInfo.objective > 0 and trackerInfo.objective or 1), unpack(self.tooltip_description))
                 else
                     tooltip:AddDoubleLine(data.name, trackerRawCount, unpack(self.tooltip_description))
                 end
