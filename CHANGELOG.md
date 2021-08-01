@@ -1,7 +1,10 @@
 # Farming Bar
 ## Version 3.0
 ### 3.0-alpha14
-- Revised alerts to improve performance
+- Performance improvements
+  - -- Revised alerts to check counts only when necessary
+  - -- Changed COMBAT_LOG_EVENT_UNFILTERED to SPELL_UPDATE_COOLDOWN to reduce the number of times called
+-
 
 ### 3.0-alpha13
 - Bug fixes:

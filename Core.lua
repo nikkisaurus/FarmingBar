@@ -105,7 +105,7 @@ end
 
 
 function addon:InitializeEvents()
-    self:RegisterEvent("BAG_UPDATE")
+    self:RegisterEvent("BAG_UPDATE_DELAYED")
     --@retail@
     self:UnregisterEvent("CURRENCY_DISPLAY_UPDATE")
     --@end-retail@

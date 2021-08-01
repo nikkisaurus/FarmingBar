@@ -141,7 +141,7 @@ local function frame_OnEvent(self, event, ...)
         widget:SetAttribute()
         self:UnregisterEvent(event)
         -- TODO: print combat left
-    elseif event == "COMBAT_LOG_EVENT_UNFILTERED" then
+    elseif event == "SPELL_UPDATE_COOLDOWN" then
         local buttonDB = widget:GetButtonDB()
         local validTrackerID, trackerType = addon:ValidateTrackerData(buttonDB.action, buttonDB.actionInfo)
 
@@ -765,7 +765,7 @@ local function Constructor()
 	frame:SetScript("OnReceiveDrag", frame_OnReceiveDrag)
     frame:SetScript("PostClick", frame_PostClick)
 
-    frame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+    frame:RegisterEvent("SPELL_UPDATE_COOLDOWN")
     frame:RegisterEvent("BANKFRAME_OPENED")
     frame:RegisterEvent("BANKFRAME_CLOSED")
 

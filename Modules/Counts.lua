@@ -7,27 +7,17 @@ local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 -- Counts
 
 
-local buttonCache = {}
-function addon:BAG_UPDATE(...)
-    wipe(buttonCache)
+function addon:BAG_UPDATE_DELAYED(...)
     for trackerID, buttonIDs in pairs(self.trackers) do
         for _, buttonID in pairs(buttonIDs) do
-            if not buttonCache[buttonID[1]..":"..buttonID[2]] then
-                -- Add to cache so we don't update this button too often
-                buttonCache[buttonID[1]..":"..buttonID[2]] = true
+            -- Get old count, then update count
+            local button = self.bars[buttonID[1]]:GetButtons()[buttonID[2]]
+            local oldCount, oldTrackerCounts = button:GetCount()
+            button:SetCount()
 
-                -- Get old count, then update count
-                local button = self.bars[buttonID[1]]:GetButtons()[buttonID[2]]
-                local oldCount, oldTrackerCounts = button:GetCount()
-                button:SetCount()
-
-                -- If alerts are muted, we're done
-                local alerts = addon:GetBarDBValue("alerts", button:GetBarID(), true)
-                if alerts.muteAll then
-                    return
-                end
-
-                -- Get info for alerts
+            local alerts = self:GetBarDBValue("alerts", buttonID[1], true)
+            if not alerts.muteAll then
+                 -- Get info for alerts
                 local buttonDB = button:GetButtonDB()
                 local newCount, trackerCounts = button:GetCount()
                 local objective = button:GetObjective()
@@ -56,8 +46,8 @@ function addon:BAG_UPDATE(...)
                         soundID = oldCount < newCount and "progress"
                     end
 
+                    -- Setup alertInfo
                     local difference = newCount - oldCount
-
                     alertInfo = {
                         objectiveTitle = buttonDB.title,
                         objective = {
@@ -92,10 +82,10 @@ function addon:BAG_UPDATE(...)
                     for trackerKey, newTrackerCount in pairs(trackerCounts) do
                         oldTrackerCount = oldTrackerCounts[trackerKey]
                         if oldTrackerCount and oldTrackerCount ~= newTrackerCount then
-                            alert = addon:GetDBValue("global", "settings.alerts.tracker.format.progress")
+                            alert = self:GetDBValue("global", "settings.alerts.tracker.format.progress")
                             soundID = oldTrackerCount < newTrackerCount and "progress"
 
-                            local trackerObjective = addon:GetTrackerDBInfo(buttonDB.trackers, trackerKey, "objective")
+                            local trackerObjective = self:GetTrackerDBInfo(buttonDB.trackers, trackerKey, "objective")
                             local difference, trackerDifference = newCount - oldCount, newTrackerCount - oldTrackerCount
 
                             alertInfo = {
@@ -117,16 +107,16 @@ function addon:BAG_UPDATE(...)
                                 },
                             }
 
-                            local trackerType, trackerID = addon:ParseTrackerKey(trackerKey)
+                            local trackerType, trackerID = self:ParseTrackerKey(trackerKey)
 
                             if trackerType == "ITEM" then
-                                addon.CacheItem(trackerID, function(itemID, alert, alertInfo, soundID)
+                                self.CacheItem(trackerID, function(itemID, alert, alertInfo, soundID)
                                     alertInfo.trackerTitle = (GetItemInfo(itemID))
                                     addon:SendAlert("tracker", alert, alertInfo, soundID)
                                 end, trackerID, alert, alertInfo, soundID)
                             else
                                 alertInfo.trackerTitle = C_CurrencyInfo.GetCurrencyInfo(trackerID).name
-                                addon:SendAlert("tracker", alert, alertInfo, soundID)
+                                self:SendAlert("tracker", alert, alertInfo, soundID)
                             end
                         end
                     end
