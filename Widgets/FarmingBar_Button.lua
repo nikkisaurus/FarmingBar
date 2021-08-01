@@ -313,6 +313,17 @@ local methods = {
         addon:UpdateButtons()
     end,
 
+    ClearTrackerInfo = function(self)
+        if self:IsEmpty() then return end
+
+        for trackerKey, trackerInfo in pairs(self:GetButtonDB().trackers) do
+            trackerInfo.includeAllChars = false
+            trackerInfo.includeBank = false
+            wipe(trackerInfo.includeGuildBank)
+            wipe(trackerInfo.exclude)
+        end
+    end,
+
     GetBarDB = function(self)
         return self:GetUserData("barDB")
     end,

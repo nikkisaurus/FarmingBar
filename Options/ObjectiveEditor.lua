@@ -180,11 +180,13 @@ function addon:GetObjectiveEditorOptions_Objective()
                     widget:RemoveObjectiveTemplateLink()
                     return
                 end
-                -- Update template name
+                -- Update button's template name
                 widget:SetDBValue("template", value)
-                -- Add template link
+                -- Add link to template's instances
                 addon:CreateObjectiveTemplateInstance(value, widget:GetButtonID())
-                --  Update button to match template
+                -- Clear includeAllChars, includeBank, includeGuildBank, and exclude from button trackers
+                widget:ClearTrackerInfo()
+                --  Update button to match template info
                 widget:UpdateLayers()
                 -- Update objective editor
                 addon:InitializeObjectiveEditorOptions(widget)
