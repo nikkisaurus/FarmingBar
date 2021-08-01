@@ -46,10 +46,12 @@ local postClickMethods = {
         self.obj.quickAddEditBox:Show()
     end,
 
+    --@retail@
     showQuickAddCurrencyEditBox = function(self, ...)
         self.obj:SetUserData("quickAddEditbox", "CURRENCY")
         self.obj.quickAddEditBox:Show()
     end,
+    --@end-retail@
 
     showObjectiveEditor = function(self, ...)
         local widget = self.obj

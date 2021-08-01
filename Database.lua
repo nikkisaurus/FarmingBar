@@ -224,10 +224,12 @@ function addon:InitializeDB()
                             button = "LeftButton",
                             modifier = "alt",
                         },
+                        --@retail@
                         showQuickAddCurrencyEditBox = {
                             button = "RightButton",
                             modifier = "alt",
                         },
+                        --@end-retail@
                         useItem = {
                             button = "RightButton",
                             modifier = "",

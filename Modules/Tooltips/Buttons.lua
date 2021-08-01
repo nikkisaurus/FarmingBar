@@ -13,7 +13,9 @@ local buttonCommandSort = {
     dragObjective = 4, -- shift+left drag
     showObjectiveEditBox = 5, -- ctrl+left
     showQuickAddEditBox = 6, -- alt+left
+    --@retail@
     showQuickAddCurrencyEditBox = 7, -- alt+right
+    --@end-retail@
     showObjectiveEditor = 8, -- ctrl+right
     moveObjectiveToBank = 9, -- alt+ctrl+right
     moveAllToBank = 10, -- alt+ctrl+left
