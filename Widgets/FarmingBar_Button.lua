@@ -278,6 +278,10 @@ local methods = {
         self:UpdateLayers()
     end,
 
+    OnRelease = function(self)
+        addon:InitializeTrackers()
+    end,
+
     Anchor = function(self)
         local barDB = self:GetUserData("barDB")
         local buttons = self:GetUserData("buttons")
@@ -724,6 +728,7 @@ local methods = {
         self:UpdateBorder()
         self:UpdateCooldown()
         self:SetAttribute()
+        addon:InitializeTrackers()
     end,
 
     UpdateObjective = function(self)

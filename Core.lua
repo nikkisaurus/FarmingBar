@@ -88,6 +88,7 @@ function addon:OnEnable()
     -- self:Initialize_Masque()
     self:InitializeBars()
     self:InitializeEvents()
+    self:InitializeTrackers()
     self:InitializeDragFrame()
     self:InitializeOptions()
 end
@@ -107,8 +108,13 @@ end
 function addon:InitializeEvents()
     self:RegisterEvent("BAG_UPDATE_DELAYED")
     --@retail@
-    self:UnregisterEvent("CURRENCY_DISPLAY_UPDATE")
+    self:RegisterEvent("CURRENCY_DISPLAY_UPDATE")
     --@end-retail@
+end
+
+
+function addon:InitializeTrackers()
+    wipe(self.trackers)
 
     for barID, bar in pairs(self.bars) do
         for buttonID, button in pairs(bar:GetButtons()) do

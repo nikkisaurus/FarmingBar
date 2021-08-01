@@ -13,7 +13,7 @@
 ### 3.0-alpha13
 - Bug fixes:
   - -- Removed "BAG_UPDATE_COOLDOWN" event from buttons to help performance issues
-  - -- Fixed error when dropping an objective from the DragFrame with not mouse focus
+  - -- Fixed error when dropping an objective from the DragFrame with no mouse focus
   - -- Added appropriate data for tracker alerts to work with custom conditions
 
 ### 3.0-alpha12

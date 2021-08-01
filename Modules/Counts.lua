@@ -4,49 +4,49 @@ local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 
 
 --*------------------------------------------------------------------------
--- Counts
+-- Events
 
 
 function addon:BAG_UPDATE_DELAYED(...)
     for trackerID, buttonIDs in pairs(self.trackers) do
         for _, buttonID in pairs(buttonIDs) do
             -- Get old count, then update count
-            local button = self.bars[buttonID[1]]:GetButtons()[buttonID[2]]
-            local oldCount, oldTrackerCounts = button:GetCount()
-            button:SetCount()
+                local button = self.bars[buttonID[1]]:GetButtons()[buttonID[2]]
+                local oldCount, oldTrackerCounts = button:GetCount()
+                button:SetCount()
 
-            local alerts = self:GetBarDBValue("alerts", buttonID[1], true)
-            if not alerts.muteAll then
-                 -- Get info for alerts
-                local buttonDB = button:GetButtonDB()
-                local newCount, trackerCounts = button:GetCount()
-                local objective = button:GetObjective()
-                local alertInfo, alert, soundID, barAlert
+                local alerts = self:GetBarDBValue("alerts", buttonID[1], true)
+                if not alerts.muteAll then
+                    -- Get info for alerts
+                    local buttonDB = button:GetButtonDB()
+                    local newCount, trackerCounts = button:GetCount()
+                    local objective = button:GetObjective()
+                    local alertInfo, alert, soundID, barAlert
 
-                -- Change in objective count
-                if oldCount ~= newCount then
-                    if objective > 0 then
-                        if alerts.completedObjectives or (not alerts.completedObjectives and ((oldCount < objective) or (newCount < oldCount and newCount < objective))) then
-                            alert = self:GetDBValue("global", "settings.alerts.button.format.withObjective")
+                    -- Change in objective count
+                    if oldCount ~= newCount then
+                        if objective > 0 then
+                            if alerts.completedObjectives or (not alerts.completedObjectives and ((oldCount < objective) or (newCount < oldCount and newCount < objective))) then
+                                alert = self:GetDBValue("global", "settings.alerts.button.format.withObjective")
 
-                            if oldCount < objective and newCount >= objective then
-                                soundID = "objectiveComplete"
-                                barAlert = "complete"
-                            else
-                                soundID = oldCount < newCount and "progress"
-                                -- Have to check if we lost an objective
-                                if oldCount >= objective and newCount < objective then
-                                    barAlert = "lost"
+                                if oldCount < objective and newCount >= objective then
+                                    soundID = "objectiveComplete"
+                                    barAlert = "complete"
+                                else
+                                    soundID = oldCount < newCount and "progress"
+                                    -- Have to check if we lost an objective
+                                    if oldCount >= objective and newCount < objective then
+                                        barAlert = "lost"
+                                    end
                                 end
                             end
+                        else
+                            -- No objective
+                            alert = self:GetDBValue("global", "settings.alerts.button.format.withoutObjective")
+                            soundID = oldCount < newCount and "progress"
                         end
-                    else
-                        -- No objective
-                        alert = self:GetDBValue("global", "settings.alerts.button.format.withoutObjective")
-                        soundID = oldCount < newCount and "progress"
-                    end
 
-                    -- Setup alertInfo
+                        -- Setup alertInfo
                     local difference = newCount - oldCount
                     alertInfo = {
                         objectiveTitle = buttonDB.title,
@@ -71,12 +71,12 @@ function addon:BAG_UPDATE_DELAYED(...)
                         -- local progressCount, progressTotal = self:GetBar():GetProgress()
 
                         -- if barAlert == "complete" then
-                        --     progressCount = progressCount - 1
-                        -- elseif barAlert == "lost" then
-                        --     progressCount = progressCount + 1
-                        -- end
+                            --     progressCount = progressCount - 1
+                            -- elseif barAlert == "lost" then
+                                --     progressCount = progressCount + 1
+                                -- end
 
-                        -- self:GetBar():AlertProgress(progressCount, progressTotal)
+                                -- self:GetBar():AlertProgress(progressCount, progressTotal)
                     end
                 elseif trackerCounts then -- CHange in tracker count
                     for trackerKey, newTrackerCount in pairs(trackerCounts) do
@@ -125,6 +125,13 @@ function addon:BAG_UPDATE_DELAYED(...)
         end
     end
 end
+
+
+addon.CURRENCY_DISPLAY_UPDATE = addon.BAG_UPDATE_DELAYED
+
+
+--*------------------------------------------------------------------------
+-- Counts
 
 
 function addon:GetDataStoreItemCount(itemID, includeBank)

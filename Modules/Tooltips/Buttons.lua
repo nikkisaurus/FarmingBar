@@ -116,7 +116,7 @@ function addon:GetButtonObjectiveInfo(widget, tooltip, buttonDB)
     end
     -- Objective
     local objective = widget:GetObjective()
-    tooltip:AddDoubleLine(L["Objective"], objective > 0 and objective or L["FALSE"], unpack(self.tooltip_keyvalue))
+    tooltip:AddDoubleLine(L["Objective"], (objective and objective > 0) and objective or L["FALSE"], unpack(self.tooltip_keyvalue))
     if objective and objective > 0 then
         tooltip:AddDoubleLine(L["Objective Complete"], count >= objective and floor(count / objective).."x" or L["FALSE"], unpack(self.tooltip_description))
     end
