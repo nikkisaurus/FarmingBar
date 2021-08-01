@@ -6,6 +6,7 @@
   - -- Default keybinds have changed for the quick add editboxes
 - Added a mute alert option for individual objectives (character specific)
 - You can now change or remove the template link of an objective on a bar from the objective editor
+- You can now include guild banks into item counts
 - Changed tracker alerts info.trackerObjective to return overall objective by default
 - Added total tracker objective to tooltips in the form:
   - -- trackerName trackerObjectiveCount /  trackerObjective*objectiveObjective (totalTrackerCount / trackerObjective)

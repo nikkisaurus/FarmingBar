@@ -134,17 +134,28 @@ addon.CURRENCY_DISPLAY_UPDATE = addon.BAG_UPDATE_DELAYED
 -- Counts
 
 
-function addon:GetDataStoreItemCount(itemID, includeBank)
+function addon:GetDataStoreItemCount(itemID, trackerInfo)
     if #self:IsDataStoreLoaded() > 0 then return end -- Missing dependencies
+    local DS = DataStore
 
     local count = 0
-    for k, character in pairs(DataStore:GetCharacters(GetRealmName(), "Default")) do
-        local bags, bank = DataStore:GetContainerItemCount(character, itemID)
-        local mail = DataStore:GetMailItemCount(character, itemID) or 0
-        local auction = DataStore:GetAuctionHouseItemCount(character, itemID) or 0
-        local inventory = DataStore:GetInventoryItemCount(character, itemID) or 0
 
-        count = count + bags + (includeBank and bank or 0) + mail + auction + inventory
+    if trackerInfo.includeAllChars then
+        for k, character in pairs(DS:GetCharacters(GetRealmName(), "Default")) do
+            local bags, bank = DS:GetContainerItemCount(character, itemID)
+            local mail = DS:GetMailItemCount(character, itemID) or 0
+            local auction = DS:GetAuctionHouseItemCount(character, itemID) or 0
+            local inventory = DS:GetInventoryItemCount(character, itemID) or 0
+
+            count = count + bags + (trackerInfo.includeBank and bank or 0) + mail + auction + inventory
+        end
+    end
+
+    for guildName, guild in pairs(DS:GetGuilds(DS.ThisRealm, DS.ThisAccount)) do
+        -- From what I see, there is no function in DataStore to check the guild faction by the ID, so checking from the db instead
+        if trackerInfo.includeGuildBank[guild] and DS.db.global.Guilds[guild].faction == UnitFactionGroup("player") then
+            count = count + DS:GetGuildBankItemCount(guild, itemID)
+        end
     end
 
     return count
@@ -286,7 +297,7 @@ function addon:GetTrackerCount(widget, trackerKey, overrideObjective)
     local count
 
     if trackerType == "ITEM" then
-        count = trackerInfo.includeAllChars and self:GetDataStoreItemCount(trackerID, trackerInfo.includeBank) or GetItemCount(trackerID, trackerInfo.includeBank)
+        count = (trackerInfo.includeAllChars or trackerInfo.includeGuildBank) and self:GetDataStoreItemCount(trackerID, trackerInfo) or GetItemCount(trackerID, trackerInfo.includeBank)
     elseif trackerType == "CURRENCY" then
         count = C_CurrencyInfo.GetCurrencyInfo(trackerID) and C_CurrencyInfo.GetCurrencyInfo(trackerID).quantity
     end

@@ -41,7 +41,7 @@ function addon:InitializeDB()
                                     -- Char
                                     includeAllChars = false,
                                     includeBank = false,
-                                    includeGuildBank = false,
+                                    includeGuildBank = {},
                                     exclude = {}, -- buttonIDs
 
                                     --Template
