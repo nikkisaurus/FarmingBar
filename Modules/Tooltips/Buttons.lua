@@ -69,6 +69,9 @@ function addon:GetButtonTooltip(widget, tooltip)
             -- Button doesn't have objective
             if widget:IsEmpty() then
                 FarmingBar_Tooltip:AddLine(L.ButtonHints("showQuickAddEditBox", self:GetDBValue("global", "settings.keybinds.button.showQuickAddEditBox")), unpack(self.tooltip_description))
+                --@retail@
+                FarmingBar_Tooltip:AddLine(L.ButtonHints("showQuickAddCurrencyEditBox", self:GetDBValue("global", "settings.keybinds.button.showQuickAddCurrencyEditBox")), unpack(self.tooltip_description))
+                --@end-retail@
             else
                 for k, v in self.pairs(self:GetDBValue("global", "settings.keybinds.button"), function(a, b) return buttonCommandSort[a] < buttonCommandSort[b] end) do
                     if buttonDB or v.showOnEmpty then --! Not sure why we're checking for v.showOnEmpty?
