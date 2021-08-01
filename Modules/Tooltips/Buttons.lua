@@ -152,7 +152,9 @@ function addon:GetButtonObjectiveInfo(widget, tooltip, buttonDB)
                     --@retail@
                     trackerRawCount = (trackerInfo.includeAllChars or trackerInfo.includeGuildBank) and self:GetDataStoreItemCount(trackerID, trackerInfo) or GetItemCount(trackerID, trackerInfo.includeBank)
                     --@end-retail@
+                    --[===[@non-retail@
                     trackerRawCount = trackerInfo.includeAllChars and self:GetDataStoreItemCount(trackerID, trackerInfo) or GetItemCount(trackerID, trackerInfo.includeBank)
+                    --@end-non-retail@]===]
                 elseif trackerType == "CURRENCY" and trackerID ~= "" then
                     trackerRawCount = trackerInfo.includeAllChars and self:GetDataStoreCurrencyCount(trackerID, trackerInfo) or (C_CurrencyInfo.GetCurrencyInfo(trackerID) and C_CurrencyInfo.GetCurrencyInfo(trackerID).quantity)
                 end
