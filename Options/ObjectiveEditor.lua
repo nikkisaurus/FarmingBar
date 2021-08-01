@@ -245,23 +245,12 @@ function addon:GetObjectiveEditorOptions_Tracker(trackerKey, trackerInfo, data)
             name = L["Include Guild Bank"],
             args = {},
         },
-        -- includeGuildBank = {
-        --     order = 3,
-        --     type = "toggle",
-        --     width = "full",
-        --     name = L["Include Guild Bank"],
-        --     get = function()
-        --         return addon:GetTrackerDBInfo(trackers, trackerKey, "includeGuildBank")
-        --     end,
-        --     set = function(_, value)
-        --         addon:SetTrackerDBValue(trackers, trackerKey, "includeGuildBank", value)
-        --         widget:SetCount()
-        --     end,
-        -- },
     }
 
+    trackers[trackerKey].includeGuildBank = trackers[trackerKey].includeGuildBank or {}
+
     local DS = DataStore
-    for guildName, guild in pairs(DS:GetGuilds(DS.ThisRealm, DS.ThisAccount)) do
+    for guildName, guild in self.pairs(DS:GetGuilds(DS.ThisRealm, DS.ThisAccount)) do
         if DS.db.global.Guilds[guild].faction == UnitFactionGroup("player") then
             options.includeGuildBank.args[guild] = {
                 type = "toggle",

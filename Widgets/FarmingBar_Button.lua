@@ -55,6 +55,7 @@ local postClickMethods = {
         local widget = self.obj
         if not widget:IsEmpty() then
             addon:InitializeObjectiveEditorOptions(widget)
+            ACD:SelectGroup(addonName.."ObjectiveEditor", "objective")
             ACD:Open(addonName.."ObjectiveEditor")
         end
     end,
@@ -319,8 +320,12 @@ local methods = {
         for trackerKey, trackerInfo in pairs(self:GetButtonDB().trackers) do
             trackerInfo.includeAllChars = false
             trackerInfo.includeBank = false
-            wipe(trackerInfo.includeGuildBank)
-            wipe(trackerInfo.exclude)
+            if trackerInfo.includeGuildBank then
+                wipe(trackerInfo.includeGuildBank)
+            end
+            if trackerInfo.exclude then
+                wipe(trackerInfo.exclude)
+            end
         end
     end,
 
