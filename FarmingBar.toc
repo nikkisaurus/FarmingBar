@@ -54,7 +54,6 @@ Modules\Buttons.lua
 Modules\DragFrame.lua
 Modules\Objectives.lua
 Modules\ObjectiveTemplates.lua
-Modules\ObjectiveEditor.lua
 Modules\Trackers.lua
 Modules\Templates.lua
 
@@ -63,6 +62,7 @@ Options\Commands.lua
 Options\Options.lua
 Options\Config.lua
 Options\ObjectiveBuilder.lua
+Options\ObjectiveEditor.lua
 Options\Settings.lua
 Options\StyleEditor.lua
 Options\Help.lua

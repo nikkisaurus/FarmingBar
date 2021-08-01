@@ -151,7 +151,7 @@ function addon:GetObjectiveEditorOptions_Objective()
         mute = {
             order = 1,
             type = "toggle",
-            name = L["Mute"],
+            name = L["Mute Alerts"],
             get = function()
                 return addon:GetButtonDBValue("mute", barID, buttonID)
             end,
