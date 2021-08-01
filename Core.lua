@@ -55,7 +55,7 @@ function addon:OnInitialize()
     end]]
     self.trackerProgress = [[function(info)
         local title = format("(%s) %s", info.objectiveTitle, info.trackerTitle)
-        local count = format("%s%d/%d|r", info.trackerObjective.color, info.newTrackerCount, info.objective.count > 0 and info.objective.count * info.trackerObjective.count or info.trackerObjective.count)
+        local count = format("%s%d/%d|r", info.trackerObjective.color, info.newTrackerCount, info.trackerObjective.count)
         local difference = format("(%s%s%d|r)", info.trackerDifference.color, info.trackerDifference.sign, info.trackerDifference.count)
 
         return format("Tracker update: %s %s %s", title, count, difference)

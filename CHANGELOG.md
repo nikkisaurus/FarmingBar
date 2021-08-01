@@ -4,7 +4,7 @@
 - Performance improvements
   - -- Revised alerts to check counts only when necessary
   - -- Changed COMBAT_LOG_EVENT_UNFILTERED to SPELL_UPDATE_COOLDOWN to reduce the number of times called
--
+- Changed tracker alerts info.trackerObjective to return overall objective by default
 
 ### 3.0-alpha13
 - Bug fixes:

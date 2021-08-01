@@ -95,8 +95,8 @@ function addon:BAG_UPDATE_DELAYED(...)
                                     count = objective,
                                 },
                                 trackerObjective = {
-                                    color = trackerObjective and (newTrackerCount >= trackerObjective and "|cff00ff00" or "|cffffcc00") or "",
-                                    count = trackerObjective,
+                                    color = newTrackerCount >= (objective > 0 and objective * trackerObjective or trackerObjective) and "|cff00ff00" or "|cffffcc00",
+                                    count = objective > 0 and objective * trackerObjective or trackerObjective,
                                 },
                                 oldTrackerCount = oldTrackerCount,
                                 newTrackerCount = newTrackerCount,
