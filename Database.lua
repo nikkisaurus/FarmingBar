@@ -25,6 +25,7 @@ function addon:InitializeDB()
                         ["**"] = { -- buttonID
                             -- Char
                             objective = 0,
+                            mute = false,
 
                             -- Template
                             template = false, -- global objective template
@@ -40,6 +41,7 @@ function addon:InitializeDB()
                                     -- Char
                                     includeAllChars = false,
                                     includeBank = false,
+                                    includeGuildBank = false,
                                     exclude = {}, -- buttonIDs
 
                                     --Template
@@ -462,7 +464,6 @@ function addon:SetButtonDBValues(key, value, barID, buttonID)
 
     path[keys[#keys]] = value
 end
-
 
 --*------------------------------------------------------------------------
 -- Objective methods

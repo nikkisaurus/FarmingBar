@@ -12,13 +12,13 @@ function addon:BAG_UPDATE_DELAYED(...)
         for _, buttonID in pairs(buttonIDs) do
             -- Get old count, then update count
                 local button = self.bars[buttonID[1]]:GetButtons()[buttonID[2]]
+                local buttonDB = button:GetButtonDB()
                 local oldCount, oldTrackerCounts = button:GetCount()
                 button:SetCount()
 
                 local alerts = self:GetBarDBValue("alerts", buttonID[1], true)
-                if not alerts.muteAll then
+                if not alerts.muteAll and not buttonDB.mute then
                     -- Get info for alerts
-                    local buttonDB = button:GetButtonDB()
                     local newCount, trackerCounts = button:GetCount()
                     local objective = button:GetObjective()
                     local alertInfo, alert, soundID, barAlert

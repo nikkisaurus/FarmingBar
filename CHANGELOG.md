@@ -4,6 +4,7 @@
 - Keybinds to toggle bank or all character inclusions have been removed
   - -- All objectives now utilize the per character objective editor accessed with ctrl+right-click (different than objective templates accessed with the same keybind on the bar anchor)
   - -- Default keybinds have changed for the quick add editboxes
+- Added a mute alert option for individual objectives (character specific)
 - Changed tracker alerts info.trackerObjective to return overall objective by default
 - Added total tracker objective to tooltips in the form:
   - -- trackerName trackerObjectiveCount /  trackerObjective*objectiveObjective (totalTrackerCount / trackerObjective)

@@ -23,7 +23,7 @@ function addon:GetObjectiveEditorOptions()
             objective = {
                 order = 0,
                 type = "group",
-                name = widget:GetObjectiveTitle(),
+                name = widget and widget:GetObjectiveTitle() or "",
                 childGroups = "select",
                 args = self:GetObjectiveEditorOptions_Objective(),
             },
@@ -45,7 +45,7 @@ function addon:GetObjectiveEditorOptions()
                     order = trackerInfo.order,
                     type = "group",
                     name = data.name,
-                    args = self:GetObjectiveEditorOptions_Tracker(),
+                    args = self:GetObjectiveEditorOptions_Tracker(trackerKey, trackerInfo),
                 }
                 return options
             end)
@@ -126,10 +126,10 @@ function addon:GetObjectiveEditorOptions_IncludeBank()
                     width = "full",
                     name = data.name,
                     get = function()
-                        return self:GetTrackerDBInfo(trackers, trackerKey, "includeBank")
+                        return addon:GetTrackerDBInfo(trackers, trackerKey, "includeBank")
                     end,
                     set = function(_, value)
-                        self:SetTrackerDBValue(trackers, trackerKey, "includeBank", value)
+                        addon:SetTrackerDBValue(trackers, trackerKey, "includeBank", value)
                         widget:UpdateLayers()
                     end,
                 }
@@ -144,7 +144,22 @@ end
 
 
 function addon:GetObjectiveEditorOptions_Objective()
-    return {}
+    if not widget then return {} end
+    local barID, buttonID = widget:GetBarID(), widget:GetUserData("buttonID")
+
+    return {
+        mute = {
+            order = 1,
+            type = "toggle",
+            name = L["Mute"],
+            get = function()
+                return addon:GetButtonDBValue("mute", barID, buttonID)
+            end,
+            set = function(_, value)
+                addon:SetButtonDBValues("mute", value, barID, buttonID)
+            end,
+        },
+    }
 end
 
 
