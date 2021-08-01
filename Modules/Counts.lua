@@ -6,27 +6,131 @@ local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 --*------------------------------------------------------------------------
 -- Counts
 
-function addon:InitializeTrackers()
-    self:RegisterEvent("BAG_UPDATE")
-    for barID, bar in pairs(self.bars) do
-        for buttonID, button in pairs(bar:GetButtons()) do
-            for trackerKey, tracker in pairs(button:GetButtonDB().trackers) do
-                local trackerType, trackerID = self:ParseTrackerKey(trackerKey)
-                self.trackers[trackerID] = self.trackers[trackerID] or {}
-                tinsert(self.trackers[trackerID], {barID, buttonID})
-            end
-        end
-    end
-end
 
-local buttons = {}
+local buttonCache = {}
 function addon:BAG_UPDATE(...)
-    wipe(buttons)
+    wipe(buttonCache)
     for trackerID, buttonIDs in pairs(self.trackers) do
         for _, buttonID in pairs(buttonIDs) do
-            if not buttons[buttonID[1]..":"..buttonID[2]] then
-                buttons[buttonID[1]..":"..buttonID[2]] = true
-                self.bars[buttonID[1]]:GetButtons()[buttonID[2]]:SetCount()
+            if not buttonCache[buttonID[1]..":"..buttonID[2]] then
+                -- Add to cache so we don't update this button too often
+                buttonCache[buttonID[1]..":"..buttonID[2]] = true
+
+                -- Get old count, then update count
+                local button = self.bars[buttonID[1]]:GetButtons()[buttonID[2]]
+                local oldCount, oldTrackerCounts = button:GetCount()
+                button:SetCount()
+
+                -- If alerts are muted, we're done
+                local alerts = addon:GetBarDBValue("alerts", button:GetBarID(), true)
+                if alerts.muteAll then
+                    return
+                end
+
+                -- Get info for alerts
+                local buttonDB = button:GetButtonDB()
+                local newCount, trackerCounts = button:GetCount()
+                local objective = button:GetObjective()
+                local alertInfo, alert, soundID, barAlert
+
+                -- Change in objective count
+                if oldCount ~= newCount then
+                    if objective > 0 then
+                        if alerts.completedObjectives or (not alerts.completedObjectives and ((oldCount < objective) or (newCount < oldCount and newCount < objective))) then
+                            alert = self:GetDBValue("global", "settings.alerts.button.format.withObjective")
+
+                            if oldCount < objective and newCount >= objective then
+                                soundID = "objectiveComplete"
+                                barAlert = "complete"
+                            else
+                                soundID = oldCount < newCount and "progress"
+                                -- Have to check if we lost an objective
+                                if oldCount >= objective and newCount < objective then
+                                    barAlert = "lost"
+                                end
+                            end
+                        end
+                    else
+                        -- No objective
+                        alert = self:GetDBValue("global", "settings.alerts.button.format.withoutObjective")
+                        soundID = oldCount < newCount and "progress"
+                    end
+
+                    local difference = newCount - oldCount
+
+                    alertInfo = {
+                        objectiveTitle = buttonDB.title,
+                        objective = {
+                            color = objective > 0 and (newCount >= objective and "|cff00ff00" or "|cffffcc00") or "",
+                            count = objective,
+                        },
+                        oldCount = oldCount,
+                        newCount = newCount,
+                        difference = {
+                            sign = difference > 0 and "+" or difference < 0 and "",
+                            color =  difference > 0 and "|cff00ff00" or difference < 0 and "|cffff0000",
+                            count = difference,
+                        },
+                    }
+                end
+
+                if alertInfo then
+                    self:SendAlert("button", alert, alertInfo, soundID)
+
+                    if barAlert then
+                        -- local progressCount, progressTotal = self:GetBar():GetProgress()
+
+                        -- if barAlert == "complete" then
+                        --     progressCount = progressCount - 1
+                        -- elseif barAlert == "lost" then
+                        --     progressCount = progressCount + 1
+                        -- end
+
+                        -- self:GetBar():AlertProgress(progressCount, progressTotal)
+                    end
+                elseif trackerCounts then -- CHange in tracker count
+                    for trackerKey, newTrackerCount in pairs(trackerCounts) do
+                        oldTrackerCount = oldTrackerCounts[trackerKey]
+                        if oldTrackerCount and oldTrackerCount ~= newTrackerCount then
+                            alert = addon:GetDBValue("global", "settings.alerts.tracker.format.progress")
+                            soundID = oldTrackerCount < newTrackerCount and "progress"
+
+                            local trackerObjective = addon:GetTrackerDBInfo(buttonDB.trackers, trackerKey, "objective")
+                            local difference, trackerDifference = newCount - oldCount, newTrackerCount - oldTrackerCount
+
+                            alertInfo = {
+                                objectiveTitle = buttonDB.title,
+                                objective = {
+                                    color = objective > 0 and (newCount >= objective and "|cff00ff00" or "|cffffcc00") or "",
+                                    count = objective,
+                                },
+                                trackerObjective = {
+                                    color = trackerObjective and (newTrackerCount >= trackerObjective and "|cff00ff00" or "|cffffcc00") or "",
+                                    count = trackerObjective,
+                                },
+                                oldTrackerCount = oldTrackerCount,
+                                newTrackerCount = newTrackerCount,
+                                trackerDifference = {
+                                    sign = trackerDifference > 0 and "+" or trackerDifference < 0 and "",
+                                    color =  trackerDifference > 0 and "|cff00ff00" or trackerDifference < 0 and "|cffff0000",
+                                    count = trackerDifference,
+                                },
+                            }
+
+                            local trackerType, trackerID = addon:ParseTrackerKey(trackerKey)
+
+                            if trackerType == "ITEM" then
+                                addon.CacheItem(trackerID, function(itemID, alert, alertInfo, soundID)
+                                    alertInfo.trackerTitle = (GetItemInfo(itemID))
+                                    addon:SendAlert("tracker", alert, alertInfo, soundID)
+                                end, trackerID, alert, alertInfo, soundID)
+                            else
+                                alertInfo.trackerTitle = C_CurrencyInfo.GetCurrencyInfo(trackerID).name
+                                addon:SendAlert("tracker", alert, alertInfo, soundID)
+                            end
+                        end
+                    end
+                end
             end
         end
     end

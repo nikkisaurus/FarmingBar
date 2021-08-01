@@ -1,5 +1,8 @@
 # Farming Bar
 ## Version 3.0
+### 3.0-alpha14
+- Revised alerts to improve performance
+
 ### 3.0-alpha13
 - Bug fixes:
   - -- Removed "BAG_UPDATE_COOLDOWN" event from buttons to help performance issues

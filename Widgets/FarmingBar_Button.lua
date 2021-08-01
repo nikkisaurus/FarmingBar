@@ -136,128 +136,8 @@ end
 local function frame_OnEvent(self, event, ...)
     local widget = self.obj
     if widget:IsEmpty() then return end
-    local alerts = addon:GetBarDBValue("alerts", widget:GetBarID(), true)
-    local buttonDB = widget:GetButtonDB()
 
-    if event == "BAG_UPDATE_DELAYED" or event == "CURRENCY_DISPLAY_UPDATE" or event == "FARMINGBAR_UPDATE_COUNT" then
-        if true then return 0 end
-        local oldCount, newCount = ...
-        local oldTrackerCounts, trackerCounts
-        local alertInfo, alert, soundID, barAlert
-
-        local objective = widget:GetObjective()
-
-        if event ~= "FARMINGBAR_UPDATE_COUNT" or (not oldCount and not newCount) then
-            oldCount, oldTrackerCounts = widget:GetCount()
-            newCount, trackerCounts = addon:GetObjectiveCount(widget)
-        end
-
-        if newCount ~= oldCount then
-            if objective > 0 then
-                if alerts.completedObjectives or (not alerts.completedObjectives and ((oldCount < objective) or (newCount < oldCount and newCount < objective))) then
-                    alert = addon:GetDBValue("global", "settings.alerts.button.format.withObjective")
-
-                    if oldCount < objective and newCount >= objective then
-                        soundID = "objectiveComplete"
-                        barAlert = "complete"
-                    else
-                        soundID = oldCount < newCount and "progress"
-                        -- Have to check if we lost an objective
-                        if oldCount >= objective and newCount < objective then
-                            barAlert = "lost"
-                        end
-                    end
-                end
-            else
-                alert = addon:GetDBValue("global", "settings.alerts.button.format.withoutObjective")
-                soundID = oldCount < newCount and "progress"
-            end
-
-            local difference = newCount - oldCount
-
-            alertInfo = {
-                objectiveTitle = buttonDB.title,
-                objective = {
-                    color = objective > 0 and (newCount >= objective and "|cff00ff00" or "|cffffcc00") or "",
-                    count = objective,
-                },
-                oldCount = oldCount,
-                newCount = newCount,
-                difference = {
-                    sign = difference > 0 and "+" or difference < 0 and "",
-                    color =  difference > 0 and "|cff00ff00" or difference < 0 and "|cffff0000",
-                    count = difference,
-                },
-            }
-        end
-
-        if alerts.muteAll then
-            return
-        end
-
-        if alertInfo then
-            addon:SendAlert("button", alert, alertInfo, soundID)
-            widget:UpdateLayers()
-
-            if barAlert then
-                -- local progressCount, progressTotal = self:GetBar():GetProgress()
-
-                -- if barAlert == "complete" then
-                --     progressCount = progressCount - 1
-                -- elseif barAlert == "lost" then
-                --     progressCount = progressCount + 1
-                -- end
-
-                -- self:GetBar():AlertProgress(progressCount, progressTotal)
-            end
-        elseif trackerCounts then
-            for trackerKey, newTrackerCount in pairs(trackerCounts) do
-                oldTrackerCount = oldTrackerCounts[trackerKey]
-                if oldTrackerCount and oldTrackerCount ~= newTrackerCount then
-                    alert = addon:GetDBValue("global", "settings.alerts.tracker.format.progress")
-                    soundID = oldTrackerCount < newTrackerCount and "progress"
-
-                    local trackerObjective = addon:GetTrackerDBInfo(buttonDB.trackers, trackerKey, "objective")
-
-                    local difference, trackerDifference = newCount - oldCount, newTrackerCount - oldTrackerCount
-
-                    alertInfo = {
-                        objectiveTitle = buttonDB.title,
-                        objective = {
-                            color = objective > 0 and (newCount >= objective and "|cff00ff00" or "|cffffcc00") or "",
-                            count = objective,
-                        },
-                        trackerObjective = {
-                            color = trackerObjective and (newTrackerCount >= trackerObjective and "|cff00ff00" or "|cffffcc00") or "",
-                            count = trackerObjective,
-                        },
-                        oldTrackerCount = oldTrackerCount,
-                        newTrackerCount = newTrackerCount,
-                        trackerDifference = {
-                            sign = trackerDifference > 0 and "+" or trackerDifference < 0 and "",
-                            color =  trackerDifference > 0 and "|cff00ff00" or trackerDifference < 0 and "|cffff0000",
-                            count = trackerDifference,
-                        },
-                    }
-
-                    local trackerType, trackerID = addon:ParseTrackerKey(trackerKey)
-
-                    if trackerType == "ITEM" then
-                        addon.CacheItem(trackerID, function(itemID, alert, alertInfo, soundID)
-                            alertInfo.trackerTitle = (GetItemInfo(itemID))
-                            addon:SendAlert("tracker", alert, alertInfo, soundID)
-                            widget:UpdateLayers()
-                        end, trackerID, alert, alertInfo, soundID)
-                    else
-                        alertInfo.trackerTitle = C_CurrencyInfo.GetCurrencyInfo(trackerID).name
-                        addon:SendAlert("tracker", alert, alertInfo, soundID)
-                        widget:UpdateLayers()
-                    end
-                end
-            end
-            -- TODO: get old track count, get alerts
-        end
-    elseif event == "PLAYER_REGEN_ENABLED" then
+    if event == "PLAYER_REGEN_ENABLED" then
         widget:SetAttribute()
         self:UnregisterEvent(event)
         -- TODO: print combat left
@@ -439,11 +319,6 @@ local methods = {
             end
         end
 
-        self.frame:UnregisterEvent("BAG_UPDATE_DELAYED")
-        --@retail@
-        self.frame:UnregisterEvent("CURRENCY_DISPLAY_UPDATE")
-        --@end-retail@
-
         self:UpdateLayers()
         addon:UpdateButtons()
     end,
@@ -588,24 +463,6 @@ local methods = {
                 -- Mixture
                 self.Count:SetTextColor(0.5, 0.5, 0.5, 1)
             end
-
-            -- local total, included, notIncluded = addon:GetObjectiveIncludedLayers(self, "includeAllChars")
-
-            -- if notIncluded == total  then
-            --     self.Count:SetTextColor(1, 1, 1, 1)
-            -- elseif included == total then
-            --     local total2, included2, notIncluded2 = addon:GetObjectiveIncludedLayers(self, "includeBank")
-
-            --     if notIncluded == total  then
-            --         self.Count:SetTextColor(1, 31/51, 0, 1)
-            --     elseif included == total then
-            --         self.Count:SetTextColor(64/255, 224/255, 208/255, 1)
-            --     else
-            --         self.Count:SetTextColor(.5, .5, .5, 1)
-            --     end
-            -- else
-            --     self.Count:SetTextColor(.5, .5, .5, 1)
-            -- end
         elseif style.style == "INCLUDEALLCHARS" then
             local total, included, notIncluded = addon:GetObjectiveIncludedLayers(self, "includeAllChars")
             if notIncluded == total  then
@@ -855,20 +712,6 @@ local methods = {
         end
     end,
 
-    UpdateEvents = function(self)
-        if self:IsEmpty() then
-            self.frame:UnregisterEvent("BAG_UPDATE_DELAYED")
-            --@retail@
-            self.frame:UnregisterEvent("CURRENCY_DISPLAY_UPDATE")
-            --@end-retail@
-        else
-            self.frame:RegisterEvent("BAG_UPDATE_DELAYED")
-            --@retail@
-            self.frame:RegisterEvent("CURRENCY_DISPLAY_UPDATE")
-            --@end-retail@
-        end
-    end,
-
     UpdateLayers = function(self)
         self:UpdateDB()
         addon:SkinButton(self, addon:GetDBValue("profile", "style.skin"))
@@ -881,7 +724,6 @@ local methods = {
         self:UpdateBorder()
         self:UpdateCooldown()
         self:SetAttribute()
-        self:UpdateEvents()
     end,
 
     UpdateObjective = function(self)

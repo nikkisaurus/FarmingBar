@@ -87,10 +87,9 @@ end
 function addon:OnEnable()
     -- self:Initialize_Masque()
     self:InitializeBars()
-    self:InitializeTrackers()
+    self:InitializeEvents()
     self:InitializeDragFrame()
     self:InitializeOptions()
-    -- self:ClearDeletedObjectives()
 end
 
 
@@ -102,6 +101,24 @@ end
 function addon:OnProfile_(...)
      self:ReleaseAllBars()
      self:InitializeBars()
+end
+
+
+function addon:InitializeEvents()
+    self:RegisterEvent("BAG_UPDATE")
+    --@retail@
+    self:UnregisterEvent("CURRENCY_DISPLAY_UPDATE")
+    --@end-retail@
+
+    for barID, bar in pairs(self.bars) do
+        for buttonID, button in pairs(bar:GetButtons()) do
+            for trackerKey, tracker in pairs(button:GetButtonDB().trackers) do
+                local trackerType, trackerID = self:ParseTrackerKey(trackerKey)
+                self.trackers[trackerID] = self.trackers[trackerID] or {}
+                tinsert(self.trackers[trackerID], {barID, buttonID})
+            end
+        end
+    end
 end
 
 
