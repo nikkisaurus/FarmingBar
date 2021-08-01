@@ -190,7 +190,9 @@ function addon:GetObjectiveEditorOptions_Objective()
                 widget:UpdateLayers()
                 -- Update objective editor
                 addon:InitializeObjectiveEditorOptions(widget)
-                ACD:Open(addonName.."ObjectiveEditor")
+                C_Timer.After(0, function()
+                    ACD:Open(addonName.."ObjectiveEditor")
+                end)
             end,
         },
         createTemplate = {
@@ -217,6 +219,10 @@ function addon:GetObjectiveEditorOptions_Tracker(trackerKey, trackerInfo, data)
             type = "toggle",
             width = "full",
             name = L["Include All Characters"],
+            disabled = function()
+                return #addon:IsDataStoreLoaded() > 0
+
+            end,
             get = function()
                 return addon:GetTrackerDBInfo(trackers, trackerKey, "includeAllChars")
             end,
@@ -243,6 +249,10 @@ function addon:GetObjectiveEditorOptions_Tracker(trackerKey, trackerInfo, data)
             type = "group",
             inline = true,
             name = L["Include Guild Bank"],
+            disabled = function()
+                return #addon:IsDataStoreLoaded() > 0
+
+            end,
             args = {},
         },
     }

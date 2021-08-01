@@ -312,6 +312,7 @@ local methods = {
 
         self:UpdateLayers()
         addon:UpdateButtons()
+        ACD:Close(addonName.."ObjectiveEditor")
     end,
 
     ClearTrackerInfo = function(self)
