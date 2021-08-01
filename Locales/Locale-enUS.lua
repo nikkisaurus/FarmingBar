@@ -94,7 +94,7 @@ L.ButtonHints = function(command, commandInfo)
         showQuickAddEditBox = format("%s to show the quick add editbox.", GetCommandString(commandInfo)),
         showQuickAddCurrencyEditBox = format("%s to show the currency quick add editbox.", GetCommandString(commandInfo)),
         showObjectiveEditor = format("%s to show the objective editbox.", GetCommandString(commandInfo)),
-        moveObjectiveToBank = format("%s to move all items until the objective to your bank..", GetCommandString(commandInfo)),
+        moveObjectiveToBank = format("%s to move all items until the objective to your bank.", GetCommandString(commandInfo)),
         moveAllToBank = format("%s to move all items to your bank.", GetCommandString(commandInfo)),
     }
 
