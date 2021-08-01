@@ -80,6 +80,23 @@ function addon:CreateObjectiveFromDragFrame(widget, objectiveInfo)
 end
 
 
+function addon:CreateObjectiveFromCurrencyID(widget, currencyID)
+    local buttonDB = widget:GetButtonDB()
+    local currency = C_CurrencyInfo.GetCurrencyInfo(currencyID)
+
+    buttonDB.title = currency.name
+    buttonDB.icon = currency.iconFileID
+    buttonDB.action = "CURRENCY"
+    buttonDB.actionInfo = currencyID
+
+    local tracker =  buttonDB.trackers["CURRENCY:"..currencyID]
+    tracker.order = 1
+
+    widget:UpdateLayers()
+end
+
+
+
 function addon:CreateObjectiveFromItemID(widget, itemID)
     local buttonDB = widget:GetButtonDB()
 

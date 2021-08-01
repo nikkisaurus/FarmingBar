@@ -134,6 +134,24 @@ addon.CURRENCY_DISPLAY_UPDATE = addon.BAG_UPDATE_DELAYED
 -- Counts
 
 
+function addon:GetDataStoreCurrencyCount(currencyID, trackerInfo)
+    if #self:IsDataStoreLoaded() > 0 then return end -- Missing dependencies
+    local DS = DataStore
+
+    local count = 0
+
+    if trackerInfo.includeAllChars then
+        local currency = C_CurrencyInfo.GetCurrencyInfo(currencyID)
+        local characters = DS:HashValueToSortedArray(DS:GetCharacters())
+        for _, character in pairs(characters) do
+            count = count + (select(2, DS:GetCurrencyInfoByName(character, currency.name)) or 0)
+        end
+    end
+
+    return count
+end
+
+
 function addon:GetDataStoreItemCount(itemID, trackerInfo)
     if #self:IsDataStoreLoaded() > 0 then return end -- Missing dependencies
     local DS = DataStore
@@ -141,7 +159,7 @@ function addon:GetDataStoreItemCount(itemID, trackerInfo)
     local count = 0
 
     if trackerInfo.includeAllChars then
-        for k, character in pairs(DS:GetCharacters(GetRealmName(), "Default")) do
+        for k, character in pairs(DS:GetCharacters(DS.ThisRealm, DS.ThisAccount)) do
             local bags, bank = DS:GetContainerItemCount(character, itemID)
             local mail = DS:GetMailItemCount(character, itemID) or 0
             local auction = DS:GetAuctionHouseItemCount(character, itemID) or 0
@@ -299,7 +317,7 @@ function addon:GetTrackerCount(widget, trackerKey, overrideObjective)
     if trackerType == "ITEM" then
         count = (trackerInfo.includeAllChars or trackerInfo.includeGuildBank) and self:GetDataStoreItemCount(trackerID, trackerInfo) or GetItemCount(trackerID, trackerInfo.includeBank)
     elseif trackerType == "CURRENCY" then
-        count = C_CurrencyInfo.GetCurrencyInfo(trackerID) and C_CurrencyInfo.GetCurrencyInfo(trackerID).quantity
+        count = trackerInfo.includeAllChars and self:GetDataStoreCurrencyCount(trackerID, trackerInfo) or (C_CurrencyInfo.GetCurrencyInfo(trackerID) and C_CurrencyInfo.GetCurrencyInfo(trackerID).quantity)
     end
 
     if not count then
@@ -371,9 +389,9 @@ function addon:IsDataStoreLoaded()
     end
 
     --@retail@
-    -- if not IsAddOnLoaded("DataStore_Currencies") then
-    --     tinsert(missing, "DataStore_Currencies")
-    -- end
+    if not IsAddOnLoaded("DataStore_Currencies") then
+        tinsert(missing, "DataStore_Currencies")
+    end
     --@end-retail@
 
     if not IsAddOnLoaded("DataStore_Inventory") then

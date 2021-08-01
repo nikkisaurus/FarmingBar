@@ -231,7 +231,10 @@ function addon:GetObjectiveEditorOptions_Tracker(trackerKey, trackerInfo, data)
                 widget:SetCount()
             end,
         },
-        includeBank = {
+    }
+
+    if trackerType == "ITEM" then
+        options.includeBank = {
             order = 2,
             type = "toggle",
             width = "full",
@@ -243,8 +246,8 @@ function addon:GetObjectiveEditorOptions_Tracker(trackerKey, trackerInfo, data)
                 addon:SetTrackerDBValue(trackers, trackerKey, "includeBank", value)
                 widget:SetCount()
             end,
-        },
-        includeGuildBank = {
+        }
+        options.includeGuildBank = {
             order = 3,
             type = "group",
             inline = true,
@@ -254,26 +257,26 @@ function addon:GetObjectiveEditorOptions_Tracker(trackerKey, trackerInfo, data)
 
             end,
             args = {},
-        },
-    }
+        }
 
-    trackers[trackerKey].includeGuildBank = trackers[trackerKey].includeGuildBank or {}
+        trackers[trackerKey].includeGuildBank = trackers[trackerKey].includeGuildBank or {}
 
-    local DS = DataStore
-    for guildName, guild in self.pairs(DS:GetGuilds(DS.ThisRealm, DS.ThisAccount)) do
-        if DS.db.global.Guilds[guild].faction == UnitFactionGroup("player") then
-            options.includeGuildBank.args[guild] = {
-                type = "toggle",
-                width = "full",
-                name = guildName,
-                get = function()
-                    return addon:GetTrackerDBInfo(trackers, trackerKey, "includeGuildBank")[guild]
-                end,
-                set = function(_, value)
-                    addon:GetTrackerDBInfo(trackers, trackerKey, "includeGuildBank")[guild] = value
-                    widget:SetCount()
-                end,
-            }
+        local DS = DataStore
+        for guildName, guild in self.pairs(DS:GetGuilds(DS.ThisRealm, DS.ThisAccount)) do
+            if DS.db.global.Guilds[guild].faction == UnitFactionGroup("player") then
+                options.includeGuildBank.args[guild] = {
+                    type = "toggle",
+                    width = "full",
+                    name = guildName,
+                    get = function()
+                        return addon:GetTrackerDBInfo(trackers, trackerKey, "includeGuildBank")[guild]
+                    end,
+                    set = function(_, value)
+                        addon:GetTrackerDBInfo(trackers, trackerKey, "includeGuildBank")[guild] = value
+                        widget:SetCount()
+                    end,
+                }
+            end
         end
     end
 

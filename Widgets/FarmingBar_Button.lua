@@ -227,18 +227,23 @@ end
 
 local function quickAddEditBox_OnEnterPressed(self)
     local widget = self.obj
-    local itemID = tonumber(self:GetText())
+    local ID = tonumber(self:GetText())
 
-    if itemID then
+    if ID then
         if widget:GetUserData("quickAddEditbox") == "ITEM" then
-            if GetItemInfoInstant(itemID) then
+            if GetItemInfoInstant(ID) then
                 widget:ClearObjective()
-                addon:CreateObjectiveFromItemID(widget, itemID)
+                addon:CreateObjectiveFromItemID(widget, ID)
             else
-                addon:ReportError(format(L.InvalidItemID, itemID))
+                addon:ReportError(format(L.InvalidItemID, ID))
             end
         else
-            print("CURRENCY")
+            if C_CurrencyInfo.GetCurrencyInfo(ID) then
+                widget:ClearObjective()
+                addon:CreateObjectiveFromCurrencyID(widget, ID)
+            else
+                addon:ReportError(format(L.InvalidCurrencyID, ID))
+            end
         end
     end
 
