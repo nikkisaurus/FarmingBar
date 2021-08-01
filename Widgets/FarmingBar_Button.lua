@@ -326,9 +326,11 @@ local methods = {
         for trackerKey, trackerInfo in pairs(self:GetButtonDB().trackers) do
             trackerInfo.includeAllChars = false
             trackerInfo.includeBank = false
+            --@retail@
             if trackerInfo.includeGuildBank then
                 wipe(trackerInfo.includeGuildBank)
             end
+            --@end-retail@
             if trackerInfo.exclude then
                 wipe(trackerInfo.exclude)
             end

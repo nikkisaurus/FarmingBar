@@ -169,12 +169,14 @@ function addon:GetDataStoreItemCount(itemID, trackerInfo)
         end
     end
 
+    --@retail@
     for guildName, guild in pairs(DS:GetGuilds(DS.ThisRealm, DS.ThisAccount)) do
         -- From what I see, there is no function in DataStore to check the guild faction by the ID, so checking from the db instead
         if trackerInfo.includeGuildBank[guild] and DS.db.global.Guilds[guild].faction == UnitFactionGroup("player") then
             count = count + DS:GetGuildBankItemCount(guild, itemID)
         end
     end
+    --@end-retail@
 
     return count
 end
@@ -315,7 +317,10 @@ function addon:GetTrackerCount(widget, trackerKey, overrideObjective)
     local count
 
     if trackerType == "ITEM" then
+        --@retail@
         count = (trackerInfo.includeAllChars or trackerInfo.includeGuildBank) and self:GetDataStoreItemCount(trackerID, trackerInfo) or GetItemCount(trackerID, trackerInfo.includeBank)
+        --@end-retail@
+        count = trackerInfo.includeAllChars and self:GetDataStoreItemCount(trackerID, trackerInfo) or GetItemCount(trackerID, trackerInfo.includeBank)
     elseif trackerType == "CURRENCY" then
         count = trackerInfo.includeAllChars and self:GetDataStoreCurrencyCount(trackerID, trackerInfo) or (C_CurrencyInfo.GetCurrencyInfo(trackerID) and C_CurrencyInfo.GetCurrencyInfo(trackerID).quantity)
     end

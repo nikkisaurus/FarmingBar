@@ -247,6 +247,7 @@ function addon:GetObjectiveEditorOptions_Tracker(trackerKey, trackerInfo, data)
                 widget:SetCount()
             end,
         }
+        --@retail@
         options.includeGuildBank = {
             order = 3,
             type = "group",
@@ -278,6 +279,7 @@ function addon:GetObjectiveEditorOptions_Tracker(trackerKey, trackerInfo, data)
                 }
             end
         end
+        --@end-retail@
     end
 
     return options

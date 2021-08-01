@@ -108,7 +108,9 @@ function addon:GetButtonObjectiveInfo(widget, tooltip, buttonDB)
     if numTrackers == 1 then
         tooltip:AddDoubleLine(L["Include All Characters"], buttonDB.trackers[self:GetFirstTracker(widget)].includeAllChars and L["TRUE"] or L["FALSE"], unpack(self.tooltip_description))
         tooltip:AddDoubleLine(L["Include Bank"], buttonDB.trackers[self:GetFirstTracker(widget)].includeBank and L["TRUE"] or L["FALSE"], unpack(self.tooltip_description))
+        --@retail@
         tooltip:AddDoubleLine(L["Include Guild Bank"], buttonDB.trackers[self:GetFirstTracker(widget)].includeGuildBank and L["TRUE"] or L["FALSE"], unpack(self.tooltip_description))
+        --@end-retail@
     else
         -- TODO: multi-tracker includes
         -- number of trackers enabled / total number of trackers
@@ -142,7 +144,10 @@ function addon:GetButtonObjectiveInfo(widget, tooltip, buttonDB)
                 local trackerRawCount
 
                 if trackerType == "ITEM" then
+                    --@retail@
                     trackerRawCount = (trackerInfo.includeAllChars or trackerInfo.includeGuildBank) and self:GetDataStoreItemCount(trackerID, trackerInfo) or GetItemCount(trackerID, trackerInfo.includeBank)
+                    --@end-retail@
+                    trackerRawCount = trackerInfo.includeAllChars and self:GetDataStoreItemCount(trackerID, trackerInfo) or GetItemCount(trackerID, trackerInfo.includeBank)
                 elseif trackerType == "CURRENCY" and trackerID ~= "" then
                     trackerRawCount = trackerInfo.includeAllChars and self:GetDataStoreCurrencyCount(trackerID, trackerInfo) or (C_CurrencyInfo.GetCurrencyInfo(trackerID) and C_CurrencyInfo.GetCurrencyInfo(trackerID).quantity)
                 end
