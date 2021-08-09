@@ -3,6 +3,10 @@ local addon = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
 local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 
 
+-- Optional libraries
+local utils = LibStub("LibAddonUtils-1.0")
+
+
 --*------------------------------------------------------------------------
 
 
@@ -161,7 +165,7 @@ function addon:GetButtonObjectiveInfo(widget, tooltip, buttonDB)
 
                 -- If custom condition, display trackerRawCount instead of the default counter
                 if data.conditionInfo == "" then
-                    tooltip:AddDoubleLine(data.name, format("%d%s (%d / %d)", trackerCount, (objective and objective > 0) and " / "..(objective * trackerInfo.objective) or "", trackerRawCount, trackerInfo.objective and trackerInfo.objective > 0 and trackerInfo.objective or 1), unpack(self.tooltip_description))
+                    tooltip:AddDoubleLine(data.name, format("%s%d%s|r (%d / %d)", ((objective and objective > 0) and (trackerCount < objective)) and utils.ChatColors["YELLOW"] or utils.ChatColors["GREEN"], trackerCount, (objective and objective > 0) and " / "..objective or "", trackerRawCount, ((trackerInfo.objective and trackerInfo.objective > 0) and trackerInfo.objective or 1) * ((objective and objective > 0) and objective or 1)), unpack(self.tooltip_description))
                 else
                     tooltip:AddDoubleLine(data.name, trackerRawCount, unpack(self.tooltip_description))
                 end

@@ -1,6 +1,9 @@
 # Farming Bar
 ## Version 3.0
 ### 3.0-alpha15
+- Changed tooltip for trackers
+  - -- trackerCount / trackerObjective (totalTrackerCount / totalTrackerObjective)
+  - -- Added progress color to trackerCount
 - Bug fixes:
   - -- Fixed bug that prevented bars from being deleted
 
