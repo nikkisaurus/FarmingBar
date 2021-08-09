@@ -13,6 +13,7 @@
 
 ## X-Curse-Project-ID: 351688
 ## X-WoWI-ID: 25440
+## X-Wago-ID: BO67dYK3
 
 # Libraries
 Libs\LibStub\LibStub.lua

@@ -118,10 +118,12 @@ function addon:InitializeTrackers()
 
     for barID, bar in pairs(self.bars) do
         for buttonID, button in pairs(bar:GetButtons()) do
-            for trackerKey, tracker in pairs(button:GetButtonDB().trackers) do
-                local trackerType, trackerID = self:ParseTrackerKey(trackerKey)
-                self.trackers[trackerID] = self.trackers[trackerID] or {}
-                tinsert(self.trackers[trackerID], {barID, buttonID})
+            if not button:IsEmpty() then
+                for trackerKey, tracker in pairs(button:GetButtonDB().trackers) do
+                    local trackerType, trackerID = self:ParseTrackerKey(trackerKey)
+                    self.trackers[trackerID] = self.trackers[trackerID] or {}
+                    tinsert(self.trackers[trackerID], {barID, buttonID})
+                end
             end
         end
     end
