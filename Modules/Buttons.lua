@@ -54,7 +54,7 @@ end
 --*------------------------------------------------------------------------
 
 
-function addon:UpdateButtons(objectiveTitle)
+function addon:UpdateButtons(objectiveTitle, callback, ...)
     -- Updates visual layers of all buttons on all bars
     for _, bar in pairs(self.bars) do
         local buttons = bar:GetUserData("buttons")
@@ -62,7 +62,11 @@ function addon:UpdateButtons(objectiveTitle)
             for _, button in pairs(buttons) do
                 local buttonObjectiveTitle = button:GetObjectiveTitle()
                 if buttonObjectiveTitle == objectiveTitle or not objectiveTitle then
-                    button:UpdateLayers(objectiveTitle)
+                    if callback then
+                        button[callback](button, ...)
+                    else
+                        button:UpdateLayers(objectiveTitle)
+                    end
                 end
             end
         end

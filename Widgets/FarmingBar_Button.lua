@@ -32,6 +32,7 @@ local postClickMethods = {
         elseif addon.movingButton then
             widget:SwapButtons(addon.movingButton)
         end
+        addon:UpdateButtons()
     end,
 
     showObjectiveEditBox = function(self, ...)
@@ -440,7 +441,6 @@ local methods = {
         self:SetAlpha()
         self:SetScale()
         self:SetSize(bar.frame:GetWidth() / .9, bar.frame:GetHeight() / .9)
-        self:SetHidden()
         self:UpdateLayers()
     end,
 
@@ -538,7 +538,7 @@ local methods = {
     end,
 
     SetHidden = function(self)
-        if self:GetUserData("barDB").hidden then
+        if self:GetBarID() and (self:GetUserData("barDB").hidden or (self:IsEmpty() and not addon:GetBarDBValue("showEmpty", self:GetBarID()) and not addon.cursorItem)) then
             self.frame:Hide()
         else
             self.frame:Show()
@@ -743,6 +743,7 @@ local methods = {
     end,
 
     UpdateLayers = function(self)
+        self:SetHidden()
         self:UpdateDB()
         addon:SkinButton(self, addon:GetDBValue("profile", "style.skin"))
         self:SetFontStringSettings("Count")
@@ -794,6 +795,7 @@ local function Constructor()
 	frame:SetScript("OnDragStop", frame_OnDragStop)
 	frame:SetScript("OnEvent", frame_OnEvent)
 	frame:SetScript("OnReceiveDrag", frame_OnReceiveDrag)
+    frame:SetScript("OnUpdate", frame_OnUpdate)
     frame:SetScript("PostClick", frame_PostClick)
 
     frame:RegisterEvent("SPELL_UPDATE_COOLDOWN")

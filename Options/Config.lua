@@ -253,7 +253,6 @@ function addon:GetBarConfigOptions(barID)
                         order = 2,
                         type = "toggle",
                         name = L["Show Empty Buttons"],
-                        disabled = true,
                     },
                     mouseover = {
                         order = 3,
