@@ -151,22 +151,13 @@ function addon:CreateObjectiveIconSelector()
     iconsGroupScrollChild:SetLayout("Flow")
     iconsGroupScrollFrame:AddChild(iconsGroupScrollChild)
 
-    iconsGroupScrollChild.icons = {}
-
-	GetLooseMacroIcons(iconsGroupScrollChild.icons)
-	GetLooseMacroItemIcons(iconsGroupScrollChild.icons)
-	GetMacroIcons(iconsGroupScrollChild.icons)
-    GetMacroItemIcons(iconsGroupScrollChild.icons)
-
-    sort(iconsGroupScrollChild.icons, function(a, b) return tostring(a) > tostring(b) end)
-
     function iconsGroupScrollChild:LoadPage(page)
         local searchTxt = searchEditBox:GetText()
 
         wipe(icons)
-        for k, v in pairs(self.icons) do
-            if searchTxt == "" or (InterfaceIcons[v] and strfind(InterfaceIcons[v], searchTxt)) then
-                tinsert(icons, v)
+        for k, v in pairs(InterfaceIcons) do
+            if searchTxt == "" or strfind(strlower(v), strlower(searchTxt)) then
+                tinsert(icons, k)
             end
         end
 
@@ -184,10 +175,10 @@ function addon:CreateObjectiveIconSelector()
                 icon:SetImageSize(40, 40)
                 icon:SetImage(icons[i * page])
                 self:AddChild(icon)
-
+                
                 icon:SetCallback("OnClick", function(self, _, key)
                     iconsGroupScrollChild.selectedIcon = icons[i * iconsGroupScrollChild.page]
-                    local name = string.format("%d (%s)", iconsGroupScrollChild.selectedIcon, InterfaceIcons[iconsGroupScrollChild.selectedIcon])
+                    local name = string.format("%d (%s)", iconsGroupScrollChild.selectedIcon, InterfaceIcons[iconsGroupScrollChild.selectedIcon] or "")
 
                     previewLabel:SetImage(iconsGroupScrollChild.selectedIcon)
                     previewLabel:SetText(name)

@@ -42,12 +42,12 @@ Core\Buttons.lua
 Options\Commands.lua
 Options\Interface.lua
 
-#@retail@
+# #@retail@
 Data\FileDataRetail.lua
-#@end-retail@
-#@non-retail@
+# #@end-retail@
+# #@non-retail@
 Data\FileDataClassic.lua
-#@end-non-retail@
+# #@end-non-retail@
 
 # Modules
 Modules\ItemMover.lua

@@ -1,4 +1,7 @@
 # Farming Bar
+## Version 2.1.7
+- Updated icon databases.
+
 ## Version 2.1.6
 - Updated TOC.
 - Fixed lua error when not providing input into the bar ButtonID editbox. (See issue 26.)
