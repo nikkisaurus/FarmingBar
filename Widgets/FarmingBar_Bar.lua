@@ -81,6 +81,26 @@ local function anchor_OnDragStop(self)
 end
 
 
+local function anchor_OnUpdate(self)
+    local widget = self.obj
+    local frame = widget.frame
+    local barID = widget:GetBarID()
+    
+    -- Check mouseover
+    local focus = GetMouseFocus() and GetMouseFocus():GetName() or ""    
+    if strfind(focus, "^FarmingBar_") then
+        local focusFrame = _G[focus].obj
+        if focusFrame:GetBarID() == barID then
+            widget:SetAlpha(true)
+        end
+    else
+        widget:SetAlpha()
+    end
+
+    -- Error: mouseover doesn't update button alphas
+end
+
+
 local function anchor_PostClick(self, buttonClicked, ...)
     ClearCursor()
 
@@ -182,10 +202,12 @@ local methods = {
         self:SetQuickButtonStates()
     end,
 
-    SetAlpha = function(self)
-        self.frame:SetAlpha(self:GetUserData("barDB").alpha)
+    SetAlpha = function(self, forceShow)
+        local alpha = (self:GetBarDB().mouseover and not forceShow) and 0 or self:GetBarDB().alpha
+        self.frame:SetAlpha(alpha)
+        self.anchor:SetAlpha(alpha)
         for _, button in pairs(self:GetUserData("buttons")) do
-            button:SetAlpha()
+            button:SetAlpha(forceShow)
         end
     end,
 
@@ -333,6 +355,7 @@ local function Constructor()
     anchor:SetScript("OnDragStart", anchor_OnDragStart)
     anchor:SetScript("OnDragStop", anchor_OnDragStop)
     anchor:SetScript("PostClick", anchor_PostClick)
+    anchor:SetScript("OnUpdate", anchor_OnUpdate)
 
     anchor:SetFrameStrata("MEDIUM")
 

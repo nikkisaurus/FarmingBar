@@ -16,7 +16,7 @@ tooltipScanner:SetScript("OnUpdate", function(self)
     local tooltip = widget and widget.GetUserData and widget:GetUserData("tooltip")
 
     addon.cursorItem = GetCursorInfo() == "item" or addon.movingButton or (addon.DragFrame and addon.DragFrame:GetObjective())
-    addon:UpdateButtons(_, "SetHidden")
+    addon:UpdateButtons(_, "SetAlpha")
 
     if tooltip and addon[tooltip] and not addon.DragFrame:GetObjective() then
         showTooltip = true

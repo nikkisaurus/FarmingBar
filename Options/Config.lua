@@ -258,13 +258,11 @@ function addon:GetBarConfigOptions(barID)
                         order = 3,
                         type = "toggle",
                         name = L["Show on Mouseover"],
-                        disabled = true,
                     },
                     anchorMouseover = {
                         order = 4,
                         type = "toggle",
                         name = L["Show on Anchor Mouseover"],
-                        disabled = true,
                     },
                 },
             },

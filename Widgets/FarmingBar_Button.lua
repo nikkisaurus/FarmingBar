@@ -389,8 +389,12 @@ local methods = {
         buttonDB.template = false
     end,
 
-    SetAlpha = function(self)
-        self.frame:SetAlpha(self:GetUserData("barDB").alpha)
+    SetAlpha = function(self, forceShow)
+        if self:GetBarID() and ((self:IsEmpty() and not addon:GetBarDBValue("showEmpty", self:GetBarID()) and not addon.cursorItem)) then
+            self.frame:SetAlpha(0)
+        else
+            self.frame:SetAlpha((self:GetBarDB().mouseover and not forceShow) and 0 or self:GetBarDB().alpha)
+        end
     end,
 
     SetAttribute = function(self)
@@ -538,7 +542,8 @@ local methods = {
     end,
 
     SetHidden = function(self)
-        if self:GetBarID() and (self:GetUserData("barDB").hidden or (self:IsEmpty() and not addon:GetBarDBValue("showEmpty", self:GetBarID()) and not addon.cursorItem)) then
+        local barDB = self:GetUserData("barDB")
+        if barDB and barDB.hidden then
             self.frame:Hide()
         else
             self.frame:Show()
