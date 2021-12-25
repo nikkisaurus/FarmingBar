@@ -223,7 +223,7 @@ function addon:GetBarConfigOptions(barID)
                         order = 3,
                         type = "toggle",
                         name = L["Completed Objectives"],
-                        disabled = true,
+                        -- disabled = true,
                     },
                 },
             },
