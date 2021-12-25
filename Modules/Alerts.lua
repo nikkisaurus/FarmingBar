@@ -11,11 +11,18 @@ local LSM = LibStub("LibSharedMedia-3.0")
 -- Send alerts
 
 
+<<<<<<< HEAD
 function addon:SendAlert(alertType, alert, alertInfo, soundID, bar, isTracker)
     -- Return if tracking completed objectives is disabled
     local objective = isTracker and alertInfo.trackerObjective.count or alertInfo.objective.count
     local oldCount = isTracker and alertInfo.oldTrackerCount or alertInfo.oldCount
     local newCount = isTracker and alertInfo.newTrackerCount or alertInfo.newCount
+=======
+function addon:SendAlert(alertType, alert, alertInfo, soundID, bar)
+    -- Return if tracking completed objectives is disabled
+    local objective = alertInfo.objective.count
+    local oldCount, newCount = alertInfo.oldCount, alertInfo.newCount
+>>>>>>> 864244fae2fa953c9811e6b53b3c75d28efb0a8e
     local completedObjectives = self:GetDBValue("char", "bars")[bar:GetBarID()].alerts.completedObjectives
 
     local newCompletion = oldCount < objective and newCount > objective
