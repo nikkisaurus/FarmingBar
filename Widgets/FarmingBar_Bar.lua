@@ -228,6 +228,55 @@ local methods = {
         end
     end,
 
+    SetBackdropAnchor = function(self)       
+        local padding = self:GetBarDB().backdropPadding
+        local firstButton = self:GetUserData("buttons")[1]
+        local lastButton = self:GetUserData("buttons")[self:GetBarDB().numVisibleButtons]
+
+        self:SetUserData("anchors", {
+            RIGHT = {
+                DOWN = {
+                    [1] = {"TOPLEFT", firstButton.frame, "TOPLEFT", -padding, padding},
+                    [2] = {"BOTTOMRIGHT", lastButton.frame, "BOTTOMRIGHT", padding, -padding},
+                },
+                UP = {
+                    [1] = {"BOTTOMLEFT", firstButton.frame, "BOTTOMLEFT", -padding, -padding},
+                    [2] = {"TOPRIGHT", lastButton.frame, "TOPRIGHT", padding, padding},
+                },
+            },
+            LEFT = {
+                DOWN = {
+                    [1] = {"TOPRIGHT", firstButton.frame, "TOPRIGHT", padding, padding},
+                    [2] = {"BOTTOMLEFT", lastButton.frame, "BOTTOMLEFT", -padding, -padding},
+                },
+                UP = {
+                    [1] = {"BOTTOMRIGHT", firstButton.frame, "BOTTOMRIGHT", padding, -padding},
+                    [2] = {"TOPLEFT", lastButton.frame, "TOPLEFT", -padding, padding},
+                },
+            },
+            UP = {
+                DOWN = {
+                    [1] = {"BOTTOMLEFT", firstButton.frame, "BOTTOMLEFT", -padding, -padding},
+                    [2] = {"TOPRIGHT", lastButton.frame, "TOPRIGHT", padding, padding},
+                },
+                UP = {
+                    [1] = {"BOTTOMRIGHT", firstButton.frame, "BOTTOMRIGHT", padding, -padding},
+                    [2] = {"TOPLEFT", lastButton.frame, "TOPLEFT", -padding, padding},
+                },
+            },
+            DOWN = {
+                DOWN = {
+                    [1] = {"TOPLEFT", firstButton.frame, "TOPLEFT", -padding, padding},
+                    [2] = {"BOTTOMRIGHT", lastButton.frame, "BOTTOMRIGHT", padding, -padding},
+                },
+                UP = {
+                    [1] = {"TOPRIGHT", firstButton.frame, "TOPRIGHT", padding, padding},
+                    [2] = {"BOTTOMLEFT", lastButton.frame, "BOTTOMLEFT", -padding, -padding},
+                },
+            },
+        })
+    end,
+
     SetBarDB = function(self, barID)
         self:SetUserData("barID", barID)
         self.barID:SetText(barID or "")
@@ -243,6 +292,7 @@ local methods = {
         self:SetAlpha()
         self:SetHidden()
         self:SetMovable()
+        self:SetBackdropAnchor()
         self:SetSize()
         self:SetPoint(unpack(barDB.point))
         self:SetQuickButtonStates()
@@ -335,44 +385,12 @@ local methods = {
         if numVisibleButtons == 0 then return end
 
         local grow = self:GetBarDB().grow
-        local hDirection, vDirection = grow[1], grow[2]        
-        local padding = self:GetBarDB().backdropPadding
-        local firstButton = self:GetUserData("buttons")[1]
-        
-        if hDirection == "RIGHT" then
-            if vDirection == "NORMAL" then
-                backdrop:SetPoint("TOPLEFT", firstButton.frame, "TOPLEFT", -padding, padding)
-                backdrop:SetPoint("BOTTOMRIGHT", lastButton.frame, "BOTTOMRIGHT", padding, -padding)
-            elseif vDirection == "REVERSE" then
-                backdrop:SetPoint("BOTTOMLEFT", firstButton.frame, "BOTTOMLEFT", -padding, -padding)
-                backdrop:SetPoint("TOPRIGHT", lastButton.frame, "TOPRIGHT", padding, padding)
-            end
-        elseif hDirection == "LEFT" then
-            if vDirection == "NORMAL" then
-                backdrop:SetPoint("TOPRIGHT", firstButton.frame, "TOPRIGHT", padding, padding)
-                backdrop:SetPoint("BOTTOMLEFT", lastButton.frame, "BOTTOMLEFT", -padding, -padding)
-            elseif vDirection == "REVERSE" then
-                backdrop:SetPoint("BOTTOMRIGHT", firstButton.frame, "BOTTOMRIGHT", padding, -padding)
-                backdrop:SetPoint("TOPLEFT", lastButton.frame, "TOPLEFT", -padding, padding)
-            end
-        elseif hDirection == "UP" then
-            if vDirection == "NORMAL" then
-                backdrop:SetPoint("BOTTOMLEFT", firstButton.frame, "BOTTOMLEFT", -padding, -padding)
-                backdrop:SetPoint("TOPRIGHT", lastButton.frame, "TOPRIGHT", padding, padding)
-            elseif vDirection == "REVERSE" then
-                backdrop:SetPoint("BOTTOMRIGHT", firstButton.frame, "BOTTOMRIGHT", padding, -padding)
-                backdrop:SetPoint("TOPLEFT", lastButton.frame, "TOPLEFT", -padding, padding)
-            end
-        elseif hDirection == "DOWN" then
-            if vDirection == "NORMAL" then
-                backdrop:SetPoint("TOPLEFT", firstButton.frame, "TOPLEFT", -padding, padding)
-                backdrop:SetPoint("BOTTOMRIGHT", lastButton.frame, "BOTTOMRIGHT", padding, -padding)
-            elseif vDirection == "REVERSE" then
-                backdrop:SetPoint("TOPRIGHT", firstButton.frame, "TOPRIGHT", padding, padding)
-                backdrop:SetPoint("BOTTOMLEFT", lastButton.frame, "BOTTOMLEFT", -padding, -padding)
-            end
-        end
-        
+        local hDirection, vDirection = grow[1], grow[2]
+        local anchors = self:GetUserData("anchors")
+
+        if not anchors then return end        
+        backdrop:SetPoint(unpack(anchors[hDirection][vDirection][1]))
+        backdrop:SetPoint(unpack(anchors[hDirection][vDirection][2]))
     end,
 
     UpdateVisibleButtons = function(self)
@@ -445,7 +463,7 @@ local function Constructor()
     removeButton:SetScript("OnClick", removeButton_OnClick)
 
     local barID = anchor:CreateFontString("$parentBarIDButton", "OVERLAY")
-    barID:SetFont([[Fonts\FRIZQT__.TTF]], 12, "NORMAL")
+    barID:SetFont([[Fonts\FRIZQT__.TTF]], 12, "DOWN")
 
 
     local widget = {

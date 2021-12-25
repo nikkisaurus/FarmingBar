@@ -296,12 +296,12 @@ function addon:GetBarConfigOptions(barID)
                     growthType = {
                         order = 2,
                         type = "select",
-                        name = L["Growth Direction"],
+                        name = L["Anchor"],
                         values = {
-                            NORMAL = L["Normal"],
-                            REVERSE = L["Reverse"],
+                            DOWN = L["Normal"],
+                            UP = L["Reverse"],
                         },
-                        sorting = {"NORMAL", "REVERSE"},
+                        sorting = {"DOWN", "UP"},
                         get = function()
                             return addon:GetBarDBValue("grow", barID)[2]
                         end,

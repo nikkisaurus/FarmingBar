@@ -272,7 +272,7 @@ function addon:InitializeDB()
                     alpha = 1,
                     numVisibleButtons = 6,
                     buttonWrap = 12,
-                    grow = {"RIGHT", "NORMAL"}, -- [1] = "RIGHT", "LEFT", "UP", "DOWN"; [2] = "NORMAL", "REVERSE"
+                    grow = {"RIGHT", "DOWN"}, -- [1] = "RIGHT", "LEFT", "UP", "DOWN"; [2] = "DOWN", "UP"
                     point = {"TOP"},
                     button = {
                         size = 35, --bar.buttonSize
