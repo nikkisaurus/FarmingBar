@@ -2,21 +2,19 @@ local addonName = ...
 local addon = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
 local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 
-
---*------------------------------------------------------------------------
+-- *------------------------------------------------------------------------
 -- Events
-
 
 local function DragFrame_OnEvent(self, event, buttonClicked, ...)
     if event == "GLOBAL_MOUSE_DOWN" then
         -- Clear objective when right clicking or not dropping item on button
-        if buttonClicked == "RightButton" or (self:GetObjective() and not strfind(GetMouseFocus():GetName() or "", "^FarmingBar_Button%d")) then
+        if buttonClicked == "RightButton" or
+            (self:GetObjective() and not strfind(GetMouseFocus():GetName() or "", "^FarmingBar_Button%d")) then
             self:Clear()
             addon.movingButton = nil
         end
     end
 end
-
 
 local function DragFrame_OnUpdate(self)
     if self:IsVisible() then
@@ -25,10 +23,8 @@ local function DragFrame_OnUpdate(self)
     end
 end
 
-
---*------------------------------------------------------------------------
+-- *------------------------------------------------------------------------
 -- Methods
-
 
 local methods = {
     Clear = function(self)
@@ -64,10 +60,10 @@ local methods = {
         self.objectiveInfo.template = objectiveTitle
 
         self:Show()
-    end,
+    end
 }
 
---*------------------------------------------------------------------------
+-- *------------------------------------------------------------------------
 
 function addon:InitializeDragFrame()
     local DragFrame = CreateFrame("Frame", "FarmingBarDragFrame", UIParent)
@@ -77,9 +73,9 @@ function addon:InitializeDragFrame()
     DragFrame:SetFrameStrata("TOOLTIP")
     addon.DragFrame = DragFrame
 
-    --@retail@
+    -- @retail@
     DragFrame:RegisterEvent("GLOBAL_MOUSE_DOWN")
-    --@end-retail@
+    -- @end-retail@
     DragFrame:SetScript("OnUpdate", DragFrame_OnUpdate)
     DragFrame:SetScript("OnEvent", DragFrame_OnEvent)
 

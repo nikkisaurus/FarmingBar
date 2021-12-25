@@ -2,10 +2,8 @@ local addonName = ...
 local addon = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
 local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 
-
---*------------------------------------------------------------------------
+-- *------------------------------------------------------------------------
 -- Create objectives
-
 
 function addon:CreateObjectiveFromCursor(widget)
     local cursorType, cursorID = GetCursorInfo()
@@ -19,13 +17,12 @@ function addon:CreateObjectiveFromCursor(widget)
         buttonDB.action = "ITEM"
         buttonDB.actionInfo = cursorID
 
-        local tracker =  buttonDB.trackers["ITEM:"..cursorID]
+        local tracker = buttonDB.trackers["ITEM:" .. cursorID]
         tracker.order = 1
 
         widget:UpdateLayers()
     end
 end
-
 
 function addon:CreateObjectiveFromDragFrame(widget, objectiveInfo)
     widget:ClearObjective() -- Remove template link when clearing objective
@@ -35,7 +32,7 @@ function addon:CreateObjectiveFromDragFrame(widget, objectiveInfo)
         if k ~= "instances" then
             if k == "trackers" then
                 for key, value in pairs(v) do
-                   buttonDB.trackers[key]  = nil
+                    buttonDB.trackers[key] = nil
                 end
                 for key, value in pairs(objectiveInfo.trackers) do
                     buttonDB.trackers[key] = {}
@@ -48,7 +45,6 @@ function addon:CreateObjectiveFromDragFrame(widget, objectiveInfo)
             end
         end
     end
-
 
     if buttonDB.template then
         self:CreateObjectiveTemplateInstance(buttonDB.template, widget:GetButtonID())
@@ -79,7 +75,6 @@ function addon:CreateObjectiveFromDragFrame(widget, objectiveInfo)
     widget:UpdateLayers()
 end
 
-
 function addon:CreateObjectiveFromCurrencyID(widget, currencyID)
     local buttonDB = widget:GetButtonDB()
     local currency = C_CurrencyInfo.GetCurrencyInfo(currencyID)
@@ -89,13 +84,11 @@ function addon:CreateObjectiveFromCurrencyID(widget, currencyID)
     buttonDB.action = "CURRENCY"
     buttonDB.actionInfo = currencyID
 
-    local tracker =  buttonDB.trackers["CURRENCY:"..currencyID]
+    local tracker = buttonDB.trackers["CURRENCY:" .. currencyID]
     tracker.order = 1
 
     widget:UpdateLayers()
 end
-
-
 
 function addon:CreateObjectiveFromItemID(widget, itemID)
     local buttonDB = widget:GetButtonDB()
@@ -104,7 +97,7 @@ function addon:CreateObjectiveFromItemID(widget, itemID)
     buttonDB.action = "ITEM"
     buttonDB.actionInfo = itemID
 
-    local tracker =  buttonDB.trackers["ITEM:"..itemID]
+    local tracker = buttonDB.trackers["ITEM:" .. itemID]
     tracker.order = 1
 
     self:CacheItem(itemID, function(widget, buttonDB, itemID)
@@ -112,7 +105,6 @@ function addon:CreateObjectiveFromItemID(widget, itemID)
         widget:UpdateLayers()
     end, widget, buttonDB, itemID)
 end
-
 
 function addon:CreateObjectiveFromTemplate(widget, template)
     local buttonDB = widget:GetButtonDB()
@@ -122,12 +114,11 @@ function addon:CreateObjectiveFromTemplate(widget, template)
     buttonDB.action = "ITEM"
     buttonDB.actionInfo = template.itemID
 
-    local tracker =  buttonDB.trackers["ITEM:"..template.itemID]
+    local tracker = buttonDB.trackers["ITEM:" .. template.itemID]
     tracker.order = 1
 
     widget:UpdateLayers()
 end
-
 
 function addon:CreateObjectiveFromUserTemplate(widget, template, withData)
     local buttonDB = widget:GetButtonDB()
@@ -150,10 +141,8 @@ function addon:CreateObjectiveFromUserTemplate(widget, template, withData)
     widget:UpdateLayers()
 end
 
-
---*------------------------------------------------------------------------
+-- *------------------------------------------------------------------------
 -- Objective info
-
 
 function addon:GetObjectiveIcon(widget)
     local buttonDB = widget:GetButtonDB()
@@ -176,14 +165,14 @@ function addon:GetObjectiveIcon(widget)
     else
         if buttonDB.icon then
             -- Convert db icon value to number if it's a file ID, otherwise use the string value
-            icon = (tonumber(buttonDB.icon) and tonumber(buttonDB.icon) ~= buttonDB.icon) and tonumber(buttonDB.icon) or buttonDB.icon
+            icon = (tonumber(buttonDB.icon) and tonumber(buttonDB.icon) ~= buttonDB.icon) and tonumber(buttonDB.icon) or
+                       buttonDB.icon
             icon = (icon == "" or not icon) and 134400 or icon
         end
     end
 
     return icon or 134400
 end
-
 
 function addon:GetObjectiveIncludedLayers(widget, layer)
     local total, included, notIncluded = 0, 0, 0

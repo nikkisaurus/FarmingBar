@@ -2,15 +2,13 @@ local addonName = ...
 local addon = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
 local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 
-
---*------------------------------------------------------------------------
+-- *------------------------------------------------------------------------
 -- Initialize options
 
 function addon:InitializeOptions()
     LibStub("AceConfig-3.0"):RegisterOptionsTable(addonName, self:GetOptions())
     LibStub("AceConfigDialog-3.0"):SetDefaultSize(addonName, 850, 600)
 end
-
 
 function addon:GetOptions()
     self.options = {
@@ -22,36 +20,36 @@ function addon:GetOptions()
                 type = "group",
                 name = L["Config"],
                 childGroups = "select",
-                args = self:GetConfigOptions(),
+                args = self:GetConfigOptions()
             },
             objectiveBuilder = {
                 order = 2,
                 type = "group",
                 name = L["Objectives"],
                 childGroups = "select",
-                args = self:GetObjectiveBuilderOptions(),
+                args = self:GetObjectiveBuilderOptions()
             },
             settings = {
                 order = 3,
                 type = "group",
                 name = L["Settings"],
                 childGroups = "select",
-                args = self:GetSettingsOptions(),
+                args = self:GetSettingsOptions()
             },
             styleEditor = {
                 order = 4,
                 type = "group",
                 name = L["Styles"],
-                args = self:GetStyleEditorOptions(),
+                args = self:GetStyleEditorOptions()
             },
             profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db),
             help = {
                 order = 6,
                 type = "group",
                 name = L["Help"],
-                args = self:GetHelpOptions(),
-            },
-        },
+                args = self:GetHelpOptions()
+            }
+        }
     }
 
     self.options.args.profiles.order = 5
@@ -59,9 +57,10 @@ function addon:GetOptions()
     return self.options
 end
 
-
 function addon:RefreshOptions()
-    if not self.options then return end
+    if not self.options then
+        return
+    end
 
     -- Update config options
     if self.options.args.config then
@@ -74,5 +73,5 @@ function addon:RefreshOptions()
     end
 
     LibStub("AceConfigRegistry-3.0"):NotifyChange(addonName)
-    LibStub("AceConfigRegistry-3.0"):NotifyChange(addonName.."ObjectiveEditor")
+    LibStub("AceConfigRegistry-3.0"):NotifyChange(addonName .. "ObjectiveEditor")
 end

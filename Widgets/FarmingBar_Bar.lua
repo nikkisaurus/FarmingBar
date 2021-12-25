@@ -2,25 +2,21 @@ local addonName = ...
 local addon = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
 local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 
-
 -- Optional libraries
 local ACD = LibStub("AceConfigDialog-3.0")
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 local LSM = LibStub("LibSharedMedia-3.0")
 
-
 local Type = "FarmingBar_Bar"
 local Version = 2
 
-
---*------------------------------------------------------------------------
+-- *------------------------------------------------------------------------
 -- Keybinds
-
 
 local postClickMethods = {
     configBar = function(self, ...)
         local barID = self.obj:GetBarID()
-        ACD:SelectGroup(addonName, "config", "bar"..barID)
+        ACD:SelectGroup(addonName, "config", "bar" .. barID)
         ACD:Open(addonName)
     end,
 
@@ -45,13 +41,11 @@ local postClickMethods = {
     openHelp = function(self, ...)
         ACD:SelectGroup(addonName, "help")
         ACD:Open(addonName)
-    end,
+    end
 }
 
-
---*------------------------------------------------------------------------
+-- *------------------------------------------------------------------------
 -- Frame methods
-
 
 local function addButton_OnClick(self)
     local widget = self.obj
@@ -64,30 +58,31 @@ local function addButton_OnClick(self)
     end
 end
 
-
 local function anchor_OnDragStart(self)
     local frame = self.obj.frame
-    if not frame:IsMovable() then return end
+    if not frame:IsMovable() then
+        return
+    end
     frame:StartMoving()
 end
-
 
 local function anchor_OnDragStop(self)
     local widget = self.obj
     local frame = widget.frame
-    if not frame:IsMovable() then return end
+    if not frame:IsMovable() then
+        return
+    end
     frame:StopMovingOrSizing()
     widget:SetDBValue("point", {frame:GetPoint()})
 end
-
 
 local function anchor_OnUpdate(self)
     local widget = self.obj
     local frame = widget.frame
     local barID = widget:GetBarID()
-    
+
     -- Check mouseover
-    local focus = GetMouseFocus() and GetMouseFocus():GetName() or ""    
+    local focus = GetMouseFocus() and GetMouseFocus():GetName() or ""
     if strfind(focus, "^FarmingBar_") then
         local focusFrame = _G[focus].obj
         if focusFrame:GetBarID() == barID then
@@ -97,7 +92,6 @@ local function anchor_OnUpdate(self)
         widget:SetAlpha()
     end
 end
-
 
 local function anchor_PostClick(self, buttonClicked, ...)
     ClearCursor()
@@ -117,7 +111,6 @@ local function anchor_PostClick(self, buttonClicked, ...)
     end
 end
 
-
 local function frame_OnEvent(self, event)
     local widget = self.obj
     if event == "PLAYER_REGEN_DISABLED" then
@@ -127,7 +120,6 @@ local function frame_OnEvent(self, event)
         widget:SetQuickButtonStates()
     end
 end
-
 
 local function removeButton_OnClick(self)
     local widget = self.obj
@@ -140,10 +132,8 @@ local function removeButton_OnClick(self)
     end
 end
 
-
---*------------------------------------------------------------------------
+-- *------------------------------------------------------------------------
 -- Widget methods
-
 
 local methods = {
     OnAcquire = function(self)
@@ -152,7 +142,9 @@ local methods = {
     end,
 
     OnRelease = function(self)
-        if not self:GetUserData("buttons") then return end
+        if not self:GetUserData("buttons") then
+            return
+        end
         for _, button in pairs(self:GetUserData("buttons")) do
             button:Release()
         end
@@ -177,26 +169,29 @@ local methods = {
                 progressTotal = progressTotal,
                 barIDName = barIDName,
                 barNameLong = format("%s%s", barIDName, barDB.title),
-                progressColor = progressCount == progressTotal and "|cff00ff00" or alertType == "complete" and "|cffffcc00" or alertType == "lost" and "|cffff0000",
+                progressColor = progressCount == progressTotal and "|cff00ff00" or alertType == "complete" and
+                    "|cffffcc00" or alertType == "lost" and "|cffff0000"
             }
 
-            local parsedBarAlert = assert(loadstring("return " .. addon:GetDBValue("global", "settings.alerts.bar.format.progress")))()(alertInfo)
+            local parsedBarAlert = assert(loadstring("return " ..
+                                                         addon:GetDBValue("global",
+                    "settings.alerts.bar.format.progress")))()(alertInfo)
 
             -- Chat
             if addon:GetDBValue("global", "settings.alerts")["bar"].chat and parsedBarAlert then
-                addon:Print(parsedBarAlert)            
+                addon:Print(parsedBarAlert)
             end
 
             -- Screen
             if addon:GetDBValue("global", "settings.alerts")["bar"].screen and parsedBarAlert then
-                UIErrorsFrame:AddMessage(parsedBarAlert, 1, 1, 1)        
+                UIErrorsFrame:AddMessage(parsedBarAlert, 1, 1, 1)
             end
 
             -- Sound
             if addon:GetDBValue("global", "settings.alerts")["bar"].sound.enabled and soundID then
-                
+
             end
-        end  
+        end
     end,
 
     AnchorButtons = function(self)
@@ -272,7 +267,7 @@ local methods = {
         end
     end,
 
-    SetBackdropAnchor = function(self)       
+    SetBackdropAnchor = function(self)
         local barDB = self:GetBarDB()
         local buttons = self:GetUserData("buttons")
 
@@ -281,64 +276,64 @@ local methods = {
         local buttonWrap = barDB.buttonWrap
         local lastButton = buttons[#buttons]
         local wrapButton = (#buttons <= buttonWrap and lastButton) or buttons[buttonWrap]
-        
+
         self:SetUserData("anchors", lastButton and {
             RIGHT = {
                 DOWN = {
                     [1] = {"TOP", self.anchor, "TOP", 0, padding},
                     [2] = {"LEFT", buttons[1].frame, "LEFT", -padding, 0},
                     [3] = {"RIGHT", wrapButton.frame, "RIGHT", padding, 0},
-                    [4] = {"BOTTOM", lastButton.frame, "BOTTOM", 0, -padding},
+                    [4] = {"BOTTOM", lastButton.frame, "BOTTOM", 0, -padding}
                 },
                 UP = {
                     [1] = {"TOP", lastButton.frame, "TOP", 0, padding},
                     [2] = {"LEFT", buttons[1].frame, "LEFT", -padding, 0},
                     [3] = {"RIGHT", wrapButton.frame, "RIGHT", padding, 0},
-                    [4] = {"BOTTOM", buttons[1].frame, "BOTTOM", 0, -padding},
-                },
+                    [4] = {"BOTTOM", buttons[1].frame, "BOTTOM", 0, -padding}
+                }
             },
             LEFT = {
                 DOWN = {
                     [1] = {"TOP", self.anchor, "TOP", 0, padding},
                     [2] = {"LEFT", wrapButton.frame, "LEFT", -padding, 0},
                     [3] = {"RIGHT", buttons[1].frame, "RIGHT", padding, 0},
-                    [4] = {"BOTTOM", lastButton.frame, "BOTTOM", 0, -padding},
+                    [4] = {"BOTTOM", lastButton.frame, "BOTTOM", 0, -padding}
                 },
                 UP = {
                     [1] = {"TOP", lastButton.frame, "TOP", 0, padding},
                     [2] = {"LEFT", wrapButton.frame, "LEFT", -padding, 0},
                     [3] = {"RIGHT", buttons[1].frame, "RIGHT", padding, 0},
-                    [4] = {"BOTTOM", buttons[1].frame, "BOTTOM", 0, -padding},
-                },
+                    [4] = {"BOTTOM", buttons[1].frame, "BOTTOM", 0, -padding}
+                }
             },
             UP = {
                 DOWN = {
                     [1] = {"TOP", wrapButton.frame, "TOP", 0, padding},
                     [2] = {"LEFT", buttons[1].frame, "LEFT", -padding, 0},
                     [3] = {"RIGHT", lastButton.frame, "RIGHT", padding, 0},
-                    [4] = {"BOTTOM", buttons[1].frame, "BOTTOM", 0, -padding},
+                    [4] = {"BOTTOM", buttons[1].frame, "BOTTOM", 0, -padding}
                 },
                 UP = {
                     [1] = {"TOP", wrapButton.frame, "TOP", 0, padding},
                     [2] = {"LEFT", lastButton.frame, "LEFT", -padding, 0},
                     [3] = {"RIGHT", buttons[1].frame, "RIGHT", padding, 0},
-                    [4] = {"BOTTOM", buttons[1].frame, "BOTTOM", 0, -padding},
-                },
+                    [4] = {"BOTTOM", buttons[1].frame, "BOTTOM", 0, -padding}
+                }
             },
             DOWN = {
                 DOWN = {
                     [1] = {"TOP", buttons[1].frame, "TOP", 0, padding},
                     [2] = {"LEFT", buttons[1].frame, "LEFT", -padding, 0},
                     [3] = {"RIGHT", lastButton.frame, "RIGHT", padding, 0},
-                    [4] = {"BOTTOM", wrapButton.frame, "BOTTOM", 0, -padding},
+                    [4] = {"BOTTOM", wrapButton.frame, "BOTTOM", 0, -padding}
                 },
                 UP = {
                     [1] = {"TOP", buttons[1].frame, "TOP", 0, padding},
                     [2] = {"LEFT", lastButton.frame, "LEFT", -padding, 0},
                     [3] = {"RIGHT", buttons[1].frame, "RIGHT", padding, 0},
-                    [4] = {"BOTTOM", wrapButton.frame, "BOTTOM", 0, -padding},
-                },
-            },
+                    [4] = {"BOTTOM", wrapButton.frame, "BOTTOM", 0, -padding}
+                }
+            }
         })
 
         self:UpdateBackdrop()
@@ -386,7 +381,7 @@ local methods = {
         addon:RefreshOptions()
     end,
 
-    SetPoint = function(self, ...) --point, anchor, relpoint, x, y
+    SetPoint = function(self, ...) -- point, anchor, relpoint, x, y
         self.frame:ClearAllPoints()
         self.frame:SetPoint(...)
     end,
@@ -417,7 +412,7 @@ local methods = {
 
     SetSize = function(self)
         local frameSize = self:GetUserData("barDB").button.size
-        local paddingSize = (2/20 * frameSize)
+        local paddingSize = (2 / 20 * frameSize)
         local buttonSize = ((frameSize - (paddingSize * 3)) / 2) * .9
         local fontSize = frameSize / 3
 
@@ -428,7 +423,6 @@ local methods = {
 
         self.removeButton:SetSize(buttonSize, buttonSize)
         self.removeButton:SetPoint("TOPRIGHT", -paddingSize, -paddingSize)
-
 
         local fontDB = addon:GetDBValue("profile", "style.font")
         self.barID:SetFont(LSM:Fetch("font", fontDB.face), fontSize, fontDB.outline)
@@ -444,7 +438,7 @@ local methods = {
         backdrop:ClearAllPoints()
         backdropTexture:ClearAllPoints()
         backdropTexture:SetTexture("")
-        
+
         local numVisibleButtons = #self:GetUserData("buttons")
         if numVisibleButtons == 0 then
             return
@@ -455,7 +449,9 @@ local methods = {
             local hDirection, vDirection = grow[1], grow[2]
             local anchors = self:GetUserData("anchors")
 
-            if not anchors then return end     
+            if not anchors then
+                return
+            end
             backdrop:SetPoint(unpack(anchors[hDirection][vDirection][1]))
             backdrop:SetPoint(unpack(anchors[hDirection][vDirection][2]))
             backdrop:SetPoint(unpack(anchors[hDirection][vDirection][3]))
@@ -476,18 +472,16 @@ local methods = {
                 self:RemoveButton()
             end
         end
-    end,
+    end
 }
 
-
---*------------------------------------------------------------------------
+-- *------------------------------------------------------------------------
 -- Constructor
 
-
 local function Constructor()
-    local frame = CreateFrame("Frame", Type..AceGUI:GetNextWidgetNum(Type), UIParent)
+    local frame = CreateFrame("Frame", Type .. AceGUI:GetNextWidgetNum(Type), UIParent)
     frame:SetScale(UIParent:GetEffectiveScale())
-	frame:Hide()
+    frame:Hide()
     frame:SetClampedToScreen(true)
 
     frame:RegisterEvent("PLAYER_REGEN_ENABLED")
@@ -535,9 +529,8 @@ local function Constructor()
     local barID = anchor:CreateFontString("$parentBarIDButton", "OVERLAY")
     barID:SetFont([[Fonts\FRIZQT__.TTF]], 12, "DOWN")
 
-
     local widget = {
-		type  = Type,
+        type = Type,
         frame = frame,
         backdrop = backdrop,
         backdropTexture = backdropTexture,
@@ -545,7 +538,7 @@ local function Constructor()
         FloatingBG = FloatingBG,
         addButton = addButton,
         removeButton = removeButton,
-        barID = barID,
+        barID = barID
     }
 
     frame.obj, anchor.obj, addButton.obj, removeButton.obj, backdrop.obj = widget, widget, widget, widget, widget
@@ -554,8 +547,7 @@ local function Constructor()
         widget[method] = func
     end
 
-	return AceGUI:RegisterAsWidget(widget)
+    return AceGUI:RegisterAsWidget(widget)
 end
-
 
 AceGUI:RegisterWidgetType(Type, Constructor, Version)

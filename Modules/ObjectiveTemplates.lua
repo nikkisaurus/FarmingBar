@@ -2,8 +2,7 @@ local addonName = ...
 local addon = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
 local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 
-
---*------------------------------------------------------------------------
+-- *------------------------------------------------------------------------
 -- Create templates
 
 function addon:CreateObjectiveTemplate(objectiveTitle, overwrite, supressSelect)
@@ -30,7 +29,7 @@ function addon:CreateObjectiveTemplate(objectiveTitle, overwrite, supressSelect)
     objectiveTemplate.title = newObjectiveTitle
 
     ------------------------------------------------------------
-    --Debug-----------------------------------------------------
+    -- Debug-----------------------------------------------------
     ------------------------------------------------------------
     -- if objectiveTemplate.title == newObjectiveTitle then
     --     print(format("DEBUG: Template successfully created: %s", newObjectiveTitle))
@@ -49,10 +48,8 @@ function addon:CreateObjectiveTemplate(objectiveTitle, overwrite, supressSelect)
     return newObjectiveTitle
 end
 
-
---*------------------------------------------------------------------------
+-- *------------------------------------------------------------------------
 -- Template info
-
 
 function addon:GetObjectiveTemplateIcon(objectiveTitle)
     local objectiveInfo = self:GetDBValue("global", "objectives")[objectiveTitle]
@@ -75,7 +72,8 @@ function addon:GetObjectiveTemplateIcon(objectiveTitle)
     else
         if objectiveInfo.icon then
             -- Convert db icon value to number if it's a file ID, otherwise use the string value
-            icon = (tonumber(objectiveInfo.icon) and tonumber(objectiveInfo.icon) ~= objectiveInfo.icon) and tonumber(objectiveInfo.icon) or objectiveInfo.icon
+            icon = (tonumber(objectiveInfo.icon) and tonumber(objectiveInfo.icon) ~= objectiveInfo.icon) and
+                       tonumber(objectiveInfo.icon) or objectiveInfo.icon
             icon = (icon == "" or not icon) and 134400 or icon
         end
     end
@@ -83,39 +81,37 @@ function addon:GetObjectiveTemplateIcon(objectiveTitle)
     return icon or 134400
 end
 
-
 function addon:GetObjectiveTemplateLinks(template)
     return self:GetDBValue("global", "objectives")[template].instances
 end
-
 
 function addon:ObjectiveTemplateExists(objectiveTitle)
     return self:GetDBValue("global", "objectives")[objectiveTitle].title ~= ""
 end
 
-
---*------------------------------------------------------------------------
+-- *------------------------------------------------------------------------
 -- Manage
-
 
 function addon:CreateObjectiveTemplateInstance(template, buttonID)
     local templateLinks = self:GetObjectiveTemplateLinks(template)
     templateLinks[self:GetCharKey()][buttonID] = true
 end
 
-
 function addon:DeleteObjectiveTemplate(objectiveTitle, confirmed)
     -- Update objective template links
-    self:UpdateObjectiveTemplateLinks(self:GetDBValue("global", "objectives")[objectiveTitle].instances, function(instances, buttonDB)
-        if not buttonDB then return end
-        buttonDB.template = false
-
-        for k, v in pairs(instances) do
-            if k ~= "instances" then
-                buttonDB[k] = v
+    self:UpdateObjectiveTemplateLinks(self:GetDBValue("global", "objectives")[objectiveTitle].instances,
+        function(instances, buttonDB)
+            if not buttonDB then
+                return
             end
-        end
-    end)
+            buttonDB.template = false
+
+            for k, v in pairs(instances) do
+                if k ~= "instances" then
+                    buttonDB[k] = v
+                end
+            end
+        end)
 
     self:GetDBValue("global", "objectives")[objectiveTitle] = nil
     -- self:UpdateExclusions(objectiveTitle)
@@ -123,12 +119,10 @@ function addon:DeleteObjectiveTemplate(objectiveTitle, confirmed)
     self:RefreshOptions()
 end
 
-
 function addon:RemoveObjectiveTemplateInstance(template, buttonID)
     local templateLinks = self:GetObjectiveTemplateLinks(template)
     templateLinks[self:GetCharKey()][buttonID] = nil
 end
-
 
 function addon:RenameObjectiveTemplate(objectiveTitle, newObjectiveTitle)
     local objectives = self:GetDBValue("global", "objectives")
@@ -146,7 +140,6 @@ function addon:RenameObjectiveTemplate(objectiveTitle, newObjectiveTitle)
 
     self:RefreshOptions()
 end
-
 
 function addon:UpdateObjectiveTemplateLinks(instances, callback)
     for profileKey, buttonIDs in pairs(instances) do

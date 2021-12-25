@@ -2,8 +2,7 @@ local addonName = ...
 local addon = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
 local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 
-
---*------------------------------------------------------------------------
+-- *------------------------------------------------------------------------
 -- Defaults
 
 local panelBackdrop = {
@@ -16,95 +15,94 @@ local panelBackdrop = {
         left = 3,
         right = 3,
         top = 3,
-        bottom = 3,
+        bottom = 3
     }
 }
-
 
 addon.skins = {
     FarmingBar_Default = {
         bar = {
             FloatingBG = {
                 texture = [[INTERFACE\BUTTONS\UI-QUICKSLOT]],
-                texCoords = {12/64, 52/64, 12/64, 52/64},
-                color = {1, 1, 1, 1},
+                texCoords = {12 / 64, 52 / 64, 12 / 64, 52 / 64},
+                color = {1, 1, 1, 1}
             },
             Normal = {
                 texture = "",
                 texCoords = {0, 1, 0, 1},
-                color = {1, 1, 1, 1},
-            },
+                color = {1, 1, 1, 1}
+            }
         },
         button = {
             Normal = {
                 texture = "INTERFACE\\BUTTONS\\UI-QUICKSLOT2",
-                texCoords = {12/64, 51/64, 12/64, 51/64},
+                texCoords = {12 / 64, 51 / 64, 12 / 64, 51 / 64},
                 color = {1, 1, 1, 1},
                 blendMode = "BLEND",
-                insets = {0, 0, 0, 0},
+                insets = {0, 0, 0, 0}
             },
             Pushed = {
                 texture = "INTERFACE\\BUTTONS\\UI-QUICKSLOT2",
-                texCoords = {12/64, 51/64, 12/64, 51/64},
+                texCoords = {12 / 64, 51 / 64, 12 / 64, 51 / 64},
                 color = {1, 1, 1, 1},
                 blendMode = "BLEND",
-                insets = {0, 0, 0, 0},
+                insets = {0, 0, 0, 0}
             },
             Highlight = {
                 texture = "INTERFACE\\BUTTONS\\BUTTONHILIGHT-SQUAREQUICKSLOT",
                 texCoords = {0, 1, 0, 1},
                 color = {1, 1, 1, 1},
                 blendMode = "ADD",
-                insets = {2, 2, 0, 0},
+                insets = {2, 2, 0, 0}
             },
             layers = {
                 FloatingBG = {
                     texture = [[INTERFACE\BUTTONS\UI-EMPTYSLOT-DISABLED]],
-                    texCoords = {10/64, 53/64, 10/64, 53/64},
+                    texCoords = {10 / 64, 53 / 64, 10 / 64, 53 / 64},
                     color = {1, 1, 1, 1},
                     blendMode = "BLEND",
-                    insets = {0, 0, 0, 0},
+                    insets = {0, 0, 0, 0}
                 },
                 Icon = {
                     texture = "",
                     texCoords = {0, 1, 0, 1},
                     color = {1, 1, 1, 1},
                     blendMode = "BLEND",
-                    insets = {2, 2.5, 2.5, 2.5},
+                    insets = {2, 2.5, 2.5, 2.5}
                 },
                 Flash = {
                     texture = "INTERFACE\\BUTTONS\\WHITE8X8",
                     texCoords = {0, 1, 0, 1},
                     color = {1, 0, 0, 1},
                     blendMode = "ADD",
-                    insets = {2, 2, 2, 2},
+                    insets = {2, 2, 2, 2}
                 },
                 Border = {
                     texture = "INTERFACE\\BUTTONS\\UI-ACTIONBUTTON-BORDER",
-                    texCoords = {12/64, 50/64, 14/64, 52/64},
+                    texCoords = {12 / 64, 50 / 64, 14 / 64, 52 / 64},
                     color = {1, 1, 1, 1},
                     blendMode = "ADD",
                     insets = {0, 0, 0, 0},
-                    anchor = "Icon",
+                    anchor = "Icon"
                 },
                 AccountOverlay = {
                     texture = [[INTERFACE\ADDONS\FARMINGBAR\MEDIA\4POINTDIAMOND]],
                     texCoords = {0.1, 0.9, 0.1, 0.9},
-                    color = {1, 33/51, 0, 1},
+                    color = {1, 33 / 51, 0, 1},
                     blendMode = "BLEND",
                     insets = {-2, -2, -2, -2},
-                    anchor = "Icon",
+                    anchor = "Icon"
                 },
                 AutoCastable = {
                     texture = "INTERFACE\\BUTTONS\\UI-AUTOCASTABLEOVERLAY",
-                    texCoords = {14/64, 49/64, 14/64, 49/64},
+                    texCoords = {14 / 64, 49 / 64, 14 / 64, 49 / 64},
                     color = {1, 1, 1, 1},
                     blendMode = "BLEND",
                     insets = {0, 0, 0, 0},
-                    anchor = "Icon",
-                },
-            },
-        },
+                    anchor = "Icon"
+                }
+            }
+        }
     },
 
     FarmingBar_Minimal = {
@@ -112,36 +110,36 @@ addon.skins = {
             FloatingBG = {
                 texture = [[INTERFACE\BUTTONS\WHITE8X8]],
                 texCoords = {0, 1, 0, 1},
-                color = {0, 0, 0, .5},
+                color = {0, 0, 0, .5}
             },
 
             Normal = {
                 texture = "INTERFACE\\ADDONS\\FARMINGBAR\\MEDIA\\ICONBORDERTHICK",
-                texCoords = {4/64, 60/64, 4/64, 60/64}, -- 1px border (5 - borderSize, 64 - left)
-                color = {0, 0, 0, 1},
-            },
+                texCoords = {4 / 64, 60 / 64, 4 / 64, 60 / 64}, -- 1px border (5 - borderSize, 64 - left)
+                color = {0, 0, 0, 1}
+            }
         },
         button = {
             Normal = {
                 texture = "INTERFACE\\ADDONS\\FARMINGBAR\\MEDIA\\ICONBORDERTHICK",
-                texCoords = {4/64, 60/64, 4/64, 60/64}, -- 1px border (5 - borderSize, 64 - left)
+                texCoords = {4 / 64, 60 / 64, 4 / 64, 60 / 64}, -- 1px border (5 - borderSize, 64 - left)
                 color = {0, 0, 0, 1},
                 blendMode = "BLEND",
-                insets = {0, 0, 0, 0},
+                insets = {0, 0, 0, 0}
             },
             Pushed = {
                 texture = "INTERFACE\\BUTTONS\\WHITE8X8",
                 texCoords = {0, 1, 0, 1},
                 color = {1, .82, 0, .15},
                 blendMode = "ADD",
-                insets = {.75, .75, .75, .75},
+                insets = {.75, .75, .75, .75}
             },
             Highlight = {
                 texture = "INTERFACE\\BUTTONS\\WHITE8X8",
                 texCoords = {0, 1, 0, 1},
                 color = {1, 1, 1, .15},
                 blendMode = "ADD",
-                insets = {.75, .75, .75, .75},
+                insets = {.75, .75, .75, .75}
             },
             layers = {
                 FloatingBG = {
@@ -149,54 +147,52 @@ addon.skins = {
                     texCoords = {0, 1, 0, 1},
                     color = {0, 0, 0, .5},
                     blendMode = "BLEND",
-                    insets = {0, 0, 0, 0},
+                    insets = {0, 0, 0, 0}
                 },
                 Icon = {
                     texture = "",
-                    texCoords = {6/64, 58/64, 6/64, 58/64},
+                    texCoords = {6 / 64, 58 / 64, 6 / 64, 58 / 64},
                     color = {1, 1, 1, 1},
                     blendMode = "BLEND",
-                    insets = {1, 1, 1, 1},
+                    insets = {1, 1, 1, 1}
                 },
                 Flash = {
                     texture = "INTERFACE\\BUTTONS\\WHITE8X8",
                     texCoords = {0, 1, 0, 1},
                     color = {1, 0, 0, 1},
                     blendMode = "ADD",
-                    insets = {0, 0, 0, 0},
+                    insets = {0, 0, 0, 0}
                 },
                 Border = {
                     texture = "INTERFACE\\ADDONS\\FARMINGBAR\\MEDIA\\ICONBORDERTHICK",
-                    texCoords = {2/64, 62/64, 2/64, 62/64},
+                    texCoords = {2 / 64, 62 / 64, 2 / 64, 62 / 64},
                     color = {1, 1, 1, 1},
                     blendMode = "BLEND",
                     insets = {0, 0, 0, 0},
-                    anchor = "Icon",
+                    anchor = "Icon"
                 },
                 AccountOverlay = {
                     texture = [[INTERFACE\ADDONS\FARMINGBAR\MEDIA\4POINTDIAMOND]],
                     texCoords = {0.1, 0.9, 0.1, 0.9},
-                    color = {1, 33/51, 0, 1},
+                    color = {1, 33 / 51, 0, 1},
                     blendMode = "BLEND",
                     insets = {-2, -2, -2, -2},
-                    anchor = "Icon",
+                    anchor = "Icon"
                 },
                 AutoCastable = {
                     texture = "INTERFACE\\BUTTONS\\UI-AUTOCASTABLEOVERLAY",
-                    texCoords = {14/64, 49/64, 14/64, 49/64},
+                    texCoords = {14 / 64, 49 / 64, 14 / 64, 49 / 64},
                     color = {1, 1, 1, 1},
                     blendMode = "BLEND",
-                    insets = {0, 0, 0, 0},
-                },
-            },
-        },
-    },
+                    insets = {0, 0, 0, 0}
+                }
+            }
+        }
+    }
 }
 
-
---*------------------------------------------------------------------------
+-- *------------------------------------------------------------------------
 -- Strip textures
-
 
 function addon:StripBarTextures(bar)
     local frame = bar.anchor
@@ -205,13 +201,14 @@ function addon:StripBarTextures(bar)
     bar.FloatingBG:SetVertexColor(1, 1, 1, 1)
     bar.FloatingBG:SetTexture("")
 
-    if not frame:GetNormalTexture() then return end
+    if not frame:GetNormalTexture() then
+        return
+    end
 
     frame:GetNormalTexture():SetTexCoord(0, 1, 0, 1)
     frame:GetNormalTexture():SetVertexColor(1, 1, 1, 1)
     frame:SetNormalTexture("")
 end
-
 
 function addon:StripButtonTextures(button)
     local frame = button.frame
@@ -229,8 +226,10 @@ function addon:StripButtonTextures(button)
                 texture:SetTexture("")
             end
         else
-            local texture = frame["Get"..layerName.."Texture"](frame)
-            if not texture then return end
+            local texture = frame["Get" .. layerName .. "Texture"](frame)
+            if not texture then
+                return
+            end
 
             texture:SetTexCoord(0, 1, 0, 1)
             texture:SetVertexColor(1, 1, 1, 1)
@@ -242,17 +241,14 @@ function addon:StripButtonTextures(button)
     end
 end
 
-
---*------------------------------------------------------------------------
+-- *------------------------------------------------------------------------
 -- Skin
-
 
 function addon:SetPanelBackdrop(panel)
     panel:SetBackdrop(panelBackdrop)
-	panel:SetBackdropColor(0.1, 0.1, 0.1, 0.5)
+    panel:SetBackdropColor(0.1, 0.1, 0.1, 0.5)
     panel:SetBackdropBorderColor(0.4, 0.4, 0.4)
 end
-
 
 function addon:SkinBar(bar, skin)
     self:StripBarTextures(bar)
@@ -273,7 +269,6 @@ function addon:SkinBar(bar, skin)
 
     self:ApplyMasqueSkin("anchor", frame)
 end
-
 
 function addon:SkinButton(button, skin)
     self:StripButtonTextures(button)
@@ -296,8 +291,8 @@ function addon:SkinButton(button, skin)
                 texture:SetPoint("BOTTOMRIGHT", -right, bottom)
             end
         else
-            frame["Set"..layerName.."Texture"](frame, layer.texture)
-            local texture = frame["Get"..layerName.."Texture"](frame)
+            frame["Set" .. layerName .. "Texture"](frame, layer.texture)
+            local texture = frame["Get" .. layerName .. "Texture"](frame)
             local top, right, bottom, left = unpack(layer.insets)
 
             texture:SetTexCoord(unpack(layer.texCoords))
@@ -312,10 +307,8 @@ function addon:SkinButton(button, skin)
     self:ApplyMasqueSkin("button", frame)
 end
 
-
---*------------------------------------------------------------------------
+-- *------------------------------------------------------------------------
 -- Masque
-
 
 local function MSQ_Callback(...)
     for _, bar in pairs(addon.bars) do
@@ -328,7 +321,7 @@ function addon:Initialize_Masque()
     if MSQ and MSQVersion >= 90001 then
         self.MSQ = {
             anchor = MSQ:Group(L.addon, "Anchor"),
-            button = MSQ:Group(L.addon, "Button", true),
+            button = MSQ:Group(L.addon, "Button", true)
         }
 
         self.MSQ.anchor:SetCallback(MSQ_Callback)

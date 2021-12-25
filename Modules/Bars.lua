@@ -2,12 +2,10 @@ local addonName = ...
 local addon = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
 local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 
-
 -- Optional libraries
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 
-
---*------------------------------------------------------------------------
+-- *------------------------------------------------------------------------
 -- Bar initialization
 
 function addon:InitializeBars()
@@ -15,7 +13,7 @@ function addon:InitializeBars()
     local bars = profile.bars
 
     ------------------------------------------------------------
-    --Debug-----------------------------------------------------
+    -- Debug-----------------------------------------------------
     ------------------------------------------------------------
     if self:GetDBValue("global", "settings.debug.barDB") then
         wipe(bars)
@@ -36,7 +34,6 @@ function addon:InitializeBars()
     end
 end
 
-
 function addon:CreateBar()
     local bars = self:GetDBValue("profile", "bars")
     local numBars = #bars
@@ -51,9 +48,10 @@ function addon:CreateBar()
     self:RefreshOptions()
 end
 
-
 function addon:LoadBar(barID)
-    if barID == 0 then return end -- barID == 0 is used in config to config all bars
+    if barID == 0 then
+        return
+    end -- barID == 0 is used in config to config all bars
 
     local bar = AceGUI:Create("FarmingBar_Bar")
     bar:SetBarDB(barID)
@@ -62,10 +60,8 @@ function addon:LoadBar(barID)
     self.bars[barID] = bar
 end
 
-
---*------------------------------------------------------------------------
+-- *------------------------------------------------------------------------
 -- Remove bars
-
 
 function addon:ReleaseAllBars()
     for _, bar in pairs(self.bars) do
@@ -74,7 +70,6 @@ function addon:ReleaseAllBars()
 
     wipe(self.bars)
 end
-
 
 function addon:RemoveBar(barID)
     -- Release widget
@@ -99,24 +94,24 @@ function addon:RemoveBar(barID)
     self:RefreshOptions()
 end
 
-
---*------------------------------------------------------------------------
+-- *------------------------------------------------------------------------
 -- Bar info
 
-
 function addon:GetBarTitle(barID)
-    if barID == 0 then return L["All Bars"] end
+    if barID == 0 then
+        return L["All Bars"]
+    end
 
     local barDB = self:GetDBValue("char", "bars")[barID]
-    if not barDB then return end
+    if not barDB then
+        return
+    end
 
     return format("%s %d%s", L["Bar"], barID, barDB.title ~= "" and format(" (%s)", barDB.title) or "")
 end
 
-
---*------------------------------------------------------------------------
+-- *------------------------------------------------------------------------
 -- Methods
-
 
 function addon:ClearBar(barID)
     local bar = self.bars[barID]
@@ -131,7 +126,6 @@ function addon:ClearBar(barID)
         end
     end
 end
-
 
 function addon:ReindexButtons(barID)
     local bar = self.bars[barID]
@@ -170,7 +164,6 @@ function addon:ReindexButtons(barID)
     return self.tcount(objectives)
 end
 
-
 function addon:SetBarDisabled(barID, enabled)
     local bars = self:GetDBValue("profile", "bars")
 
@@ -195,7 +188,6 @@ function addon:SetBarDisabled(barID, enabled)
     self:RefreshOptions()
 end
 
-
 function addon:SizeBarToButtons(barID)
     -- Reindex button and get numObjectives
     local numObjectives = self:ReindexButtons(barID)
@@ -204,7 +196,6 @@ function addon:SizeBarToButtons(barID)
     self:SetBarDBValue("numVisibleButtons", numObjectives, barID)
     self.bars[barID]:UpdateVisibleButtons()
 end
-
 
 function addon:UpdateBars()
     -- Update bar visuals

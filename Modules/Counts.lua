@@ -2,66 +2,67 @@ local addonName = ...
 local addon = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
 local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 
-
---*------------------------------------------------------------------------
+-- *------------------------------------------------------------------------
 -- Events
-
 
 function addon:BAG_UPDATE_DELAYED(...)
     for trackerID, buttonIDs in pairs(self.trackers) do
         for _, buttonID in pairs(buttonIDs) do
             -- Get old count, then update count
-                local bar = self.bars[buttonID[1]]
-                local button = bar:GetButtons()[buttonID[2]]
-                local buttonDB = button:GetButtonDB()
-                local oldCount, oldTrackerCounts = button:GetCount()
-                button:SetCount()
+            local bar = self.bars[buttonID[1]]
+            local button = bar:GetButtons()[buttonID[2]]
+            local buttonDB = button:GetButtonDB()
+            local oldCount, oldTrackerCounts = button:GetCount()
+            button:SetCount()
 
-                local alerts = self:GetBarDBValue("alerts", buttonID[1], true)
-                local alertInfo, alert, soundID, barAlert
-                if not alerts.muteAll and not buttonDB.mute then
-                    -- Get info for alerts
-                    local newCount, trackerCounts = button:GetCount()
-                    local objective = button:GetObjective()
+            local alerts = self:GetBarDBValue("alerts", buttonID[1], true)
+            local alertInfo, alert, soundID, barAlert
+            if not alerts.muteAll and not buttonDB.mute then
+                -- Get info for alerts
+                local newCount, trackerCounts = button:GetCount()
+                local objective = button:GetObjective()
 
-                    -- Change in objective count
-                    if oldCount ~= newCount then
-                        if objective and objective > 0 then
-                            if alerts.completedObjectives or (not alerts.completedObjectives and ((oldCount < objective) or (newCount < oldCount and newCount < objective))) then
-                                alert = self:GetDBValue("global", "settings.alerts.button.format.withObjective")
+                -- Change in objective count
+                if oldCount ~= newCount then
+                    if objective and objective > 0 then
+                        if alerts.completedObjectives or
+                            (not alerts.completedObjectives and
+                                ((oldCount < objective) or (newCount < oldCount and newCount < objective))) then
+                            alert = self:GetDBValue("global", "settings.alerts.button.format.withObjective")
 
-                                if oldCount < objective and newCount >= objective then
-                                    soundID = "objectiveComplete"
-                                    barAlert = "complete"
-                                else
-                                    soundID = oldCount < newCount and "progress"
-                                    -- Have to check if we lost an objective
-                                    if oldCount >= objective and newCount < objective then
-                                        barAlert = "lost"
-                                    end
+                            if oldCount < objective and newCount >= objective then
+                                soundID = "objectiveComplete"
+                                barAlert = "complete"
+                            else
+                                soundID = oldCount < newCount and "progress"
+                                -- Have to check if we lost an objective
+                                if oldCount >= objective and newCount < objective then
+                                    barAlert = "lost"
                                 end
                             end
-                        else
-                            -- No objective
-                            alert = self:GetDBValue("global", "settings.alerts.button.format.withoutObjective")
-                            soundID = oldCount < newCount and "progress"
                         end
+                    else
+                        -- No objective
+                        alert = self:GetDBValue("global", "settings.alerts.button.format.withoutObjective")
+                        soundID = oldCount < newCount and "progress"
+                    end
 
-                        -- Setup alertInfo
+                    -- Setup alertInfo
                     local difference = newCount - oldCount
                     alertInfo = {
                         objectiveTitle = buttonDB.title,
                         objective = {
-                            color = (objective and objective > 0) and (newCount >= objective and "|cff00ff00" or "|cffffcc00") or "",
-                            count = objective,
+                            color = (objective and objective > 0) and
+                                (newCount >= objective and "|cff00ff00" or "|cffffcc00") or "",
+                            count = objective
                         },
                         oldCount = oldCount,
                         newCount = newCount,
                         difference = {
                             sign = difference > 0 and "+" or difference < 0 and "",
-                            color =  difference > 0 and "|cff00ff00" or difference < 0 and "|cffff0000",
-                            count = difference,
-                        },
+                            color = difference > 0 and "|cff00ff00" or difference < 0 and "|cffff0000",
+                            count = difference
+                        }
                     }
                 end
 
@@ -80,20 +81,25 @@ function addon:BAG_UPDATE_DELAYED(...)
                             alertInfo = {
                                 objectiveTitle = buttonDB.title,
                                 objective = {
-                                    color = (objective and objective > 0) and (newCount >= objective and "|cff00ff00" or "|cffffcc00") or "",
-                                    count = objective,
+                                    color = (objective and objective > 0) and
+                                        (newCount >= objective and "|cff00ff00" or "|cffffcc00") or "",
+                                    count = objective
                                 },
                                 trackerObjective = {
-                                    color = newTrackerCount >= ((objective and objective > 0) and objective * trackerObjective or trackerObjective) and "|cff00ff00" or "|cffffcc00",
-                                    count = (objective and objective > 0) and objective * trackerObjective or trackerObjective,
+                                    color = newTrackerCount >=
+                                        ((objective and objective > 0) and objective * trackerObjective or
+                                            trackerObjective) and "|cff00ff00" or "|cffffcc00",
+                                    count = (objective and objective > 0) and objective * trackerObjective or
+                                        trackerObjective
                                 },
                                 oldTrackerCount = oldTrackerCount,
                                 newTrackerCount = newTrackerCount,
                                 trackerDifference = {
                                     sign = trackerDifference > 0 and "+" or trackerDifference < 0 and "",
-                                    color =  trackerDifference > 0 and "|cff00ff00" or trackerDifference < 0 and "|cffff0000",
-                                    count = trackerDifference,
-                                },
+                                    color = trackerDifference > 0 and "|cff00ff00" or trackerDifference < 0 and
+                                        "|cffff0000",
+                                    count = trackerDifference
+                                }
                             }
 
                             local trackerType, trackerID = self:ParseTrackerKey(trackerKey)
@@ -115,16 +121,15 @@ function addon:BAG_UPDATE_DELAYED(...)
     end
 end
 
-
 addon.CURRENCY_DISPLAY_UPDATE = addon.BAG_UPDATE_DELAYED
 
-
---*------------------------------------------------------------------------
+-- *------------------------------------------------------------------------
 -- Counts
 
-
 function addon:GetDataStoreCurrencyCount(currencyID, trackerInfo)
-    if #self:IsDataStoreLoaded() > 0 then return end -- Missing dependencies
+    if #self:IsDataStoreLoaded() > 0 then
+        return
+    end -- Missing dependencies
     local DS = DataStore
 
     local count = 0
@@ -140,9 +145,10 @@ function addon:GetDataStoreCurrencyCount(currencyID, trackerInfo)
     return count
 end
 
-
 function addon:GetDataStoreItemCount(itemID, trackerInfo)
-    if #self:IsDataStoreLoaded() > 0 then return end -- Missing dependencies
+    if #self:IsDataStoreLoaded() > 0 then
+        return
+    end -- Missing dependencies
     local DS = DataStore
 
     local count = 0
@@ -159,7 +165,7 @@ function addon:GetDataStoreItemCount(itemID, trackerInfo)
         end
     end
 
-    --@retail@
+    -- @retail@
     local guilds = DS:HashValueToSortedArray(DS:GetGuilds())
     for guildName, guild in pairs(guilds) do
         -- From what I see, there is no function in DataStore to check the guild faction by the ID, so checking from the db instead
@@ -167,7 +173,7 @@ function addon:GetDataStoreItemCount(itemID, trackerInfo)
             count = count + GetItemCount(itemID, trackerInfo.includeBank) + DS:GetGuildBankItemCount(guild, itemID)
         end
     end
-    --@end-retail@
+    -- @end-retail@
 
     count = count == 0 and GetItemCount(itemID, trackerInfo.includeBank) or count
 
@@ -277,7 +283,7 @@ function addon:GetObjectiveCount(widget, objectiveTitle)
                         end
 
                         -- Get the scaled amount
-                        local key1Count = key2Count  * (ratio1 / ratio2)
+                        local key1Count = key2Count * (ratio1 / ratio2)
 
                         -- Find out how many can go toward key
                         equivPending = key1Count / overrideObjective
@@ -303,21 +309,23 @@ function addon:GetObjectiveCount(widget, objectiveTitle)
     return count > 0 and count or 0, trackers
 end
 
-
 function addon:GetTrackerCount(widget, trackerKey, overrideObjective)
     local trackerType, trackerID = self:ParseTrackerKey(trackerKey)
     local trackerInfo = widget:GetButtonDB().trackers[trackerKey]
     local count
 
     if trackerType == "ITEM" then
-        --@retail@
-        count = (trackerInfo.includeAllChars or trackerInfo.includeGuildBank) and self:GetDataStoreItemCount(trackerID, trackerInfo) or GetItemCount(trackerID, trackerInfo.includeBank)
-        --@end-retail@
+        -- @retail@
+        count = (trackerInfo.includeAllChars or trackerInfo.includeGuildBank) and
+                    self:GetDataStoreItemCount(trackerID, trackerInfo) or
+                    GetItemCount(trackerID, trackerInfo.includeBank)
+        -- @end-retail@
         --[===[@non-retail@
         count = trackerInfo.includeAllChars and self:GetDataStoreItemCount(trackerID, trackerInfo) or GetItemCount(trackerID, trackerInfo.includeBank)
         --@end-non-retail@]===]
     elseif trackerType == "CURRENCY" then
-        count = trackerInfo.includeAllChars and self:GetDataStoreCurrencyCount(trackerID, trackerInfo) or (C_CurrencyInfo.GetCurrencyInfo(trackerID) and C_CurrencyInfo.GetCurrencyInfo(trackerID).quantity)
+        count = trackerInfo.includeAllChars and self:GetDataStoreCurrencyCount(trackerID, trackerInfo) or
+                    (C_CurrencyInfo.GetCurrencyInfo(trackerID) and C_CurrencyInfo.GetCurrencyInfo(trackerID).quantity)
     end
 
     if not count then
@@ -364,9 +372,8 @@ function addon:GetTrackerCount(widget, trackerKey, overrideObjective)
     return objective and min(count, objective) or count
 end
 
---*------------------------------------------------------------------------
+-- *------------------------------------------------------------------------
 -- Validation
-
 
 local missing = {}
 function addon:IsDataStoreLoaded()
@@ -388,11 +395,11 @@ function addon:IsDataStoreLoaded()
         tinsert(missing, "DataStore_Characters")
     end
 
-    --@retail@
+    -- @retail@
     if not IsAddOnLoaded("DataStore_Currencies") then
         tinsert(missing, "DataStore_Currencies")
     end
-    --@end-retail@
+    -- @end-retail@
 
     if not IsAddOnLoaded("DataStore_Inventory") then
         tinsert(missing, "DataStore_Inventory")
@@ -404,7 +411,6 @@ function addon:IsDataStoreLoaded()
 
     return missing
 end
-
 
 function addon:ValidateCustomCondition(condition)
     -- return {{t1 = 10, t2 = 2, t3 = 3}, {t1 = 5}}

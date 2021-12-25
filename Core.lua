@@ -2,16 +2,13 @@ local addonName = ...
 local addon = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
 local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 
-
 -- Optional libraries
 local ACD = LibStub("AceConfigDialog-3.0")
 local LSM = LibStub("LibSharedMedia-3.0")
 LibStub("LibAddonUtils-1.0"):Embed(addon)
 
-
---*------------------------------------------------------------------------
+-- *------------------------------------------------------------------------
 -- Addon functions
-
 
 function addon:OnInitialize()
     -- Create bar container
@@ -66,14 +63,14 @@ function addon:OnInitialize()
     end]]
 
     -- Register sounds
-    --@retail@
+    -- @retail@
     LSM:Register("sound", L["Auction Open"], 567482) -- id:5274
     LSM:Register("sound", L["Auction Close"], 567499) -- id:5275
     LSM:Register("sound", L["Loot Coin"], 567428) -- id:120
     LSM:Register("sound", L["Quest Activate"], 567400) -- id:618
     LSM:Register("sound", L["Quest Complete"], 567439) -- id:878
     LSM:Register("sound", L["Quest Failed"], 567459) -- id:846
-    --@end-retail@
+    -- @end-retail@
     --[===[@non-retail@
     LSM:Register("sound", L["Auction Open"], "sound/interface/auctionwindowopen.ogg") -- id:5274
     LSM:Register("sound", L["Auction Close"], "sound/interface/auctionwindowclose.ogg") -- id:5275
@@ -97,25 +94,21 @@ function addon:OnEnable()
     self:InitializeOptions()
 end
 
-
 function addon:OnDisable()
 
 end
 
-
 function addon:OnProfile_(...)
-     self:ReleaseAllBars()
-     self:InitializeBars()
+    self:ReleaseAllBars()
+    self:InitializeBars()
 end
-
 
 function addon:InitializeEvents()
     self:RegisterEvent("BAG_UPDATE_DELAYED")
-    --@retail@
+    -- @retail@
     self:RegisterEvent("CURRENCY_DISPLAY_UPDATE")
-    --@end-retail@
+    -- @end-retail@
 end
-
 
 function addon:InitializeTrackers()
     wipe(self.trackers)
@@ -133,7 +126,6 @@ function addon:InitializeTrackers()
     end
 end
 
-
 function addon:RegisterSlashCommands()
     for command, enabled in pairs(self:GetDBValue("global", "settings.commands")) do
         if enabled then
@@ -143,7 +135,6 @@ function addon:RegisterSlashCommands()
         end
     end
 end
-
 
 function addon:SlashCommandFunc(input)
     local cmd, arg, arg2 = strsplit(" ", strupper(input))
@@ -160,7 +151,7 @@ function addon:SlashCommandFunc(input)
         end
     elseif cmd == "CONFIG" then
         local arg = tonumber(arg)
-        ACD:SelectGroup(addonName, "config", addon.bars[arg] and "bar"..arg)
+        ACD:SelectGroup(addonName, "config", addon.bars[arg] and "bar" .. arg)
         ACD:Open(addonName)
     else
         LibStub("AceConfigDialog-3.0"):Open(addonName)
@@ -168,16 +159,13 @@ function addon:SlashCommandFunc(input)
     end
 end
 
-
 function addon:ReportError(error)
     PlaySound(846) -- "sound/interface/igquestfailed.ogg" classic?
     self:Print(string.format("%s %s", self.ColorFontString(L["Error"], "red"), error))
 end
 
-
---*------------------------------------------------------------------------
+-- *------------------------------------------------------------------------
 -- Methods
-
 
 function addon:CloneTable(orig)
     -- https://forum.cockos.com/showthread.php?t=221712
@@ -194,11 +182,9 @@ function addon:CloneTable(orig)
     return copy
 end
 
-
 function addon:GetCharKey()
     return format("%s - %s", UnitName("player"), GetRealmName())
 end
-
 
 function addon:GetModifierString()
     local mod = ""
@@ -206,10 +192,10 @@ function addon:GetModifierString()
         mod = "shift"
     end
     if IsControlKeyDown() then
-        mod = "ctrl"..(mod ~= "" and "-" or "")..mod
+        mod = "ctrl" .. (mod ~= "" and "-" or "") .. mod
     end
     if IsAltKeyDown() then
-        mod = "alt"..(mod ~= "" and "-" or "")..mod
+        mod = "alt" .. (mod ~= "" and "-" or "") .. mod
     end
     return mod
 end

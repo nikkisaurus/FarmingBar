@@ -2,9 +2,7 @@ local addonName = ...
 local addon = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
 local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 
-
---*------------------------------------------------------------------------
-
+-- *------------------------------------------------------------------------
 
 StaticPopupDialogs["FARMINGBAR_CONFIRM_OVERWRITE_TEMPLATE"] = {
     text = L.FARMINGBAR_CONFIRM_OVERWRITE_TEMPLATE,
@@ -17,9 +15,8 @@ StaticPopupDialogs["FARMINGBAR_CONFIRM_OVERWRITE_TEMPLATE"] = {
     whileDead = true,
     enterClicksFirstButton = true,
     hideOnEscape = true,
-    preferredIndex = 3,
+    preferredIndex = 3
 }
-
 
 StaticPopupDialogs["FARMINGBAR_INCLUDE_TEMPLATE_DATA"] = {
     text = L.FARMINGBAR_INCLUDE_TEMPLATE_DATA,
@@ -33,7 +30,8 @@ StaticPopupDialogs["FARMINGBAR_INCLUDE_TEMPLATE_DATA"] = {
                 dialog.data = {data[1], data[2], true}
             end
         else
-            addon:LoadTemplate("user", data[1], data[2], true, addon:GetDBValue("global", "settings.misc.preserveTemplateOrder") == "ENABLED")
+            addon:LoadTemplate("user", data[1], data[2], true,
+                addon:GetDBValue("global", "settings.misc.preserveTemplateOrder") == "ENABLED")
         end
     end,
     OnCancel = function(_, data)
@@ -43,16 +41,16 @@ StaticPopupDialogs["FARMINGBAR_INCLUDE_TEMPLATE_DATA"] = {
                 dialog.data = {data[1], data[2], false}
             end
         else
-            addon:LoadTemplate("user", data[1], data[2], false, addon:GetDBValue("global", "settings.misc.preserveTemplateOrder") == "ENABLED")
+            addon:LoadTemplate("user", data[1], data[2], false,
+                addon:GetDBValue("global", "settings.misc.preserveTemplateOrder") == "ENABLED")
         end
     end,
     timeout = 0,
     whileDead = true,
     enterClicksFirstButton = true,
     hideOnEscape = true,
-    preferredIndex = 3,
+    preferredIndex = 3
 }
-
 
 StaticPopupDialogs["FARMINGBAR_SAVE_TEMPLATE_ORDER"] = {
     text = L.FARMINGBAR_SAVE_TEMPLATE_ORDER,
@@ -69,5 +67,5 @@ StaticPopupDialogs["FARMINGBAR_SAVE_TEMPLATE_ORDER"] = {
     whileDead = true,
     enterClicksFirstButton = true,
     hideOnEscape = true,
-    preferredIndex = 3,
+    preferredIndex = 3
 }

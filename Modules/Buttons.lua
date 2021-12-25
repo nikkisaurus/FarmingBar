@@ -2,7 +2,7 @@ local addonName = ...
 local addon = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
 local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 
---*------------------------------------------------------------------------
+-- *------------------------------------------------------------------------
 -- Anchors
 
 local anchors = {
@@ -12,7 +12,7 @@ local anchors = {
         xOffset = 1,
         yOffset = 0,
         DOWN = "DOWN",
-        UP = "UP",
+        UP = "UP"
     },
     LEFT = {
         anchor = "TOPRIGHT",
@@ -20,7 +20,7 @@ local anchors = {
         xOffset = -1,
         yOffset = 0,
         DOWN = "DOWN",
-        UP = "UP",
+        UP = "UP"
     },
     UP = {
         anchor = "BOTTOMLEFT",
@@ -28,7 +28,7 @@ local anchors = {
         xOffset = 0,
         yOffset = 1,
         DOWN = "RIGHT",
-        UP = "LEFT",
+        UP = "LEFT"
     },
     DOWN = {
         anchor = "TOPLEFT",
@@ -36,23 +36,19 @@ local anchors = {
         xOffset = 0,
         yOffset = -1,
         DOWN = "RIGHT",
-        UP = "LEFT",
-    },
+        UP = "LEFT"
+    }
 }
-
 
 function addon:GetAnchorPoints(grow)
     return anchors[grow].anchor, anchors[grow].relativeAnchor, anchors[grow].xOffset, anchors[grow].yOffset
 end
 
-
 function addon:GetRelativeAnchorPoints(grow)
     return self:GetAnchorPoints(anchors[grow[1]][grow[2]])
 end
 
-
---*------------------------------------------------------------------------
-
+-- *------------------------------------------------------------------------
 
 function addon:UpdateButtons(objectiveTitle, callback, ...)
     -- Updates visual layers of all buttons on all bars

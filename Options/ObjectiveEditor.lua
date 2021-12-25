@@ -2,22 +2,18 @@ local addonName = ...
 local addon = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
 local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 
-
 -- Optional libraries
 local ACD = LibStub("AceConfigDialog-3.0")
 
-
---*------------------------------------------------------------------------
+-- *------------------------------------------------------------------------
 -- Initialize
-
 
 local widget
 function addon:InitializeObjectiveEditorOptions(...)
     widget = ...
-    LibStub("AceConfig-3.0"):RegisterOptionsTable(addonName.."ObjectiveEditor", self:GetObjectiveEditorOptions())
-    LibStub("AceConfigDialog-3.0"):SetDefaultSize(addonName.."ObjectiveEditor", 425, 300)
+    LibStub("AceConfig-3.0"):RegisterOptionsTable(addonName .. "ObjectiveEditor", self:GetObjectiveEditorOptions())
+    LibStub("AceConfigDialog-3.0"):SetDefaultSize(addonName .. "ObjectiveEditor", 425, 300)
 end
-
 
 function addon:GetObjectiveEditorOptions()
     local options = {
@@ -29,15 +25,15 @@ function addon:GetObjectiveEditorOptions()
                 type = "group",
                 name = widget and format("[%s] %s", widget:GetButtonID(), widget:GetObjectiveTitle()) or "",
                 childGroups = "select",
-                args = self:GetObjectiveEditorOptions_Objective(),
+                args = self:GetObjectiveEditorOptions_Objective()
             },
             trackers = {
                 order = 1,
                 type = "group",
                 name = L["Trackers"],
-                args = {},
-            },
-        },
+                args = {}
+            }
+        }
     }
 
     if widget then
@@ -49,7 +45,7 @@ function addon:GetObjectiveEditorOptions()
                     order = trackerInfo.order,
                     type = "group",
                     name = data.name,
-                    args = self:GetObjectiveEditorOptions_Tracker(trackerKey, trackerInfo, data),
+                    args = self:GetObjectiveEditorOptions_Tracker(trackerKey, trackerInfo, data)
                 }
                 return options
             end)
@@ -59,14 +55,11 @@ function addon:GetObjectiveEditorOptions()
     return options
 end
 
-
---*------------------------------------------------------------------------
+-- *------------------------------------------------------------------------
 -- Load options
 
-
 function addon:GetObjectiveEditorOptions_IncludeAllChars()
-    local options = {
-    }
+    local options = {}
 
     -- Check for missing DataStore dependencies
     local missingDependencies = self:IsDataStoreLoaded()
@@ -77,7 +70,8 @@ function addon:GetObjectiveEditorOptions_IncludeAllChars()
             order = 0,
             type = "description",
             width = "full",
-            name = format(L.MissingIncludeAllCharsDependecies, red..strjoin("|r, "..red, unpack(missingDependencies))),
+            name = format(L.MissingIncludeAllCharsDependecies,
+                red .. strjoin("|r, " .. red, unpack(missingDependencies)))
         }
     end
 
@@ -101,7 +95,7 @@ function addon:GetObjectiveEditorOptions_IncludeAllChars()
                     set = function(_, value)
                         self:SetTrackerDBValue(trackers, trackerKey, "includeAllChars", value)
                         widget:UpdateLayers()
-                    end,
+                    end
                 }
 
                 return options
@@ -111,7 +105,6 @@ function addon:GetObjectiveEditorOptions_IncludeAllChars()
 
     return options
 end
-
 
 function addon:GetObjectiveEditorOptions_IncludeBank()
     local options = {}
@@ -135,7 +128,7 @@ function addon:GetObjectiveEditorOptions_IncludeBank()
                     set = function(_, value)
                         addon:SetTrackerDBValue(trackers, trackerKey, "includeBank", value)
                         widget:UpdateLayers()
-                    end,
+                    end
                 }
 
                 return options
@@ -146,9 +139,10 @@ function addon:GetObjectiveEditorOptions_IncludeBank()
     return options
 end
 
-
 function addon:GetObjectiveEditorOptions_Objective()
-    if not widget then return {} end
+    if not widget then
+        return {}
+    end
     local barID, buttonID = widget:GetBarID(), widget:GetUserData("buttonID")
     local buttonDB = widget:GetButtonDB()
 
@@ -162,7 +156,7 @@ function addon:GetObjectiveEditorOptions_Objective()
             end,
             set = function(_, value)
                 widget:SetDBValue("mute", value)
-            end,
+            end
         },
         template = {
             order = 2,
@@ -191,9 +185,9 @@ function addon:GetObjectiveEditorOptions_Objective()
                 -- Update objective editor
                 addon:InitializeObjectiveEditorOptions(widget)
                 C_Timer.After(0, function()
-                    ACD:Open(addonName.."ObjectiveEditor")
+                    ACD:Open(addonName .. "ObjectiveEditor")
                 end)
-            end,
+            end
         },
         createTemplate = {
             order = 3,
@@ -202,14 +196,15 @@ function addon:GetObjectiveEditorOptions_Objective()
             disabled = true,
             func = function()
 
-            end,
-        },
+            end
+        }
     }
 end
 
-
 function addon:GetObjectiveEditorOptions_Tracker(trackerKey, trackerInfo, data)
-    if not widget then return {} end
+    if not widget then
+        return {}
+    end
     local trackerType, trackerID = self:ParseTrackerKey(trackerKey)
     local trackers = widget:GetButtonDB().trackers
 
@@ -229,8 +224,8 @@ function addon:GetObjectiveEditorOptions_Tracker(trackerKey, trackerInfo, data)
             set = function(_, value)
                 addon:SetTrackerDBValue(trackers, trackerKey, "includeAllChars", value)
                 widget:SetCount()
-            end,
-        },
+            end
+        }
     }
 
     if trackerType == "ITEM" then
@@ -245,9 +240,9 @@ function addon:GetObjectiveEditorOptions_Tracker(trackerKey, trackerInfo, data)
             set = function(_, value)
                 addon:SetTrackerDBValue(trackers, trackerKey, "includeBank", value)
                 widget:SetCount()
-            end,
+            end
         }
-        --@retail@
+        -- @retail@
         if IsAddOnLoaded("DataStore") then
             options.includeGuildBank = {
                 order = 3,
@@ -258,7 +253,7 @@ function addon:GetObjectiveEditorOptions_Tracker(trackerKey, trackerInfo, data)
                     return #addon:IsDataStoreLoaded() > 0
 
                 end,
-                args = {},
+                args = {}
             }
 
             trackers[trackerKey].includeGuildBank = trackers[trackerKey].includeGuildBank or {}
@@ -276,12 +271,12 @@ function addon:GetObjectiveEditorOptions_Tracker(trackerKey, trackerInfo, data)
                         set = function(_, value)
                             addon:GetTrackerDBInfo(trackers, trackerKey, "includeGuildBank")[guild] = value
                             widget:SetCount()
-                        end,
+                        end
                     }
                 end
             end
         end
-        --@end-retail@
+        -- @end-retail@
     end
 
     return options

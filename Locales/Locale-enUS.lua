@@ -9,12 +9,12 @@ local utils = LibStub("LibAddonUtils-1.0")
 local format, gsub, strlower, strupper = string.format, string.gsub, string.lower, string.upper
 local sexteal = utils.ChatColors["SEXTEAL"]
 
---*------------------------------------------------------------------------
+-- *------------------------------------------------------------------------
 
 L.addon = "Farming Bar"
 
---*------------------------------------------------------------------------
---*Errors------------------------------------------------------------------
+-- *------------------------------------------------------------------------
+-- *Errors------------------------------------------------------------------
 
 -- Shared
 L["Error"] = true
@@ -27,8 +27,10 @@ L["Tracked"] = true
 L.InvalidCustomCondition = "Invalid custom condition:"
 L.InvalidCustomConditionReturn = [[Custom conditions must return a table with nested "trackerGroup" tables.]]
 L.InvalidCustomConditionTable = "Nested trackerGroups must be tables."
-L.InvalidCustomConditionID = [[Nested trackerGroup keys must be in the format "t%d", where %d is the tracker ID or "%dt%d:%dt%d" expressing a ration between two tracker IDs, such that 10t1:1t2 represents the equivalency between 10 of tracker 1 and 1 of tracker 2.]]
-L.InvalidCustomConditionObjective = "Nested trackerGroup values must be an integer >= 0 representing the tracker objective."
+L.InvalidCustomConditionID =
+    [[Nested trackerGroup keys must be in the format "t%d", where %d is the tracker ID or "%dt%d:%dt%d" expressing a ration between two tracker IDs, such that 10t1:1t2 represents the equivalency between 10 of tracker 1 and 1 of tracker 2.]]
+L.InvalidCustomConditionObjective =
+    "Nested trackerGroup values must be an integer >= 0 representing the tracker objective."
 L.InvalidObjectiveTitle = "Invalid objective title."
 L.InvalidTrackerExclusion = "Cannot exclude parent objective."
 L.ObjectiveIsExcluded = "Objective is already being excluded."
@@ -37,15 +39,16 @@ L.InvalidCraftSkillID = "Invalid tradeskill name."
 L.MissingCraftRecipeName = "Please specify a Recipe String"
 L.UnknownRecipe = "You do not know the recipe: %s"
 
-L.invalidSyntax = function(err) return "Syntax error: "..err end
+L.invalidSyntax = function(err)
+    return "Syntax error: " .. err
+end
 L.InvalidTrackerID = "Invalid tracker: %s:%s"
 -- L.InvalidTrackerID = function(trackerType, trackerID) return format("Invalid tracker ID: %s:%s", strupper(trackerType), trackerID) end
 L.TrackerIDExists = "Already tracking %s"
 -- L.TrackerIDExists = function(trackerID) return format("Already tracking %s", trackerID) end
 
-
---*------------------------------------------------------------------------
---*Hints-------------------------------------------------------------------
+-- *------------------------------------------------------------------------
+-- *Hints-------------------------------------------------------------------
 
 L["Hint"] = true
 L["Hints"] = true
@@ -53,7 +56,9 @@ L["Hints"] = true
 -- Modules\ObjectiveBuilder.lua
 L.FilterAutoItemsHint = [[Check this option to hide automatically created item objectives (prepended by "item:").]]
 L.NewObjectiveHint = "You can drop an item on this button to quickly add it as an objective."
-L.ObjectiveContextMenuHint = format("%sRight-click|r this button to open a context menu to rename, duplicate, or delete this objective.\n%sDrag|r this button onto a bar to track it.", sexteal, sexteal)
+L.ObjectiveContextMenuHint = format(
+    "%sRight-click|r this button to open a context menu to rename, duplicate, or delete this objective.\n%sDrag|r this button onto a bar to track it.",
+    sexteal, sexteal)
 L.RemoveExcludeHint = format("%sShift+right-click|r this objective to remove it from the list.", sexteal)
 L.TrackerContextMenuHint = format("%sRight-click|r this button to delete or move this tracker.", sexteal)
 
@@ -62,8 +67,10 @@ L.TrackerContextMenuHint = format("%sRight-click|r this button to delete or move
 -- Modules\Tooltips.lua
 local function GetCommandString(commandInfo)
     -- Ctrl+right-click
-    local mods = gsub(strupper(strsub(commandInfo.modifier, 1, 1))..strlower(strsub(commandInfo.modifier, 2)), "-", "+") -- Put in title case and replace - with +
-    local button = (button == "LeftButton" or button == "RightButton") and gsub(commandInfo.button, "Button", "") or commandInfo.button
+    local mods = gsub(strupper(strsub(commandInfo.modifier, 1, 1)) .. strlower(strsub(commandInfo.modifier, 2)), "-",
+        "+") -- Put in title case and replace - with +
+    local button = (button == "LeftButton" or button == "RightButton") and gsub(commandInfo.button, "Button", "") or
+                       commandInfo.button
     button = mods == "" and button or format("+%s", strlower(button))
     local clickType = commandInfo.type and "drag" or "click"
 
@@ -71,14 +78,17 @@ local function GetCommandString(commandInfo)
 end
 
 L.BarHints = function(command, commandInfo)
-    commandInfo = commandInfo or {button = "", modifier = ""}
+    commandInfo = commandInfo or {
+        button = "",
+        modifier = ""
+    }
     local commands = {
-        moveBar =  format("%s to move this bar.", GetCommandString(commandInfo)),
+        moveBar = format("%s to move this bar.", GetCommandString(commandInfo)),
         configBar = format("%s to configure this bar.", GetCommandString(commandInfo)),
         toggleMovable = format("%s to lock or unlock this bar.", GetCommandString(commandInfo)),
         openHelp = format("%s to open the help documentation.", GetCommandString(commandInfo)),
         openSettings = format("%s to configure addon settings.", GetCommandString(commandInfo)),
-        showObjectiveBuilder = format("%s to open the Objective Builder.", GetCommandString(commandInfo)),
+        showObjectiveBuilder = format("%s to open the Objective Builder.", GetCommandString(commandInfo))
     }
 
     return commands[command] or ""
@@ -88,14 +98,15 @@ L.ButtonHints = function(command, commandInfo)
     local commands = {
         useItem = format("%s to use the display item or run the display macrotext.", GetCommandString(commandInfo)),
         moveObjective = format("%s to move this objective.", GetCommandString(commandInfo)),
-        dragObjective =  format("%s to move this objective.", GetCommandString(commandInfo)),
+        dragObjective = format("%s to move this objective.", GetCommandString(commandInfo)),
         clearObjective = format("%s to clear this objective.", GetCommandString(commandInfo)),
         showObjectiveEditBox = format("%s to show the objective editbox.", GetCommandString(commandInfo)),
         showQuickAddEditBox = format("%s to show the quick add editbox.", GetCommandString(commandInfo)),
         showQuickAddCurrencyEditBox = format("%s to show the currency quick add editbox.", GetCommandString(commandInfo)),
         showObjectiveEditor = format("%s to show the objective editbox.", GetCommandString(commandInfo)),
-        moveObjectiveToBank = format("%s to move all items until the objective to your bank.", GetCommandString(commandInfo)),
-        moveAllToBank = format("%s to move all items to your bank.", GetCommandString(commandInfo)),
+        moveObjectiveToBank = format("%s to move all items until the objective to your bank.",
+            GetCommandString(commandInfo)),
+        moveAllToBank = format("%s to move all items to your bank.", GetCommandString(commandInfo))
     }
 
     return commands[command] or ""
@@ -108,8 +119,8 @@ L.ToggleMovable = function(barTitle, movable)
     return format("%s %s.", barTitle, movable and "unlocked" or "locked")
 end
 
---*------------------------------------------------------------------------
---*Strings-----------------------------------------------------------------
+-- *------------------------------------------------------------------------
+-- *Strings-----------------------------------------------------------------
 
 -- Shared
 
@@ -179,8 +190,8 @@ L["Toggle Bar Enabled"] = true
 L["TRUE"] = true
 L["Type"] = true
 
-
-L.DisplayReferenceDescription = [[Actions allow you to set which item/currency you want to use for automatic objective information. This includes the icon chosen when using "Automatic Icon" and the item associated with a button's "use" attribute. However, when set to a macrotext, the icon will be unaffected.
+L.DisplayReferenceDescription =
+    [[Actions allow you to set which item/currency you want to use for automatic objective information. This includes the icon chosen when using "Automatic Icon" and the item associated with a button's "use" attribute. However, when set to a macrotext, the icon will be unaffected.
 
 Farming Bar provides a /craft command that you can use in your macrotexts. Simply use "/craft Recipe String". For example:
 
@@ -287,21 +298,29 @@ L.Options_settings_global_general_tooltips_hideObjectiveInfo = "Hides objective 
 L.Options_settings_global_general_hints_bars = "Displays keybind hints at the bottom of bar tooltips."
 L.Options_settings_global_general_hints_buttons = "Displays keybind hints at the bottom of button tooltips."
 L.Options_settings_global_general_hints_ObjectiveBuilder = "Displays tooltip hints on Objective Builder widgets."
-L.Options_settings_global_general_hints_enableModifier = "Allows tooltip hints to be shown only when a modifier is held down."
+L.Options_settings_global_general_hints_enableModifier =
+    "Allows tooltip hints to be shown only when a modifier is held down."
 L.Options_settings_global_general_hints_modifier = "Sets the modifier key used to show tooltip hints."
 L.Options_settings_global_misc_autoLootOnUse = "Temporarily enables auto loot when using an item"
-L.Options_settings_global_misc_filterQuickObjectives = "Hides automatically created item objectives from the Objective Builder list"
+L.Options_settings_global_misc_filterQuickObjectives =
+    "Hides automatically created item objectives from the Objective Builder list"
 L.Options_settings_global_templates_deleteTemplate = "Permanently deletes a user-defined template."
-L.Options_settings_global_templates_deleteTemplateConfirm = [[Are you sure you want to permanently delete the template "%s"?]]
-L.Options_settings_global_templates_preserveTemplateData = "Includes objective data when loading user-defined templates."
-L.Options_settings_global_templates_preserveTemplateOrder = "Saves the order of objectives loaded onto a bar from user-defined templates."
+L.Options_settings_global_templates_deleteTemplateConfirm =
+    [[Are you sure you want to permanently delete the template "%s"?]]
+L.Options_settings_global_templates_preserveTemplateData =
+    "Includes objective data when loading user-defined templates."
+L.Options_settings_global_templates_preserveTemplateOrder =
+    "Saves the order of objectives loaded onto a bar from user-defined templates."
 
 L.Options_settings_profile_skin = "Sets the skin for bars and buttons."
-L.Options_settings_profile_buttonLayers_AccountOverlay = "Enables the four-point orange diamond border indicating account counts on buttons."
-L.Options_settings_profile_buttonLayers_AutoCastable = "Enables the four-point gold border indicating bank inclusion on buttons."
+L.Options_settings_profile_buttonLayers_AccountOverlay =
+    "Enables the four-point orange diamond border indicating account counts on buttons."
+L.Options_settings_profile_buttonLayers_AutoCastable =
+    "Enables the four-point gold border indicating bank inclusion on buttons."
 L.Options_settings_profile_buttonLayers_Border = "Enables the item quality border on buttons."
 L.Options_settings_profile_buttonLayers_Cooldown = "Enables the item cooldown swipe on buttons."
-L.Options_settings_profile_buttonLayers_CooldownEdge = "Enables the bling on the edge of item cooldown swipes on buttons."
+L.Options_settings_profile_buttonLayers_CooldownEdge =
+    "Enables the bling on the edge of item cooldown swipes on buttons."
 L.Options_settings_profile_fonts_face = "Sets the font face for bar and button fontstrings."
 L.Options_settings_profile_fonts_size = "Sets the font size for bar and button fontstrings."
 L.Options_settings_profile_fonts_outline = "Sets the font outline for bar and button fontstrings."
@@ -396,31 +415,30 @@ L.MissingIncludeAllCharsDependecies = "The following addons are missing and requ
 
 L.TemplateObjectiveMissing = [[Missing template objective "%s" not loaded.]]
 
---*------------------------------------------------------------------------
+-- *------------------------------------------------------------------------
 
 L.Options_Config = function(widget)
     local strings = {
         ["charSpecific"] = [["*" denotes character specific database settings]],
-        ["mixedSpecific"] = [["**" denotes mixed character and profile specific database settings]],
+        ["mixedSpecific"] = [["**" denotes mixed character and profile specific database settings]]
     }
 
     return strings[widget]
 end
 
-
---*------------------------------------------------------------------------
+-- *------------------------------------------------------------------------
 
 L.Options_ObjectiveBuilder = function(widget)
     local strings = {
         ["objective.dropper"] = "Click to place this objective onto a bar.",
         ["objective.manage.DeleteObjectiveTemplate_confirm"] = [[Are you sure you want to delete the objective template "%s"?]],
-        ["tracker.deleteTracker"] = [[Are you sure you want to permanently delete this tracker?]],
+        ["tracker.deleteTracker"] = [[Are you sure you want to permanently delete this tracker?]]
     }
 
     return strings[widget]
 end
 
---*------------------------------------------------------------------------
+-- *------------------------------------------------------------------------
 
 L.Options_Help = [[|cffffcc00Farming Bar (v3.0-alpha15)|r
 
