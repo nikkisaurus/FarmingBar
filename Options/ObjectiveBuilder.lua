@@ -24,7 +24,7 @@ local actionSort = {"ITEM", "CURRENCY", "MACROTEXT", "RECIPE", "NONE"}
 local actionSort = {"ITEM", "MACROTEXT", "RECIPE", "NONE"}
 --@end-non-retail@]===]
 
-local newTrackerType, newTrackerID = "ITEM"
+local newTrackerType = "ITEM"
 -- @retail@
 local trackers = {
     ITEM = L["Item"],
@@ -179,7 +179,7 @@ function addon:GetObjectiveBuilderOptions()
                                 type = "input",
                                 width = "full",
                                 name = function()
-                                    return GetTrackerIDLabel(objectiveTitle)
+                                    return GetTrackerIDLabel()
                                 end,
                                 validate = function(_, value)
                                     local validTrackerID = self:ValidateTrackerData(newTrackerType, value)

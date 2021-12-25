@@ -65,7 +65,7 @@ end
 function addon:GetFirstTracker(widget, isTemplate)
     local buttonDB = isTemplate and self:GetDBValue("global", "objectives")[widget] or widget:GetButtonDB()
 
-    local firstOrder, firstTracker = 0
+    local firstOrder, firstTracker = 0, false
     for k, v in pairs(buttonDB.trackers) do
         if v.order ~= 0 then
             firstOrder = firstTracker and min(v.order, firstOrder) or v.order
