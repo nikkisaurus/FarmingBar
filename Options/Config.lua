@@ -495,6 +495,7 @@ function addon:GetButtonConfigOptions(barID)
                         set = function(info, value)
                             self:SetBarDBValue(info[#info], value, barID)
                             bar:UpdateVisibleButtons()
+                            bar:SetBackdropAnchor()
                         end,
                     },
                     buttonWrap = {

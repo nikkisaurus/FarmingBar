@@ -273,52 +273,75 @@ local methods = {
     end,
 
     SetBackdropAnchor = function(self)       
-        local padding = self:GetBarDB().backdropPadding
-        local firstButton = self:GetUserData("buttons")[1]
-        local lastButton = self:GetUserData("buttons")[self:GetBarDB().numVisibleButtons]
+        local barDB = self:GetBarDB()
+        local buttons = self:GetUserData("buttons")
 
-        self:SetUserData("anchors", {
+        local firstButton = buttons[1]
+        local padding = barDB.backdropPadding
+        local buttonWrap = barDB.buttonWrap
+        local lastButton = buttons[#buttons]
+        local wrapButton = (#buttons <= buttonWrap and lastButton) or buttons[buttonWrap]
+        
+        self:SetUserData("anchors", lastButton and {
             RIGHT = {
                 DOWN = {
-                    [1] = {"TOPLEFT", firstButton.frame, "TOPLEFT", -padding, padding},
-                    [2] = {"BOTTOMRIGHT", lastButton.frame, "BOTTOMRIGHT", padding, -padding},
+                    [1] = {"TOP", self.anchor, "TOP", 0, padding},
+                    [2] = {"LEFT", buttons[1].frame, "LEFT", -padding, 0},
+                    [3] = {"RIGHT", wrapButton.frame, "RIGHT", padding, 0},
+                    [4] = {"BOTTOM", lastButton.frame, "BOTTOM", 0, -padding},
                 },
                 UP = {
-                    [1] = {"BOTTOMLEFT", firstButton.frame, "BOTTOMLEFT", -padding, -padding},
-                    [2] = {"TOPRIGHT", lastButton.frame, "TOPRIGHT", padding, padding},
+                    [1] = {"TOP", lastButton.frame, "TOP", 0, padding},
+                    [2] = {"LEFT", buttons[1].frame, "LEFT", -padding, 0},
+                    [3] = {"RIGHT", wrapButton.frame, "RIGHT", padding, 0},
+                    [4] = {"BOTTOM", buttons[1].frame, "BOTTOM", 0, -padding},
                 },
             },
             LEFT = {
                 DOWN = {
-                    [1] = {"TOPRIGHT", firstButton.frame, "TOPRIGHT", padding, padding},
-                    [2] = {"BOTTOMLEFT", lastButton.frame, "BOTTOMLEFT", -padding, -padding},
+                    [1] = {"TOP", self.anchor, "TOP", 0, padding},
+                    [2] = {"LEFT", wrapButton.frame, "LEFT", -padding, 0},
+                    [3] = {"RIGHT", buttons[1].frame, "RIGHT", padding, 0},
+                    [4] = {"BOTTOM", lastButton.frame, "BOTTOM", 0, -padding},
                 },
                 UP = {
-                    [1] = {"BOTTOMRIGHT", firstButton.frame, "BOTTOMRIGHT", padding, -padding},
-                    [2] = {"TOPLEFT", lastButton.frame, "TOPLEFT", -padding, padding},
+                    [1] = {"TOP", lastButton.frame, "TOP", 0, padding},
+                    [2] = {"LEFT", wrapButton.frame, "LEFT", -padding, 0},
+                    [3] = {"RIGHT", buttons[1].frame, "RIGHT", padding, 0},
+                    [4] = {"BOTTOM", buttons[1].frame, "BOTTOM", 0, -padding},
                 },
             },
             UP = {
                 DOWN = {
-                    [1] = {"BOTTOMLEFT", firstButton.frame, "BOTTOMLEFT", -padding, -padding},
-                    [2] = {"TOPRIGHT", lastButton.frame, "TOPRIGHT", padding, padding},
+                    [1] = {"TOP", wrapButton.frame, "TOP", 0, padding},
+                    [2] = {"LEFT", buttons[1].frame, "LEFT", -padding, 0},
+                    [3] = {"RIGHT", lastButton.frame, "RIGHT", padding, 0},
+                    [4] = {"BOTTOM", buttons[1].frame, "BOTTOM", 0, -padding},
                 },
                 UP = {
-                    [1] = {"BOTTOMRIGHT", firstButton.frame, "BOTTOMRIGHT", padding, -padding},
-                    [2] = {"TOPLEFT", lastButton.frame, "TOPLEFT", -padding, padding},
+                    [1] = {"TOP", wrapButton.frame, "TOP", 0, padding},
+                    [2] = {"LEFT", lastButton.frame, "LEFT", -padding, 0},
+                    [3] = {"RIGHT", buttons[1].frame, "RIGHT", padding, 0},
+                    [4] = {"BOTTOM", buttons[1].frame, "BOTTOM", 0, -padding},
                 },
             },
             DOWN = {
                 DOWN = {
-                    [1] = {"TOPLEFT", firstButton.frame, "TOPLEFT", -padding, padding},
-                    [2] = {"BOTTOMRIGHT", lastButton.frame, "BOTTOMRIGHT", padding, -padding},
+                    [1] = {"TOP", buttons[1].frame, "TOP", 0, padding},
+                    [2] = {"LEFT", buttons[1].frame, "LEFT", -padding, 0},
+                    [3] = {"RIGHT", lastButton.frame, "RIGHT", padding, 0},
+                    [4] = {"BOTTOM", wrapButton.frame, "BOTTOM", 0, -padding},
                 },
                 UP = {
-                    [1] = {"TOPRIGHT", firstButton.frame, "TOPRIGHT", padding, padding},
-                    [2] = {"BOTTOMLEFT", lastButton.frame, "BOTTOMLEFT", -padding, -padding},
+                    [1] = {"TOP", buttons[1].frame, "TOP", 0, padding},
+                    [2] = {"LEFT", lastButton.frame, "LEFT", -padding, 0},
+                    [3] = {"RIGHT", buttons[1].frame, "RIGHT", padding, 0},
+                    [4] = {"BOTTOM", wrapButton.frame, "BOTTOM", 0, -padding},
                 },
             },
         })
+
+        self:UpdateBackdrop()
     end,
 
     SetBarDB = function(self, barID)
@@ -389,10 +412,7 @@ local methods = {
         end
 
         -- Update backdrop
-        local buttons = self:GetUserData("buttons")
-        if buttons and buttons[numVisibleButtons] then
-            self:UpdateBackdrop(buttons[numVisibleButtons])
-        end
+        self:SetBackdropAnchor()
     end,
 
     SetSize = function(self)
@@ -420,21 +440,27 @@ local methods = {
     end,
 
     UpdateBackdrop = function(self, lastButton)
-        self.backdropTexture:SetTexture(self:GetBarDB().backdrop)
-
-        local backdrop = self.backdrop
+        local backdrop, backdropTexture = self.backdrop, self.backdropTexture
         backdrop:ClearAllPoints()
+        backdropTexture:ClearAllPoints()
+        backdropTexture:SetTexture("")
+        
+        local numVisibleButtons = #self:GetUserData("buttons")
+        if numVisibleButtons == 0 then
+            return
+        else
+            backdropTexture:SetTexture(self:GetBarDB().backdrop)
+            backdropTexture:SetAllPoints(backdrop)
+            local grow = self:GetBarDB().grow
+            local hDirection, vDirection = grow[1], grow[2]
+            local anchors = self:GetUserData("anchors")
 
-        local numVisibleButtons = self:GetBarDB().numVisibleButtons
-        if numVisibleButtons == 0 then return end
-
-        local grow = self:GetBarDB().grow
-        local hDirection, vDirection = grow[1], grow[2]
-        local anchors = self:GetUserData("anchors")
-
-        if not anchors then return end        
-        backdrop:SetPoint(unpack(anchors[hDirection][vDirection][1]))
-        backdrop:SetPoint(unpack(anchors[hDirection][vDirection][2]))
+            if not anchors then return end     
+            backdrop:SetPoint(unpack(anchors[hDirection][vDirection][1]))
+            backdrop:SetPoint(unpack(anchors[hDirection][vDirection][2]))
+            backdrop:SetPoint(unpack(anchors[hDirection][vDirection][3]))
+            backdrop:SetPoint(unpack(anchors[hDirection][vDirection][4]))
+        end
     end,
 
     UpdateVisibleButtons = function(self)
