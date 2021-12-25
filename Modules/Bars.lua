@@ -73,7 +73,9 @@ end
 
 function addon:RemoveBar(barID)
     -- Release widget
-    self.bars[barID]:Release()
+    if self.bars[barID] then
+        self.bars[barID]:Release()
+    end
 
     -- Remove bar
     tremove(self.db.profile.bars, barID)
@@ -82,7 +84,7 @@ function addon:RemoveBar(barID)
     -- Update bars for existing widgets
     -- There was a link left when just updating the barIDs on the widgets and when two bars were deleted in the middle of the bars, it would clear buttons after the second delete. Instead I'm releasing and loading new bars. They will be updated in self.bars during the LoadBar method.
     for k, bar in pairs(self.bars) do
-        if k >= barID then
+        if k >= barID and bar.enabled then
             bar:Release()
             self:LoadBar(k)
         end
@@ -181,9 +183,12 @@ function addon:SetBarDisabled(barID, enabled)
     -- Release or load bar
     if not enabled then
         self.bars[barID]:Release()
+        self.bars[barID] = nil
     else
         self:LoadBar(barID)
     end
+
+    self:SetDBValue("profile", "enabled", self.tcount(self.bars) > 0)
 
     self:RefreshOptions()
 end

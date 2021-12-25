@@ -114,6 +114,9 @@ function addon:InitializeTrackers()
     wipe(self.trackers)
 
     for barID, bar in pairs(self.bars) do
+        if not bar:GetButtons() then
+            return
+        end
         for buttonID, button in pairs(bar:GetButtons()) do
             if not button:IsEmpty() then
                 for trackerKey, tracker in pairs(button:GetButtonDB().trackers) do

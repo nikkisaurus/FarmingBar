@@ -85,13 +85,13 @@ function addon:GetBarConfigOptions(barID)
                 inline = true,
                 name = L["Manage"],
                 args = {
-                    ToggleBarDisabled = {
+                    ToggleBarEnabled = {
                         order = 1,
                         type = "select",
                         width = "full",
                         name = L["Toggle Bar Enabled"],
                         disabled = function()
-                            return self.tcount(self.bars) == 0
+                            return self.tcount(self:GetDBValue("profile", "bars")) == 0
                         end,
                         values = function()
                             local values = {}
@@ -123,7 +123,7 @@ function addon:GetBarConfigOptions(barID)
                         width = "full",
                         name = L["Remove Bar"],
                         disabled = function()
-                            return self.tcount(self.bars) == 0
+                            return self.tcount(self:GetDBValue("profile", "bars")) == 0
                         end,
                         values = function()
                             local values = {}
@@ -419,14 +419,10 @@ function addon:GetBarConfigOptions(barID)
                                 if addon:GetDBValue("global", "settings.misc.preserveTemplateOrder") == "PROMPT" then
                                     local dialog = StaticPopup_Show("FARMINGBAR_SAVE_TEMPLATE_ORDER", templateName)
                                     if dialog then
-                                        dialog.data = {barID, templateName,
-                                                       addon:GetDBValue("global", "settings.misc.preserveTemplateData") ==
-                                            "ENABLED"}
+                                        dialog.data = {barID, templateName, addon:GetDBValue("global", "settings.misc.preserveTemplateData") == "ENABLED"}
                                     end
                                 else
-                                    addon:LoadTemplate("user", barID, templateName, addon:GetDBValue("global",
-                                        "settings.misc.preserveTemplateData") == "ENABLED", addon:GetDBValue("global",
-                                        "settings.misc.preserveTemplateOrder") == "ENABLED")
+                                    addon:LoadTemplate("user", barID, templateName, addon:GetDBValue("global", "settings.misc.preserveTemplateData") == "ENABLED", addon:GetDBValue("global", "settings.misc.preserveTemplateOrder") == "ENABLED")
                                 end
                             end
                         end
@@ -448,6 +444,33 @@ function addon:GetBarConfigOptions(barID)
                         end,
                         func = function()
                             self:RemoveBar(barID)
+                        end
+                    },
+                    CopyFrom = {
+                        order = 2,
+                        type = "select",
+                        style = "dropdown",
+                        name = "Copy From",
+                        values = function()
+                            local values = {}
+
+                            for id, _ in pairs(addon:GetDBValue("profile", "bars")) do
+                                if id ~= barID and id ~= "**" then
+                                    values[id] = format("%s %d", L["Bar"], id)
+                                end
+                            end
+                            return values
+                        end,
+                        set = function(info, value)
+                            local bars = addon:GetDBValue("profile", "bars")
+                            local point = bars[barID].point
+                            bars[barID] = addon:CloneTable(bars[value])
+                            -- Preserve bar position, so there are not issues with moving a bar below another, and enabled status
+                            bars[barID].point = addon:CloneTable(point)
+                            -- Redraw bars
+                            addon:ReleaseAllBars()
+                            addon:InitializeBars()
+                            addon:RefreshOptions()
                         end
                     }
                 }

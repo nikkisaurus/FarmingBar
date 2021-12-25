@@ -204,8 +204,7 @@ local function objectiveEditBox_OnEnterPressed(self)
     self.obj:SetObjective(objective)
 
     if addon:GetDBValue("global", "settings.alerts.button.sound.enabled") then
-        PlaySoundFile(LSM:Fetch("sound", addon:GetDBValue("global", "settings.alerts.button.sound")[objective and
-            "objectiveSet" or "objectiveCleared"]))
+        PlaySoundFile(LSM:Fetch("sound", addon:GetDBValue("global", "settings.alerts.button.sound")[objective and "objectiveSet" or "objectiveCleared"]))
     end
 
     self:ClearFocus()
@@ -275,16 +274,13 @@ local methods = {
 
         self:ClearAllPoints()
         if buttonID == 1 then
-            self:SetPoint(anchor, self:GetUserData("bar").frame, relativeAnchor, xOffset * barDB.button.padding,
-                yOffset * barDB.button.padding)
+            self:SetPoint(anchor, self:GetUserData("bar").frame, relativeAnchor, xOffset * barDB.button.padding, yOffset * barDB.button.padding)
         else
             if math.fmod(buttonID, barDB.buttonWrap) == 1 or barDB.buttonWrap == 1 then
                 local anchor, relativeAnchor, xOffset, yOffset = addon:GetRelativeAnchorPoints(barDB.grow)
-                self:SetPoint(anchor, buttons[buttonID - barDB.buttonWrap].frame, relativeAnchor,
-                    xOffset * barDB.button.padding, yOffset * barDB.button.padding)
+                self:SetPoint(anchor, buttons[buttonID - barDB.buttonWrap].frame, relativeAnchor, xOffset * barDB.button.padding, yOffset * barDB.button.padding)
             else
-                self:SetPoint(anchor, buttons[buttonID - 1].frame, relativeAnchor, xOffset * barDB.button.padding,
-                    yOffset * barDB.button.padding)
+                self:SetPoint(anchor, buttons[buttonID - 1].frame, relativeAnchor, xOffset * barDB.button.padding, yOffset * barDB.button.padding)
             end
         end
 
@@ -317,7 +313,6 @@ local methods = {
         end
 
         self:UpdateLayers()
-        addon:UpdateButtons()
         ACD:Close(addonName .. "ObjectiveEditor")
     end,
 
@@ -349,8 +344,7 @@ local methods = {
     end,
 
     GetButtonDB = function(self)
-        return self:GetBarID() and
-                   addon:GetBarDBValue("objectives", self:GetUserData("barID"), true)[self:GetUserData("buttonID")]
+        return self:GetBarID() and addon:GetBarDBValue("objectives", self:GetUserData("barID"), true)[self:GetUserData("buttonID")]
     end,
 
     GetButtonID = function(self)
@@ -381,8 +375,7 @@ local methods = {
     end,
 
     IsObjectiveComplete = function(self)
-        return not self:IsEmpty() and self:GetObjective() and self:GetObjective() > 0 and self:GetCount() >=
-                   self:GetObjective()
+        return not self:IsEmpty() and self:GetObjective() and self:GetObjective() > 0 and self:GetCount() >= self:GetObjective()
     end,
 
     RemoveObjectiveTemplateLink = function(self)
@@ -411,8 +404,7 @@ local methods = {
 
     SetAttribute = function(self)
         local info = addon:GetDBValue("global", "settings.keybinds.button.useItem")
-        local buttonType = (info.modifier ~= "" and (info.modifier .. "-") or "") .. "type" ..
-                               (info.button == "RightButton" and 2 or 1)
+        local buttonType = (info.modifier ~= "" and (info.modifier .. "-") or "") .. "type" .. (info.button == "RightButton" and 2 or 1)
         local isEmpty = self:IsEmpty()
         local buttonDB = self:GetButtonDB()
 
@@ -483,8 +475,7 @@ local methods = {
 
             for k, v in pairs(self:GetButtonDB().trackers) do
                 local trackerType, trackerID = addon:ParseTrackerKey(k)
-                itemQuality = trackerType == "ITEM" and max(itemQuality, C_Item.GetItemQualityByID(trackerID)) or
-                                  itemQuality
+                itemQuality = trackerType == "ITEM" and max(itemQuality, C_Item.GetItemQualityByID(trackerID)) or itemQuality
             end
 
             if itemQuality > 1 then
@@ -493,8 +484,7 @@ local methods = {
                 self.Count:SetTextColor(r, g, b, 1)
             end
         elseif style.style == "INCLUDEAUTOLAYERS" then
-            local total_char, included_char, notIncluded_char =
-                addon:GetObjectiveIncludedLayers(self, "includeAllChars")
+            local total_char, included_char, notIncluded_char = addon:GetObjectiveIncludedLayers(self, "includeAllChars")
             local total_bank, included_bank, notIncluded_bank = addon:GetObjectiveIncludedLayers(self, "includeBank")
 
             if notIncluded_char == total_char and notIncluded_bank == total_bank then
@@ -558,8 +548,7 @@ local methods = {
         self[fontString]:SetSize(0, 0)
 
         self[fontString]:SetPoint(db.anchor, self.frame, db.anchor, db.xOffset, db.yOffset)
-        self[fontString]:SetJustifyH((db.anchor:find("RIGHT") and "RIGHT") or (db.anchor:find("LEFT") and "LEFT") or
-                                         "CENTER")
+        self[fontString]:SetJustifyH((db.anchor:find("RIGHT") and "RIGHT") or (db.anchor:find("LEFT") and "LEFT") or "CENTER")
     end,
 
     SetHidden = function(self)
@@ -666,8 +655,7 @@ local methods = {
         if value == "includeAllChars" then
             local missingDependencies = addon:IsDataStoreLoaded()
             if #missingDependencies > 0 then
-                addon:ReportError(
-                    format(L.MissingIncludeAllCharsDependecies, strjoin(", ", unpack(missingDependencies))))
+                addon:ReportError(format(L.MissingIncludeAllCharsDependecies, strjoin(", ", unpack(missingDependencies))))
             end
         end
 
@@ -721,8 +709,7 @@ local methods = {
 
             for k, v in pairs(self:GetButtonDB().trackers) do
                 local trackerType, trackerID = addon:ParseTrackerKey(k)
-                itemQuality = trackerType == "ITEM" and max(itemQuality, C_Item.GetItemQualityByID(trackerID) or 0) or
-                                  itemQuality
+                itemQuality = trackerType == "ITEM" and max(itemQuality, C_Item.GetItemQualityByID(trackerID) or 0) or itemQuality
             end
 
             if itemQuality > 1 then
@@ -818,8 +805,7 @@ local methods = {
 -- Constructor
 
 local function Constructor()
-    local frame = CreateFrame("Button", Type .. AceGUI:GetNextWidgetNum(Type), UIParent,
-        "SecureActionButtonTemplate, SecureHandlerDragTemplate")
+    local frame = CreateFrame("Button", Type .. AceGUI:GetNextWidgetNum(Type), UIParent, "SecureActionButtonTemplate, SecureHandlerDragTemplate")
     frame:SetScale(UIParent:GetEffectiveScale())
     frame:Hide()
     frame:RegisterForClicks("AnyUp")
