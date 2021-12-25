@@ -295,6 +295,12 @@ local methods = {
                 self:SetPoint(anchor, buttons[buttonID - 1].frame, relativeAnchor, xOffset * barDB.button.padding, yOffset * barDB.button.padding)
             end
         end
+
+        local bar = self:GetUserData("bar")
+        local lastButton = self:GetUserData("buttons")[barDB.numVisibleButtons]
+        if bar and lastButton then
+            bar:UpdateBackdrop(lastButton)
+        end
     end,
 
     ApplySkin = function(self)
@@ -389,11 +395,9 @@ local methods = {
         buttonDB.template = false
     end,
 
-    SetAlpha = function(self, forceShow)
-        if self:GetBarID() and ((self:IsEmpty() and not addon:GetBarDBValue("showEmpty", self:GetBarID()) and not addon.cursorItem)) then
-            self.frame:SetAlpha(0)
-        else
-            self.frame:SetAlpha((self:GetBarDB().mouseover and not forceShow) and 0 or self:GetBarDB().alpha)
+    SetAlpha = function(self, alpha)
+        if alpha then            
+            self.frame:SetAlpha(alpha)
         end
     end,
 
@@ -443,8 +447,7 @@ local methods = {
 
         self:Anchor()
         self:SetAlpha()
-        self:SetScale()
-        self:SetSize(bar.frame:GetWidth() / .9, bar.frame:GetHeight() / .9)
+        self:SetSize()
         self:UpdateLayers()
     end,
 
@@ -566,14 +569,12 @@ local methods = {
         self.frame:SetPoint(...)
     end,
 
-    SetScale = function(self)
-        self.frame:SetScale(self:GetUserData("barDB").scale)
-    end,
+    SetSize = function(self)        
+        local frameSize = self:GetUserData("barDB").button.size
 
-    SetSize = function(self, width, height)
-        self.frame:SetSize(width, height)
-        self.Count:SetWidth(width)
-        self.Objective:SetWidth(width)
+        self.frame:SetSize(frameSize, frameSize)
+        self.Count:SetWidth(frameSize)
+        self.Objective:SetWidth(frameSize)
     end,
 
     SwapButtons = function(self, movingButton)
@@ -793,6 +794,7 @@ local methods = {
 
 local function Constructor()
     local frame = CreateFrame("Button", Type.. AceGUI:GetNextWidgetNum(Type), UIParent, "SecureActionButtonTemplate, SecureHandlerDragTemplate")
+    frame:SetScale(UIParent:GetEffectiveScale())
 	frame:Hide()
     frame:RegisterForClicks("AnyUp")
     frame:RegisterForDrag("LeftButton", "RightButton")
@@ -802,7 +804,7 @@ local function Constructor()
 	frame:SetScript("OnReceiveDrag", frame_OnReceiveDrag)
     frame:SetScript("OnUpdate", frame_OnUpdate)
     frame:SetScript("PostClick", frame_PostClick)
-
+    
     frame:RegisterEvent("SPELL_UPDATE_COOLDOWN")
 
     local FloatingBG = frame:CreateTexture("$parentFloatingBG", "BACKGROUND", nil, 1)

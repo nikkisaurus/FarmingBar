@@ -12,13 +12,14 @@ local showTooltip
 
 tooltipScanner:SetScript("OnUpdate", function(self)
     local frame = GetMouseFocus()
+    local focus = frame and frame:GetName() or ""
     local widget = frame and frame.obj
     local tooltip = widget and widget.GetUserData and widget:GetUserData("tooltip")
 
     addon.cursorItem = GetCursorInfo() == "item" or addon.movingButton or (addon.DragFrame and addon.DragFrame:GetObjective())
     addon:UpdateButtons(_, "SetAlpha")
 
-    if tooltip and addon[tooltip] and not addon.DragFrame:GetObjective() then
+    if tooltip and addon[tooltip] and not addon.DragFrame:GetObjective() and not strfind(focus, "Backdrop") then
         showTooltip = true
         FarmingBar_Tooltip:ClearLines()
         FarmingBar_Tooltip:SetOwner(frame, "ANCHOR_BOTTOMRIGHT", 0, 0)

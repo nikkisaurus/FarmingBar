@@ -264,11 +264,12 @@ function addon:InitializeDB()
                     enabled = false,
                     movable = true,
                     hidden = false,
+                    backdrop = [[INTERFACE\BUTTONS\WHITE8X8]],
+                    backdropPadding = 2,
                     anchorMouseover = false,
                     mouseover = false,
                     showEmpty = true,
                     alpha = 1,
-                    scale = 1,
                     numVisibleButtons = 6,
                     buttonWrap = 12,
                     grow = {"RIGHT", "NORMAL"}, -- [1] = "RIGHT", "LEFT", "UP", "DOWN"; [2] = "NORMAL", "REVERSE"

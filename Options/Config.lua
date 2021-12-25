@@ -335,20 +335,8 @@ function addon:GetBarConfigOptions(barID)
                     return addon:GetBarDBValue(info[#info], barID)
                 end,
                 args = {
-                    scale = {
-                        order = 1,
-                        type = "range",
-                        name = L["Scale"],
-                        min = self.minScale,
-                        max = self.maxScale,
-                        step = .01,
-                        set = function(info, value)
-                            addon:SetBarDBValue(info[#info], value, barID)
-                            bar:SetScale()
-                        end,
-                    },
                     alpha = {
-                        order = 2,
+                        order = 1,
                         type = "range",
                         name = L["Alpha"],
                         min = 0,

@@ -91,13 +91,11 @@ local function anchor_OnUpdate(self)
     if strfind(focus, "^FarmingBar_") then
         local focusFrame = _G[focus].obj
         if focusFrame:GetBarID() == barID then
-            widget:SetAlpha(true)
+            widget:SetAlpha(focus)
         end
     else
         widget:SetAlpha()
     end
-
-    -- Error: mouseover doesn't update button alphas
 end
 
 
@@ -202,12 +200,31 @@ local methods = {
         self:SetQuickButtonStates()
     end,
 
-    SetAlpha = function(self, forceShow)
-        local alpha = (self:GetBarDB().mouseover and not forceShow) and 0 or self:GetBarDB().alpha
-        self.frame:SetAlpha(alpha)
-        self.anchor:SetAlpha(alpha)
+    SetAlpha = function(self, focus)
+        local anchor = self.anchor
+        local frame = self.frame
+        local db = self:GetBarDB()
+
+        local mouseoverAnchor = db.anchorMouseover and strfind(focus or "", self.anchor:GetName())
+        local mouseover = not db.anchorMouseover and db.mouseover
+        local mouseoverFocus = mouseover and focus
+        local noMouseover = not db.anchorMouseover and not db.mouseover
+
+        -- Anchor alpha
+        if mouseoverAnchor or mouseoverFocus or noMouseover then
+            -- Show
+            anchor:SetAlpha(db.alpha)
+        else
+            -- Hide
+            anchor:SetAlpha(0)
+        end
+
+        local alpha = (mouseover and not focus) and 0 or db.alpha
+
+        frame:SetAlpha(alpha)
         for _, button in pairs(self:GetUserData("buttons")) do
-            button:SetAlpha(forceShow)
+            local showEmpty = db.showEmpty or not button:IsEmpty() or addon.cursorItem
+            button:SetAlpha(showEmpty and alpha or 0)
         end
     end,
 
@@ -226,7 +243,6 @@ local methods = {
         self:SetAlpha()
         self:SetHidden()
         self:SetMovable()
-        self:SetScale()
         self:SetSize()
         self:SetPoint(unpack(barDB.point))
         self:SetQuickButtonStates()
@@ -277,12 +293,11 @@ local methods = {
             addButton:Enable()
             removeButton:Enable()
         end
-    end,
 
-    SetScale = function(self)
-        self.frame:SetScale(self:GetUserData("barDB").scale)
-        for _, button in pairs(self:GetUserData("buttons")) do
-            button:SetScale()
+        -- Update backdrop
+        local buttons = self:GetUserData("buttons")
+        if buttons and buttons[numVisibleButtons] then
+            self:UpdateBackdrop(buttons[numVisibleButtons])
         end
     end,
 
@@ -310,6 +325,56 @@ local methods = {
         end
     end,
 
+    UpdateBackdrop = function(self, lastButton)
+        self.backdropTexture:SetTexture(self:GetBarDB().backdrop)
+
+        local backdrop = self.backdrop
+        backdrop:ClearAllPoints()
+
+        local numVisibleButtons = self:GetBarDB().numVisibleButtons
+        if numVisibleButtons == 0 then return end
+
+        local grow = self:GetBarDB().grow
+        local hDirection, vDirection = grow[1], grow[2]        
+        local padding = self:GetBarDB().backdropPadding
+        local firstButton = self:GetUserData("buttons")[1]
+        
+        if hDirection == "RIGHT" then
+            if vDirection == "NORMAL" then
+                backdrop:SetPoint("TOPLEFT", firstButton.frame, "TOPLEFT", -padding, padding)
+                backdrop:SetPoint("BOTTOMRIGHT", lastButton.frame, "BOTTOMRIGHT", padding, -padding)
+            elseif vDirection == "REVERSE" then
+                backdrop:SetPoint("BOTTOMLEFT", firstButton.frame, "BOTTOMLEFT", -padding, -padding)
+                backdrop:SetPoint("TOPRIGHT", lastButton.frame, "TOPRIGHT", padding, padding)
+            end
+        elseif hDirection == "LEFT" then
+            if vDirection == "NORMAL" then
+                backdrop:SetPoint("TOPRIGHT", firstButton.frame, "TOPRIGHT", padding, padding)
+                backdrop:SetPoint("BOTTOMLEFT", lastButton.frame, "BOTTOMLEFT", -padding, -padding)
+            elseif vDirection == "REVERSE" then
+                backdrop:SetPoint("BOTTOMRIGHT", firstButton.frame, "BOTTOMRIGHT", padding, -padding)
+                backdrop:SetPoint("TOPLEFT", lastButton.frame, "TOPLEFT", -padding, padding)
+            end
+        elseif hDirection == "UP" then
+            if vDirection == "NORMAL" then
+                backdrop:SetPoint("BOTTOMLEFT", firstButton.frame, "BOTTOMLEFT", -padding, -padding)
+                backdrop:SetPoint("TOPRIGHT", lastButton.frame, "TOPRIGHT", padding, padding)
+            elseif vDirection == "REVERSE" then
+                backdrop:SetPoint("BOTTOMRIGHT", firstButton.frame, "BOTTOMRIGHT", padding, -padding)
+                backdrop:SetPoint("TOPLEFT", lastButton.frame, "TOPLEFT", -padding, padding)
+            end
+        elseif hDirection == "DOWN" then
+            if vDirection == "NORMAL" then
+                backdrop:SetPoint("TOPLEFT", firstButton.frame, "TOPLEFT", -padding, padding)
+                backdrop:SetPoint("BOTTOMRIGHT", lastButton.frame, "BOTTOMRIGHT", padding, -padding)
+            elseif vDirection == "REVERSE" then
+                backdrop:SetPoint("TOPRIGHT", firstButton.frame, "TOPRIGHT", padding, padding)
+                backdrop:SetPoint("BOTTOMLEFT", lastButton.frame, "BOTTOMLEFT", -padding, -padding)
+            end
+        end
+        
+    end,
+
     UpdateVisibleButtons = function(self)
         local buttons = self:GetUserData("buttons")
         local difference = self:GetUserData("barDB").numVisibleButtons - #buttons
@@ -333,6 +398,7 @@ local methods = {
 
 local function Constructor()
     local frame = CreateFrame("Frame", Type..AceGUI:GetNextWidgetNum(Type), UIParent)
+    frame:SetScale(UIParent:GetEffectiveScale())
 	frame:Hide()
     frame:SetClampedToScreen(true)
 
@@ -341,8 +407,12 @@ local function Constructor()
 
     frame:SetScript("OnEvent", frame_OnEvent)
 
-    local backdrop = CreateFrame("Frame", nil, frame, BackdropTemplateMixin and "BackdropTemplate")
+    local backdrop = CreateFrame("Frame", "$parentBackdrop", frame, BackdropTemplateMixin and "BackdropTemplate")
+    backdrop:SetFrameStrata("BACKGROUND")
     backdrop:EnableMouse(true)
+
+    local backdropTexture = backdrop:CreateTexture("$parentTexture", "BACKGROUND")
+    backdropTexture:SetAllPoints(backdrop)
 
     local anchor = CreateFrame("Button", "$parentAnchor", frame)
     anchor:SetAllPoints(frame)
@@ -362,19 +432,19 @@ local function Constructor()
     local FloatingBG = anchor:CreateTexture("$parentFloatingBG", "BACKGROUND")
     FloatingBG:SetAllPoints(anchor)
 
-    local addButton = CreateFrame("Button", nil, anchor)
+    local addButton = CreateFrame("Button", "$parentAddButton", anchor)
     addButton:SetNormalTexture([[INTERFACE\ADDONS\FARMINGBAR\MEDIA\PLUS]])
     addButton:SetDisabledTexture([[INTERFACE\ADDONS\FARMINGBAR\MEDIA\PLUS-DISABLED]])
 
     addButton:SetScript("OnClick", addButton_OnClick)
 
-    local removeButton = CreateFrame("Button", nil, anchor)
+    local removeButton = CreateFrame("Button", "$parentRemoveButton", anchor)
     removeButton:SetNormalTexture([[INTERFACE\ADDONS\FARMINGBAR\MEDIA\MINUS]])
     removeButton:SetDisabledTexture([[INTERFACE\ADDONS\FARMINGBAR\MEDIA\MINUS-DISABLED]])
 
     removeButton:SetScript("OnClick", removeButton_OnClick)
 
-    local barID = anchor:CreateFontString(nil, "OVERLAY")
+    local barID = anchor:CreateFontString("$parentBarIDButton", "OVERLAY")
     barID:SetFont([[Fonts\FRIZQT__.TTF]], 12, "NORMAL")
 
 
@@ -382,6 +452,7 @@ local function Constructor()
 		type  = Type,
         frame = frame,
         backdrop = backdrop,
+        backdropTexture = backdropTexture,
         anchor = anchor,
         FloatingBG = FloatingBG,
         addButton = addButton,
@@ -389,7 +460,7 @@ local function Constructor()
         barID = barID,
     }
 
-    frame.obj, anchor.obj, addButton.obj, removeButton.obj = widget, widget, widget, widget
+    frame.obj, anchor.obj, addButton.obj, removeButton.obj, backdrop.obj = widget, widget, widget, widget, widget
 
     for method, func in pairs(methods) do
         widget[method] = func

@@ -129,7 +129,7 @@
 
 ### 3.0-alpha3
 - Additional bar customizations are now available through the GUI
-  -  -- Bar: title, mute all alerts, hidden, growth direction and type, movability, scale, alpha
+  -  -- Bar: title, mute all alerts, hidden, growth direction and type, movability, alpha
   -  -- Button: number of buttons, buttons per wrap, size, padding, count anchor, objective anchor
   -  -- Button operations: clear buttons, reindex buttons, size bar to buttons
   -  -- Bars can be added and removed from the GUI as well as the implemented command.

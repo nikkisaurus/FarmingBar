@@ -356,7 +356,6 @@ L["Remove Selected"] = true
 L["Reverse"] = true
 L["Right"] = true
 L["Save as Template"] = true
-L["Scale"] = true
 L["Screen"] = true
 L["Show Empty Buttons"] = true
 L["Show on Anchor Mouseover"] = true
