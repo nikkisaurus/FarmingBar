@@ -11,7 +11,8 @@ function addon:BAG_UPDATE_DELAYED(...)
     for trackerID, buttonIDs in pairs(self.trackers) do
         for _, buttonID in pairs(buttonIDs) do
             -- Get old count, then update count
-                local button = self.bars[buttonID[1]]:GetButtons()[buttonID[2]]
+                local bar = self.bars[buttonID[1]]
+                local button = bar:GetButtons()[buttonID[2]]
                 local buttonDB = button:GetButtonDB()
                 local oldCount, oldTrackerCounts = button:GetCount()
                 button:SetCount()
@@ -65,7 +66,7 @@ function addon:BAG_UPDATE_DELAYED(...)
                 end
 
                 if alertInfo then
-                    self:SendAlert("button", alert, alertInfo, soundID)
+                    self:SendAlert("button", alert, alertInfo, soundID, bar)
 
                     if barAlert then
                         -- local progressCount, progressTotal = self:GetBar():GetProgress()
