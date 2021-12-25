@@ -27,7 +27,7 @@ local buttonCommandSort = {
 
 
 function addon:GetButtonTooltip(widget, tooltip)
-    if not self:GetDBValue("global", "settings.tooltips.button") or widget.frame:GetAlpha() == 0 then return end
+    if not self:GetDBValue("global", "settings.tooltips.button") then return end
 
     local buttonDB = widget:GetButtonDB()
     if not buttonDB then return end

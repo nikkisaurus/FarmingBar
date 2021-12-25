@@ -18,11 +18,11 @@ function addon:BAG_UPDATE_DELAYED(...)
                 button:SetCount()
 
                 local alerts = self:GetBarDBValue("alerts", buttonID[1], true)
+                local alertInfo, alert, soundID, barAlert
                 if not alerts.muteAll and not buttonDB.mute then
                     -- Get info for alerts
                     local newCount, trackerCounts = button:GetCount()
                     local objective = button:GetObjective()
-                    local alertInfo, alert, soundID, barAlert
 
                     -- Change in objective count
                     if oldCount ~= newCount then
@@ -66,19 +66,7 @@ function addon:BAG_UPDATE_DELAYED(...)
                 end
 
                 if alertInfo then
-                    self:SendAlert("button", alert, alertInfo, soundID, bar)
-
-                    if barAlert then
-                        -- local progressCount, progressTotal = self:GetBar():GetProgress()
-
-                        -- if barAlert == "complete" then
-                            --     progressCount = progressCount - 1
-                            -- elseif barAlert == "lost" then
-                                --     progressCount = progressCount + 1
-                                -- end
-
-                                -- self:GetBar():AlertProgress(progressCount, progressTotal)
-                    end
+                    self:SendAlert("button", alert, alertInfo, soundID, bar, nil, barAlert)
                 elseif trackerCounts then -- Change in tracker count
                     for trackerKey, newTrackerCount in pairs(trackerCounts) do
                         oldTrackerCount = oldTrackerCounts[trackerKey]

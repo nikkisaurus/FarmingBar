@@ -10,21 +10,21 @@ local LSM = LibStub("LibSharedMedia-3.0")
 --*------------------------------------------------------------------------
 -- Send alerts
 
-function addon:SendAlert(alertType, alert, alertInfo, soundID, bar, isTracker)
+function addon:SendAlert(alertType, alert, alertInfo, soundID, bar, isTracker, barAlert)      
+    local barDB = self:GetDBValue("char", "bars")[bar:GetBarID()]
+
     -- Return if tracking completed objectives is disabled
     local objective = isTracker and alertInfo.trackerObjective.count or alertInfo.objective.count
     local oldCount = isTracker and alertInfo.oldTrackerCount or alertInfo.oldCount
     local newCount = isTracker and alertInfo.newTrackerCount or alertInfo.newCount
-
-    local completedObjectives = self:GetDBValue("char", "bars")[bar:GetBarID()].alerts.completedObjectives
-
+    
     local newCompletion = oldCount < objective and newCount > objective
     local lostCompletion = oldCount > objective and newCount < objective
-    if not completedObjectives and not newCompletion and not lostCompletion then return end
+    if not barDB.alerts.completedObjectives and not newCompletion and not lostCompletion then return end 
 
     -- Send alert
     local parsedAlert = assert(loadstring("return " .. alert))()(alertInfo)
-
+    
     -- Chat
     if self:GetDBValue("global", "settings.alerts")[alertType].chat and alert then
         self:Print(parsedAlert)
@@ -42,5 +42,9 @@ function addon:SendAlert(alertType, alert, alertInfo, soundID, bar, isTracker)
     -- Sound
     if self:GetDBValue("global", "settings.alerts")[alertType].sound.enabled and soundID then
         PlaySoundFile(LSM:Fetch("sound", self:GetDBValue("global", "settings.alerts.button.sound")[soundID]))
+    end 
+
+    if not isTracker then
+        bar:AlertProgress(bar, barAlert)
     end
 end

@@ -191,6 +191,50 @@ local methods = {
         return self:GetUserData("buttons")
     end,
 
+    GetProgress = function(self)
+        local complete, total = 0, 0
+        for _, button in pairs(self:GetButtons()) do
+            total = button:HasObjective() and total + 1 or total
+            complete = button:IsObjectiveComplete() and complete + 1 or complete
+        end
+
+        return complete, total
+    end,
+
+    AlertProgress = function(self, bar, alertType)
+        local barDB = addon:GetDBValue("char", "bars")[bar:GetBarID()]
+        if barDB.alerts.barProgress then
+            local barIDName = format("%s %d", L["Bar"], self:GetBarID())
+
+            local progressCount, progressTotal = self:GetProgress()
+
+            local alertInfo = {
+                progressCount = progressCount,
+                progressTotal = progressTotal,
+                barIDName = barIDName,
+                barNameLong = format("%s%s", barIDName, barDB.title),
+                progressColor = progressCount == progressTotal and "|cff00ff00" or alertType == "complete" and "|cffffcc00" or alertType == "lost" and "|cffff0000",
+            }
+
+            local parsedBarAlert = assert(loadstring("return " .. addon:GetDBValue("global", "settings.alerts.bar.format.progress")))()(alertInfo)
+
+            -- Chat
+            if addon:GetDBValue("global", "settings.alerts")["bar"].chat and parsedBarAlert then
+                addon:Print(parsedBarAlert)            
+            end
+
+            -- Screen
+            if addon:GetDBValue("global", "settings.alerts")["bar"].screen and parsedBarAlert then
+                UIErrorsFrame:AddMessage(parsedBarAlert, 1, 1, 1)        
+            end
+
+            -- Sound
+            if addon:GetDBValue("global", "settings.alerts")["bar"].sound.enabled and soundID then
+                
+            end
+        end  
+    end,
+
     RemoveButton = function(self)
         local buttons = self:GetUserData("buttons")
 
