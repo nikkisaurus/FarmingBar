@@ -35,7 +35,12 @@ function addon:OnInitialize()
     self.tooltip_keyvalue = {1, .82, 0, 1, 1, 1, 1}
     -- self.barProgress = "%B progress: %progressColor%%c/%t%color%%if(%p>0, (%p%%),)if%"
     self.barProgress = [[function(info)
-        return ""
+        return format("Progress: %s %s%d/%d|r", info.barNameLong, info.progressColor, info.progressCount, info.progressTotal)
+        -- local barDB = bar:GetBarDB()
+        -- local barID = bar:GetBarID()
+        -- local progressCount, progressTotal = bar:GetProgress()
+
+        -- return format("Progress: %s %d/%d", bar:GetBarTitle(), progressCount, progressTotal)
     end]]
     self.withObjective = [[function(info)
         local percent = floor((info.newCount / info.objective.count) * 100)

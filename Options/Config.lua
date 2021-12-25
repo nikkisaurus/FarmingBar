@@ -217,13 +217,11 @@ function addon:GetBarConfigOptions(barID)
                         order = 2,
                         type = "toggle",
                         name = L["Bar Progress"],
-                        disabled = true,
                     },
                     completedObjectives = {
                         order = 3,
                         type = "toggle",
                         name = L["Completed Objectives"],
-                        -- disabled = true,
                     },
                 },
             },

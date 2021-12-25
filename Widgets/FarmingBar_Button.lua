@@ -377,8 +377,16 @@ local methods = {
         return not self:IsEmpty() and self:GetButtonDB().title
     end,
 
+    HasObjective = function(self)
+        return not self:IsEmpty() and self:GetObjective() and self:GetObjective() > 0
+    end,
+
     IsEmpty = function(self)
         return not self:GetBarID() or self:GetButtonDB().title == ""
+    end,
+
+    IsObjectiveComplete = function(self)
+        return not self:IsEmpty() and self:GetObjective() and self:GetObjective() > 0 and self:GetCount() >= self:GetObjective()
     end,
 
     RemoveObjectiveTemplateLink = function(self)
@@ -558,11 +566,14 @@ local methods = {
     end,
 
     SetObjective = function(self, objective)
+        local oldObjective = self:GetObjective() or 0
         objective = tonumber(objective)
         self:SetUserData("objective", objective)
         self:SetDBValue("objective", objective)
         self:UpdateObjective()
         addon:UpdateButtons()
+        local bar = self:GetUserData("bar")
+        bar:AlertProgress(bar, (objective or 0) > oldObjective and "complete" or "lost")
     end,
 
     SetPoint = function(self, ...) --point, anchor, relpoint, x, y
