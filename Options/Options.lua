@@ -6,8 +6,14 @@ local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 -- Initialize options
 
 function addon:InitializeOptions()
+    local ACD = LibStub("AceConfigDialog-3.0")
     LibStub("AceConfig-3.0"):RegisterOptionsTable(addonName, self:GetOptions())
-    LibStub("AceConfigDialog-3.0"):SetDefaultSize(addonName, 850, 600)
+    ACD:SetDefaultSize(addonName, 850, 600)
+
+    C_Timer.After(1, function()
+        ACD:SelectGroup(addonName, "settings", "global", "alerts")
+        ACD:Open(addonName)
+    end)
 end
 
 function addon:GetOptions()
@@ -20,36 +26,36 @@ function addon:GetOptions()
                 type = "group",
                 name = L["Config"],
                 childGroups = "select",
-                args = self:GetConfigOptions()
+                args = self:GetConfigOptions(),
             },
             objectiveBuilder = {
                 order = 2,
                 type = "group",
                 name = L["Objectives"],
                 childGroups = "select",
-                args = self:GetObjectiveBuilderOptions()
+                args = self:GetObjectiveBuilderOptions(),
             },
             settings = {
                 order = 3,
                 type = "group",
                 name = L["Settings"],
                 childGroups = "select",
-                args = self:GetSettingsOptions()
+                args = self:GetSettingsOptions(),
             },
             styleEditor = {
                 order = 4,
                 type = "group",
                 name = L["Styles"],
-                args = self:GetStyleEditorOptions()
+                args = self:GetStyleEditorOptions(),
             },
             profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db),
             help = {
                 order = 6,
                 type = "group",
                 name = L["Help"],
-                args = self:GetHelpOptions()
-            }
-        }
+                args = self:GetHelpOptions(),
+            },
+        },
     }
 
     self.options.args.profiles.order = 5

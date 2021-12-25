@@ -2,6 +2,11 @@ local addonName = ...
 local addon = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
 local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 
+-- Optional libraries
+local ACD = LibStub("AceConfigDialog-3.0")
+
+addon.editors = {}
+
 -- *------------------------------------------------------------------------
 
 function addon:GetSettingsOptions()
@@ -23,7 +28,7 @@ function addon:GetSettingsOptions()
                             inline = true,
                             name = L["Tooltips"],
                             get = function(info)
-                                return self:GetDBValue("global", "settings.tooltips." .. info[#info])
+                                return addon:GetDBValue("global", "settings.tooltips." .. info[#info])
                             end,
                             set = function(info, value)
                                 self:SetDBValue("global", "settings.tooltips." .. info[#info], value)
@@ -33,21 +38,21 @@ function addon:GetSettingsOptions()
                                     order = 1,
                                     type = "toggle",
                                     name = L["Bar"],
-                                    desc = L.Options_settings_global_general_tooltips_bar
+                                    desc = L.Options_settings_global_general_tooltips_bar,
                                 },
                                 button = {
                                     order = 1,
                                     type = "toggle",
                                     name = L["Button"],
-                                    desc = L.Options_settings_global_general_tooltips_button
+                                    desc = L.Options_settings_global_general_tooltips_button,
                                 },
                                 hideObjectiveInfo = {
                                     order = 1,
                                     type = "toggle",
                                     name = L["Hide Objective Info"],
-                                    desc = L.Options_settings_global_general_tooltips_hideObjectiveInfo
-                                }
-                            }
+                                    desc = L.Options_settings_global_general_tooltips_hideObjectiveInfo,
+                                },
+                            },
                         },
                         hints = {
                             order = 2,
@@ -55,7 +60,7 @@ function addon:GetSettingsOptions()
                             inline = true,
                             name = L["Hints"],
                             get = function(info)
-                                return self:GetDBValue("global", "settings.hints." .. info[#info])
+                                return addon:GetDBValue("global", "settings.hints." .. info[#info])
                             end,
                             set = function(info, value)
                                 self:SetDBValue("global", "settings.hints." .. info[#info], value)
@@ -65,25 +70,25 @@ function addon:GetSettingsOptions()
                                     order = 1,
                                     type = "toggle",
                                     name = L["Bars"],
-                                    desc = L.Options_settings_global_general_hints_bars
+                                    desc = L.Options_settings_global_general_hints_bars,
                                 },
                                 buttons = {
                                     order = 2,
                                     type = "toggle",
                                     name = L["Buttons"],
-                                    desc = L.Options_settings_global_general_hints_buttons
+                                    desc = L.Options_settings_global_general_hints_buttons,
                                 },
                                 ObjectiveBuilder = {
                                     order = 3,
                                     type = "toggle",
                                     name = L["Objective Builder"],
-                                    desc = L.Options_settings_global_general_hints_ObjectiveBuilder
+                                    desc = L.Options_settings_global_general_hints_ObjectiveBuilder,
                                 },
                                 enableModifier = {
                                     order = 4,
                                     type = "toggle",
                                     name = L["Enable Modifier"],
-                                    desc = L.Options_settings_global_general_hints_enableModifier
+                                    desc = L.Options_settings_global_general_hints_enableModifier,
                                 },
                                 modifier = {
                                     order = 5,
@@ -95,21 +100,21 @@ function addon:GetSettingsOptions()
                                         local info = {
                                             Alt = L["Alt"],
                                             Control = L["Control"],
-                                            Shift = L["Shift"]
+                                            Shift = L["Shift"],
                                         }
 
                                         return info
                                     end,
-                                    sorting = {"Alt", "Control", "Shift"}
-                                }
-                            }
+                                    sorting = {"Alt", "Control", "Shift"},
+                                },
+                            },
                         },
                         templates = {
                             order = 3,
                             type = "group",
                             inline = true,
                             get = function(info)
-                                return self:GetDBValue("global", "settings.misc." .. info[#info])
+                                return addon:GetDBValue("global", "settings.misc." .. info[#info])
                             end,
                             set = function(info, value)
                                 self:SetDBValue("global", "settings.misc." .. info[#info], value)
@@ -139,7 +144,7 @@ function addon:GetSettingsOptions()
                                     end,
                                     set = function(_, value)
                                         self:DeleteTemplate(value)
-                                    end
+                                    end,
                                 },
                                 preserveTemplateData = {
                                     order = 2,
@@ -151,12 +156,12 @@ function addon:GetSettingsOptions()
                                         local info = {
                                             ENABLED = L["ENABLED"],
                                             DISABLED = L["DISABLED"],
-                                            PROMPT = L["PROMPT"]
+                                            PROMPT = L["PROMPT"],
                                         }
 
                                         return info
                                     end,
-                                    sorting = {"ENABLED", "DISABLED", "PROMPT"}
+                                    sorting = {"ENABLED", "DISABLED", "PROMPT"},
                                 },
                                 preserveTemplateOrder = {
                                     order = 3,
@@ -168,21 +173,21 @@ function addon:GetSettingsOptions()
                                         local info = {
                                             ENABLED = L["ENABLED"],
                                             DISABLED = L["DISABLED"],
-                                            PROMPT = L["PROMPT"]
+                                            PROMPT = L["PROMPT"],
                                         }
 
                                         return info
                                     end,
-                                    sorting = {"ENABLED", "DISABLED", "PROMPT"}
-                                }
-                            }
+                                    sorting = {"ENABLED", "DISABLED", "PROMPT"},
+                                },
+                            },
                         },
                         misc = {
                             order = 4,
                             type = "group",
                             inline = true,
                             get = function(info)
-                                return self:GetDBValue("global", "settings.misc." .. info[#info])
+                                return addon:GetDBValue("global", "settings.misc." .. info[#info])
                             end,
                             set = function(info, value)
                                 self:SetDBValue("global", "settings.misc." .. info[#info], value)
@@ -195,9 +200,9 @@ function addon:GetSettingsOptions()
                                     width = "full",
                                     disabled = true, -- ! temporary until implemented
                                     name = L["Auto loot items on use"],
-                                    desc = L.Options_settings_global_misc_autoLootOnUse
-                                }
-                            }
+                                    desc = L.Options_settings_global_misc_autoLootOnUse,
+                                },
+                            },
                         },
                         commands = {
                             order = 5,
@@ -205,7 +210,7 @@ function addon:GetSettingsOptions()
                             inline = true,
                             name = L["Slash Commands"],
                             get = function(info)
-                                return self:GetDBValue("global", "settings.commands." .. info[#info])
+                                return addon:GetDBValue("global", "settings.commands." .. info[#info])
                             end,
                             set = function(info, value)
                                 self:SetDBValue("global", "settings.commands." .. info[#info], value)
@@ -215,29 +220,29 @@ function addon:GetSettingsOptions()
                                 farmingbar = {
                                     order = 1,
                                     type = "toggle",
-                                    name = "/farmingbar"
+                                    name = "/farmingbar",
                                 },
                                 farmbar = {
                                     order = 2,
                                     type = "toggle",
-                                    name = "/farmbar"
+                                    name = "/farmbar",
                                 },
                                 farm = {
                                     order = 3,
                                     type = "toggle",
-                                    name = "/farm"
+                                    name = "/farm",
                                 },
                                 fbar = {
                                     order = 4,
                                     type = "toggle",
-                                    name = "/fbar"
+                                    name = "/fbar",
                                 },
                                 fb = {
                                     order = 5,
                                     type = "toggle",
-                                    name = "/fb"
-                                }
-                            }
+                                    name = "/fb",
+                                },
+                            },
                         },
                         debug = {
                             order = 99,
@@ -245,14 +250,14 @@ function addon:GetSettingsOptions()
                             inline = true,
                             name = L["Debug"],
                             get = function(info)
-                                return self:GetDBValue("global", "settings.debug." .. info[#info])
+                                return addon:GetDBValue("global", "settings.debug." .. info[#info])
                             end,
                             set = function(info, value)
                                 self:SetDBValue("global", "settings.debug." .. info[#info], value)
                             end,
-                            args = {}
-                        }
-                    }
+                            args = {},
+                        },
+                    },
                 },
                 alerts = {
                     order = 2,
@@ -271,7 +276,7 @@ function addon:GetSettingsOptions()
                                     name = L["Alerts"],
                                     inline = true,
                                     get = function(info)
-                                        return self:GetDBValue("global", "settings.alerts.bar." .. info[#info])
+                                        return addon:GetDBValue("global", "settings.alerts.bar." .. info[#info])
                                     end,
                                     set = function(info, value)
                                         self:SetDBValue("global", "settings.alerts.bar." .. info[#info], value)
@@ -280,33 +285,77 @@ function addon:GetSettingsOptions()
                                         chat = {
                                             order = 1,
                                             type = "toggle",
-                                            name = L["Chat"]
+                                            name = L["Chat"],
                                         },
                                         screen = {
                                             order = 2,
                                             type = "toggle",
-                                            name = L["Screen"]
+                                            name = L["Screen"],
                                         },
                                         sound = {
                                             order = 3,
                                             type = "toggle",
                                             name = L["Sound"],
                                             get = function(info)
-                                                return self:GetDBValue("global", "settings.alerts.bar.sound.enabled")
+                                                return addon:GetDBValue("global", "settings.alerts.bar.sound.enabled")
                                             end,
                                             set = function(info, value)
-                                                self:SetDBValue("global", "settings.alerts.bar.sound.enabled", value)
-                                            end
+                                                addon:SetDBValue("global", "settings.alerts.bar.sound.enabled", value)
+                                            end,
                                         },
                                         format = {
                                             order = 4,
                                             type = "input",
-                                            name = "Format" -- !
+                                            name = L["Progress Format"],
+                                            width = "full",
+                                            multiline = true,
+                                            dialogControl = "FarmingBar_MultiLineEditBox",
+                                            get = function(info)
+                                                return addon:GetDBValue("global", "settings.alerts.bar.format.progress")
+                                            end,
+                                            arg = {"global", "settings.alerts.bar.format.progress"},
+                                        },
+                                        -- luaFormat = {
+                                        --     order = 5,
+                                        --     type = "execute",
+                                        --     name = L["Expand"],
+                                        --     dialogControl = "FarmingBar_MultiLineEditBox",
+                                        --     get = function(info, expandButton)
+                                        --         if not info then
+                                        --             LibStub("AceConfigRegistry-3.0"):GetOptionsTable(addonName, "dialog", "FarmingBar-1.0").args.settings.args.global.args.alerts.args.bar.args.toggle.args.luaFormat.func = function()
 
-                                        }
-                                    }
-                                }
-                            }
+                                        --                 local editor = LibStub("AceGUI-3.0", true):Create("FarmingBar_Editor")
+                                        --                 editor:SetTitle(format("%s %s", L.addon, L["Editor"]))
+                                        --                 editor:LoadCode("global", "settings.alerts.bar.format.progress")
+                                        --                 editor:SetCallback("OnClose", function(widget)
+                                        --                     widget.frame:Hide()
+                                        --                     ACD:SelectGroup(addonName, "settings")
+                                        --                     ACD:Open(addonName)
+                                        --                 end)
+                                        --                 editor.frame:Show()
+
+                                        --                 AceGUI:GetWidgetCount("FarmingBar_")
+                                        --             end
+
+                                        --             print(addon.luaFormatInfo)
+                                        --             -- -- expandButton.frame:SetPoint()
+                                        --             -- local anchor = LibStub("AceConfigRegistry-3.0"):GetOptionsTable(addonName, "dialog", "FarmingBar-1.0").args.settings.args.global.args.alerts.args.bar.args.toggle.args.format
+                                        --             -- print(anchor)
+                                        --             -- for k, v in pairs(anchor) do
+                                        --             --     print(k, v)
+                                        --             -- end
+                                        --             -- expandButton:SetPoint("LEFT", anchor, "RIGHT", 4, 0)
+
+                                        --             return "global.args.alerts.args.bar.args.toggle.args.luaFormat"
+                                        --         else
+                                        --             print("Hi")
+                                        --             addon.luaFormatInfo = info
+                                        --         end
+                                        --     end,
+                                        -- },
+                                    },
+                                },
+                            },
                         },
                         button = {
                             order = 1,
@@ -320,7 +369,7 @@ function addon:GetSettingsOptions()
                                     name = L["Alerts"],
                                     inline = true,
                                     get = function(info)
-                                        return self:GetDBValue("global", "settings.alerts.button." .. info[#info])
+                                        return addon:GetDBValue("global", "settings.alerts.button." .. info[#info])
                                     end,
                                     set = function(info, value)
                                         self:SetDBValue("global", "settings.alerts.button." .. info[#info], value)
@@ -329,27 +378,27 @@ function addon:GetSettingsOptions()
                                         chat = {
                                             order = 1,
                                             type = "toggle",
-                                            name = L["Chat"]
+                                            name = L["Chat"],
                                         },
                                         screen = {
                                             order = 2,
                                             type = "toggle",
-                                            name = L["Screen"]
+                                            name = L["Screen"],
                                         },
                                         sound = {
                                             order = 3,
                                             type = "toggle",
                                             name = L["Sound"],
                                             get = function(info)
-                                                return self:GetDBValue("global", "settings.alerts.button.sound.enabled")
+                                                return addon:GetDBValue("global", "settings.alerts.button.sound.enabled")
                                             end,
                                             set = function(info, value)
                                                 self:SetDBValue("global", "settings.alerts.button.sound.enabled", value)
-                                            end
-                                        }
-                                    }
-                                }
-                            }
+                                            end,
+                                        },
+                                    },
+                                },
+                            },
                         },
                         tracker = {
                             order = 1,
@@ -363,7 +412,7 @@ function addon:GetSettingsOptions()
                                     name = L["Alerts"],
                                     inline = true,
                                     get = function(info)
-                                        return self:GetDBValue("global", "settings.alerts.tracker." .. info[#info])
+                                        return addon:GetDBValue("global", "settings.alerts.tracker." .. info[#info])
                                     end,
                                     set = function(info, value)
                                         self:SetDBValue("global", "settings.alerts.tracker." .. info[#info], value)
@@ -372,38 +421,37 @@ function addon:GetSettingsOptions()
                                         chat = {
                                             order = 1,
                                             type = "toggle",
-                                            name = L["Chat"]
+                                            name = L["Chat"],
                                         },
                                         screen = {
                                             order = 2,
                                             type = "toggle",
-                                            name = L["Screen"]
+                                            name = L["Screen"],
                                         },
                                         sound = {
                                             order = 3,
                                             type = "toggle",
                                             name = L["Sound"],
                                             get = function(info)
-                                                return
-                                                    self:GetDBValue("global", "settings.alerts.tracker.sound.enabled")
+                                                return addon:GetDBValue("global", "settings.alerts.tracker.sound.enabled")
                                             end,
                                             set = function(info, value)
                                                 self:SetDBValue("global", "settings.alerts.tracker.sound.enabled", value)
-                                            end
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
+                                            end,
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
                 },
                 keybinds = {
                     order = 3,
                     type = "group",
                     name = L["Keybinds"],
-                    args = {}
-                }
-            }
+                    args = {},
+                },
+            },
         },
         profile = {
             order = 2,
@@ -420,7 +468,7 @@ function addon:GetSettingsOptions()
                     values = function(info)
                         local info = {
                             FarmingBar_Default = "FarmingBar_Default",
-                            FarmingBar_Minimal = "FarmingBar_Minimal"
+                            FarmingBar_Minimal = "FarmingBar_Minimal",
                         }
 
                         for k, _ in pairs(addon:GetDBValue("global", "skins")) do
@@ -439,12 +487,12 @@ function addon:GetSettingsOptions()
                         return info
                     end,
                     get = function(...)
-                        return self:GetDBValue("profile", "style.skin")
+                        return addon:GetDBValue("profile", "style.skin")
                     end,
                     set = function(_, value)
                         self:SetDBValue("profile", "style.skin", value)
                         self:UpdateBars()
-                    end
+                    end,
                 },
                 count = {
                     order = 2,
@@ -462,16 +510,16 @@ function addon:GetSettingsOptions()
                                 ["INCLUDEAUTOLAYERS"] = L["INCLUDE ACCOUNT AND BANK"],
                                 ["INCLUDEALLCHARS"] = L["ACCOUNT COUNTS"],
                                 ["INCLUDEBANK"] = L["BANK INCLUSION"],
-                                ["ITEMQUALITY"] = L["ITEM QUALITY"]
+                                ["ITEMQUALITY"] = L["ITEM QUALITY"],
                             },
                             sorting = {"CUSTOM", "INCLUDEAUTOLAYERS", "INCLUDEALLCHARS", "INCLUDEBANK", "ITEMQUALITY"},
                             get = function(info)
-                                return self:GetDBValue("profile", "style.font.fontStrings.count.style")
+                                return addon:GetDBValue("profile", "style.font.fontStrings.count.style")
                             end,
                             set = function(info, value)
                                 self:SetDBValue("profile", "style.font.fontStrings.count.style", value)
                                 self:UpdateBars()
-                            end
+                            end,
                         },
                         color = {
                             order = 2,
@@ -485,9 +533,9 @@ function addon:GetSettingsOptions()
                             set = function(info, ...)
                                 self:SetDBValue("profile", "style.font.fontStrings.count.color", {...})
                                 self:UpdateBars()
-                            end
-                        }
-                    }
+                            end,
+                        },
+                    },
                 },
                 buttonLayers = {
                     order = 3,
@@ -495,7 +543,7 @@ function addon:GetSettingsOptions()
                     inline = true,
                     name = L["Button Layers"],
                     get = function(info)
-                        return self:GetDBValue("profile", "style.buttonLayers." .. info[#info])
+                        return addon:GetDBValue("profile", "style.buttonLayers." .. info[#info])
                     end,
                     set = function(info, value)
                         self:SetDBValue("profile", "style.buttonLayers." .. info[#info], value)
@@ -506,33 +554,33 @@ function addon:GetSettingsOptions()
                             order = 1,
                             type = "toggle",
                             name = L["Account Counts Overlay"],
-                            desc = L.Options_settings_profile_buttonLayers_AccountOverlay
+                            desc = L.Options_settings_profile_buttonLayers_AccountOverlay,
                         },
                         AutoCastable = {
                             order = 1,
                             type = "toggle",
                             name = L["Bank Overlay"],
-                            desc = L.Options_settings_profile_buttonLayers_AutoCastable
+                            desc = L.Options_settings_profile_buttonLayers_AutoCastable,
                         },
                         Border = {
                             order = 2,
                             type = "toggle",
                             name = L["Item Quality"],
-                            desc = L.Options_settings_profile_buttonLayers_Border
+                            desc = L.Options_settings_profile_buttonLayers_Border,
                         },
                         Cooldown = {
                             order = 3,
                             type = "toggle",
                             name = L["Cooldown"],
-                            desc = L.Options_settings_profile_buttonLayers_Cooldown
+                            desc = L.Options_settings_profile_buttonLayers_Cooldown,
                         },
                         CooldownEdge = {
                             order = 4,
                             type = "toggle",
                             name = L["Cooldown Edge"],
-                            desc = L.Options_settings_profile_buttonLayers_CooldownEdge
-                        }
-                    }
+                            desc = L.Options_settings_profile_buttonLayers_CooldownEdge,
+                        },
+                    },
                 },
                 fonts = {
                     order = 4,
@@ -540,7 +588,7 @@ function addon:GetSettingsOptions()
                     inline = true,
                     name = L["Fonts"],
                     get = function(info)
-                        return self:GetDBValue("profile", "style.font." .. info[#info])
+                        return addon:GetDBValue("profile", "style.font." .. info[#info])
                     end,
                     set = function(info, value)
                         self:SetDBValue("profile", "style.font." .. info[#info], value)
@@ -553,7 +601,7 @@ function addon:GetSettingsOptions()
                             name = L["Face"],
                             desc = L.Options_settings_profile_fonts_face,
                             dialogControl = "LSM30_Font",
-                            values = AceGUIWidgetLSMlists.font
+                            values = AceGUIWidgetLSMlists.font,
                         },
                         outline = {
                             order = 2,
@@ -564,9 +612,9 @@ function addon:GetSettingsOptions()
                                 ["MONOCHROME"] = L["MONOCHROME"],
                                 ["OUTLINE"] = L["OUTLINE"],
                                 ["THICKOUTLINE"] = L["THICKOUTLINE"],
-                                ["NONE"] = L["NONE"]
+                                ["NONE"] = L["NONE"],
                             },
-                            sorting = {"MONOCHROME", "OUTLINE", "THICKOUTLINE", "NONE"}
+                            sorting = {"MONOCHROME", "OUTLINE", "THICKOUTLINE", "NONE"},
                         },
                         size = {
                             order = 3,
@@ -575,19 +623,19 @@ function addon:GetSettingsOptions()
                             desc = L.Options_settings_profile_fonts_outline,
                             min = self.minFontSize,
                             max = self.maxFontSize,
-                            step = 1
-                        }
-                    }
-                }
-            }
-        }
+                            step = 1,
+                        },
+                    },
+                },
+            },
+        },
     }
 
     for k, v in pairs(self:GetDBValue("global", "settings.debug")) do
         if k ~= "enabled" then
             options.global.args.general.args.debug.args[k] = {
                 type = "toggle",
-                name = k
+                name = k,
             }
         end
     end

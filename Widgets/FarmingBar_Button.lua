@@ -4,7 +4,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 
 -- Optional libraries
 local ACD = LibStub("AceConfigDialog-3.0")
-local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
+local AceGUI = LibStub("AceGUI-3.0", true)
 local LSM = LibStub("LibSharedMedia-3.0")
 
 local Type = "FarmingBar_Button"

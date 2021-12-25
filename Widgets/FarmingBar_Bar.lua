@@ -4,7 +4,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 
 -- Optional libraries
 local ACD = LibStub("AceConfigDialog-3.0")
-local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
+local AceGUI = LibStub("AceGUI-3.0", true)
 local LSM = LibStub("LibSharedMedia-3.0")
 
 local Type = "FarmingBar_Bar"
@@ -41,7 +41,7 @@ local postClickMethods = {
     openHelp = function(self, ...)
         ACD:SelectGroup(addonName, "help")
         ACD:Open(addonName)
-    end
+    end,
 }
 
 -- *------------------------------------------------------------------------
@@ -83,7 +83,7 @@ local function anchor_OnUpdate(self)
 
     -- Check mouseover
     local focus = GetMouseFocus() and GetMouseFocus():GetName() or ""
-    if strfind(focus, "^FarmingBar_") then
+    if strfind(focus, "^FarmingBar_B") then
         local focusFrame = _G[focus].obj
         if focusFrame:GetBarID() == barID then
             widget:SetAlpha(focus)
@@ -169,13 +169,10 @@ local methods = {
                 progressTotal = progressTotal,
                 barIDName = barIDName,
                 barNameLong = format("%s%s", barIDName, barDB.title),
-                progressColor = progressCount == progressTotal and "|cff00ff00" or alertType == "complete" and
-                    "|cffffcc00" or alertType == "lost" and "|cffff0000"
+                progressColor = progressCount == progressTotal and "|cff00ff00" or alertType == "complete" and "|cffffcc00" or alertType == "lost" and "|cffff0000",
             }
 
-            local parsedBarAlert = assert(loadstring("return " ..
-                                                         addon:GetDBValue("global",
-                    "settings.alerts.bar.format.progress")))()(alertInfo)
+            local parsedBarAlert = assert(loadstring("return " .. addon:GetDBValue("global", "settings.alerts.bar.format.progress")))()(alertInfo)
 
             -- Chat
             if addon:GetDBValue("global", "settings.alerts")["bar"].chat and parsedBarAlert then
@@ -283,57 +280,57 @@ local methods = {
                     [1] = {"TOP", self.anchor, "TOP", 0, padding},
                     [2] = {"LEFT", buttons[1].frame, "LEFT", -padding, 0},
                     [3] = {"RIGHT", wrapButton.frame, "RIGHT", padding, 0},
-                    [4] = {"BOTTOM", lastButton.frame, "BOTTOM", 0, -padding}
+                    [4] = {"BOTTOM", lastButton.frame, "BOTTOM", 0, -padding},
                 },
                 UP = {
                     [1] = {"TOP", lastButton.frame, "TOP", 0, padding},
                     [2] = {"LEFT", buttons[1].frame, "LEFT", -padding, 0},
                     [3] = {"RIGHT", wrapButton.frame, "RIGHT", padding, 0},
-                    [4] = {"BOTTOM", buttons[1].frame, "BOTTOM", 0, -padding}
-                }
+                    [4] = {"BOTTOM", buttons[1].frame, "BOTTOM", 0, -padding},
+                },
             },
             LEFT = {
                 DOWN = {
                     [1] = {"TOP", self.anchor, "TOP", 0, padding},
                     [2] = {"LEFT", wrapButton.frame, "LEFT", -padding, 0},
                     [3] = {"RIGHT", buttons[1].frame, "RIGHT", padding, 0},
-                    [4] = {"BOTTOM", lastButton.frame, "BOTTOM", 0, -padding}
+                    [4] = {"BOTTOM", lastButton.frame, "BOTTOM", 0, -padding},
                 },
                 UP = {
                     [1] = {"TOP", lastButton.frame, "TOP", 0, padding},
                     [2] = {"LEFT", wrapButton.frame, "LEFT", -padding, 0},
                     [3] = {"RIGHT", buttons[1].frame, "RIGHT", padding, 0},
-                    [4] = {"BOTTOM", buttons[1].frame, "BOTTOM", 0, -padding}
-                }
+                    [4] = {"BOTTOM", buttons[1].frame, "BOTTOM", 0, -padding},
+                },
             },
             UP = {
                 DOWN = {
                     [1] = {"TOP", wrapButton.frame, "TOP", 0, padding},
                     [2] = {"LEFT", buttons[1].frame, "LEFT", -padding, 0},
                     [3] = {"RIGHT", lastButton.frame, "RIGHT", padding, 0},
-                    [4] = {"BOTTOM", buttons[1].frame, "BOTTOM", 0, -padding}
+                    [4] = {"BOTTOM", buttons[1].frame, "BOTTOM", 0, -padding},
                 },
                 UP = {
                     [1] = {"TOP", wrapButton.frame, "TOP", 0, padding},
                     [2] = {"LEFT", lastButton.frame, "LEFT", -padding, 0},
                     [3] = {"RIGHT", buttons[1].frame, "RIGHT", padding, 0},
-                    [4] = {"BOTTOM", buttons[1].frame, "BOTTOM", 0, -padding}
-                }
+                    [4] = {"BOTTOM", buttons[1].frame, "BOTTOM", 0, -padding},
+                },
             },
             DOWN = {
                 DOWN = {
                     [1] = {"TOP", buttons[1].frame, "TOP", 0, padding},
                     [2] = {"LEFT", buttons[1].frame, "LEFT", -padding, 0},
                     [3] = {"RIGHT", lastButton.frame, "RIGHT", padding, 0},
-                    [4] = {"BOTTOM", wrapButton.frame, "BOTTOM", 0, -padding}
+                    [4] = {"BOTTOM", wrapButton.frame, "BOTTOM", 0, -padding},
                 },
                 UP = {
                     [1] = {"TOP", buttons[1].frame, "TOP", 0, padding},
                     [2] = {"LEFT", lastButton.frame, "LEFT", -padding, 0},
                     [3] = {"RIGHT", buttons[1].frame, "RIGHT", padding, 0},
-                    [4] = {"BOTTOM", wrapButton.frame, "BOTTOM", 0, -padding}
-                }
-            }
+                    [4] = {"BOTTOM", wrapButton.frame, "BOTTOM", 0, -padding},
+                },
+            },
         })
 
         self:UpdateBackdrop()
@@ -472,7 +469,7 @@ local methods = {
                 self:RemoveButton()
             end
         end
-    end
+    end,
 }
 
 -- *------------------------------------------------------------------------
@@ -538,7 +535,7 @@ local function Constructor()
         FloatingBG = FloatingBG,
         addButton = addButton,
         removeButton = removeButton,
-        barID = barID
+        barID = barID,
     }
 
     frame.obj, anchor.obj, addButton.obj, removeButton.obj, backdrop.obj = widget, widget, widget, widget, widget

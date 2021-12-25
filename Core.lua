@@ -33,11 +33,6 @@ function addon:OnInitialize()
     -- self.barProgress = "%B progress: %progressColor%%c/%t%color%%if(%p>0, (%p%%),)if%"
     self.barProgress = [[function(info)
         return format("Progress: %s %s%d/%d|r", info.barNameLong, info.progressColor, info.progressCount, info.progressTotal)
-        -- local barDB = bar:GetBarDB()
-        -- local barID = bar:GetBarID()
-        -- local progressCount, progressTotal = bar:GetProgress()
-
-        -- return format("Progress: %s %d/%d", bar:GetBarTitle(), progressCount, progressTotal)
     end]]
     self.withObjective = [[function(info)
         local percent = floor((info.newCount / info.objective.count) * 100)
@@ -173,7 +168,7 @@ end
 function addon:CloneTable(orig)
     -- https://forum.cockos.com/showthread.php?t=221712
     local copy
-    if type(orig) == 'table' then
+    if type(orig) == "table" then
         copy = {}
         for orig_key, orig_value in pairs(orig) do
             copy[self:CloneTable(orig_key)] = self:CloneTable(orig_value)
