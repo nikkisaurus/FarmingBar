@@ -19,8 +19,8 @@ local methods = {
     end,
 
     LoadCode = function(self, ...)
-        self.editbox:SetUserData("dbArgs", {...})
-        self.editbox:SetText(addon:GetDBValue(unpack(self.editbox:GetUserData("dbArgs"))))
+        self.editbox:SetUserData("info", {...})
+        self.editbox:SetText(addon:GetDBValue(unpack(self.editbox:GetUserData("info"))))
         self.frame:Show()
     end,
 
@@ -44,8 +44,8 @@ local function Constructor()
     local editbox = AceGUI:Create("MultiLineEditBox")
     addon.indent.enable(editbox.editBox, _, 4) -- adds syntax highlighting
     editbox:SetCallback("OnEnterPressed", function(self, _, text)
-        tinsert(self:GetUserData("dbArgs"), text)
-        addon:SetDBValue(unpack(self:GetUserData("dbArgs")))
+        local info = self:GetUserData("info")
+        addon:SetDBValue(info[1], info[2], text)
         self.obj:Release()
     end)
     window:AddChild(editbox)

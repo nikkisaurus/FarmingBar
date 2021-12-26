@@ -23,6 +23,7 @@ local methods = {
 
 local function Constructor()
     local frame = AceGUI:Create("MultiLineEditBox")
+    addon.indent.enable(frame.editBox, _, 4) -- adds syntax highlighting
 
     local expandButton = CreateFrame("Button", Type .. AceGUI:GetNextWidgetNum(Type) .. "ExpandButton", frame.frame, "UIPanelButtonTemplate")
     expandButton:SetText(L["Expand"])
@@ -31,7 +32,7 @@ local function Constructor()
     expandButton:SetPoint("LEFT", frame.button, "RIGHT", 4, 0)
     expandButton:SetScript("OnClick", function()
         local scope, key = unpack(frame:GetUserData("info"))
-        local editor = AceGUI:Create("FarmingBar_Editor")
+        local editor = LibStub("AceGUI-3.0", true):Create("FarmingBar_Editor")
         editor:SetTitle(format("%s %s", L.addon, L["Editor"]))
         editor:LoadCode(scope, key)
         editor:SetCallback("OnClose", function(widget)

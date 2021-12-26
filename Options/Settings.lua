@@ -313,46 +313,11 @@ function addon:GetSettingsOptions()
                                             get = function(info)
                                                 return addon:GetDBValue("global", "settings.alerts.bar.format.progress")
                                             end,
+                                            set = function(_, value)
+                                                addon:SetDBValue("global", "settings.alerts.bar.format.progress", value)
+                                            end,
                                             arg = {"global", "settings.alerts.bar.format.progress"},
                                         },
-                                        -- luaFormat = {
-                                        --     order = 5,
-                                        --     type = "execute",
-                                        --     name = L["Expand"],
-                                        --     dialogControl = "FarmingBar_MultiLineEditBox",
-                                        --     get = function(info, expandButton)
-                                        --         if not info then
-                                        --             LibStub("AceConfigRegistry-3.0"):GetOptionsTable(addonName, "dialog", "FarmingBar-1.0").args.settings.args.global.args.alerts.args.bar.args.toggle.args.luaFormat.func = function()
-
-                                        --                 local editor = LibStub("AceGUI-3.0", true):Create("FarmingBar_Editor")
-                                        --                 editor:SetTitle(format("%s %s", L.addon, L["Editor"]))
-                                        --                 editor:LoadCode("global", "settings.alerts.bar.format.progress")
-                                        --                 editor:SetCallback("OnClose", function(widget)
-                                        --                     widget.frame:Hide()
-                                        --                     ACD:SelectGroup(addonName, "settings")
-                                        --                     ACD:Open(addonName)
-                                        --                 end)
-                                        --                 editor.frame:Show()
-
-                                        --                 AceGUI:GetWidgetCount("FarmingBar_")
-                                        --             end
-
-                                        --             print(addon.luaFormatInfo)
-                                        --             -- -- expandButton.frame:SetPoint()
-                                        --             -- local anchor = LibStub("AceConfigRegistry-3.0"):GetOptionsTable(addonName, "dialog", "FarmingBar-1.0").args.settings.args.global.args.alerts.args.bar.args.toggle.args.format
-                                        --             -- print(anchor)
-                                        --             -- for k, v in pairs(anchor) do
-                                        --             --     print(k, v)
-                                        --             -- end
-                                        --             -- expandButton:SetPoint("LEFT", anchor, "RIGHT", 4, 0)
-
-                                        --             return "global.args.alerts.args.bar.args.toggle.args.luaFormat"
-                                        --         else
-                                        --             print("Hi")
-                                        --             addon.luaFormatInfo = info
-                                        --         end
-                                        --     end,
-                                        -- },
                                     },
                                 },
                             },
