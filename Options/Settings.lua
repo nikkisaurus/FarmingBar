@@ -267,13 +267,33 @@ function addon:GetSettingsOptions()
                         bar = {
                             order = 1,
                             type = "group",
-                            inline = true,
                             name = L["Bar"],
-                            args = {
-                                toggle = {
+                            args = {                                
+                                chat = {
                                     order = 1,
+                                    type = "toggle",
+                                    name = L["Chat"],
+                                },
+                                screen = {
+                                    order = 2,
+                                    type = "toggle",
+                                    name = L["Screen"],
+                                },
+                                sound = {
+                                    order = 3,
+                                    type = "toggle",
+                                    name = L["Sound"],
+                                    get = function(info)
+                                        return addon:GetDBValue("global", "settings.alerts.bar.sound.enabled")
+                                    end,
+                                    set = function(info, value)
+                                        addon:SetDBValue("global", "settings.alerts.bar.sound.enabled", value)
+                                    end,
+                                },
+                                format = {
+                                    order = 4,
                                     type = "group",
-                                    name = L["Alerts"],
+                                    name = L["Formats"],
                                     inline = true,
                                     get = function(info)
                                         return addon:GetDBValue("global", "settings.alerts.bar." .. info[#info])
@@ -282,29 +302,8 @@ function addon:GetSettingsOptions()
                                         self:SetDBValue("global", "settings.alerts.bar." .. info[#info], value)
                                     end,
                                     args = {
-                                        chat = {
-                                            order = 1,
-                                            type = "toggle",
-                                            name = L["Chat"],
-                                        },
-                                        screen = {
-                                            order = 2,
-                                            type = "toggle",
-                                            name = L["Screen"],
-                                        },
-                                        sound = {
-                                            order = 3,
-                                            type = "toggle",
-                                            name = L["Sound"],
-                                            get = function(info)
-                                                return addon:GetDBValue("global", "settings.alerts.bar.sound.enabled")
-                                            end,
-                                            set = function(info, value)
-                                                addon:SetDBValue("global", "settings.alerts.bar.sound.enabled", value)
-                                            end,
-                                        },
                                         format = {
-                                            order = 4,
+                                            order = 1,
                                             type = "input",
                                             name = L["Progress Format"],
                                             width = "full",
@@ -317,15 +316,87 @@ function addon:GetSettingsOptions()
                                                 addon:SetDBValue("global", "settings.alerts.bar.format.progress", value)
                                             end,
                                             arg = {"global", "settings.alerts.bar.format.progress"},
+                                        },                                        
+                                        previewHeader = {
+                                            order = 2,
+                                            type = "header",
+                                            name = L["Preview"]
+                                        },
+                                        previewCount = {
+                                            order = 3,
+                                            type = "range",
+                                            name = L["Completed Objectives"],
+                                            min = 0,
+                                            max = addon.maxButtons,
+                                            step = 1,
+                                            get = function()
+                                                return addon:GetDBValue("global", "settings.alerts.bar.preview.count")
+                                            end,
+                                            set = function(_, value)
+                                                addon:SetDBValue("global", "settings.alerts.bar.preview.count", value)
+                                            end,
+                                        },
+                                        previewTotal = {
+                                            order = 4,
+                                            type = "range",
+                                            name = L["Total Objectives"],
+                                            min = 0,
+                                            max = addon.maxButtons,
+                                            step = 1,
+                                            get = function()
+                                                return addon:GetDBValue("global", "settings.alerts.bar.preview.total")
+                                            end,
+                                            set = function(_, value)
+                                                addon:SetDBValue("global", "settings.alerts.bar.preview.total", value)
+                                            end,
+                                        },
+                                        alertType = {
+                                            order = 5,
+                                            type = "select",
+                                            style = "dropdown",
+                                            name = L["Alert Type"],
+                                            values = function()
+                                                return {
+                                                    complete = L["Gain"],
+                                                    lost = L["Loss"],
+                                                }
+                                            end,
+                                            get = function()
+                                                return addon:GetDBValue("global", "settings.alerts.bar.preview.alertType")
+                                            end,
+                                            set = function(_, value)
+                                                addon:SetDBValue("global", "settings.alerts.bar.preview.alertType", value)
+                                            end,
+                                        },
+                                        toggle = {
+                                            order = 6,
+                                            type = "toggle",
+                                            name = L["Use Long Name"],
+                                            get = function()
+                                                return addon:GetDBValue("global", "settings.alerts.bar.preview.withTitle")
+                                            end,
+                                            set = function(_, value)
+                                                addon:SetDBValue("global", "settings.alerts.bar.preview.withTitle", value)
+                                            end,
+                                        },
+                                        preview = {
+                                            order = 7,
+                                            type = "input",
+                                            name = " ",
+                                            width = "full",
+                                            disabled = true,
+                                            get = function()
+                                                return addon:PreviewBarAlert()
+                                            end,               
                                         },
                                     },
                                 },
+
                             },
                         },
                         button = {
                             order = 1,
                             type = "group",
-                            inline = true,
                             name = L["Button"],
                             args = {
                                 toggle = {
@@ -361,14 +432,29 @@ function addon:GetSettingsOptions()
                                                 self:SetDBValue("global", "settings.alerts.button.sound.enabled", value)
                                             end,
                                         },
+                                        -- format = {
+                                        --     order = 4,
+                                        --     type = "input",
+                                        --     name = L["Progress Format"],
+                                        --     width = "full",
+                                        --     multiline = true,
+                                        --     dialogControl = "FarmingBar_MultiLineEditBox",
+                                        --     get = function(info)
+                                        --         return addon:GetDBValue("global", "settings.alerts.bar.format.progress")
+                                        --     end,
+                                        --     set = function(_, value)
+                                        --         addon:SetDBValue("global", "settings.alerts.bar.format.progress", value)
+                                        --     end,
+                                        --     arg = {"global", "settings.alerts.bar.format.progress"},
+                                        -- },
                                     },
                                 },
                             },
                         },
+
                         tracker = {
                             order = 1,
                             type = "group",
-                            inline = true,
                             name = L["Tracker"],
                             args = {
                                 toggle = {

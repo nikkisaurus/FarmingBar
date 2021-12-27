@@ -48,6 +48,9 @@ local function Constructor()
         addon:SetDBValue(info[1], info[2], text)
         self.obj:Release()
     end)
+    editbox:SetCallback("OnTextChanged", function()
+        frame:SetStatusText(addon:PreviewBarAlert())
+    end)
     window:AddChild(editbox)
 
     local widget = {

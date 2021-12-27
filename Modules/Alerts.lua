@@ -6,7 +6,30 @@ local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 local LSM = LibStub("LibSharedMedia-3.0")
 
 -- *------------------------------------------------------------------------
--- Send alerts
+
+function addon:PreviewBarAlert()
+    local barIDName = format("%s %s", L["Bar"], 1)
+    local progressCount = self:GetDBValue("global", "settings.alerts.bar.preview.count")
+    local progressTotal = self:GetDBValue("global", "settings.alerts.bar.preview.total")
+    local alertType = self:GetDBValue("global", "settings.alerts.bar.preview.alertType")
+
+    local alertInfo = {
+        progressCount = progressCount,
+        progressTotal = progressTotal,
+        barIDName = barIDName,
+        barNameLong = format("%s (%s)", barIDName, L["My Bar Name"]),
+        progressColor = (progressCount == progressTotal and alertType ~= "lost") and "|cff00ff00" or alertType == "complete" and "|cffffcc00" or alertType == "lost" and "|cffff0000",
+    }
+
+    if alertType == "complete" and progressCount == 0 then
+        return ""
+    elseif progressTotal < progressCount then
+        return format("%s: %s", L.Error, L.InvalidBarPreviewTotal)
+    else
+        return "|cffffffff" .. assert(loadstring("return " .. self:GetDBValue("global", "settings.alerts.bar.format.progress")))()(alertInfo) .. "|r"
+    end
+end
+
 
 function addon:SendAlert(alertType, alert, alertInfo, soundID, bar, isTracker, barAlert)
     local barDB = self:GetDBValue("char", "bars")[bar:GetBarID()]

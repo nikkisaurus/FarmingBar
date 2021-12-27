@@ -18,6 +18,7 @@ L.addon = "Farming Bar"
 
 -- Shared
 L["Error"] = true
+L.InvalidBarPreviewTotal = "Progress total cannot be larger than progress count."
 
 ------------------------------------------------------------
 
@@ -317,6 +318,7 @@ L.Options_settings_profile_count_color = "Sets the custom color for button count
 
 -- Frame\Widgets\FarmingBar_BarButton.lua
 L["Alerts"] = true
+L["Alert Type"] = true
 L["All Bars"] = true
 L["Alpha"] = true
 L["Anchor"] = true
@@ -342,16 +344,20 @@ L["Expand"] = true
 L["Font Face"] = true
 L["Font Outline"] = true
 L["Font Size"] = true
+L["Formats"] = true
+L["Gain"] = true
 L["Growth Direction"] = true
 L["Growth Type"] = true
 L["Hidden"] = true
 L["Left"] = true
 L["Load Template"] = true
 L["Load User Template"] = true
+L["Loss"] = true
 L["Monochrome"] = true
 L["Movable"] = true
 L["Mute All"] = true
 L["Muted"] = true
+L["My Bar Name"] = true
 L["None"] = true
 L["Normal"] = true
 L["Number of Buttons"] = true
@@ -360,6 +366,7 @@ L["Operations"] = true
 L["Outline"] = true
 L["Padding"] = true
 L["Point"] = true
+L["Preview"] = true
 L["Progress Format"] = true
 L["Reindex Buttons"] = true
 L["Remove"] = true
@@ -383,11 +390,13 @@ L["Export Objective"] = true
 L["Title"] = true
 L["Top"] = true
 L["Topleft"] = true
+L["Total Objectives"] = true
 L["Tracker"] = true
 L["Icon"] = true
 L["Recipe"] = true
 L["Topright"] = true
 L["Up"] = true
+L["Use Long Name"] = true
 L["Visibility"] = true
 L["X Offset"] = true
 L["Y Offset"] = true
