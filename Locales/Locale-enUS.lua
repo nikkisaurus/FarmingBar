@@ -18,6 +18,8 @@ L.addon = "Farming Bar"
 
 -- Shared
 L["Error"] = true
+L.InvalidFunction = "Input must be a function."
+L.InvalidReturn = "Function must return a string"
 L.InvalidBarPreviewTotal = "Progress total cannot be larger than progress count."
 
 ------------------------------------------------------------
@@ -40,7 +42,7 @@ L.MissingCraftRecipeName = "Please specify a Recipe String"
 L.UnknownRecipe = "You do not know the recipe: %s"
 
 L.invalidSyntax = function(err)
-    return "Syntax error: " .. err
+    return "Syntax error: " .. (type(err) == "string" and err or "??")
 end
 L.InvalidTrackerID = "Invalid tracker: %s:%s"
 -- L.InvalidTrackerID = function(trackerType, trackerID) return format("Invalid tracker ID: %s:%s", strupper(trackerType), trackerID) end
@@ -338,12 +340,15 @@ L["Completed Objectives"] = true
 L["Count Fontstring"] = true
 L["Disabled"] = true
 L["Down"] = true
-L["Editor"] = true
+L["Lua Editor"] = true
 L["Enabled"] = true
 L["Expand"] = true
+L["Hearthstone"] = true
 L["Font Face"] = true
 L["Font Outline"] = true
 L["Font Size"] = true
+L["Format With Objective"] = true
+L["Format Without Objective"] = true
 L["Formats"] = true
 L["Gain"] = true
 L["Growth Direction"] = true

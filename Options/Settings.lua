@@ -302,25 +302,30 @@ function addon:GetSettingsOptions()
                                         self:SetDBValue("global", "settings.alerts.bar." .. info[#info], value)
                                     end,
                                     args = {
-                                        format = {
+                                        progress = {
                                             order = 1,
                                             type = "input",
                                             name = L["Progress Format"],
                                             width = "full",
                                             multiline = true,
-                                            dialogControl = "FarmingBar_MultiLineEditBox",
+                                            dialogControl = "FarmingBar_LuaEditBox",
                                             get = function(info)
                                                 return addon:GetDBValue("global", "settings.alerts.bar.format.progress")
                                             end,
-                                            set = function(_, value)
+                                            set = function(info, value)
                                                 addon:SetDBValue("global", "settings.alerts.bar.format.progress", value)
                                             end,
-                                            arg = {"global", "settings.alerts.bar.format.progress"},
-                                        },                                        
-                                        previewHeader = {
+                                            arg = {"global", "settings.alerts.bar.format.progress", "PreviewBarAlert"},
+                                        },       
+                                        preview = {
                                             order = 2,
-                                            type = "header",
-                                            name = L["Preview"]
+                                            type = "input",
+                                            name = L["Preview"],
+                                            width = "full",
+                                            disabled = true,
+                                            get = function(info)
+                                                return addon:PreviewBarAlert(addon:GetDBValue("global", "settings.alerts.bar.format.progress"))
+                                            end,  
                                         },
                                         previewCount = {
                                             order = 3,
@@ -379,16 +384,6 @@ function addon:GetSettingsOptions()
                                                 addon:SetDBValue("global", "settings.alerts.bar.preview.withTitle", value)
                                             end,
                                         },
-                                        preview = {
-                                            order = 7,
-                                            type = "input",
-                                            name = " ",
-                                            width = "full",
-                                            disabled = true,
-                                            get = function()
-                                                return addon:PreviewBarAlert()
-                                            end,               
-                                        },
                                     },
                                 },
 
@@ -398,11 +393,32 @@ function addon:GetSettingsOptions()
                             order = 1,
                             type = "group",
                             name = L["Button"],
-                            args = {
-                                toggle = {
+                            args = {                                
+                                chat = {
                                     order = 1,
+                                    type = "toggle",
+                                    name = L["Chat"],
+                                },
+                                screen = {
+                                    order = 2,
+                                    type = "toggle",
+                                    name = L["Screen"],
+                                },
+                                sound = {
+                                    order = 3,
+                                    type = "toggle",
+                                    name = L["Sound"],
+                                    get = function(info)
+                                        return addon:GetDBValue("global", "settings.alerts.button.sound.enabled")
+                                    end,
+                                    set = function(info, value)
+                                        self:SetDBValue("global", "settings.alerts.button.sound.enabled", value)
+                                    end,
+                                },
+                                format = {
+                                    order = 4,
                                     type = "group",
-                                    name = L["Alerts"],
+                                    name = L["Formats"],
                                     inline = true,
                                     get = function(info)
                                         return addon:GetDBValue("global", "settings.alerts.button." .. info[#info])
@@ -410,35 +426,29 @@ function addon:GetSettingsOptions()
                                     set = function(info, value)
                                         self:SetDBValue("global", "settings.alerts.button." .. info[#info], value)
                                     end,
-                                    args = {
-                                        chat = {
+                                    args = {                                        
+                                        withoutObjective = {
                                             order = 1,
-                                            type = "toggle",
-                                            name = L["Chat"],
-                                        },
-                                        screen = {
-                                            order = 2,
-                                            type = "toggle",
-                                            name = L["Screen"],
-                                        },
-                                        sound = {
-                                            order = 3,
-                                            type = "toggle",
-                                            name = L["Sound"],
+                                            type = "input",
+                                            name = L["Format With Objective"],
+                                            width = "full",
+                                            multiline = true,
+                                            dialogControl = "FarmingBar_LuaEditBox",
                                             get = function(info)
-                                                return addon:GetDBValue("global", "settings.alerts.button.sound.enabled")
+                                                return addon:GetDBValue("global", "settings.alerts.button.format.withoutObjective")
                                             end,
                                             set = function(info, value)
-                                                self:SetDBValue("global", "settings.alerts.button.sound.enabled", value)
+                                                addon:SetDBValue("global", "settings.alerts.button.format.withoutObjective", value)
                                             end,
-                                        },
+                                            arg = {"global", "settings.alerts.button.format.withoutObjective", "PreviewAlert"},
+                                        },  
                                         -- format = {
                                         --     order = 4,
                                         --     type = "input",
                                         --     name = L["Progress Format"],
                                         --     width = "full",
                                         --     multiline = true,
-                                        --     dialogControl = "FarmingBar_MultiLineEditBox",
+                                        --     dialogControl = "FarmingBar_LuaEditBox",
                                         --     get = function(info)
                                         --         return addon:GetDBValue("global", "settings.alerts.bar.format.progress")
                                         --     end,

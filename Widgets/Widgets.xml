@@ -3,6 +3,6 @@
 	<Script file="indent.lua"/>
 	<Script file="FarmingBar_Bar.lua"/>
 	<Script file="FarmingBar_Button.lua"/>
-	<Script file="FarmingBar_Editor.lua"/>
-	<Script file="FarmingBar_MultiLineEditBox.lua"/>
+	<Script file="FarmingBar_LuaEditor.lua"/>
+	<Script file="FarmingBar_LuaEditBox.lua"/>
 </Ui>

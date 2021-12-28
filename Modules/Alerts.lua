@@ -7,7 +7,7 @@ local LSM = LibStub("LibSharedMedia-3.0")
 
 -- *------------------------------------------------------------------------
 
-function addon:PreviewBarAlert()
+function addon:PreviewBarAlert(input)
     local barIDName = format("%s %s", L["Bar"], 1)
     local progressCount = self:GetDBValue("global", "settings.alerts.bar.preview.count")
     local progressTotal = self:GetDBValue("global", "settings.alerts.bar.preview.total")
@@ -26,10 +26,59 @@ function addon:PreviewBarAlert()
     elseif progressTotal < progressCount then
         return format("%s: %s", L.Error, L.InvalidBarPreviewTotal)
     else
-        return "|cffffffff" .. assert(loadstring("return " .. self:GetDBValue("global", "settings.alerts.bar.format.progress")))()(alertInfo) .. "|r"
+        local func, err = loadstring("return " .. (input or self:GetDBValue("global", "settings.alerts.bar.format.progress") or ""))
+        local success, error = pcall(func, addon, alertInfo)
+
+        -- Syntax error
+        if not success then
+            return L.invalidSyntax(error), true
+        elseif not assert(func)() then 
+            return L.InvalidFunction, true
+        elseif not assert(func)()(alertInfo) or type(assert(func)()(alertInfo)) ~= "string" then
+            return L.InvalidReturn, true
+        else
+            return "|cffffffff" .. assert(func)()(alertInfo) .. "|r"
+        end
     end
 end
 
+
+function addon:PreviewAlert(input, info)
+    local objective = self:GetDBValue("global", "settings.alerts.button.preview.objective")
+    local oldCount = self:GetDBValue("global", "settings.alerts.button.preview.oldCount")
+    local newCount = self:GetDBValue("global", "settings.alerts.button.preview.newCount")
+    local difference = newCount - oldCount
+
+    local alertInfo = {
+        objectiveTitle = L["Hearthstone"],
+        objective = {
+            color = (objective and objective > 0) and
+                (newCount >= objective and "|cff00ff00" or "|cffffcc00") or "",
+            count = objective
+        },
+        oldCount = oldCount,
+        newCount = newCount,
+        difference = {
+            sign = difference > 0 and "+" or difference < 0 and "",
+            color = difference > 0 and "|cff00ff00" or difference < 0 and "|cffff0000",
+            count = difference
+        }
+    }
+    
+    local func, err = loadstring("return " .. (input or self:GetDBValue(info[1], info[2]) or ""))
+    local success, error = pcall(func, addon, alertInfo)
+
+    -- Syntax error
+    if not success then
+        return L.invalidSyntax(error), true
+    elseif not assert(func)() then 
+        return L.InvalidFunction, true
+    elseif not assert(func)()(alertInfo) or type(assert(func)()(alertInfo)) ~= "string" then
+        return L.InvalidReturn, true
+    else
+        return "|cffffffff" .. assert(func)()(alertInfo) .. "|r"
+    end
+end
 
 function addon:SendAlert(alertType, alert, alertInfo, soundID, bar, isTracker, barAlert)
     local barDB = self:GetDBValue("char", "bars")[bar:GetBarID()]

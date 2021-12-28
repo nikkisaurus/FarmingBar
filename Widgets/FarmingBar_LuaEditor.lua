@@ -7,7 +7,7 @@ local ACD = LibStub("AceConfigDialog-3.0")
 local AceGUI = LibStub("AceGUI-3.0", true)
 local LSM = LibStub("LibSharedMedia-3.0")
 
-local Type = "FarmingBar_Editor"
+local Type = "FarmingBar_LuaEditor"
 local Version = 1
 
 -- *------------------------------------------------------------------------
@@ -18,10 +18,31 @@ local methods = {
         self.frame:Hide()
     end,
 
-    LoadCode = function(self, ...)
-        self.editbox:SetUserData("info", {...})
-        self.editbox:SetText(addon:GetDBValue(unpack(self.editbox:GetUserData("info"))))
+    LoadCode = function(self, info, text)
+        self.editbox:SetUserData("info", info)
+        self.editbox:SetText(text)
         self.frame:Show()
+    end,
+
+    SetStatusText = function(self, info)
+        local func = addon[info[3]] and addon[info[3]]
+        if not func then return end
+
+        local editbox = self.editbox
+        local window = self.window
+
+        editbox.editBox:HookScript("OnUpdate", function()
+            local preview, err = func(addon, editbox:GetText(), info[4])
+            if err then
+                editbox.button:Disable()
+                window:SetStatusText(preview)
+            else
+                editbox.button:Enable()
+                if preview ~= window.statustext:GetText() then
+                    window:SetStatusText(preview)
+                end
+            end
+        end)
     end,
 
     SetTitle = function(self, title)
@@ -43,21 +64,21 @@ local function Constructor()
 
     local editbox = AceGUI:Create("MultiLineEditBox")
     addon.indent.enable(editbox.editBox, _, 4) -- adds syntax highlighting
+    editbox:SetLabel("")
+    window:AddChild(editbox)
+
     editbox:SetCallback("OnEnterPressed", function(self, _, text)
         local info = self:GetUserData("info")
         addon:SetDBValue(info[1], info[2], text)
         self.obj:Release()
     end)
-    editbox:SetCallback("OnTextChanged", function()
-        frame:SetStatusText(addon:PreviewBarAlert())
-    end)
-    window:AddChild(editbox)
 
     local widget = {
         type = Type,
         window = window,
         frame = frame,
         editbox = editbox,
+        statustext = window.statustext
     }
 
     window.obj, frame.obj, editbox.obj = widget, widget, widget
