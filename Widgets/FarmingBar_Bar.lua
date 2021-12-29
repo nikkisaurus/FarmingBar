@@ -76,20 +76,31 @@ local function anchor_OnDragStop(self)
     widget:SetDBValue("point", {frame:GetPoint()})
 end
 
-local function anchor_OnUpdate(self)
+local function anchor_OnEnter(self)
     local widget = self.obj
-    local frame = widget.frame
-    local barID = widget:GetBarID()
+    local barDB = widget:GetBarDB()
 
-    -- Check mouseover
-    local focus = GetMouseFocus() and GetMouseFocus():GetName() or ""
-    if strfind(focus, "^FarmingBar_B") then
-        local focusFrame = _G[focus].obj
-        if focusFrame:GetBarID() == barID then
-            widget:SetAlpha(focus)
-        end
-    else
-        widget:SetAlpha()
+    widget:SetAlpha(true)
+
+    local tooltip = widget:GetUserData("tooltip")
+    if tooltip and not addon.DragFrame:GetObjective() then
+        addon.tooltip:ClearLines()
+        addon.tooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT", 0, 0)
+        addon[tooltip](addon, widget, addon.tooltip)
+        addon.tooltip:Show()
+    end
+end
+
+local function anchor_OnLeave(self)
+    local widget = self.obj
+    local barDB = widget:GetBarDB()
+
+    widget:SetAlpha(false)
+
+    local tooltip = widget:GetUserData("tooltip")
+    if tooltip and not addon.DragFrame:GetObjective() then
+        addon.tooltip:ClearLines()
+        addon.tooltip:Hide()
     end
 end
 
@@ -236,31 +247,14 @@ local methods = {
         self:SetQuickButtonStates()
     end,
 
-    SetAlpha = function(self, focus)
-        local anchor = self.anchor
-        local frame = self.frame
+    SetAlpha = function(self, hasFocus)
         local db = self:GetBarDB()
+        local alpha = (hasFocus or (not db.mouseover and not db.anchorMouseover)) and db.alpha or 0
+        self.anchor:SetAlpha(alpha)
 
-        local mouseoverAnchor = db.anchorMouseover and strfind(focus or "", self.anchor:GetName())
-        local mouseover = not db.anchorMouseover and db.mouseover
-        local mouseoverFocus = mouseover and focus
-        local noMouseover = not db.anchorMouseover and not db.mouseover
-
-        -- Anchor alpha
-        if mouseoverAnchor or mouseoverFocus or noMouseover then
-            -- Show
-            anchor:SetAlpha(db.alpha)
-        else
-            -- Hide
-            anchor:SetAlpha(0)
-        end
-
-        local alpha = (mouseover and not focus) and 0 or db.alpha
-
-        frame:SetAlpha(alpha)
         for _, button in pairs(self:GetUserData("buttons")) do
-            local showEmpty = db.showEmpty or not button:IsEmpty() or addon.cursorItem
-            button:SetAlpha(showEmpty and alpha or 0)
+            local showButton = (db.showEmpty or not button:IsEmpty()) and (hasFocus or not db.mouseover or db.anchorMouseover) and not addon.cursorItem
+            button:SetAlpha(showButton and db.alpha or 0)
         end
     end,
 
@@ -504,7 +498,8 @@ local function Constructor()
     anchor:SetScript("OnDragStart", anchor_OnDragStart)
     anchor:SetScript("OnDragStop", anchor_OnDragStop)
     anchor:SetScript("PostClick", anchor_PostClick)
-    anchor:SetScript("OnUpdate", anchor_OnUpdate)
+    anchor:SetScript("OnEnter", anchor_OnEnter)
+    anchor:SetScript("OnLeave", anchor_OnLeave)
 
     anchor:SetFrameStrata("MEDIUM")
 
@@ -539,6 +534,20 @@ local function Constructor()
     }
 
     frame.obj, anchor.obj, addButton.obj, removeButton.obj, backdrop.obj = widget, widget, widget, widget, widget
+
+    backdrop:SetScript("OnEnter", function(self)
+        local barDB = self.obj:GetUserData("barDB")
+        if not barDB.anchorMouseover then
+            widget:SetAlpha(true)
+        end
+    end)
+
+    backdrop:SetScript("OnLeave", function(self)
+        local barDB = self.obj:GetUserData("barDB")
+        if barDB.mouseover or barDB.anchorMouseover then
+            widget:SetAlpha(false)
+        end
+    end)
 
     for method, func in pairs(methods) do
         widget[method] = func

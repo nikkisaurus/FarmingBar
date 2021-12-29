@@ -81,6 +81,7 @@ function addon:OnInitialize()
 end
 
 function addon:OnEnable()
+    addon.tooltip = CreateFrame("GameTooltip", "FarmingBar_Tooltip", UIParent, "GameTooltipTemplate")
     -- self:Initialize_Masque()
     self:InitializeBars()
     self:InitializeEvents()
@@ -196,4 +197,12 @@ function addon:GetModifierString()
         mod = "alt" .. (mod ~= "" and "-" or "") .. mod
     end
     return mod
+end
+
+function addon:IsTooltipMod()
+    if not self:GetDBValue("global", "settings.hints.enableModifier") then
+        return true
+    else
+        return _G["Is" .. self:GetDBValue("global", "settings.hints.modifier") .. "KeyDown"]()
+    end
 end

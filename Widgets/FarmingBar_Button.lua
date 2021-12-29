@@ -65,7 +65,7 @@ local postClickMethods = {
 
     moveAllToBank = function(self, ...)
         print("Keybind in maintenenance.")
-    end
+    end,
 }
 
 -- *------------------------------------------------------------------------
@@ -108,6 +108,34 @@ end
 
 local function frame_OnDragStop(self)
     self.obj:SetUserData("isDragging")
+end
+
+local function frame_OnEnter(self)
+    local widget = self.obj
+    local barDB = widget:GetBarDB()
+
+    widget:GetBar():SetAlpha(true)
+
+    local tooltip = widget:GetUserData("tooltip")
+    if tooltip and not addon.DragFrame:GetObjective() then
+        addon.tooltip:ClearLines()
+        addon.tooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT", 0, 0)
+        addon[tooltip](addon, widget, addon.tooltip)
+        addon.tooltip:Show()
+    end
+end
+
+local function frame_OnLeave(self)
+    local widget = self.obj
+    local barDB = widget:GetBarDB()
+
+    widget:GetBar():SetAlpha(false)
+
+    local tooltip = widget:GetUserData("tooltip")
+    if tooltip and not addon.DragFrame:GetObjective() then
+        addon.tooltip:ClearLines()
+        addon.tooltip:Hide()
+    end
 end
 
 local function frame_OnEvent(self, event, ...)
@@ -335,6 +363,10 @@ local methods = {
         end
     end,
 
+    GetBar = function(self)
+        return self:GetUserData("bar")
+    end,
+
     GetBarDB = function(self)
         return self:GetUserData("barDB")
     end,
@@ -397,9 +429,7 @@ local methods = {
     end,
 
     SetAlpha = function(self, alpha)
-        if alpha then
-            self.frame:SetAlpha(alpha)
-        end
+        self.frame:SetAlpha(alpha or self:GetBarDB().alpha)
     end,
 
     SetAttribute = function(self)
@@ -589,7 +619,7 @@ local methods = {
 
     SwapButtons = function(self, movingButton)
         local buttonDB = {
-            trackers = {}
+            trackers = {},
         }
         local currentButtonDB = self:GetButtonDB()
         local moveButtonDB = movingButton[1]:GetButtonDB()
@@ -798,7 +828,7 @@ local methods = {
         else
             self.Objective:SetText("")
         end
-    end
+    end,
 }
 
 -- *------------------------------------------------------------------------
@@ -814,7 +844,8 @@ local function Constructor()
     frame:SetScript("OnDragStop", frame_OnDragStop)
     frame:SetScript("OnEvent", frame_OnEvent)
     frame:SetScript("OnReceiveDrag", frame_OnReceiveDrag)
-    frame:SetScript("OnUpdate", frame_OnUpdate)
+    frame:SetScript("OnEnter", frame_OnEnter)
+    frame:SetScript("OnLeave", frame_OnLeave)
     frame:SetScript("PostClick", frame_PostClick)
 
     frame:RegisterEvent("SPELL_UPDATE_COOLDOWN")
@@ -898,7 +929,7 @@ local function Constructor()
         Objective = Objective,
         Cooldown = Cooldown,
         objectiveEditBox = objectiveEditBox,
-        quickAddEditBox = quickAddEditBox
+        quickAddEditBox = quickAddEditBox,
     }
 
     frame.obj, objectiveEditBox.obj, quickAddEditBox.obj = widget, widget, widget
