@@ -315,7 +315,7 @@ function addon:GetSettingsOptions()
                                             set = function(info, value)
                                                 addon:SetDBValue("global", "settings.alerts.bar.format.progress", value)
                                             end,
-                                            arg = {"global", "settings.alerts.bar.format.progress", "PreviewBarAlert"},
+                                            arg = {"global", "settings.alerts.bar.format.progress", "PreviewAlert", {"bar"}},
                                         },       
                                         preview = {
                                             order = 2,
@@ -440,7 +440,7 @@ function addon:GetSettingsOptions()
                                             set = function(info, value)
                                                 addon:SetDBValue("global", "settings.alerts.button.format.withoutObjective", value)
                                             end,
-                                            arg = {"global", "settings.alerts.button.format.withoutObjective", "PreviewAlert"},
+                                            arg = {"global", "settings.alerts.button.format.withoutObjective", "PreviewAlert", {"button"}},
                                         },  
                                         -- format = {
                                         --     order = 4,

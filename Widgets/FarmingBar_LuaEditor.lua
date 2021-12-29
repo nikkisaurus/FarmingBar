@@ -18,6 +18,11 @@ local methods = {
         self.frame:Hide()
     end,
 
+    OnRelease = function(self)
+        self.window.obj:Release()
+        self.editbox.obj:Release()
+    end,
+
     LoadCode = function(self, info, text)
         self.editbox:SetUserData("info", info)
         self.editbox:SetText(text)
@@ -25,22 +30,24 @@ local methods = {
     end,
 
     SetStatusText = function(self, info)
-        local func = addon[info[3]] and addon[info[3]]
+        local scope, key, func, args = unpack(info)
         if not func then return end
 
         local editbox = self.editbox
         local window = self.window
 
         editbox.editBox:HookScript("OnUpdate", function()
-            local preview, err = func(addon, editbox:GetText(), info[4])
-            if err then
+            -- Update preview while typing
+            local preview, err = func(addon, addon.unpack(args, {}), editbox:GetText())
+            local saved = func(addon, addon.unpack(args, {}), _, info)
+            local changed = preview ~= saved
+
+            window:SetStatusText(changed and preview or saved)
+
+            if err or not changed then
                 editbox.button:Disable()
-                window:SetStatusText(preview)
             else
                 editbox.button:Enable()
-                if preview ~= window.statustext:GetText() then
-                    window:SetStatusText(preview)
-                end
             end
         end)
     end,

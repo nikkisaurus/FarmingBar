@@ -427,7 +427,7 @@ function addon:ValidateCustomCondition(condition)
     local func, err = loadstring(condition)
     -- Syntax error
     if err then
-        return false, L.invalidSyntax(err)
+        return false, L.InvalidSyntax(err)
     end
 
     local tbl = func()

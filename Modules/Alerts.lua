@@ -8,75 +8,98 @@ local LSM = LibStub("LibSharedMedia-3.0")
 -- *------------------------------------------------------------------------
 
 function addon:PreviewBarAlert(input)
-    local barIDName = format("%s %s", L["Bar"], 1)
-    local progressCount = self:GetDBValue("global", "settings.alerts.bar.preview.count")
-    local progressTotal = self:GetDBValue("global", "settings.alerts.bar.preview.total")
-    local alertType = self:GetDBValue("global", "settings.alerts.bar.preview.alertType")
+    -- local barIDName = format("%s %s", L["Bar"], 1)
+    -- local progressCount = self:GetDBValue("global", "settings.alerts.bar.preview.count")
+    -- local progressTotal = self:GetDBValue("global", "settings.alerts.bar.preview.total")
+    -- local alertType = self:GetDBValue("global", "settings.alerts.bar.preview.alertType")
 
-    local alertInfo = {
-        progressCount = progressCount,
-        progressTotal = progressTotal,
-        barIDName = barIDName,
-        barNameLong = format("%s (%s)", barIDName, L["My Bar Name"]),
-        progressColor = (progressCount == progressTotal and alertType ~= "lost") and "|cff00ff00" or alertType == "complete" and "|cffffcc00" or alertType == "lost" and "|cffff0000",
-    }
+    -- local alertInfo = {
+    --     progressCount = progressCount,
+    --     progressTotal = progressTotal,
+    --     barIDName = barIDName,
+    --     barNameLong = format("%s (%s)", barIDName, L["My Bar Name"]),
+    --     progressColor = (progressCount == progressTotal and alertType ~= "lost") and "|cff00ff00" or alertType == "complete" and "|cffffcc00" or alertType == "lost" and "|cffff0000",
+    -- }
 
-    if alertType == "complete" and progressCount == 0 then
-        return ""
-    elseif progressTotal < progressCount then
-        return format("%s: %s", L.Error, L.InvalidBarPreviewTotal)
-    else
-        local func, err = loadstring("return " .. (input or self:GetDBValue("global", "settings.alerts.bar.format.progress") or ""))
-        local success, error = pcall(func, addon, alertInfo)
+    -- if alertType == "complete" and progressCount == 0 then
+    --     return ""
+    -- elseif progressTotal < progressCount then
+    --     return format("%s: %s", L.Error, L.InvalidBarPreviewTotal)
+    -- else
+    --     local func, err = loadstring("return " .. (input or self:GetDBValue("global", "settings.alerts.bar.format.progress") or ""))
+    --     local success, error = pcall(func, addon, alertInfo)
 
-        -- Syntax error
-        if not success then
-            return L.invalidSyntax(error), true
-        elseif not assert(func)() then 
-            return L.InvalidFunction, true
-        elseif not assert(func)()(alertInfo) or type(assert(func)()(alertInfo)) ~= "string" then
-            return L.InvalidReturn, true
-        else
-            return "|cffffffff" .. assert(func)()(alertInfo) .. "|r"
-        end
-    end
+    --     -- Syntax error
+    --     if not success then
+    --         return L.InvalidSyntax(error), true
+    --     elseif not assert(func)() then 
+    --         return L.InvalidFunction, true
+    --     elseif not assert(func)()(alertInfo) or type(assert(func)()(alertInfo)) ~= "string" then
+    --         return L.InvalidReturn, true
+    --     else
+    --         return "|cffffffff" .. assert(func)()(alertInfo) .. "|r"
+    --     end
+    -- end
 end
 
+function addon:PreviewAlert(alertType, input, info)
+    local alertInfo
 
-function addon:PreviewAlert(input, info)
-    local objective = self:GetDBValue("global", "settings.alerts.button.preview.objective")
-    local oldCount = self:GetDBValue("global", "settings.alerts.button.preview.oldCount")
-    local newCount = self:GetDBValue("global", "settings.alerts.button.preview.newCount")
-    local difference = newCount - oldCount
-
-    local alertInfo = {
-        objectiveTitle = L["Hearthstone"],
-        objective = {
-            color = (objective and objective > 0) and
-                (newCount >= objective and "|cff00ff00" or "|cffffcc00") or "",
-            count = objective
-        },
-        oldCount = oldCount,
-        newCount = newCount,
-        difference = {
-            sign = difference > 0 and "+" or difference < 0 and "",
-            color = difference > 0 and "|cff00ff00" or difference < 0 and "|cffff0000",
-            count = difference
-        }
-    }
+    -- Setupt alertInfo
+    if alertType == "bar" then
+        return
+    elseif alertType == "button" then
+        local objective = self:GetDBValue("global", "settings.alerts.button.preview.objective")
+        local oldCount = self:GetDBValue("global", "settings.alerts.button.preview.oldCount")
+        local newCount = self:GetDBValue("global", "settings.alerts.button.preview.newCount")
+        local difference = newCount - oldCount
     
-    local func, err = loadstring("return " .. (input or self:GetDBValue(info[1], info[2]) or ""))
-    local success, error = pcall(func, addon, alertInfo)
+        alertInfo = {
+            objectiveTitle = L["Hearthstone"],
+            objective = {
+                color = (objective and objective > 0) and (newCount >= objective and "|cff00ff00" or "|cffffcc00") or "",
+                count = objective
+            },
+            oldCount = oldCount,
+            newCount = newCount,
+            difference = {
+                sign = difference > 0 and "+" or difference < 0 and "",
+                color = difference > 0 and "|cff00ff00" or difference < 0 and "|cffff0000",
+                count = difference
+            }
+        }
 
-    -- Syntax error
+        input = input or self:GetDBValue(info[1], info[2]) or ""
+    else
+        return
+    end
+
+    -- Validate alert
+    -- Transform the string into a function
+    -- "return function(info) return "" end" -> local userFunc = function(info) return "" end
+    local userFunc, err = loadstring("return " .. input) 
+    if not userFunc then
+        return L.InvalidSyntax(err), true
+    end
+
+    -- Verify that userFunc is actually a valid function
+    -- local userParseFunc = userFunc(alertInfo)
+    local success, userParseFunc = pcall(userFunc, alertInfo)
     if not success then
-        return L.invalidSyntax(error), true
-    elseif not assert(func)() then 
+        return L.InvalidSyntax(userParseFunc), true
+    elseif type(userParseFunc) ~= "function" then
         return L.InvalidFunction, true
-    elseif not assert(func)()(alertInfo) or type(assert(func)()(alertInfo)) ~= "string" then
+    end
+
+    -- Get the parsed string from userFunc
+    local success, ret = pcall(userParseFunc, alertInfo)
+    
+    if not success then
+        return L.InvalidSyntax(ret), true
+    elseif type(ret) ~= "string" then
         return L.InvalidReturn, true
     else
-        return "|cffffffff" .. assert(func)()(alertInfo) .. "|r"
+        return "|cffffffff" .. ret .. "|r"
     end
 end
 

@@ -16,25 +16,25 @@ local Version = 1
 local methods = {
     OnAcquire = function(self)
         self.editBox:HookScript("OnUpdate", function(this)
-            local text = this:GetText()           
-            addon.barFormatPendingText = text
+            -- Updates whether the accept button is active, based on the validity of the userInput
+            local text = this:GetText()
 
             local info = self:GetUserData("info")    
-            if not info then return end
+            local scope, key, func, args =  info and unpack(info)
+            if not func or not addon[func] then return end
             
-            local func = addon[info[3]] and addon[info[3]]
-            if not func then return end
-            
-            local preview, err = func(addon, text, info)
-            local scope, key, func = unpack(info)
-            local enabled = self.button:IsEnabled()
+            local preview, err = func(text, info, addon.unpack(args, {}))
 
             if err or text == addon:GetDBValue(scope, key) then
                 self.button:Disable()
-            elseif enabled or text ~= addon:GetDBValue(scope, key) then
+            else
                 self.button:Enable()
             end
         end)
+    end,
+
+    OnRelease = function(self)
+        self.frame.obj:Release()
     end,
 }
 
@@ -54,8 +54,12 @@ local function Constructor()
     expandButton:SetScript("OnClick", function()
         local info = frame:GetUserData("info")
         local scope, key, func = unpack(info)
-        local editor = LibStub("AceGUI-3.0", true):Create("FarmingBar_LuaEditor")
+
+        local editor = AceGUI:Create("FarmingBar_LuaEditor")
         frame:SetUserData("editor", editor)
+        editor.frame:Show()        
+        ACD:Close(addonName)
+
         editor:SetTitle(format("%s %s", L.addon, L["Lua Editor"]))
         editor:LoadCode(info, frame:GetText())
         editor:SetCallback("OnClose", function(widget)
@@ -63,9 +67,9 @@ local function Constructor()
             ACD:SelectGroup(addonName, "settings")
             ACD:Open(addonName)      
         end)
-        ACD:Close(addonName)
-        editor.frame:Show()
-        if func then
+
+        if func and addon[func] then
+            info[3] = addon[func]
             editor:SetStatusText(info)
         end
     end)

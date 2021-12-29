@@ -41,7 +41,7 @@ L.InvalidCraftSkillID = "Invalid tradeskill name."
 L.MissingCraftRecipeName = "Please specify a Recipe String"
 L.UnknownRecipe = "You do not know the recipe: %s"
 
-L.invalidSyntax = function(err)
+L.InvalidSyntax = function(err)
     return "Syntax error: " .. (type(err) == "string" and err or "??")
 end
 L.InvalidTrackerID = "Invalid tracker: %s:%s"
