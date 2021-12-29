@@ -595,14 +595,20 @@ local methods = {
     end,
 
     SetObjective = function(self, objective)
+        local bar = self:GetUserData("bar")
+        local progressCount, progressTotal = bar:GetProgress()
+
         local oldObjective = self:GetObjective() or 0
         objective = tonumber(objective)
+
         self:SetUserData("objective", objective)
         self:SetDBValue("objective", objective)
         self:UpdateObjective()
+
+        local newProgressCount, newProgressTotal = bar:GetProgress()
+        -- bar:AlertProgress("objectiveSet", newProgressTotal > progressTotal and "complete" or "lost")
+
         addon:UpdateButtons()
-        local bar = self:GetUserData("bar")
-        bar:AlertProgress(bar, (objective or 0) > oldObjective and "complete" or "lost")
     end,
 
     SetPoint = function(self, ...) -- point, anchor, relpoint, x, y

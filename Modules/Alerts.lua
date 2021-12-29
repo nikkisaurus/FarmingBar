@@ -7,6 +7,27 @@ local LSM = LibStub("LibSharedMedia-3.0")
 
 -- *------------------------------------------------------------------------
 
+function addon:InitializeAlerts()
+    self.alerts = {
+        bar = {
+            progress = loadstring("return " .. self:GetDBValue("global", "settings.alerts.bar.format.progress")),
+        },
+        button = {
+            withObjective = loadstring("return " .. self:GetDBValue("global", "settings.alerts.button.format.withObjective")),
+            withoutObjective = loadstring("return " .. self:GetDBValue("global", "settings.alerts.button.format.withoutObjective")),
+        },
+        tracker = {
+            progress = loadstring("return " .. self:GetDBValue("global", "settings.alerts.tracker.format.progress")),
+        },
+    }
+end
+
+function addon:UpdateAlert(alertType, alert, input)
+    if addon.alerts[alertType] and addon.alerts[alertType][alert] and input then
+        addon.alerts[alertType][alert] = loadstring("return " .. input)
+    end
+end
+
 function addon:PreviewBarAlert(input)
     -- local barIDName = format("%s %s", L["Bar"], 1)
     -- local progressCount = self:GetDBValue("global", "settings.alerts.bar.preview.count")
@@ -45,7 +66,7 @@ end
 function addon:PreviewAlert(alertType, input, info)
     local alertInfo
 
-    -- Setupt alertInfo
+    -- Setup alertInfo
     if alertType == "bar" then
         return
     elseif alertType == "button" then
@@ -53,20 +74,20 @@ function addon:PreviewAlert(alertType, input, info)
         local oldCount = self:GetDBValue("global", "settings.alerts.button.preview.oldCount")
         local newCount = self:GetDBValue("global", "settings.alerts.button.preview.newCount")
         local difference = newCount - oldCount
-    
+
         alertInfo = {
             objectiveTitle = L["Hearthstone"],
             objective = {
                 color = (objective and objective > 0) and (newCount >= objective and "|cff00ff00" or "|cffffcc00") or "",
-                count = objective
+                count = objective,
             },
             oldCount = oldCount,
             newCount = newCount,
             difference = {
                 sign = difference > 0 and "+" or difference < 0 and "",
                 color = difference > 0 and "|cff00ff00" or difference < 0 and "|cffff0000",
-                count = difference
-            }
+                count = difference,
+            },
         }
 
         input = input or self:GetDBValue(info[1], info[2]) or ""
@@ -77,7 +98,7 @@ function addon:PreviewAlert(alertType, input, info)
     -- Validate alert
     -- Transform the string into a function
     -- "return function(info) return "" end" -> local userFunc = function(info) return "" end
-    local userFunc, err = loadstring("return " .. input) 
+    local userFunc, err = loadstring("return " .. input)
     if not userFunc then
         return L.InvalidSyntax(err), true
     end
@@ -93,7 +114,7 @@ function addon:PreviewAlert(alertType, input, info)
 
     -- Get the parsed string from userFunc
     local success, ret = pcall(userParseFunc, alertInfo)
-    
+
     if not success then
         return L.InvalidSyntax(ret), true
     elseif type(ret) ~= "string" then
@@ -103,43 +124,41 @@ function addon:PreviewAlert(alertType, input, info)
     end
 end
 
-function addon:SendAlert(alertType, alert, alertInfo, soundID, bar, isTracker, barAlert)
-    local barDB = self:GetDBValue("char", "bars")[bar:GetBarID()]
-
-    -- Return if tracking completed objectives is disabled
-    local objective = isTracker and alertInfo.trackerObjective.count or alertInfo.objective.count
-    local oldCount = isTracker and alertInfo.oldTrackerCount or alertInfo.oldCount
-    local newCount = isTracker and alertInfo.newTrackerCount or alertInfo.newCount
-
-    local newCompletion = oldCount < objective and newCount > objective
-    local lostCompletion = oldCount > objective and newCount < objective
-    if not barDB.alerts.completedObjectives and not newCompletion and not lostCompletion then
+function addon:SendAlert(bar, alertType, alert, alertInfo, soundID, isTracker)
+    -- Validate format func
+    local success, formatFunc = pcall(addon.alerts[alertType][alert])
+    if not success then
         return
     end
 
-    -- Send alert
-    local parsedAlert = assert(loadstring("return " .. alert))()(alertInfo)
+    local alertSettings = addon:GetDBValue("global", "settings.alerts")[alertType]
 
-    -- Chat
-    if self:GetDBValue("global", "settings.alerts")[alertType].chat and alert then
-        self:Print(parsedAlert)
+    -- Get parsed alert
+    local parsedAlert = formatFunc(alertInfo)
+    if parsedAlert then
+        -- Send alert
+        if alertSettings.chat then
+            self:Print(parsedAlert)
+        elseif alertSettings.screen then
+            UIErrorsFrame:AddMessage(parsedAlert, 1, 1, 1)
+        end
     end
 
-    -- Screen
-    if self:GetDBValue("global", "settings.alerts")[alertType].screen and alert then
-        -- if not self.CoroutineUpdater:IsVisible() then
-        UIErrorsFrame:AddMessage(parsedAlert, 1, 1, 1)
-        -- else
-        --     self.CoroutineUpdater.alert:SetText(parsedAlert)
-        -- end
-    end
+    -- Send sound alert
+    local barDB = bar:GetBarCharDB()
+    local newCompletion = alertInfo.objective.count and alertInfo.newCount > alertInfo.objective.count and alertInfo.oldCount < alertInfo.objective.count
+    local showBarAlert = barDB.alerts.barProgress and barDB.alerts.completedObjectives
 
-    -- Sound
-    if self:GetDBValue("global", "settings.alerts")[alertType].sound.enabled and soundID then
-        PlaySoundFile(LSM:Fetch("sound", self:GetDBValue("global", "settings.alerts.button.sound")[soundID]))
-    end
+    if alertSettings.sound.enabled and soundID and not (newCompletion and showBarAlert) then
+        PlaySoundFile(LSM:Fetch("sound", alertSettings.sound[soundID]))
+    else
+        -- Get bar progress info
+        local objective = not isTracker and alertInfo.objective.count
+        local oldCount = not isTracker and alertInfo.oldCount
+        local newCount = not isTracker and alertInfo.newCount
+        local newCompletion = oldCount < objective and newCount > objective
+        local lostCompletion = oldCount > objective and newCount < objective
 
-    if not isTracker then
-        bar:AlertProgress(bar, barAlert)
+        -- bar:AlertProgress("progress", (newCompletion and "complete") or (lostCompletion and "lost"))
     end
 end

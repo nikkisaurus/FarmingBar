@@ -15,22 +15,22 @@ local Version = 1
 
 local methods = {
     OnAcquire = function(self)
-        self.editBox:HookScript("OnUpdate", function(this)
-            -- Updates whether the accept button is active, based on the validity of the userInput
-            local text = this:GetText()
+        -- self.editBox:HookScript("OnUpdate", function(this)
+        --     -- Updates whether the accept button is active, based on the validity of the userInput
+        --     local text = this:GetText()
 
-            local info = self:GetUserData("info")    
-            local scope, key, func, args =  info and unpack(info)
-            if not func or not addon[func] then return end
-            
-            local preview, err = func(text, info, addon.unpack(args, {}))
+        --     local info = self:GetUserData("info")    
+        --     local scope, key, func, args =  info and unpack(info)
+        --     if not func or not addon[func] then return end
 
-            if err or text == addon:GetDBValue(scope, key) then
-                self.button:Disable()
-            else
-                self.button:Enable()
-            end
-        end)
+        --     local preview, err = func(text, info, addon.unpack(args, {}))
+
+        --     if err or text == addon:GetDBValue(scope, key) then
+        --         self.button:Disable()
+        --     else
+        --         self.button:Enable()
+        --     end
+        -- end)
     end,
 
     OnRelease = function(self)
@@ -57,7 +57,7 @@ local function Constructor()
 
         local editor = AceGUI:Create("FarmingBar_LuaEditor")
         frame:SetUserData("editor", editor)
-        editor.frame:Show()        
+        editor.frame:Show()
         ACD:Close(addonName)
 
         editor:SetTitle(format("%s %s", L.addon, L["Lua Editor"]))
@@ -65,15 +65,10 @@ local function Constructor()
         editor:SetCallback("OnClose", function(widget)
             widget.frame:Hide()
             ACD:SelectGroup(addonName, "settings")
-            ACD:Open(addonName)      
+            ACD:Open(addonName)
         end)
-
-        if func and addon[func] then
-            info[3] = addon[func]
-            editor:SetStatusText(info)
-        end
     end)
-    
+
     expandButton:SetScript("OnShow", function()
         local option = frame.userdata.option
         local info = option and option.arg

@@ -268,7 +268,13 @@ function addon:GetSettingsOptions()
                             order = 1,
                             type = "group",
                             name = L["Bar"],
-                            args = {                                
+                            get = function(info)
+                                return addon:GetDBValue("global", "settings.alerts.bar." .. info[#info])
+                            end,
+                            set = function(info, value)
+                                self:SetDBValue("global", "settings.alerts.bar." .. info[#info], value)
+                            end,
+                            args = {
                                 chat = {
                                     order = 1,
                                     type = "toggle",
@@ -283,11 +289,11 @@ function addon:GetSettingsOptions()
                                     order = 3,
                                     type = "toggle",
                                     name = L["Sound"],
-                                    get = function(info)
+                                    get = function()
                                         return addon:GetDBValue("global", "settings.alerts.bar.sound.enabled")
                                     end,
-                                    set = function(info, value)
-                                        addon:SetDBValue("global", "settings.alerts.bar.sound.enabled", value)
+                                    set = function(_, value)
+                                        self:SetDBValue("global", "settings.alerts.bar.sound.enabled", value)
                                     end,
                                 },
                                 format = {
@@ -314,9 +320,10 @@ function addon:GetSettingsOptions()
                                             end,
                                             set = function(info, value)
                                                 addon:SetDBValue("global", "settings.alerts.bar.format.progress", value)
+                                                addon:UpdateAlert("bar", "progress", value)
                                             end,
                                             arg = {"global", "settings.alerts.bar.format.progress", "PreviewAlert", {"bar"}},
-                                        },       
+                                        },
                                         preview = {
                                             order = 2,
                                             type = "input",
@@ -325,7 +332,7 @@ function addon:GetSettingsOptions()
                                             disabled = true,
                                             get = function(info)
                                                 return addon:PreviewBarAlert(addon:GetDBValue("global", "settings.alerts.bar.format.progress"))
-                                            end,  
+                                            end,
                                         },
                                         previewCount = {
                                             order = 3,
@@ -393,7 +400,13 @@ function addon:GetSettingsOptions()
                             order = 1,
                             type = "group",
                             name = L["Button"],
-                            args = {                                
+                            get = function(info)
+                                return addon:GetDBValue("global", "settings.alerts.button." .. info[#info])
+                            end,
+                            set = function(info, value)
+                                self:SetDBValue("global", "settings.alerts.button." .. info[#info], value)
+                            end,
+                            args = {
                                 chat = {
                                     order = 1,
                                     type = "toggle",
@@ -411,7 +424,7 @@ function addon:GetSettingsOptions()
                                     get = function(info)
                                         return addon:GetDBValue("global", "settings.alerts.button.sound.enabled")
                                     end,
-                                    set = function(info, value)
+                                    set = function(_, value)
                                         self:SetDBValue("global", "settings.alerts.button.sound.enabled", value)
                                     end,
                                 },
@@ -426,7 +439,7 @@ function addon:GetSettingsOptions()
                                     set = function(info, value)
                                         self:SetDBValue("global", "settings.alerts.button." .. info[#info], value)
                                     end,
-                                    args = {                                        
+                                    args = {
                                         withoutObjective = {
                                             order = 1,
                                             type = "input",
@@ -439,9 +452,10 @@ function addon:GetSettingsOptions()
                                             end,
                                             set = function(info, value)
                                                 addon:SetDBValue("global", "settings.alerts.button.format.withoutObjective", value)
+                                                addon:UpdateAlert("button", "withoutObjective", value)
                                             end,
                                             arg = {"global", "settings.alerts.button.format.withoutObjective", "PreviewAlert", {"button"}},
-                                        },  
+                                        },
                                         -- format = {
                                         --     order = 4,
                                         --     type = "input",
@@ -466,18 +480,18 @@ function addon:GetSettingsOptions()
                             order = 1,
                             type = "group",
                             name = L["Tracker"],
+                            get = function(info)
+                                return addon:GetDBValue("global", "settings.alerts.tracker." .. info[#info])
+                            end,
+                            set = function(info, value)
+                                self:SetDBValue("global", "settings.alerts.tracker." .. info[#info], value)
+                            end,
                             args = {
                                 toggle = {
                                     order = 1,
                                     type = "group",
                                     name = L["Alerts"],
                                     inline = true,
-                                    get = function(info)
-                                        return addon:GetDBValue("global", "settings.alerts.tracker." .. info[#info])
-                                    end,
-                                    set = function(info, value)
-                                        self:SetDBValue("global", "settings.alerts.tracker." .. info[#info], value)
-                                    end,
                                     args = {
                                         chat = {
                                             order = 1,
@@ -496,7 +510,7 @@ function addon:GetSettingsOptions()
                                             get = function(info)
                                                 return addon:GetDBValue("global", "settings.alerts.tracker.sound.enabled")
                                             end,
-                                            set = function(info, value)
+                                            set = function(_, value)
                                                 self:SetDBValue("global", "settings.alerts.tracker.sound.enabled", value)
                                             end,
                                         },

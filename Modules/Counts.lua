@@ -16,7 +16,7 @@ function addon:BAG_UPDATE_DELAYED(...)
             button:SetCount()
 
             local alerts = self:GetBarDBValue("alerts", buttonID[1], true)
-            local alertInfo, alert, soundID, barAlert
+            local alertInfo, alert, soundID
             if not alerts.muteAll and not buttonDB.mute then
                 -- Get info for alerts
                 local newCount, trackerCounts = button:GetCount()
@@ -25,25 +25,18 @@ function addon:BAG_UPDATE_DELAYED(...)
                 -- Change in objective count
                 if oldCount ~= newCount then
                     if objective and objective > 0 then
-                        if alerts.completedObjectives or
-                            (not alerts.completedObjectives and
-                                ((oldCount < objective) or (newCount < oldCount and newCount < objective))) then
-                            alert = self:GetDBValue("global", "settings.alerts.button.format.withObjective")
+                        if alerts.completedObjectives or (not alerts.completedObjectives and ((oldCount < objective) or (newCount < oldCount and newCount < objective))) then
+                            alert = "withObjective"
 
                             if oldCount < objective and newCount >= objective then
                                 soundID = "objectiveComplete"
-                                barAlert = "complete"
                             else
                                 soundID = oldCount < newCount and "progress"
-                                -- Have to check if we lost an objective
-                                if oldCount >= objective and newCount < objective then
-                                    barAlert = "lost"
-                                end
                             end
                         end
                     else
                         -- No objective
-                        alert = self:GetDBValue("global", "settings.alerts.button.format.withoutObjective")
+                        alert = "withoutObjective"
                         soundID = oldCount < newCount and "progress"
                     end
 
@@ -52,27 +45,26 @@ function addon:BAG_UPDATE_DELAYED(...)
                     alertInfo = {
                         objectiveTitle = buttonDB.title,
                         objective = {
-                            color = (objective and objective > 0) and
-                                (newCount >= objective and "|cff00ff00" or "|cffffcc00") or "",
-                            count = objective
+                            color = (objective and objective > 0) and (newCount >= objective and "|cff00ff00" or "|cffffcc00") or "",
+                            count = objective,
                         },
                         oldCount = oldCount,
                         newCount = newCount,
                         difference = {
                             sign = difference > 0 and "+" or difference < 0 and "",
                             color = difference > 0 and "|cff00ff00" or difference < 0 and "|cffff0000",
-                            count = difference
-                        }
+                            count = difference,
+                        },
                     }
                 end
 
                 if alertInfo then
-                    self:SendAlert("button", alert, alertInfo, soundID, bar, nil, barAlert)
+                    self:SendAlert(bar, "button", alert, alertInfo, soundID)
                 elseif trackerCounts then -- Change in tracker count
                     for trackerKey, newTrackerCount in pairs(trackerCounts) do
                         oldTrackerCount = oldTrackerCounts[trackerKey]
                         if oldTrackerCount and oldTrackerCount ~= newTrackerCount then
-                            alert = self:GetDBValue("global", "settings.alerts.tracker.format.progress")
+                            alert = "progress"
                             soundID = oldTrackerCount < newTrackerCount and "progress"
 
                             local trackerObjective = self:GetTrackerDBInfo(buttonDB.trackers, trackerKey, "objective")
@@ -81,25 +73,20 @@ function addon:BAG_UPDATE_DELAYED(...)
                             alertInfo = {
                                 objectiveTitle = buttonDB.title,
                                 objective = {
-                                    color = (objective and objective > 0) and
-                                        (newCount >= objective and "|cff00ff00" or "|cffffcc00") or "",
-                                    count = objective
+                                    color = (objective and objective > 0) and (newCount >= objective and "|cff00ff00" or "|cffffcc00") or "",
+                                    count = objective,
                                 },
                                 trackerObjective = {
-                                    color = newTrackerCount >=
-                                        ((objective and objective > 0) and objective * trackerObjective or
-                                            trackerObjective) and "|cff00ff00" or "|cffffcc00",
-                                    count = (objective and objective > 0) and objective * trackerObjective or
-                                        trackerObjective
+                                    color = newTrackerCount >= ((objective and objective > 0) and objective * trackerObjective or trackerObjective) and "|cff00ff00" or "|cffffcc00",
+                                    count = (objective and objective > 0) and objective * trackerObjective or trackerObjective,
                                 },
                                 oldTrackerCount = oldTrackerCount,
                                 newTrackerCount = newTrackerCount,
                                 trackerDifference = {
                                     sign = trackerDifference > 0 and "+" or trackerDifference < 0 and "",
-                                    color = trackerDifference > 0 and "|cff00ff00" or trackerDifference < 0 and
-                                        "|cffff0000",
-                                    count = trackerDifference
-                                }
+                                    color = trackerDifference > 0 and "|cff00ff00" or trackerDifference < 0 and "|cffff0000",
+                                    count = trackerDifference,
+                                },
                             }
 
                             local trackerType, trackerID = self:ParseTrackerKey(trackerKey)
@@ -107,11 +94,11 @@ function addon:BAG_UPDATE_DELAYED(...)
                             if trackerType == "ITEM" then
                                 self.CacheItem(trackerID, function(itemID, alert, alertInfo, soundID)
                                     alertInfo.trackerTitle = (GetItemInfo(itemID))
-                                    addon:SendAlert("tracker", alert, alertInfo, soundID, bar, true)
+                                    addon:SendAlert(bar, "tracker", alert, alertInfo, soundID, true)
                                 end, trackerID, alert, alertInfo, soundID)
                             else
                                 alertInfo.trackerTitle = C_CurrencyInfo.GetCurrencyInfo(trackerID).name
-                                self:SendAlert("tracker", alert, alertInfo, soundID, bar, true)
+                                self:SendAlert(bar, "tracker", alert, alertInfo, soundID, true)
                             end
                         end
                     end
@@ -316,16 +303,13 @@ function addon:GetTrackerCount(widget, trackerKey, overrideObjective)
 
     if trackerType == "ITEM" then
         -- @retail@
-        count = (trackerInfo.includeAllChars or trackerInfo.includeGuildBank) and
-                    self:GetDataStoreItemCount(trackerID, trackerInfo) or
-                    GetItemCount(trackerID, trackerInfo.includeBank)
+        count = (trackerInfo.includeAllChars or trackerInfo.includeGuildBank) and self:GetDataStoreItemCount(trackerID, trackerInfo) or GetItemCount(trackerID, trackerInfo.includeBank)
         -- @end-retail@
         --[===[@non-retail@
         count = trackerInfo.includeAllChars and self:GetDataStoreItemCount(trackerID, trackerInfo) or GetItemCount(trackerID, trackerInfo.includeBank)
         --@end-non-retail@]===]
     elseif trackerType == "CURRENCY" then
-        count = trackerInfo.includeAllChars and self:GetDataStoreCurrencyCount(trackerID, trackerInfo) or
-                    (C_CurrencyInfo.GetCurrencyInfo(trackerID) and C_CurrencyInfo.GetCurrencyInfo(trackerID).quantity)
+        count = trackerInfo.includeAllChars and self:GetDataStoreCurrencyCount(trackerID, trackerInfo) or (C_CurrencyInfo.GetCurrencyInfo(trackerID) and C_CurrencyInfo.GetCurrencyInfo(trackerID).quantity)
     end
 
     if not count then

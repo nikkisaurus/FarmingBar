@@ -6,6 +6,11 @@ local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 local ACD = LibStub("AceConfigDialog-3.0")
 local AceGUI = LibStub("AceGUI-3.0", true)
 local LSM = LibStub("LibSharedMedia-3.0")
+local utils = LibStub("LibAddonUtils-1.0")
+
+local red = utils.ChatColors["RED"]
+local gold = utils.ChatColors["GOLD"]
+local green = utils.ChatColors["GREEN"]
 
 local Type = "FarmingBar_Bar"
 local Version = 2
@@ -168,36 +173,46 @@ local methods = {
         self:SetQuickButtonStates()
     end,
 
-    AlertProgress = function(self, bar, alertType)
-        local barDB = addon:GetDBValue("char", "bars")[bar:GetBarID()]
+    AlertProgress = function(self, alertType, newCompletion)
+        local barDB = self:GetBarCharDB()
         if barDB.alerts.barProgress then
-            local barIDName = format("%s %d", L["Bar"], self:GetBarID())
+            if alertType == "progress" then
+                local barIDName = format("%s %d", L["Bar"], self:GetBarID())
+                local progressCount, progressTotal = self:GetProgress()
 
-            local progressCount, progressTotal = self:GetProgress()
+                local alertInfo = {
+                    progressCount = progressCount,
+                    progressTotal = progressTotal,
+                    barIDName = barIDName,
+                    barNameLong = format("%s%s", barIDName, barDB.title),
+                    progressColor = (newCompletion == "lost" and red) or (progressCount < progressTotal and gold) or green,
+                }
 
-            local alertInfo = {
-                progressCount = progressCount,
-                progressTotal = progressTotal,
-                barIDName = barIDName,
-                barNameLong = format("%s%s", barIDName, barDB.title),
-                progressColor = progressCount == progressTotal and "|cff00ff00" or alertType == "complete" and "|cffffcc00" or alertType == "lost" and "|cffff0000",
-            }
+                -- Validate format func
+                local success, formatFunc = pcall(addon.alerts.bar.progress)
+                if not success then
+                    return
+                end
 
-            local parsedBarAlert = assert(loadstring("return " .. addon:GetDBValue("global", "settings.alerts.bar.format.progress")))()(alertInfo)
+                local alertSettings = addon:GetDBValue("global", "settings.alerts.bar")
 
-            -- Chat
-            if addon:GetDBValue("global", "settings.alerts")["bar"].chat and parsedBarAlert then
-                addon:Print(parsedBarAlert)
-            end
+                -- Get parsed alert
+                local parsedAlert = formatFunc(alertInfo)
+                if parsedAlert then
+                    -- Send alert
+                    if alertSettings.chat then
+                        addon:Print(parsedAlert)
+                    elseif alertSettings.screen then
+                        UIErrorsFrame:AddMessage(parsedAlert, 1, 1, 1)
+                    end
+                end
 
-            -- Screen
-            if addon:GetDBValue("global", "settings.alerts")["bar"].screen and parsedBarAlert then
-                UIErrorsFrame:AddMessage(parsedBarAlert, 1, 1, 1)
-            end
-
-            -- Sound
-            if addon:GetDBValue("global", "settings.alerts")["bar"].sound.enabled and soundID then
-
+                -- Send sound alert
+                if alertSettings.sound.enabled and newCompletion ~= "lost" then
+                    PlaySoundFile(LSM:Fetch("sound", alertSettings.sound[progressCount >= progressTotal and "complete" or "progress"]))
+                end
+            elseif alertType == "setObjective" then
+                print("Number of objectives changed, add a new format for alert.")
             end
         end
     end,
@@ -218,6 +233,10 @@ local methods = {
 
     GetBarDB = function(self)
         return self:GetUserData("barDB")
+    end,
+
+    GetBarCharDB = function(self)
+        return addon:GetDBValue("char", "bars")[self:GetBarID()]
     end,
 
     GetBarTitle = function(self)

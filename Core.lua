@@ -82,6 +82,7 @@ end
 
 function addon:OnEnable()
     addon.tooltip = CreateFrame("GameTooltip", "FarmingBar_Tooltip", UIParent, "GameTooltipTemplate")
+    addon:InitializeAlerts()
     -- self:Initialize_Masque()
     self:InitializeBars()
     self:InitializeEvents()

@@ -26,30 +26,28 @@ local methods = {
     LoadCode = function(self, info, text)
         self.editbox:SetUserData("info", info)
         self.editbox:SetText(text)
+        self.editbox:Fire("OnTextChanged")
         self.frame:Show()
+
+        hooksecurefunc(self.window, "SetStatusText", function(_, text)
+            C_Timer.After(0.1, function()
+                local _, _, func, args = unpack(info)
+                if not func or not addon[func] then
+                    return
+                else
+                    func = addon[func]
+                end
+
+                if func(addon, addon.unpack(args, {}), self.editbox:GetText()) ~= text then
+                    -- self.editbox:Fire("OnTextChanged")
+                    print("COW")
+                end
+            end)
+        end)
     end,
 
-    SetStatusText = function(self, info)
-        local scope, key, func, args = unpack(info)
-        if not func then return end
-
-        local editbox = self.editbox
-        local window = self.window
-
-        editbox.editBox:HookScript("OnUpdate", function()
-            -- Update preview while typing
-            local preview, err = func(addon, addon.unpack(args, {}), editbox:GetText())
-            local saved = func(addon, addon.unpack(args, {}), _, info)
-            local changed = preview ~= saved
-
-            window:SetStatusText(changed and preview or saved)
-
-            if err or not changed then
-                editbox.button:Disable()
-            else
-                editbox.button:Enable()
-            end
-        end)
+    SetStatusText = function(self, text)
+        self.window:SetStatusText(text)
     end,
 
     SetTitle = function(self, title)
@@ -80,12 +78,35 @@ local function Constructor()
         self.obj:Release()
     end)
 
+    editbox:SetCallback("OnTextChanged", function(self)
+        local info = self:GetUserData("info")
+        local scope, key, func, args = unpack(info)
+        if not func or not addon[func] then
+            return
+        else
+            func = addon[func]
+        end
+
+        -- Update preview while typing
+        local changed = self:GetText() ~= addon:GetDBValue(scope, key)
+        local preview, err = func(addon, addon.unpack(args, {}), self:GetText())
+        local saved = func(addon, addon.unpack(args, {}), _, info)
+
+        window:SetStatusText(changed and preview or saved)
+
+        if err or not changed then
+            editbox.button:Disable()
+        else
+            editbox.button:Enable()
+        end
+    end)
+
     local widget = {
         type = Type,
         window = window,
         frame = frame,
         editbox = editbox,
-        statustext = window.statustext
+        statustext = window.statustext,
     }
 
     window.obj, frame.obj, editbox.obj = widget, widget, widget
