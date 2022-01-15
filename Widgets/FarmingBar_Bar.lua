@@ -529,17 +529,32 @@ local function Constructor()
     local FloatingBG = anchor:CreateTexture("$parentFloatingBG", "BACKGROUND")
     FloatingBG:SetAllPoints(anchor)
 
+    local OnLeave = function()
+        local barDB = frame.obj:GetUserData("barDB")
+        if barDB.mouseover or barDB.anchorMouseover then
+            frame.obj:SetAlpha(false)
+        end
+    end
+
     local addButton = CreateFrame("Button", "$parentAddButton", anchor)
     addButton:SetNormalTexture([[INTERFACE\ADDONS\FARMINGBAR\MEDIA\PLUS]])
     addButton:SetDisabledTexture([[INTERFACE\ADDONS\FARMINGBAR\MEDIA\PLUS-DISABLED]])
 
     addButton:SetScript("OnClick", addButton_OnClick)
+    addButton:SetScript("OnEnter", function(self)
+        frame.obj:SetAlpha(true)
+    end)
+    addButton:SetScript("OnLeave", OnLeave)
 
     local removeButton = CreateFrame("Button", "$parentRemoveButton", anchor)
     removeButton:SetNormalTexture([[INTERFACE\ADDONS\FARMINGBAR\MEDIA\MINUS]])
     removeButton:SetDisabledTexture([[INTERFACE\ADDONS\FARMINGBAR\MEDIA\MINUS-DISABLED]])
 
     removeButton:SetScript("OnClick", removeButton_OnClick)
+    removeButton:SetScript("OnEnter", function(self)
+        frame.obj:SetAlpha(true)
+    end)
+    removeButton:SetScript("OnLeave", OnLeave)
 
     local barID = anchor:CreateFontString("$parentBarIDButton", "OVERLAY")
     barID:SetFont([[Fonts\FRIZQT__.TTF]], 12, "DOWN")
@@ -565,12 +580,7 @@ local function Constructor()
         end
     end)
 
-    backdrop:SetScript("OnLeave", function(self)
-        local barDB = self.obj:GetUserData("barDB")
-        if barDB.mouseover or barDB.anchorMouseover then
-            widget:SetAlpha(false)
-        end
-    end)
+    backdrop:SetScript("OnLeave", OnLeave)
 
     for method, func in pairs(methods) do
         widget[method] = func
