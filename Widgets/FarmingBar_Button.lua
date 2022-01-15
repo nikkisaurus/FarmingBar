@@ -118,10 +118,13 @@ local function frame_OnEnter(self)
 
     local tooltip = widget:GetUserData("tooltip")
     if tooltip and not addon.DragFrame:GetObjective() then
-        addon.tooltip:ClearLines()
-        addon.tooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT", 0, 0)
-        addon[tooltip](addon, widget, addon.tooltip)
-        addon.tooltip:Show()
+        addon.tooltip:SetScript("OnUpdate", function()
+            addon.tooltip:ClearLines()
+            addon.tooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT", 0, 0)
+            addon[tooltip](addon, widget, addon.tooltip)
+            addon.tooltip:Show()
+        end)
+        addon.tooltip:GetScript("OnUpdate")()
     end
 end
 
@@ -135,6 +138,7 @@ local function frame_OnLeave(self)
     if tooltip and not addon.DragFrame:GetObjective() then
         addon.tooltip:ClearLines()
         addon.tooltip:Hide()
+        addon.tooltip:SetScript("OnUpdate", nil)
     end
 end
 

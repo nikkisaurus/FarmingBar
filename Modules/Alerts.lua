@@ -146,7 +146,7 @@ function addon:SendAlert(bar, alertType, alert, alertInfo, soundID, isTracker)
 
     -- Send sound alert
     local barDB = bar:GetBarCharDB()
-    local newCompletion = alertInfo.objective.count and alertInfo.newCount > alertInfo.objective.count and alertInfo.oldCount < alertInfo.objective.count
+    local newCompletion = (alertInfo.objective.count or 0) and (alertInfo.newCount or 0) > (alertInfo.objective.count or 0) and (alertInfo.oldCount or 0) < (alertInfo.objective.count or 0)
     local showBarAlert = barDB.alerts.barProgress and barDB.alerts.completedObjectives
 
     if alertSettings.sound.enabled and soundID and not (newCompletion and showBarAlert) then
