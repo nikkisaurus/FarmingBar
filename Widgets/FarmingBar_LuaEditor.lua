@@ -29,21 +29,21 @@ local methods = {
         self.editbox:Fire("OnTextChanged")
         self.frame:Show()
 
-        hooksecurefunc(self.window, "SetStatusText", function(_, text)
-            C_Timer.After(0.1, function()
-                local _, _, func, args = unpack(info)
-                if not func or not addon[func] then
-                    return
-                else
-                    func = addon[func]
-                end
+        -- hooksecurefunc(self.window, "SetStatusText", function(_, text)
+        --     C_Timer.After(0.1, function()
+        --         local _, _, func, args = unpack(info)
+        --         if not func or not addon[func] then
+        --             return
+        --         else
+        --             func = addon[func]
+        --         end
 
-                if func(addon, addon.unpack(args, {}), self.editbox:GetText()) ~= text then
-                    -- self.editbox:Fire("OnTextChanged")
-                    print("COW")
-                end
-            end)
-        end)
+        --         if func(addon, addon.unpack(args, {}), self.editbox:GetText()) ~= text then
+        --             -- self.editbox:Fire("OnTextChanged")
+        --             print("COW")
+        --         end
+        --     end)
+        -- end)
     end,
 
     SetStatusText = function(self, text)

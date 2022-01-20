@@ -326,16 +326,19 @@ function addon:GetSettingsOptions()
                                         },
                                         preview = {
                                             order = 2,
-                                            type = "input",
-                                            name = L["Preview"],
-                                            width = "full",
-                                            disabled = true,
-                                            get = function(info)
-                                                return addon:PreviewBarAlert(addon:GetDBValue("global", "settings.alerts.bar.format.progress"))
+                                            type = "description",
+                                            name = function(text)
+                                                return text
                                             end,
+                                            width = "full",
+                                        },
+                                        previewSettings = {
+                                            order = 3,
+                                            type = "header",
+                                            name = L["Preview Settings"],
                                         },
                                         previewCount = {
-                                            order = 3,
+                                            order = 4,
                                             type = "range",
                                             name = L["Completed Objectives"],
                                             min = 0,
@@ -349,7 +352,7 @@ function addon:GetSettingsOptions()
                                             end,
                                         },
                                         previewTotal = {
-                                            order = 4,
+                                            order = 5,
                                             type = "range",
                                             name = L["Total Objectives"],
                                             min = 0,
@@ -363,7 +366,7 @@ function addon:GetSettingsOptions()
                                             end,
                                         },
                                         alertType = {
-                                            order = 5,
+                                            order = 6,
                                             type = "select",
                                             style = "dropdown",
                                             name = L["Alert Type"],
@@ -381,7 +384,7 @@ function addon:GetSettingsOptions()
                                             end,
                                         },
                                         toggle = {
-                                            order = 6,
+                                            order = 7,
                                             type = "toggle",
                                             name = L["Use Long Name"],
                                             get = function()
@@ -440,10 +443,34 @@ function addon:GetSettingsOptions()
                                         self:SetDBValue("global", "settings.alerts.button." .. info[#info], value)
                                     end,
                                     args = {
-                                        withoutObjective = {
+                                        withObjective = {
                                             order = 1,
                                             type = "input",
                                             name = L["Format With Objective"],
+                                            width = "full",
+                                            multiline = true,
+                                            dialogControl = "FarmingBar_LuaEditBox",
+                                            get = function(info)
+                                                return addon:GetDBValue("global", "settings.alerts.button.format.withObjective")
+                                            end,
+                                            set = function(info, value)
+                                                addon:SetDBValue("global", "settings.alerts.button.format.withObjective", value)
+                                                addon:UpdateAlert("button", "withObjective", value)
+                                            end,
+                                            arg = {"global", "settings.alerts.button.format.withObjective", "PreviewAlert", {"button"}},
+                                        },
+                                        withObjectivePreview = {
+                                            order = 2,
+                                            type = "description",
+                                            name = function(text)
+                                                return text
+                                            end,
+                                            width = "full",
+                                        },
+                                        withoutObjective = {
+                                            order = 3,
+                                            type = "input",
+                                            name = L["Format Without Objective"],
                                             width = "full",
                                             multiline = true,
                                             dialogControl = "FarmingBar_LuaEditBox",
@@ -456,21 +483,67 @@ function addon:GetSettingsOptions()
                                             end,
                                             arg = {"global", "settings.alerts.button.format.withoutObjective", "PreviewAlert", {"button"}},
                                         },
-                                        -- format = {
-                                        --     order = 4,
-                                        --     type = "input",
-                                        --     name = L["Progress Format"],
-                                        --     width = "full",
-                                        --     multiline = true,
-                                        --     dialogControl = "FarmingBar_LuaEditBox",
-                                        --     get = function(info)
-                                        --         return addon:GetDBValue("global", "settings.alerts.bar.format.progress")
-                                        --     end,
-                                        --     set = function(_, value)
-                                        --         addon:SetDBValue("global", "settings.alerts.bar.format.progress", value)
-                                        --     end,
-                                        --     arg = {"global", "settings.alerts.bar.format.progress"},
-                                        -- },
+                                        withoutObjectivePreview = {
+                                            order = 4,
+                                            type = "description",
+                                            name = function(text)
+                                                return text
+                                            end,
+                                            width = "full",
+                                        },
+                                        previewSettings = {
+                                            order = 5,
+                                            type = "header",
+                                            name = L["Preview Settings"],
+                                        },
+                                        oldCount = {
+                                            order = 6,
+                                            type = "input",
+                                            name = L["Old Count"],
+                                            width = 0.5,
+                                            validate = function(_, value)
+                                                local count = tonumber(value)
+                                                return count and count >= 0
+                                            end,
+                                            get = function()
+                                                return tostring(addon:GetDBValue("global", "settings.alerts.button.preview.oldCount"))
+                                            end,
+                                            set = function(_, value)
+                                                addon:SetDBValue("global", "settings.alerts.button.preview.oldCount", tonumber(value))
+                                            end,
+                                        },
+                                        newCount = {
+                                            order = 7,
+                                            type = "input",
+                                            name = L["New Count"],
+                                            width = 0.5,
+                                            validate = function(_, value)
+                                                local count = tonumber(value)
+                                                return count and count >= 0
+                                            end,
+                                            get = function()
+                                                return tostring(addon:GetDBValue("global", "settings.alerts.button.preview.newCount"))
+                                            end,
+                                            set = function(_, value)
+                                                addon:SetDBValue("global", "settings.alerts.button.preview.newCount", tonumber(value))
+                                            end,
+                                        },
+                                        objective = {
+                                            order = 7,
+                                            type = "input",
+                                            name = L["Objective"],
+                                            width = 0.5,
+                                            validate = function(_, value)
+                                                local count = tonumber(value)
+                                                return count and count >= 1
+                                            end,
+                                            get = function()
+                                                return tostring(addon:GetDBValue("global", "settings.alerts.button.preview.objective"))
+                                            end,
+                                            set = function(_, value)
+                                                addon:SetDBValue("global", "settings.alerts.button.preview.objective", tonumber(value))
+                                            end,
+                                        },
                                     },
                                 },
                             },

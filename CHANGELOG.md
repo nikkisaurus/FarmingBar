@@ -1,11 +1,15 @@
 # Farming Bar
 ## Version 3.0
 ### 3.0-alpha15
+- Added configuration for bar and button alert formats
+  - -- Bar alerts are still under construction
+- Implemented button configurations for showEmpty, mouseover, and anchorMouseover
 - Changed tooltip for trackers
   - -- trackerCount / trackerObjective (totalTrackerCount / totalTrackerObjective)
   - -- Added progress color to trackerCount
 - Bug fixes:
   - -- Fixed bug that prevented bars from being deleted
+  - -- Fixed error in cloning bars when enabling or disabling them
 
 ### 3.0-alpha14
 - Keybinds to toggle bank or all character inclusions have been removed

@@ -40,7 +40,7 @@ function addon:OnInitialize()
 
         local status = format("%s", (percent >= 100 and info.oldCount < info.objective.count) and "Objective complete!" or "Farming update:")
         local count = format("%s%d/%d|r", info.objective.color, info.newCount, info.objective.count)
-        local difference = format("%s%s%d|r", info.difference.color, info.difference.sign, info.difference.count)
+        local difference = format("%s%s%d|r", info.difference.color or "", info.difference.sign or "", info.difference.count)
 
         return format("%s %s %s (%s%s)", status, info.objectiveTitle, count, objectiveReps > 1 and "x"..objectiveReps.." " or "", difference)
     end]]

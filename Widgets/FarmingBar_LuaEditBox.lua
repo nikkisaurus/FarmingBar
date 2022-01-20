@@ -15,26 +15,19 @@ local Version = 1
 
 local methods = {
     OnAcquire = function(self)
-        -- self.editBox:HookScript("OnUpdate", function(this)
-        --     -- Updates whether the accept button is active, based on the validity of the userInput
-        --     local text = this:GetText()
-
-        --     local info = self:GetUserData("info")    
-        --     local scope, key, func, args =  info and unpack(info)
-        --     if not func or not addon[func] then return end
-
-        --     local preview, err = func(text, info, addon.unpack(args, {}))
-
-        --     if err or text == addon:GetDBValue(scope, key) then
-        --         self.button:Disable()
-        --     else
-        --         self.button:Enable()
-        --     end
-        -- end)
+        self.editBox:HookScript("OnTextChanged", function(this)
+            -- Updates whether the accept button is active, based on the validity of the userInput
+            if err or this:GetText() == addon:GetDBValue(scope, key) then
+                self.button:Disable()
+            else
+                self.button:Enable()
+            end
+        end)
     end,
 
     OnRelease = function(self)
         self.frame.obj:Release()
+        addon:Unhook(self.editbox, "OnTextChanged")
     end,
 }
 
@@ -75,6 +68,9 @@ local function Constructor()
 
         frame:SetUserData("info", info)
     end)
+
+    -- Fix misaligned editbox label
+    frame.label:SetHeight(frame.label:GetStringHeight() + 6)
 
     if IsAddOnLoaded("ElvUI") then
         local E = unpack(_G["ElvUI"])
