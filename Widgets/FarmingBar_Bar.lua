@@ -278,7 +278,7 @@ local methods = {
         local cursorType, cursorID = GetCursorInfo()
         local objectiveTitle, objectiveInfo = addon.DragFrame and addon.DragFrame:GetObjective()
         for _, button in pairs(self:GetUserData("buttons")) do
-            local isDragging = cursorType or objectiveTitle or addon.movingButton
+            local isDragging = cursorType or objectiveTitle or addon.isMoving
 
             local showButton = (db.showEmpty or not button:IsEmpty() or isDragging) and (hasFocus or not db.mouseover or db.anchorMouseover)
 

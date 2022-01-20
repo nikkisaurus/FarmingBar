@@ -21,6 +21,12 @@ local postClickMethods = {
     moveObjective = function(self, ...)
         local widget = self.obj
 
+        if addon.isMoving then
+            addon.isMoving = nil
+        else
+            addon.isMoving = true
+        end
+
         if not widget:IsEmpty() and not addon.movingButton then
             widget.Flash:Show()
             UIFrameFlash(widget.Flash, 0.5, 0.5, -1)
@@ -28,7 +34,9 @@ local postClickMethods = {
         elseif addon.movingButton then
             widget:SwapButtons(addon.movingButton)
         end
+
         addon:UpdateButtons()
+        addon:UpdateBars()
     end,
 
     showObjectiveEditBox = function(self, ...)

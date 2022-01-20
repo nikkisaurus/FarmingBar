@@ -28,7 +28,7 @@ function addon:GetButtonTooltip(widget, tooltip)
     end
 
     local buttonDB = widget:GetButtonDB()
-    if not buttonDB then
+    if not buttonDB or (not widget:GetBar():GetBarDB().showEmpty and widget:IsEmpty()) then
         return
     end
 
