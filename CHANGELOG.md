@@ -1,6 +1,6 @@
 # Farming Bar
 ## Version 3.0
-### 3.0-alpha15
+### 3.0-alpha16 (3.0-alpha15 skipped)
 - Added configuration for bar and button alert formats
   - -- Bar alerts are still under construction
 - Implemented button configurations for showEmpty, mouseover, and anchorMouseover

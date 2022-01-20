@@ -446,7 +446,7 @@ end
 
 -- *------------------------------------------------------------------------
 
-L.Options_Help = [[|cffffcc00Farming Bar (v3.0-alpha15)|r
+L.Options_Help = [[|cffffcc00Farming Bar (v3.0-alpha16)|r
 
 Thank you for testing the alpha! If you have any suggestions or bug reports, please create an issue at |cff00ccff[ https://github.com/niketa-wow/farmingbar/issues ]|r and specify the current alpha version. Features in the stable release that are not yet implemented in this alpha are not bugs and should not be reported.
 
