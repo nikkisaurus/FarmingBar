@@ -8,6 +8,9 @@ local AceGUI = LibStub("AceGUI-3.0", true)
 -- *------------------------------------------------------------------------
 -- Bar initialization
 
+addon.cursorFrame = CreateFrame("Frame", nil, UIParent)
+addon.cursorFrame:Hide()
+
 function addon:InitializeBars()
     local profile = self:GetDBValue("profile")
     local bars = profile.bars
@@ -32,6 +35,8 @@ function addon:InitializeBars()
             end
         end
     end
+
+    self:RegisterEvent("CURSOR_CHANGED")
 end
 
 function addon:CreateBar()
@@ -58,6 +63,14 @@ function addon:LoadBar(barID)
 
     -- Add to bar container
     self.bars[barID] = bar
+end
+
+function addon:CURSOR_CHANGED()
+    local cursorType, cursorID = GetCursorInfo()
+
+    for _, bar in pairs(self.bars) do
+        bar:SetAlpha(cursorType == "item")
+    end
 end
 
 -- *------------------------------------------------------------------------

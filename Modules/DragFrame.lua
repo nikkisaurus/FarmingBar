@@ -5,11 +5,16 @@ local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 -- *------------------------------------------------------------------------
 -- Events
 
+local function DragFrame_OnShow()
+    for _, bar in pairs(addon.bars) do
+        bar:SetAlpha(true)
+    end
+end
+
 local function DragFrame_OnEvent(self, event, buttonClicked, ...)
     if event == "GLOBAL_MOUSE_DOWN" then
         -- Clear objective when right clicking or not dropping item on button
-        if buttonClicked == "RightButton" or
-            (self:GetObjective() and not strfind(GetMouseFocus():GetName() or "", "^FarmingBar_Button%d")) then
+        if buttonClicked == "RightButton" or (self:GetObjective() and not strfind(GetMouseFocus():GetName() or "", "^FarmingBar_Button%d")) then
             self:Clear()
             addon.movingButton = nil
         end
@@ -31,6 +36,10 @@ local methods = {
         self.icon:SetTexture("")
         self.text:SetText("")
         self:Hide()
+
+        for _, bar in pairs(addon.bars) do
+            bar:SetAlpha()
+        end
     end,
 
     GetObjective = function(self)
@@ -60,7 +69,7 @@ local methods = {
         self.objectiveInfo.template = objectiveTitle
 
         self:Show()
-    end
+    end,
 }
 
 -- *------------------------------------------------------------------------
@@ -78,6 +87,7 @@ function addon:InitializeDragFrame()
     -- @end-retail@
     DragFrame:SetScript("OnUpdate", DragFrame_OnUpdate)
     DragFrame:SetScript("OnEvent", DragFrame_OnEvent)
+    DragFrame:SetScript("OnShow", DragFrame_OnShow)
 
     DragFrame.icon = DragFrame:CreateTexture(nil, "OVERLAY")
     DragFrame.icon:SetAllPoints(DragFrame)

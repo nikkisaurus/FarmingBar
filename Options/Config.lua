@@ -232,6 +232,7 @@ function addon:GetBarConfigOptions(barID)
                 end,
                 set = function(info, value)
                     addon:SetBarDBValue(info[#info], value, barID)
+                    bar:SetAlpha()
                 end,
                 args = {
                     hidden = {
@@ -252,19 +253,11 @@ function addon:GetBarConfigOptions(barID)
                         order = 3,
                         type = "toggle",
                         name = L["Show on Mouseover"],
-                        set = function(info, value)
-                            addon:SetBarDBValue(info[#info], value, barID)
-                            bar:SetAlpha()
-                        end,
                     },
                     anchorMouseover = {
                         order = 4,
                         type = "toggle",
                         name = L["Show on Anchor Mouseover"],
-                        set = function(info, value)
-                            addon:SetBarDBValue(info[#info], value, barID)
-                            bar:SetAlpha()
-                        end,
                     },
                 },
             },

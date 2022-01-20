@@ -275,8 +275,13 @@ local methods = {
         local alpha = (hasFocus or (not db.mouseover and not db.anchorMouseover)) and db.alpha or 0
         self.anchor:SetAlpha(alpha)
 
+        local cursorType, cursorID = GetCursorInfo()
+        local objectiveTitle, objectiveInfo = addon.DragFrame and addon.DragFrame:GetObjective()
         for _, button in pairs(self:GetUserData("buttons")) do
-            local showButton = (db.showEmpty or not button:IsEmpty()) and (hasFocus or not db.mouseover or db.anchorMouseover) and not addon.cursorItem
+            local isDragging = cursorType or objectiveTitle or addon.movingButton
+
+            local showButton = (db.showEmpty or not button:IsEmpty() or isDragging) and (hasFocus or not db.mouseover or db.anchorMouseover)
+
             button:SetAlpha(showButton and db.alpha or 0)
         end
     end,
@@ -530,10 +535,7 @@ local function Constructor()
     FloatingBG:SetAllPoints(anchor)
 
     local OnLeave = function()
-        local barDB = frame.obj:GetUserData("barDB")
-        if barDB.mouseover or barDB.anchorMouseover then
-            frame.obj:SetAlpha(false)
-        end
+        frame.obj:SetAlpha()
     end
 
     local addButton = CreateFrame("Button", "$parentAddButton", anchor)

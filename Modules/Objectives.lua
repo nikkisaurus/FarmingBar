@@ -165,8 +165,7 @@ function addon:GetObjectiveIcon(widget)
     else
         if buttonDB.icon then
             -- Convert db icon value to number if it's a file ID, otherwise use the string value
-            icon = (tonumber(buttonDB.icon) and tonumber(buttonDB.icon) ~= buttonDB.icon) and tonumber(buttonDB.icon) or
-                       buttonDB.icon
+            icon = (tonumber(buttonDB.icon) and tonumber(buttonDB.icon) ~= buttonDB.icon) and tonumber(buttonDB.icon) or buttonDB.icon
             icon = (icon == "" or not icon) and 134400 or icon
         end
     end

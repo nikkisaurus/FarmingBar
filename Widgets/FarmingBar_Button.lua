@@ -114,7 +114,7 @@ local function frame_OnEnter(self)
     local widget = self.obj
     local barDB = widget:GetBarDB()
 
-    widget:GetBar():SetAlpha(true)
+    widget:GetBar():SetAlpha(not barDB.anchorMouseover)
 
     local tooltip = widget:GetUserData("tooltip")
     if tooltip and not addon.DragFrame:GetObjective() then
