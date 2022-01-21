@@ -82,9 +82,10 @@ function addon:InitializeDragFrame()
     DragFrame:SetFrameStrata("TOOLTIP")
     addon.DragFrame = DragFrame
 
-    -- @retail@
+--@retail@
+
     DragFrame:RegisterEvent("GLOBAL_MOUSE_DOWN")
-    -- @end-retail@
+    --@end-retail@
     DragFrame:SetScript("OnUpdate", DragFrame_OnUpdate)
     DragFrame:SetScript("OnEvent", DragFrame_OnEvent)
     DragFrame:SetScript("OnShow", DragFrame_OnShow)

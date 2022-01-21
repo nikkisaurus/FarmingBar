@@ -58,14 +58,14 @@ function addon:OnInitialize()
     end]]
 
     -- Register sounds
-    -- @retail@
+    --@retail@
     LSM:Register("sound", L["Auction Open"], 567482) -- id:5274
     LSM:Register("sound", L["Auction Close"], 567499) -- id:5275
     LSM:Register("sound", L["Loot Coin"], 567428) -- id:120
     LSM:Register("sound", L["Quest Activate"], 567400) -- id:618
     LSM:Register("sound", L["Quest Complete"], 567439) -- id:878
     LSM:Register("sound", L["Quest Failed"], 567459) -- id:846
-    -- @end-retail@
+    --@end-retail@
     --[===[@non-retail@
     LSM:Register("sound", L["Auction Open"], "sound/interface/auctionwindowopen.ogg") -- id:5274
     LSM:Register("sound", L["Auction Close"], "sound/interface/auctionwindowclose.ogg") -- id:5275
@@ -102,9 +102,12 @@ end
 
 function addon:InitializeEvents()
     self:RegisterEvent("BAG_UPDATE_DELAYED")
-    -- @retail@
+--@retail@
+
+
+
     self:RegisterEvent("CURRENCY_DISPLAY_UPDATE")
-    -- @end-retail@
+    --@end-retail@
 end
 
 function addon:InitializeTrackers()

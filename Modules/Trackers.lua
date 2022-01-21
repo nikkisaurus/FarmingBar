@@ -91,7 +91,7 @@ function addon:GetTrackerDataTable(...)
                 icon = icon or 134400,
                 label = addon:GetTrackerTypeLabel(dataType),
                 trackerType = dataType,
-                trackerID = dataID
+                trackerID = dataID,
             }
 
             if callback then
@@ -108,7 +108,7 @@ function addon:GetTrackerDataTable(...)
             icon = currency and currency.iconFileID or 134400,
             label = self:GetTrackerTypeLabel(dataType),
             trackerType = dataType,
-            trackerID = dataID
+            trackerID = dataID,
         }
 
         if callback then
@@ -130,9 +130,9 @@ function addon:GetTrackerKey(widget, trackerSort)
 end
 
 function addon:GetTrackerTypeLabel(trackerType)
-    -- @retail@
+    --@retail@
     return trackerType == "ITEM" and L["Item ID/Name/Link"] or L["Currency ID/Link"]
-    -- @end-retail@
+    --@end-retail@
     --[===[@non-retail@
     return L["Item ID/Name/Link"]
     --@end-non-retail@]===]

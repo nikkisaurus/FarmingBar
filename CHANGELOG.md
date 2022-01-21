@@ -1,5 +1,11 @@
 # Farming Bar
 ## Version 3.0
+### 3.0-alpha17
+- Bug fixes:
+  - -- Removed the non-existant event "CURSOR_CHANGED" from TBCC and changed to "CURSOR_UPDATE"
+  - -- Fixed several packager errors preventing the TBCC file from properly packaging
+  - -- Fixed error where database attempted to index a table that did not yet exist
+
 ### 3.0-alpha16 (3.0-alpha15 skipped)
 - Added configuration for bar and button alert formats
   - -- Bar alerts are still under construction

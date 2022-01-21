@@ -39,9 +39,10 @@ function addon:InitializeDB()
                                     -- Char
                                     includeAllChars = false,
                                     includeBank = false,
-                                    -- @retail@
+--@retail@
+
                                     includeGuildBank = {},
-                                    -- @end-retail@
+                                    --@end-retail@
                                     exclude = {}, -- buttonIDs
 
                                     -- Template
@@ -223,12 +224,13 @@ function addon:InitializeDB()
                             button = "LeftButton",
                             modifier = "alt",
                         },
-                        -- @retail@
+--@retail@
+
                         showQuickAddCurrencyEditBox = {
                             button = "RightButton",
                             modifier = "alt",
                         },
-                        -- @end-retail@
+                        --@end-retail@
                         useItem = {
                             button = "RightButton",
                             modifier = "",
@@ -376,7 +378,7 @@ function addon:ValidateDB()
     local backup
 
     if FarmingBarDB then
-        local version = FarmingBarDB.global.version
+        local version = FarmingBarDB.global and FarmingBarDB.global.version
         if version == currentVersion then
             return
         else

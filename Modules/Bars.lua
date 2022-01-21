@@ -36,7 +36,7 @@ function addon:InitializeBars()
         end
     end
 
-    self:RegisterEvent("CURSOR_CHANGED")
+    self:RegisterEvent("CURSOR_UPDATE")
 end
 
 function addon:CreateBar()
@@ -65,7 +65,7 @@ function addon:LoadBar(barID)
     self.bars[barID] = bar
 end
 
-function addon:CURSOR_CHANGED()
+function addon:CURSOR_UPDATE()
     local cursorType, cursorID = GetCursorInfo()
 
     for _, bar in pairs(self.bars) do

@@ -14,9 +14,10 @@ local buttonCommandSort = {
     dragObjective = 4, -- shift+left drag
     showObjectiveEditBox = 5, -- ctrl+left
     showQuickAddEditBox = 6, -- alt+left
-    -- @retail@
+--@retail@
+
     showQuickAddCurrencyEditBox = 7, -- alt+right
-    -- @end-retail@
+    --@end-retail@
     showObjectiveEditor = 8, -- ctrl+right
     moveObjectiveToBank = 9, -- alt+ctrl+right
     moveAllToBank = 10, -- alt+ctrl+left
@@ -76,9 +77,10 @@ function addon:GetButtonTooltip(widget, tooltip)
             -- Button doesn't have objective
             if widget:IsEmpty() then
                 FarmingBar_Tooltip:AddLine(L.ButtonHints("showQuickAddEditBox", self:GetDBValue("global", "settings.keybinds.button.showQuickAddEditBox")), unpack(self.tooltip_description))
-                -- @retail@
+--@retail@
+
                 FarmingBar_Tooltip:AddLine(L.ButtonHints("showQuickAddCurrencyEditBox", self:GetDBValue("global", "settings.keybinds.button.showQuickAddCurrencyEditBox")), unpack(self.tooltip_description))
-                -- @end-retail@
+                --@end-retail@
             else
                 for k, v in self.pairs(self:GetDBValue("global", "settings.keybinds.button"), function(a, b)
                     return buttonCommandSort[a] < buttonCommandSort[b]
@@ -121,9 +123,10 @@ function addon:GetButtonObjectiveInfo(widget, tooltip, buttonDB)
     if numTrackers == 1 then
         tooltip:AddDoubleLine(L["Include All Characters"], buttonDB.trackers[self:GetFirstTracker(widget)].includeAllChars and L["TRUE"] or L["FALSE"], unpack(self.tooltip_description))
         tooltip:AddDoubleLine(L["Include Bank"], buttonDB.trackers[self:GetFirstTracker(widget)].includeBank and L["TRUE"] or L["FALSE"], unpack(self.tooltip_description))
-        -- @retail@
+--@retail@
+
         tooltip:AddDoubleLine(L["Include Guild Bank"], buttonDB.trackers[self:GetFirstTracker(widget)].includeGuildBank and L["TRUE"] or L["FALSE"], unpack(self.tooltip_description))
-        -- @end-retail@
+        --@end-retail@
     else
         -- TODO: multi-tracker includes
         -- number of trackers enabled / total number of trackers
@@ -157,9 +160,10 @@ function addon:GetButtonObjectiveInfo(widget, tooltip, buttonDB)
                 local trackerRawCount
 
                 if trackerType == "ITEM" then
-                    -- @retail@
+--@retail@
+
                     trackerRawCount = (trackerInfo.includeAllChars or trackerInfo.includeGuildBank) and self:GetDataStoreItemCount(trackerID, trackerInfo) or GetItemCount(trackerID, trackerInfo.includeBank)
-                    -- @end-retail@
+                    --@end-retail@
                     --[===[@non-retail@
                     trackerRawCount = trackerInfo.includeAllChars and self:GetDataStoreItemCount(trackerID, trackerInfo) or GetItemCount(trackerID, trackerInfo.includeBank)
                     --@end-non-retail@]===]

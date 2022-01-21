@@ -51,12 +51,13 @@ local postClickMethods = {
         self.obj.quickAddEditBox:Show()
     end,
 
-    -- @retail@
+--@retail@
+
     showQuickAddCurrencyEditBox = function(self, ...)
         self.obj:SetUserData("quickAddEditbox", "CURRENCY")
         self.obj.quickAddEditBox:Show()
     end,
-    -- @end-retail@
+    --@end-retail@
 
     showObjectiveEditor = function(self, ...)
         local widget = self.obj
@@ -364,11 +365,12 @@ local methods = {
         for trackerKey, trackerInfo in pairs(self:GetButtonDB().trackers) do
             trackerInfo.includeAllChars = false
             trackerInfo.includeBank = false
-            -- @retail@
+--@retail@
+
             if trackerInfo.includeGuildBank then
                 wipe(trackerInfo.includeGuildBank)
             end
-            -- @end-retail@
+            --@end-retail@
             if trackerInfo.exclude then
                 wipe(trackerInfo.exclude)
             end
