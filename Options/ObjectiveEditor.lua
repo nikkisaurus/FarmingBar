@@ -18,7 +18,7 @@ end
 function addon:GetObjectiveEditorOptions()
     local options = {
         type = "group",
-        name = format("%s %s", L.addon, L["Objective Editor"]),
+        name = format("%s - %s", L.addon, L["Objective Editor"]),
         args = {
             objective = {
                 order = 0,

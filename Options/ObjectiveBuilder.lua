@@ -90,7 +90,8 @@ function addon:GetObjectiveBuilderOptions()
             type = "execute",
             name = L["Import"],
             func = function()
-                local importFrame = AceGUI:Create("Frame")
+                local importFrame = AceGUI:Create("Frame")                
+                importFrame:SetTitle(L.addon .. " - " .. L["Import Frame"])
                 importFrame:SetLayout("Fill")
                 importFrame:SetCallback("OnClose", function(self)
                     self:Release()
@@ -116,6 +117,7 @@ function addon:GetObjectiveBuilderOptions()
 
                     -- Create objective import frame
                     local importObjective = AceGUI:Create("Window")
+                    importObjective:SetTitle(L.addon .. " - " .. L["Import"])
                     importObjective:SetLayout("Flow")
                     importObjective:SetWidth(300)
                     importObjective:SetHeight(200)
@@ -153,9 +155,68 @@ function addon:GetObjectiveBuilderOptions()
                     local codeFrame
                     codeButton:SetCallback("OnClick", function()
                         codeFrame = codeFrame or AceGUI:Create("Frame")
+                        codeFrame:SetTitle(L.addon .. " - " .. L["Custom Code"])
+                        codeFrame:SetLayout("Fill")
                         codeFrame:SetCallback("OnClose", function(self)
                             self:Release()
                             codeFrame = nil
+                        end)
+                        
+                        local treeGroup = AceGUI:Create("TreeGroup")
+                        treeGroup:SetFullWidth(true)
+                        treeGroup:SetLayout("Fill")
+                        codeFrame:AddChild(treeGroup)
+
+                        treeGroup:SetTree({
+                            {
+                                value = "bar",
+                                text = L["Bar"],
+                                children = {
+                                    {
+                                        value = "progress",
+                                        text = L["Progress Format"],
+                                    },
+                                },
+                            },
+                            {
+                                value = "button",
+                                text = L["Button"],
+                                children = {
+                                    {
+                                        value = "withObjective",
+                                        text = L["Format With Objective"],
+                                    },
+                                    {
+                                        value = "withoutObjective",
+                                        text = L["Format Without Objective"],
+                                    },
+                                },
+                            },
+                            {
+                                value = "tracker",
+                                text = L["Tracker"],
+                                children = {
+                                    {
+                                        value = "progress",
+                                        text = L["Progress Format"],
+                                    },
+                                },
+                            },
+                        })
+                        
+                        local editbox = AceGUI:Create("MultiLineEditBox")
+                        addon.indent.enable(editbox.editBox, _, 4) 
+                        editbox:DisableButton(true)
+                        treeGroup:AddChild(editbox)
+
+                        treeGroup:SetCallback("OnGroupSelected", function(_, _, value)
+                            local group, setting = strsplit("\001", value)
+
+                            if setting then
+                                editbox:SetText(addon:GetDBValue("global", format("settings.alerts.%s.format.%s", group, setting)))
+                            else
+                                editbox:SetText("")
+                            end                            
                         end)
                     end)
 
@@ -510,6 +571,7 @@ function addon:GetObjectiveBuilderOptions_Objective(objectiveTitle)
                     func = function()
                         -- Create frame
                         local exportFrame = AceGUI:Create("Frame")
+                        exportFrame:SetTitle(L.addon .. " - " .. L["Export Frame"])
                         exportFrame:SetLayout("Fill")
                         exportFrame:SetCallback("OnClose", function(self)
                             self:Release()
