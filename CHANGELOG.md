@@ -2,9 +2,11 @@
 ## Version 3.0
 ### 3.0-alpha18
 - Implemented remaining alert settings
+- Options have been rearranged
 - Bug fixes:
   - -- Objectives now properly clear when deleted from the mouse
   - -- Fixed lua error when configuring bars after changing profiles
+  - -- Disabled "Copy From" in bar configuration when only one bar exists
 
 ### 3.0-alpha17
 - Bug fixes:

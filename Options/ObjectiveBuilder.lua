@@ -101,7 +101,10 @@ function addon:GetObjectiveBuilderOptions()
 
             options[objectiveTitle] = {
                 type = "group",
-                name = objectiveTitle,
+                name = objectiveTitle,                
+                icon = function()
+                    return self:GetObjectiveTemplateIcon(objectiveTitle), 35, 35
+                end,
                 childGroups = "tab",
                 args = {
                     objective = {

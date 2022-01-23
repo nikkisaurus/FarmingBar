@@ -349,6 +349,7 @@ L["Completed Objectives"] = true
 L["Count Fontstring"] = true
 L["Disabled"] = true
 L["Down"] = true
+L["Duplicate Bar"] = true
 L["Lua Editor"] = true
 L["Enabled"] = true
 L["Expand"] = true
@@ -395,7 +396,7 @@ L["Show Empty Buttons"] = true
 L["Show on Anchor Mouseover"] = true
 L["Show on Mouseover"] = true
 L["Size"] = true
-L["Size Bar to Buttons"] = true
+L["Resize Bar"] = true
 L["Sound"] = true
 L["Sounds"] = true
 L["Style"] = true
@@ -433,8 +434,8 @@ L.TemplateObjectiveMissing = [[Missing template objective "%s" not loaded.]]
 
 L.Options_Config = function(widget)
     local strings = {
-        ["charSpecific"] = [["*" denotes character specific database settings]],
-        ["mixedSpecific"] = [["**" denotes mixed character and profile specific database settings]],
+        ["charSpecific"] = [[*(Asterisk) denotes character specific database settings.]],
+        ["mixedSpecific"] = [[**(Double asterisk) denotes mixed character and profile specific database settings.]],
     }
 
     return strings[widget]

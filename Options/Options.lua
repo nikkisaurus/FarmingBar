@@ -10,10 +10,10 @@ function addon:InitializeOptions()
     LibStub("AceConfig-3.0"):RegisterOptionsTable(addonName, self:GetOptions())
     ACD:SetDefaultSize(addonName, 850, 600)
 
-    -- C_Timer.After(1, function()
-    --     ACD:SelectGroup(addonName, "settings", "global", "alerts", "button")
-    --     ACD:Open(addonName)
-    -- end)
+     C_Timer.After(1, function()
+         ACD:SelectGroup(addonName, "config", "bar1")
+         ACD:Open(addonName)
+     end)
 end
 
 function addon:GetOptions()
@@ -25,21 +25,18 @@ function addon:GetOptions()
                 order = 1,
                 type = "group",
                 name = L["Config"],
-                childGroups = "select",
                 args = self:GetConfigOptions(),
             },
             objectiveBuilder = {
                 order = 2,
                 type = "group",
                 name = L["Objectives"],
-                childGroups = "select",
                 args = self:GetObjectiveBuilderOptions(),
             },
             settings = {
                 order = 3,
                 type = "group",
                 name = L["Settings"],
-                childGroups = "select",
                 args = self:GetSettingsOptions(),
             },
             styleEditor = {
