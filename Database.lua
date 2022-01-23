@@ -281,7 +281,7 @@ function addon:InitializeDB()
                     grow = {"RIGHT", "DOWN"}, -- [1] = "RIGHT", "LEFT", "UP", "DOWN"; [2] = "DOWN", "UP"
                     point = {"TOP"},
                     button = {
-                        size = 65, -- bar.buttonSize
+                        size = 35, -- bar.buttonSize
                         padding = 2, -- bar.buttonPadding
                         fontStrings = {
                             count = {
@@ -303,7 +303,7 @@ function addon:InitializeDB()
                 font = {
                     face = "Friz Quadrata TT",
                     outline = "OUTLINE",
-                    size = 18,
+                    size = 12,
                     fontStrings = {
                         count = {
                             style = "CUSTOM", -- "CUSTOM", "INCLUDEAUTOLAYERS", "INCLUDEALLCHARS", "INCLUDEBANK", "ITEMQUALITY" --profile.style.count.type

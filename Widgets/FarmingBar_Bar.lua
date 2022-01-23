@@ -186,6 +186,8 @@ local methods = {
                 local barIDName = format("%s %d", L["Bar"], self:GetBarID())
                 local progressCount, progressTotal = self:GetProgress()
 
+                if progressTotal == 0 then return end
+
                 local alertInfo = {
                     progressCount = progressCount,
                     progressTotal = progressTotal,
@@ -418,7 +420,9 @@ local methods = {
     SetQuickButtonStates = function(self)
         local addButton = self.addButton
         local removeButton = self.removeButton
-        local numVisibleButtons = self:GetUserData("barDB").numVisibleButtons
+        local barDB = self:GetUserData("barDB")
+        if not barDB then return end
+        local numVisibleButtons = barDB.numVisibleButtons
 
         if numVisibleButtons == 0 then
             removeButton:Disable()
