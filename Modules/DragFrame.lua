@@ -12,9 +12,9 @@ local function DragFrame_OnShow()
 end
 
 local function DragFrame_OnEvent(self, event, buttonClicked, ...)
-    if event == "GLOBAL_MOUSE_DOWN" then
+    if event == "GLOBAL_MOUSE_DOWN" and (self:GetObjective() or addon.movingButton) then
         -- Clear objective when right clicking or not dropping item on button
-        if buttonClicked == "RightButton" or (self:GetObjective() and not strfind(GetMouseFocus():GetName() or "", "^FarmingBar_Button%d")) then
+        if buttonClicked == "RightButton" or not strfind(GetMouseFocus():GetName() or "", "^FarmingBar_Button%d") then
             self:Clear()
             addon.movingButton = nil
         end

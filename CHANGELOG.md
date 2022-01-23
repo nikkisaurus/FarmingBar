@@ -7,6 +7,7 @@
   - -- Objectives now properly clear when deleted from the mouse
   - -- Fixed lua error when configuring bars after changing profiles
   - -- Disabled "Copy From" in bar configuration when only one bar exists
+  - -- DragFrame should only attempt to clear an objective when it is loaded
 
 ### 3.0-alpha17
 - Bug fixes:
