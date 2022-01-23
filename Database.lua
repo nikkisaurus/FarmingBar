@@ -254,7 +254,6 @@ function addon:InitializeDB()
 
                     bars = true, -- global.tooltips.barTips
                     buttons = true, -- global.tooltips.buttonTips
-                    ObjectiveBuilder = true,
                 },
                 misc = {
                     autoLootOnUse = false, -- global.autoLootItems
@@ -283,7 +282,7 @@ function addon:InitializeDB()
                     grow = {"RIGHT", "DOWN"}, -- [1] = "RIGHT", "LEFT", "UP", "DOWN"; [2] = "DOWN", "UP"
                     point = {"TOP"},
                     button = {
-                        size = 35, -- bar.buttonSize
+                        size = 65, -- bar.buttonSize
                         padding = 2, -- bar.buttonPadding
                         fontStrings = {
                             count = {
@@ -305,7 +304,7 @@ function addon:InitializeDB()
                 font = {
                     face = "Friz Quadrata TT",
                     outline = "OUTLINE",
-                    size = 11,
+                    size = 18,
                     fontStrings = {
                         count = {
                             style = "CUSTOM", -- "CUSTOM", "INCLUDEAUTOLAYERS", "INCLUDEALLCHARS", "INCLUDEBANK", "ITEMQUALITY" --profile.style.count.type

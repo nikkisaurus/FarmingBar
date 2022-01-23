@@ -30,7 +30,7 @@ function addon:OnInitialize()
     self.OffsetY = 10
     self.tooltip_description = {1, 1, 1, 1, 1, 1, 1}
     self.tooltip_keyvalue = {1, .82, 0, 1, 1, 1, 1}
-    -- self.barProgress = "%B progress: %progressColor%%c/%t%color%%if(%p>0, (%p%%),)if%"
+    
     self.barProgress = [[function(info)
         -- info keys: progressCount, progressTotal, barIDName, barNameLong, progressColor
 

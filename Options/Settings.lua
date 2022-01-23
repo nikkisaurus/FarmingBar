@@ -78,20 +78,14 @@ function addon:GetSettingsOptions()
                                     name = L["Buttons"],
                                     desc = L.Options_settings_global_general_hints_buttons,
                                 },
-                                ObjectiveBuilder = {
-                                    order = 3,
-                                    type = "toggle",
-                                    name = L["Objective Builder"],
-                                    desc = L.Options_settings_global_general_hints_ObjectiveBuilder,
-                                },
                                 enableModifier = {
-                                    order = 4,
+                                    order = 3,
                                     type = "toggle",
                                     name = L["Enable Modifier"],
                                     desc = L.Options_settings_global_general_hints_enableModifier,
                                 },
                                 modifier = {
-                                    order = 5,
+                                    order = 4,
                                     type = "select",
                                     style = "dropdown",
                                     name = L["Modifier"],
