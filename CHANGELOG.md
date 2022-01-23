@@ -4,6 +4,7 @@
 - Implemented remaining alert settings
 - Bug fixes:
   - -- Objectives now properly clear when deleted from the mouse
+  - -- Fixed lua error when configuring bars after changing profiles
 
 ### 3.0-alpha17
 - Bug fixes:

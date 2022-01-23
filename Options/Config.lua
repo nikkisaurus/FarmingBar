@@ -75,7 +75,6 @@ end
 
 function addon:GetBarConfigOptions(barID)
     local options
-    local bar = barID > 0 and self.bars[barID]
 
     if barID == 0 then -- Config all bars
         options = {
@@ -232,7 +231,7 @@ function addon:GetBarConfigOptions(barID)
                 end,
                 set = function(info, value)
                     addon:SetBarDBValue(info[#info], value, barID)
-                    bar:SetAlpha()
+                    self.bars[barID]:SetAlpha()
                 end,
                 args = {
                     hidden = {
@@ -241,7 +240,7 @@ function addon:GetBarConfigOptions(barID)
                         name = L["Hidden"],
                         set = function(info, value)
                             addon:SetBarDBValue(info[#info], value, barID)
-                            bar:SetHidden()
+                            self.bars[barID]:SetHidden()
                         end,
                     },
                     showEmpty = {
@@ -284,7 +283,7 @@ function addon:GetBarConfigOptions(barID)
                         end,
                         set = function(info, value)
                             addon:GetDBValue("profile", "bars")[barID].grow[1] = value
-                            bar:AnchorButtons()
+                            self.bars[barID]:AnchorButtons()
                         end,
 
                     },
@@ -302,7 +301,7 @@ function addon:GetBarConfigOptions(barID)
                         end,
                         set = function(info, value)
                             addon:GetDBValue("profile", "bars")[barID].grow[2] = value
-                            bar:AnchorButtons()
+                            self.bars[barID]:AnchorButtons()
                         end,
 
                     },
@@ -315,7 +314,7 @@ function addon:GetBarConfigOptions(barID)
                         end,
                         set = function(info, value)
                             addon:SetBarDBValue(info[#info], value, barID)
-                            bar:SetMovable()
+                            self.bars[barID]:SetMovable()
                         end,
                     },
                 },
@@ -339,7 +338,7 @@ function addon:GetBarConfigOptions(barID)
                         step = .01,
                         set = function(info, value)
                             addon:SetBarDBValue(info[#info], value, barID)
-                            bar:SetAlpha()
+                            self.bars[barID]:SetAlpha()
                         end,
                     },
                 },
@@ -515,8 +514,8 @@ function addon:GetButtonConfigOptions(barID)
                         step = 1,
                         set = function(info, value)
                             self:SetBarDBValue(info[#info], value, barID)
-                            bar:UpdateVisibleButtons()
-                            bar:SetBackdropAnchor()
+                            self.bars[barID]:UpdateVisibleButtons()
+                            self.bars[barID]:SetBackdropAnchor()
                         end,
                     },
                     buttonWrap = {
@@ -528,7 +527,7 @@ function addon:GetButtonConfigOptions(barID)
                         step = 1,
                         set = function(info, value)
                             self:SetBarDBValue(info[#info], value, barID)
-                            bar:AnchorButtons()
+                            self.bars[barID]:AnchorButtons()
                         end,
                     },
                 },
@@ -552,7 +551,7 @@ function addon:GetButtonConfigOptions(barID)
                         end,
                         set = function(info, value)
                             self:SetBarDBValue("button." .. info[#info], value, barID)
-                            bar:SetSize()
+                            self.bars[barID]:SetSize()
                         end,
                     },
                     padding = {
@@ -567,8 +566,8 @@ function addon:GetButtonConfigOptions(barID)
                         end,
                         set = function(info, value)
                             self:SetBarDBValue("button." .. info[#info], value, barID)
-                            bar:SetSize()
-                            bar:AnchorButtons()
+                            self.bars[barID]:SetSize()
+                            self.bars[barID]:AnchorButtons()
                         end,
                     },
                     countHeader = {
