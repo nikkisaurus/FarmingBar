@@ -15,13 +15,25 @@ local Version = 1
 
 local methods = {
     OnAcquire = function(self)
-        self.editBox:HookScript("OnTextChanged", function(this)
-            -- Updates whether the accept button is active, based on the validity of the userInput
-            if err or this:GetText() == addon:GetDBValue(scope, key) then
-                self.button:Disable()
+        self.editBox:HookScript("OnTextChanged", function(this)   
+            local info = self:GetUserData("info")
+            local scope, key, func, args = unpack(info)
+            if not func or not addon[func] then
+                return
             else
-                self.button:Enable()
+                func = addon[func]
             end
+
+            -- Updates whether the accept button is active, based on the validity of the userInput
+            local preview, err = func(addon, addon.unpack(args, {}), this:GetText())
+
+            C_Timer.After(0.01, function()
+                if err then
+                    self.button:Disable()
+                else
+                    self.button:Enable()
+                end
+            end)
         end)
     end,
 

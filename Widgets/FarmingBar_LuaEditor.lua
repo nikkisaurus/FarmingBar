@@ -28,22 +28,6 @@ local methods = {
         self.editbox:SetText(text)
         self.editbox:Fire("OnTextChanged")
         self.frame:Show()
-
-        -- hooksecurefunc(self.window, "SetStatusText", function(_, text)
-        --     C_Timer.After(0.1, function()
-        --         local _, _, func, args = unpack(info)
-        --         if not func or not addon[func] then
-        --             return
-        --         else
-        --             func = addon[func]
-        --         end
-
-        --         if func(addon, addon.unpack(args, {}), self.editbox:GetText()) ~= text then
-        --             -- self.editbox:Fire("OnTextChanged")
-        --             print("COW")
-        --         end
-        --     end)
-        -- end)
     end,
 
     SetStatusText = function(self, text)
@@ -88,17 +72,16 @@ local function Constructor()
         end
 
         -- Update preview while typing
-        local changed = self:GetText() ~= addon:GetDBValue(scope, key)
         local preview, err = func(addon, addon.unpack(args, {}), self:GetText())
-        local saved = func(addon, addon.unpack(args, {}), _, info)
+        window:SetStatusText(preview)
 
-        window:SetStatusText(changed and preview or saved)
-
-        if err or not changed then
-            editbox.button:Disable()
-        else
-            editbox.button:Enable()
-        end
+        C_Timer.After(0.01, function()
+            if err then
+                editbox.button:Disable()
+            else
+                editbox.button:Enable()
+            end
+        end)
     end)
 
     local widget = {

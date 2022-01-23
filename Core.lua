@@ -33,7 +33,7 @@ function addon:OnInitialize()
     -- self.barProgress = "%B progress: %progressColor%%c/%t%color%%if(%p>0, (%p%%),)if%"
     self.barProgress = [[function(info)
         -- info keys: progressCount, progressTotal, barIDName, barNameLong, progressColor
-        
+
         return format("Progress: %s %s%d/%d|r", info.barNameLong, info.progressColor, info.progressCount, info.progressTotal)
     end]]
     self.withObjective = [[function(info)
@@ -56,6 +56,8 @@ function addon:OnInitialize()
         return format("Farming update: %s x%d (%s)", info.objectiveTitle, info.newCount, difference)
     end]]
     self.trackerProgress = [[function(info)
+        -- info keys: objectiveTitle, trackerTitle, objective.color, objective.count, trackerObjective.color, trackerObjective.count, oldTrackerCount, newTrackerCount, trackerDifference.sign, trackerDifference.color, trackerDifference.count
+
         local title = format("(%s) %s", info.objectiveTitle, info.trackerTitle)
         local count = format("%s%d/%d|r", info.trackerObjective.color, info.newTrackerCount, info.trackerObjective.count)
         local difference = format("(%s%s%d|r)", info.trackerDifference.color, info.trackerDifference.sign, info.trackerDifference.count)
