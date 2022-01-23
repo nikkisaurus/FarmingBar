@@ -67,8 +67,19 @@ function addon:PreviewAlert(alertType, input, info)
     local alertInfo
 
     -- Setup alertInfo
-    if alertType == "bar" then
-        return
+    if alertType == "bar" then        
+        local barIDName = format("%s %s", L["Bar"], 1)
+        local progressCount = self:GetDBValue("global", "settings.alerts.bar.preview.count")
+        local progressTotal = self:GetDBValue("global", "settings.alerts.bar.preview.total")
+        local alertType = self:GetDBValue("global", "settings.alerts.bar.preview.alertType")
+
+        alertInfo = {
+            progressCount = progressCount,
+            progressTotal = progressTotal,
+            barIDName = barIDName,
+            barNameLong = format("%s (%s)", barIDName, L["My Bar Name"]),
+            progressColor = (progressCount == progressTotal and alertType ~= "lost") and "|cff00ff00" or alertType == "complete" and "|cffffcc00" or alertType == "lost" and "|cffff0000",
+        }
     elseif alertType == "button" then
         local objective = self:GetDBValue("global", "settings.alerts.button.preview.objective")
         local oldCount = self:GetDBValue("global", "settings.alerts.button.preview.oldCount")
@@ -89,11 +100,39 @@ function addon:PreviewAlert(alertType, input, info)
                 count = difference,
             },
         }
+    elseif alertType == "tracker" then
+        local oldTrackerCount = self:GetDBValue("global", "settings.alerts.tracker.preview.oldCount")
+        local newTrackerCount = self:GetDBValue("global", "settings.alerts.tracker.preview.newCount")
+        local trackerObjective = self:GetDBValue("global", "settings.alerts.tracker.preview.objective")
+        local oldCount = self:GetDBValue("global", "settings.alerts.tracker.preview.objectiveInfo.oldCount")
+        local newCount = self:GetDBValue("global", "settings.alerts.tracker.preview.objectiveInfo.newCount")
+        local objective = self:GetDBValue("global", "settings.alerts.tracker.preview.objectiveInfo.objective")
+        local difference, trackerDifference = newCount - oldCount, newTrackerCount - oldTrackerCount
 
-        input = input or self:GetDBValue(info[1], info[2]) or ""
+        alertInfo = {
+            objectiveTitle = L["Hearthstones"],
+            trackerTitle = L["Hearthstone"],
+            objective = {
+                color = (objective and objective > 0) and (newCount >= objective and "|cff00ff00" or "|cffffcc00") or "",
+                count = objective,
+            },
+            trackerObjective = {
+                color = newTrackerCount >= ((objective and objective > 0) and objective * trackerObjective or trackerObjective) and "|cff00ff00" or "|cffffcc00",
+                count = (objective and objective > 0) and objective * trackerObjective or trackerObjective,
+            },
+            oldTrackerCount = oldTrackerCount,
+            newTrackerCount = newTrackerCount,
+            trackerDifference = {
+                sign = trackerDifference > 0 and "+" or trackerDifference < 0 and "",
+                color = trackerDifference > 0 and "|cff00ff00" or trackerDifference < 0 and "|cffff0000",
+                count = trackerDifference,
+            },
+        }
     else
         return
     end
+
+    input = input or self:GetDBValue(info[1], info[2]) or ""
 
     -- Validate alert
     -- Transform the string into a function

@@ -159,6 +159,12 @@ function addon:InitializeDB()
                         preview = {
                             oldCount = 20,
                             newCount = 25,
+                            objectiveInfo = {
+                                oldCount = 5,
+                                newCount = 6,
+                                objective = 20,
+                            },
+                            objective = 10,
                         },
                     },
                 },

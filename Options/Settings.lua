@@ -301,12 +301,6 @@ function addon:GetSettingsOptions()
                                     type = "group",
                                     name = L["Formats"],
                                     inline = true,
-                                    get = function(info)
-                                        return addon:GetDBValue("global", "settings.alerts.bar." .. info[#info])
-                                    end,
-                                    set = function(info, value)
-                                        self:SetDBValue("global", "settings.alerts.bar." .. info[#info], value)
-                                    end,
                                     args = {
                                         progress = {
                                             order = 1,
@@ -324,21 +318,13 @@ function addon:GetSettingsOptions()
                                             end,
                                             arg = {"global", "settings.alerts.bar.format.progress", "PreviewAlert", {"bar"}},
                                         },
-                                        preview = {
-                                            order = 2,
-                                            type = "description",
-                                            name = function(text)
-                                                return text
-                                            end,
-                                            width = "full",
-                                        },
                                         previewSettings = {
-                                            order = 3,
+                                            order = 2,
                                             type = "header",
                                             name = L["Preview Settings"],
                                         },
                                         previewCount = {
-                                            order = 4,
+                                            order = 3,
                                             type = "range",
                                             name = L["Completed Objectives"],
                                             min = 0,
@@ -352,7 +338,7 @@ function addon:GetSettingsOptions()
                                             end,
                                         },
                                         previewTotal = {
-                                            order = 5,
+                                            order = 4,
                                             type = "range",
                                             name = L["Total Objectives"],
                                             min = 0,
@@ -366,7 +352,7 @@ function addon:GetSettingsOptions()
                                             end,
                                         },
                                         alertType = {
-                                            order = 6,
+                                            order = 5,
                                             type = "select",
                                             style = "dropdown",
                                             name = L["Alert Type"],
@@ -384,7 +370,7 @@ function addon:GetSettingsOptions()
                                             end,
                                         },
                                         toggle = {
-                                            order = 7,
+                                            order = 6,
                                             type = "toggle",
                                             name = L["Use Long Name"],
                                             get = function()
@@ -396,7 +382,36 @@ function addon:GetSettingsOptions()
                                         },
                                     },
                                 },
-
+                                sounds = {
+                                    order = 5,
+                                    type = "group",
+                                    name = L["Sounds"],
+                                    inline = true,
+                                    get = function(info)
+                                        return addon:GetDBValue("global", "settings.alerts.bar.sound." .. info[#info])
+                                    end,
+                                    set = function(info, value)
+                                        self:SetDBValue("global", "settings.alerts.bar.sound." .. info[#info], value)
+                                    end,
+                                    args = {
+                                        progress = {
+                                            order = 1,
+                                            type = "select",
+                                            style = "dropdown",
+                                            name = L["Bar Progress"],
+                                            control = "LSM30_Sound",
+                                            values = AceGUIWidgetLSMlists.sound,
+                                        },
+                                        complete = {
+                                            order = 2,
+                                            type = "select",
+                                            style = "dropdown",
+                                            name = L["Bar Complete"],
+                                            control = "LSM30_Sound",
+                                            values = AceGUIWidgetLSMlists.sound,
+                                        },
+                                    },
+                                },
                             },
                         },
                         button = {
@@ -436,12 +451,6 @@ function addon:GetSettingsOptions()
                                     type = "group",
                                     name = L["Formats"],
                                     inline = true,
-                                    get = function(info)
-                                        return addon:GetDBValue("global", "settings.alerts.button." .. info[#info])
-                                    end,
-                                    set = function(info, value)
-                                        self:SetDBValue("global", "settings.alerts.button." .. info[#info], value)
-                                    end,
                                     args = {
                                         withObjective = {
                                             order = 1,
@@ -483,21 +492,13 @@ function addon:GetSettingsOptions()
                                             end,
                                             arg = {"global", "settings.alerts.button.format.withoutObjective", "PreviewAlert", {"button"}},
                                         },
-                                        withoutObjectivePreview = {
-                                            order = 4,
-                                            type = "description",
-                                            name = function(text)
-                                                return text
-                                            end,
-                                            width = "full",
-                                        },
                                         previewSettings = {
-                                            order = 5,
+                                            order = 4,
                                             type = "header",
                                             name = L["Preview Settings"],
                                         },
                                         oldCount = {
-                                            order = 6,
+                                            order = 5,
                                             type = "input",
                                             name = L["Old Count"],
                                             width = 0.5,
@@ -513,7 +514,7 @@ function addon:GetSettingsOptions()
                                             end,
                                         },
                                         newCount = {
-                                            order = 7,
+                                            order = 6,
                                             type = "input",
                                             name = L["New Count"],
                                             width = 0.5,
@@ -546,6 +547,52 @@ function addon:GetSettingsOptions()
                                         },
                                     },
                                 },
+                                sounds = {
+                                    order = 5,
+                                    type = "group",
+                                    name = L["Sounds"],
+                                    inline = true,
+                                    get = function(info)
+                                        return addon:GetDBValue("global", "settings.alerts.button.sound." .. info[#info])
+                                    end,
+                                    set = function(info, value)
+                                        self:SetDBValue("global", "settings.alerts.button.sound." .. info[#info], value)
+                                    end,
+                                    args = {
+                                        objectiveSet = {
+                                            order = 1,
+                                            type = "select",
+                                            style = "dropdown",
+                                            name = L["Objective Set"],
+                                            control = "LSM30_Sound",
+                                            values = AceGUIWidgetLSMlists.sound,
+                                        },
+                                        objectiveCleared = {
+                                            order = 2,
+                                            type = "select",
+                                            style = "dropdown",
+                                            name = L["Objective Cleared"],
+                                            control = "LSM30_Sound",
+                                            values = AceGUIWidgetLSMlists.sound,
+                                        },
+                                        progress = {
+                                            order = 3,
+                                            type = "select",
+                                            style = "dropdown",
+                                            name = L["Progress"],
+                                            control = "LSM30_Sound",
+                                            values = AceGUIWidgetLSMlists.sound,
+                                        },
+                                        objectiveComplete = {
+                                            order = 4,
+                                            type = "select",
+                                            style = "dropdown",
+                                            name = L["Objective Complete"],
+                                            control = "LSM30_Sound",
+                                            values = AceGUIWidgetLSMlists.sound,
+                                        },
+                                    },
+                                },
                             },
                         },
 
@@ -553,39 +600,177 @@ function addon:GetSettingsOptions()
                             order = 1,
                             type = "group",
                             name = L["Tracker"],
-                            get = function(info)
-                                return addon:GetDBValue("global", "settings.alerts.tracker." .. info[#info])
-                            end,
-                            set = function(info, value)
-                                self:SetDBValue("global", "settings.alerts.tracker." .. info[#info], value)
-                            end,
                             args = {
-                                toggle = {
+                                chat = {
                                     order = 1,
+                                    type = "toggle",
+                                    name = L["Chat"],
+                                },
+                                screen = {
+                                    order = 2,
+                                    type = "toggle",
+                                    name = L["Screen"],
+                                },
+                                sound = {
+                                    order = 3,
+                                    type = "toggle",
+                                    name = L["Sound"],
+                                    get = function(info)
+                                        return addon:GetDBValue("global", "settings.alerts.tracker.sound.enabled")
+                                    end,
+                                    set = function(_, value)
+                                        self:SetDBValue("global", "settings.alerts.tracker.sound.enabled", value)
+                                    end,
+                                },
+                                format = {
+                                    order = 4,
                                     type = "group",
-                                    name = L["Alerts"],
+                                    name = L["Formats"],
                                     inline = true,
-                                    args = {
-                                        chat = {
+                                    args = {                                        
+                                        progress = {
                                             order = 1,
-                                            type = "toggle",
-                                            name = L["Chat"],
-                                        },
-                                        screen = {
-                                            order = 2,
-                                            type = "toggle",
-                                            name = L["Screen"],
-                                        },
-                                        sound = {
-                                            order = 3,
-                                            type = "toggle",
-                                            name = L["Sound"],
+                                            type = "input",
+                                            name = L["Progress Format"],
+                                            width = "full",
+                                            multiline = true,
+                                            dialogControl = "FarmingBar_LuaEditBox",
                                             get = function(info)
-                                                return addon:GetDBValue("global", "settings.alerts.tracker.sound.enabled")
+                                                return addon:GetDBValue("global", "settings.alerts.tracker.format.progress")
+                                            end,
+                                            set = function(info, value)
+                                                addon:SetDBValue("global", "settings.alerts.tracker.format.progress", value)
+                                                addon:UpdateAlert("tracker", "progress", value)
+                                            end,
+                                            arg = {"global", "settings.alerts.tracker.format.progress", "PreviewAlert", {"tracker"}},
+                                        },
+                                        previewSettings = {
+                                            order = 2,
+                                            type = "header",
+                                            name = L["Preview Settings - Tracker"],
+                                        },
+                                        oldCount = {
+                                            order = 3,
+                                            type = "input",
+                                            name = L["Old Count"],
+                                            width = 0.5,
+                                            validate = function(_, value)
+                                                local count = tonumber(value)
+                                                return count and count >= 0
+                                            end,
+                                            get = function()
+                                                return tostring(addon:GetDBValue("global", "settings.alerts.tracker.preview.oldCount"))
                                             end,
                                             set = function(_, value)
-                                                self:SetDBValue("global", "settings.alerts.tracker.sound.enabled", value)
+                                                addon:SetDBValue("global", "settings.alerts.tracker.preview.oldCount", tonumber(value))
                                             end,
+                                        },
+                                        newCount = {
+                                            order = 4,
+                                            type = "input",
+                                            name = L["New Count"],
+                                            width = 0.5,
+                                            validate = function(_, value)
+                                                local count = tonumber(value)
+                                                return count and count >= 0
+                                            end,
+                                            get = function()
+                                                return tostring(addon:GetDBValue("global", "settings.alerts.tracker.preview.newCount"))
+                                            end,
+                                            set = function(_, value)
+                                                addon:SetDBValue("global", "settings.alerts.tracker.preview.newCount", tonumber(value))
+                                            end,
+                                        },
+                                        objective = {
+                                            order = 5,
+                                            type = "input",
+                                            name = L["Objective"],
+                                            width = 0.5,
+                                            validate = function(_, value)
+                                                local count = tonumber(value)
+                                                return count and count >= 1
+                                            end,
+                                            get = function()
+                                                return tostring(addon:GetDBValue("global", "settings.alerts.tracker.preview.objective"))
+                                            end,
+                                            set = function(_, value)
+                                                addon:SetDBValue("global", "settings.alerts.tracker.preview.objective", tonumber(value))
+                                            end,
+                                        },
+                                        objectivePreviewSettings = {
+                                            order = 6,
+                                            type = "header",
+                                            name = L["Preview Settings - Objective"],
+                                        },
+                                        objectiveOldCount = {
+                                            order = 7,
+                                            type = "input",
+                                            name = L["Old Count"],
+                                            width = 0.5,
+                                            validate = function(_, value)
+                                                local count = tonumber(value)
+                                                return count and count >= 0
+                                            end,
+                                            get = function()
+                                                return tostring(addon:GetDBValue("global", "settings.alerts.tracker.preview.objectiveInfo.oldCount"))
+                                            end,
+                                            set = function(_, value)
+                                                addon:SetDBValue("global", "settings.alerts.tracker.preview.objectiveInfo.oldCount", tonumber(value))
+                                            end,
+                                        },
+                                        objectiveNewCount = {
+                                            order = 8,
+                                            type = "input",
+                                            name = L["New Count"],
+                                            width = 0.5,
+                                            validate = function(_, value)
+                                                local count = tonumber(value)
+                                                return count and count >= 0
+                                            end,
+                                            get = function()
+                                                return tostring(addon:GetDBValue("global", "settings.alerts.tracker.preview.objectiveInfo.newCount"))
+                                            end,
+                                            set = function(_, value)
+                                                addon:SetDBValue("global", "settings.alerts.tracker.preview.objectiveInfo.newCount", tonumber(value))
+                                            end,
+                                        },
+                                        objectiveObjective = {
+                                            order = 9,
+                                            type = "input",
+                                            name = L["Objective"],
+                                            width = 0.5,
+                                            validate = function(_, value)
+                                                local count = tonumber(value)
+                                                return count and count >= 1
+                                            end,
+                                            get = function()
+                                                return tostring(addon:GetDBValue("global", "settings.alerts.tracker.preview.objectiveInfo.objective"))
+                                            end,
+                                            set = function(_, value)
+                                                addon:SetDBValue("global", "settings.alerts.tracker.preview.objectiveInfo.objective", tonumber(value))
+                                            end,
+                                        },
+                                    },
+                                },
+                                sounds = {
+                                    order = 5,
+                                    type = "group",
+                                    name = L["Sounds"],
+                                    inline = true,
+                                    get = function(info)
+                                        return addon:GetDBValue("global", "settings.alerts.tracker.sound." .. info[#info])
+                                    end,
+                                    set = function(info, value)
+                                        self:SetDBValue("global", "settings.alerts.tracker.sound." .. info[#info], value)
+                                    end,
+                                    args = {
+                                        progress = {
+                                            order = 1,
+                                            type = "select",
+                                            style = "dropdown",
+                                            name = L["Progress"],
+                                            control = "LSM30_Sound",
+                                            values = AceGUIWidgetLSMlists.sound,
                                         },
                                     },
                                 },

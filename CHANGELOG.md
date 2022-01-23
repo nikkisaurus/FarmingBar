@@ -1,5 +1,8 @@
 # Farming Bar
 ## Version 3.0
+### 3.0-alpha18
+- Implemented remaining alert settings
+
 ### 3.0-alpha17
 - Bug fixes:
   - -- Removed the non-existant event "CURSOR_CHANGED" from TBCC and changed to "CURSOR_UPDATE"

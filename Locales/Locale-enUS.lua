@@ -141,6 +141,8 @@ L["Add"] = true
 L["All"] = true
 L["Any"] = true
 L["Automatic Icon"] = true
+L["Bar Complete"] = true
+L["Bar Progress"] = true
 L["Choose"] = true
 L["Cleanup"] = true
 L["Close"] = true
@@ -179,10 +181,14 @@ L["New Tracker"] = true
 L["None"] = true
 L["Objective"] = true
 L["Objective Builder"] = true
+L["Objective Cleared"] = true
 L["Objective Editor"] = true
+L["Objective Set"] = true
 L["Old Count"] = true
 L["Order"] = true
 L["Preview Settings"] = true
+L["Preview Settings - Objective"] = true
+L["Preview Settings - Tracker"] = true
 L["Rename"] = true
 L["Condition"] = true
 L["Trackers"] = true
@@ -347,6 +353,7 @@ L["Lua Editor"] = true
 L["Enabled"] = true
 L["Expand"] = true
 L["Hearthstone"] = true
+L["Hearthstones"] = true
 L["Font Face"] = true
 L["Font Outline"] = true
 L["Font Size"] = true
@@ -390,6 +397,7 @@ L["Show on Mouseover"] = true
 L["Size"] = true
 L["Size Bar to Buttons"] = true
 L["Sound"] = true
+L["Sounds"] = true
 L["Style"] = true
 L["Styles"] = true
 L["Template"] = true
@@ -446,7 +454,7 @@ end
 
 -- *------------------------------------------------------------------------
 
-L.Options_Help = [[|cffffcc00Farming Bar (v3.0-alpha17)|r
+L.Options_Help = [[|cffffcc00Farming Bar (v3.0-alpha18)|r
 
 Thank you for testing the alpha! If you have any suggestions or bug reports, please create an issue at |cff00ccff[ https://github.com/niketa-wow/farmingbar/issues ]|r and specify the current alpha version. Features in the stable release that are not yet implemented in this alpha are not bugs and should not be reported.
 

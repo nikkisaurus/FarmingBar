@@ -32,9 +32,13 @@ function addon:OnInitialize()
     self.tooltip_keyvalue = {1, .82, 0, 1, 1, 1, 1}
     -- self.barProgress = "%B progress: %progressColor%%c/%t%color%%if(%p>0, (%p%%),)if%"
     self.barProgress = [[function(info)
+        -- info keys: progressCount, progressTotal, barIDName, barNameLong, progressColor
+        
         return format("Progress: %s %s%d/%d|r", info.barNameLong, info.progressColor, info.progressCount, info.progressTotal)
     end]]
     self.withObjective = [[function(info)
+        -- info keys: objectiveTitle, objective.color, objective.count, oldCount, newCount, difference.sign, difference.color, difference.count
+
         local percent = floor((info.newCount / info.objective.count) * 100)
         local objectiveReps = floor(info.newCount / info.objective.count)
 
@@ -45,6 +49,8 @@ function addon:OnInitialize()
         return format("%s %s %s (%s%s)", status, info.objectiveTitle, count, objectiveReps > 1 and "x"..objectiveReps.." " or "", difference)
     end]]
     self.withoutObjective = [[function(info)
+        -- info keys: objectiveTitle, objective.color, objective.count, oldCount, newCount, difference.sign, difference.color, difference.count
+
         local difference = format("%s%s%d|r", info.difference.color, info.difference.sign, info.difference.count)
 
         return format("Farming update: %s x%d (%s)", info.objectiveTitle, info.newCount, difference)
