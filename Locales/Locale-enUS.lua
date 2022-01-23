@@ -1,5 +1,5 @@
 local addonName = ...
-local addon = LibStub("AceAddon-3.0"):NewAddon("FarmingBar", "AceConsole-3.0", "AceEvent-3.0", "AceHook-3.0")
+local addon = LibStub("AceAddon-3.0"):NewAddon("FarmingBar", "AceConsole-3.0", "AceEvent-3.0", "AceHook-3.0", "AceSerializer-3.0")
 local L = LibStub("AceLocale-3.0"):NewLocale("FarmingBar", "enUS", true)
 
 ------------------------------------------------------------
@@ -195,6 +195,7 @@ L["Trackers"] = true
 L["Toggle Bar Enabled"] = true
 L["TRUE"] = true
 L["Type"] = true
+L["View Code"] = true
 
 L.DisplayReferenceDescription =
     [[Actions allow you to set which item/currency you want to use for automatic objective information. This includes the icon chosen when using "Automatic Icon" and the item associated with a button's "use" attribute. However, when set to a macrotext, the icon will be unaffected.
@@ -204,6 +205,7 @@ Farming Bar provides a /craft command that you can use in your macrotexts. Simpl
 /craft Enchanting Eternal Bounds
 /use Enchanting Vellum]]
 L.DisplayReferenceDescription_Gsub = "/currency"
+L.CustomCodeWarning = "This objective may contain custom Lua code. Make sure you only import objectives from trusted sources."
 
 ------------------------------------------------------------
 

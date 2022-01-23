@@ -4,6 +4,9 @@ local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 
 -- Optional libraries
 local ACD = LibStub("AceConfigDialog-3.0")
+local AceGUI = LibStub("AceGUI-3.0", true)
+local LibSerialize = LibStub("LibSerialize")
+local LibDeflate = LibStub("LibDeflate")
 
 -- *------------------------------------------------------------------------
 -- Tables and sorts
@@ -86,9 +89,98 @@ function addon:GetObjectiveBuilderOptions()
             order = 2,
             type = "execute",
             name = L["Import"],
-            disabled = true,
             func = function()
+                local importFrame = AceGUI:Create("Frame")
+                importFrame:SetLayout("Fill")
+                importFrame:SetCallback("OnClose", function(self)
+                    self:Release()
+                    ACD:Open(addonName)
+                end)
 
+                local editbox = AceGUI:Create("MultiLineEditBox")
+                editbox:SetLabel("")
+                editbox:DisableButton(true)
+                importFrame:AddChild(editbox)
+
+                editbox:SetCallback("OnTextChanged", function(self)
+                    -- Decode
+                    local decoded = LibDeflate:DecodeForPrint(self:GetText())
+                    if not decoded then return end
+                    local decompressed = LibDeflate:DecompressDeflate(decoded)
+                    if not decompressed then return end
+                    local success, objectiveInfo = LibSerialize:Deserialize(decompressed)
+                    if not success then return end
+                    
+                    importFrame:Fire("OnClose")
+                    ACD:Close(addonName)
+
+                    -- Create objective import frame
+                    local importObjective = AceGUI:Create("Window")
+                    importObjective:SetLayout("Flow")
+                    importObjective:SetWidth(300)
+                    importObjective:SetHeight(200)
+                    importObjective:SetCallback("OnClose", function(self)
+                        self:Release()
+                        ACD:Open(addonName)
+                    end)
+
+                    local icon = AceGUI:Create("Icon")
+                    icon:SetWidth(50)
+                    icon:SetImage(addon:GetObjectiveTemplateIcon(objectiveInfo.title))
+                    icon:SetImageSize(40, 40)
+                    importObjective:AddChild(icon)
+
+                    local objective = AceGUI:Create("Label")
+                    objective:SetText(addon.ColorFontString(objectiveInfo.title, "SEXBLUE"))
+                    objective:SetFontObject(GameFontNormalLarge)
+                    importObjective:AddChild(objective)
+
+                    local warning = AceGUI:Create("Label")
+                    warning:SetFullWidth(true)
+                    warning:SetText(addon.ColorFontString(L.CustomCodeWarning, "red"))
+                    importObjective:AddChild(warning)
+
+                    local spacer = AceGUI:Create("Label")
+                    spacer:SetFullWidth(true)
+                    spacer:SetText(" ")
+                    importObjective:AddChild(spacer)
+
+                    local codeButton = AceGUI:Create("Button")
+                    codeButton:SetRelativeWidth(0.5)
+                    codeButton:SetText(L["View Code"])
+                    importObjective:AddChild(codeButton)
+
+                    local codeFrame
+                    codeButton:SetCallback("OnClick", function()
+                        codeFrame = codeFrame or AceGUI:Create("Frame")
+                        codeFrame:SetCallback("OnClose", function(self)
+                            self:Release()
+                            codeFrame = nil
+                        end)
+                    end)
+
+                    local codeButton = AceGUI:Create("Button")
+                    codeButton:SetRelativeWidth(0.5)
+                    codeButton:SetText(L["Import"])
+                    importObjective:AddChild(codeButton)
+
+                    codeButton:SetCallback("OnClick", function()
+                        if codeFrame then
+                            codeFrame:Fire("OnClose")
+                        end
+                        importObjective:Fire("OnClose")
+
+                        local objectiveTitle = addon:DuplicateObjective(objectiveInfo.title, objectiveInfo)
+                        ACD:SelectGroup(addonName, "objectiveBuilder", objectiveTitle)
+                        ACD:Open(addonName)
+                    end)
+                end)
+
+                editbox:SetFocus()
+                
+                -- Hide options
+                ACD:Close(addonName)
+                importFrame:Show()
             end,
         },
         quickAdd = {
@@ -415,9 +507,33 @@ function addon:GetObjectiveBuilderOptions_Objective(objectiveTitle)
                     order = 2,
                     type = "execute",
                     name = L["Export Objective"],
-                    disabled = true,
                     func = function()
+                        -- Create frame
+                        local exportFrame = AceGUI:Create("Frame")
+                        exportFrame:SetLayout("Fill")
+                        exportFrame:SetCallback("OnClose", function(self)
+                            self:Release()
+                            ACD:Open(addonName)
+                        end)
 
+                        local editbox = AceGUI:Create("MultiLineEditBox")
+                        editbox:SetLabel(objectiveTitle)
+                        editbox:DisableButton(true)
+                        exportFrame:AddChild(editbox)
+                                
+                        -- Hide options
+                        ACD:Close(addonName)
+                        exportFrame:Show()
+
+                        -- Populate editbox
+                        local objective = self:GetDBValue("global", "objectives")[objectiveTitle]
+                        local serialized = LibSerialize:Serialize(objective)
+                        local compressed = LibDeflate:CompressDeflate(serialized)
+                        local encoded = LibDeflate:EncodeForPrint (compressed)
+
+                        editbox:SetText(encoded)
+                        editbox:SetFocus()
+                        editbox:HighlightText()
                     end,
                 },
                 DeleteObjectiveTemplate = {

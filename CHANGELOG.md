@@ -4,6 +4,7 @@
 - Implemented remaining alert settings
 - Implemented objective quick add buttons in the Objective Builder
 - Implemented objective duplication
+- Implemented objective import and export
 - Options have been rearranged
 - Bug fixes:
   - -- Objectives now properly clear when deleted from the mouse

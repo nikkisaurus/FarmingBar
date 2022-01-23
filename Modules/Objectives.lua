@@ -141,22 +141,26 @@ function addon:CreateObjectiveFromUserTemplate(widget, template, withData)
     widget:UpdateLayers()
 end
 
-function addon:DuplicateObjective(objectiveTitle)
+function addon:DuplicateObjective(objectiveTitle, objectiveInfo)
     local newObjectiveTitle
 
-    local i = 2
-    while not newObjectiveTitle do
-        local title = format("%s %d", objectiveTitle, i)
+    if self:ObjectiveTemplateExists(objectiveTitle) then
+        local i = 2
+        while not newObjectiveTitle do
+            local title = format("%s %d", objectiveTitle, i)
 
-        if not self:ObjectiveTemplateExists(title) then
-            newObjectiveTitle = title
-        else
-            i = i + 1
+            if not self:ObjectiveTemplateExists(title) then
+                newObjectiveTitle = title
+            else
+                i = i + 1
+            end
         end
     end
 
+    newObjectiveTitle = newObjectiveTitle or objectiveTitle
+
     -- Create template
-    local originTemplate = self:GetDBValue("global", "objectives")[objectiveTitle]
+    local originTemplate = objectiveInfo or self:GetDBValue("global", "objectives")[objectiveTitle]
     local objectiveTemplate = self:GetDBValue("global", "objectives")[newObjectiveTitle]
 
     objectiveTemplate.title = newObjectiveTitle
@@ -169,6 +173,8 @@ function addon:DuplicateObjective(objectiveTitle)
     objectiveTemplate.trackers = self:CloneTable(originTemplate.trackers)
 
     self:RefreshOptions()
+
+    return newObjectiveTitle
 end
 
 -- *------------------------------------------------------------------------
