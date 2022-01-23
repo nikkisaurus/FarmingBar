@@ -12,26 +12,95 @@ local widget
 function addon:InitializeObjectiveEditorOptions(...)
     widget = ...
     LibStub("AceConfig-3.0"):RegisterOptionsTable(addonName .. "ObjectiveEditor", self:GetObjectiveEditorOptions())
-    LibStub("AceConfigDialog-3.0"):SetDefaultSize(addonName .. "ObjectiveEditor", 425, 300)
+    LibStub("AceConfigDialog-3.0"):SetDefaultSize(addonName .. "ObjectiveEditor", 525, 400)
 end
 
-function addon:GetObjectiveEditorOptions()
+function addon:GetObjectiveEditorOptions()    
+    local barID, buttonID, buttonDB
+    if widget then
+        barID, buttonID = widget:GetBarID(), widget:GetUserData("buttonID")
+        buttonDB = widget:GetButtonDB()
+    end
+
     local options = {
         type = "group",
         name = format("%s - %s", L.addon, L["Objective Editor"]),
-        args = {
-            objective = {
-                order = 0,
-                type = "group",
-                name = widget and format("[%s] %s", widget:GetButtonID(), widget:GetObjectiveTitle()) or "",
-                childGroups = "select",
-                args = self:GetObjectiveEditorOptions_Objective(),
-            },
-            trackers = {
+        args = {          
+            template = {
                 order = 1,
-                type = "group",
-                name = L["Trackers"],
-                args = {},
+                type = "select",
+                style = "dropdown",
+                name = L["Link Objective Template"],
+                desc = L.ObjectiveEditor_template,
+                values = function()
+                    local values = {
+                        none = L["None"],
+                    }
+                    
+                    for templateName, template in pairs(addon:GetDBValue("global", "objectives")) do
+                        values[templateName] = template.title
+                    end
+
+                    return values
+                end,
+                get = function(info)
+                    return buttonDB.template
+                end,
+                set = function(_, value)
+                    if value == "none" then
+                        -- Remove the template link, but don't delete the objective
+                        widget:RemoveObjectiveTemplateLink()
+                        return
+                    end
+                    -- Update button's template name
+                    widget:SetDBValue("template", value)
+                    -- Add link to template's instances
+                    addon:CreateObjectiveTemplateInstance(value, widget:GetButtonID())
+                    -- Clear includeAllChars, includeBank, includeGuildBank, and exclude from button trackers
+                    widget:ClearTrackerInfo()
+                    --  Update button to match template info
+                    widget:UpdateLayers()
+                    -- Update objective editor
+                    addon:InitializeObjectiveEditorOptions(widget)
+                    C_Timer.After(0, function()
+                        ACD:Open(addonName .. "ObjectiveEditor")
+                    end)
+                end,
+            },
+            createTemplate = {
+                order = 2,
+                type = "execute",
+                name = L["Create Objective"],
+                desc = L.ObjectiveEditor_CreateTemplate,
+                disabled = function()
+                    return not buttonDB.title or buttonDB.title == ""
+                end,
+                func = function()
+                    local objectiveTitle = addon:DuplicateObjective(buttonDB.title, buttonDB)
+
+                    -- Update button's template name
+                    widget:SetDBValue("template", objectiveTitle)
+                    -- Add link to template's instances
+                    addon:CreateObjectiveTemplateInstance(objectiveTitle, widget:GetButtonID())
+
+                    ACD:SelectGroup(addonName, "objectiveBuilder", objectiveTitle)
+                    ACD:Open(addonName)
+                end,
+            },  
+            mute = {
+                order = 3,
+                type = "toggle",
+                name = L["Mute Alerts"],
+                width = 0.75,
+                disabled = function()
+                    return not buttonDB.title or buttonDB.title == ""
+                end,
+                get = function()
+                    return buttonDB.mute
+                end,
+                set = function(_, value)
+                    widget:SetDBValue("mute", value)
+                end,
             },
         },
     }
@@ -39,9 +108,9 @@ function addon:GetObjectiveEditorOptions()
     if widget then
         for trackerKey, trackerInfo in self.pairs(widget:GetButtonDB().trackers) do
             local trackerType, trackerID = self:ParseTrackerKey(trackerKey)
-
+    
             self:GetTrackerDataTable(widget:GetButtonDB(), trackerType, trackerID, function(data)
-                options.args.trackers.args[trackerKey] = {
+                options.args[trackerKey] = {
                     order = trackerInfo.order,
                     type = "group",
                     name = data.name,
@@ -146,57 +215,6 @@ function addon:GetObjectiveEditorOptions_Objective()
     local buttonDB = widget:GetButtonDB()
 
     return {
-        mute = {
-            order = 1,
-            type = "toggle",
-            name = L["Mute Alerts"],
-            get = function()
-                return buttonDB.mute
-            end,
-            set = function(_, value)
-                widget:SetDBValue("mute", value)
-            end,
-        },
-        template = {
-            order = 2,
-            type = "input",
-            name = L["Template"],
-            validate = function(_, value)
-                return value == "" or addon:ObjectiveTemplateExists(value)
-            end,
-            get = function(info)
-                return buttonDB.template
-            end,
-            set = function(_, value)
-                if not value or value == "" then
-                    -- Remove the template link, but don't delete the objective
-                    widget:RemoveObjectiveTemplateLink()
-                    return
-                end
-                -- Update button's template name
-                widget:SetDBValue("template", value)
-                -- Add link to template's instances
-                addon:CreateObjectiveTemplateInstance(value, widget:GetButtonID())
-                -- Clear includeAllChars, includeBank, includeGuildBank, and exclude from button trackers
-                widget:ClearTrackerInfo()
-                --  Update button to match template info
-                widget:UpdateLayers()
-                -- Update objective editor
-                addon:InitializeObjectiveEditorOptions(widget)
-                C_Timer.After(0, function()
-                    ACD:Open(addonName .. "ObjectiveEditor")
-                end)
-            end,
-        },
-        createTemplate = {
-            order = 3,
-            type = "execute",
-            name = L["Create Objective Template"],
-            disabled = true,
-            func = function()
-
-            end,
-        },
     }
 end
 

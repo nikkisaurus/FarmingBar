@@ -80,10 +80,12 @@ function addon:GetButtonTooltip(widget, tooltip)
             -- Button doesn't have objective
             if widget:IsEmpty() then
                 tooltipFrame:AddLine(L.ButtonHints("showQuickAddEditBox", self:GetDBValue("global", "settings.keybinds.button.showQuickAddEditBox")), unpack(self.tooltip_description))
---@retail@
 
+                --@retail@
                 tooltipFrame:AddLine(L.ButtonHints("showQuickAddCurrencyEditBox", self:GetDBValue("global", "settings.keybinds.button.showQuickAddCurrencyEditBox")), unpack(self.tooltip_description))
                 --@end-retail@
+                
+                tooltipFrame:AddLine(L.ButtonHints("showObjectiveEditor", self:GetDBValue("global", "settings.keybinds.button.showObjectiveEditor")), unpack(self.tooltip_description))
             else
                 for k, v in self.pairs(self:GetDBValue("global", "settings.keybinds.button"), function(a, b)
                     return buttonCommandSort[a] < buttonCommandSort[b]

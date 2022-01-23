@@ -61,11 +61,9 @@ local postClickMethods = {
 
     showObjectiveEditor = function(self, ...)
         local widget = self.obj
-        if not widget:IsEmpty() then
-            addon:InitializeObjectiveEditorOptions(widget)
-            ACD:SelectGroup(addonName .. "ObjectiveEditor", "objective")
-            ACD:Open(addonName .. "ObjectiveEditor")
-        end
+        addon:InitializeObjectiveEditorOptions(widget)
+        ACD:SelectGroup(addonName .. "ObjectiveEditor", "objective")
+        ACD:Open(addonName .. "ObjectiveEditor")
     end,
 
     moveObjectiveToBank = function(self, ...)

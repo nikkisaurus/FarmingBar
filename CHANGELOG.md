@@ -5,10 +5,12 @@
 - Implemented objective quick add buttons in the Objective Builder
 - Implemented objective duplication
 - Implemented objective import and export
-- Options have been rearranged
+- Configurations have been rearranged
 - Added configuration for bar backdrop
 - Option added to use GameTooltip instead of FarmingBar_Tooltip
 - Merged hideObjectiveInfo with hint enableModifier into tooltip condensedTooltip
+- Implemented option to create objective from a button item
+- You can now open the objective editor from an empty button to link an objective template
 - Bug fixes:
   - -- Fixed lua error when configuring bars after changing profiles
   - -- Disabled "Copy From" in bar configuration when only one bar exists
