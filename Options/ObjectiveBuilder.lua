@@ -627,38 +627,18 @@ function addon:GetObjectiveBuilderOptions_Trackers(objectiveTitle, trackerKey)
         order = trackerInfo.order,
         type = "group",
         name = trackerKey,
-        -- name = "", --! add back after fixing below
         args = {
             title = {
                 order = 1,
                 type = "description",
                 name = tostring(trackerID),
-                -- name = "", --! add back after fixing below
                 width = "full",
                 imageWidth = 20,
                 imageHeight = 20,
                 fontSize = "medium",
             },
-            order = {
-                order = 2,
-                type = "input",
-                width = "full",
-                name = L["Order"],
-                get = function(info)
-                    return tostring(self:GetTrackerDBInfo(trackers, trackerKey, info[#info]))
-                end,
-                validate = function(_, value)
-                    value = tonumber(value) or 0
-                    return value > 0
-                end,
-                set = function(info, value)
-                    self:SetTrackerDBValue(trackers, trackerKey, info[#info], tonumber(value))
-                    addon:UpdateButtons()
-                end,
-            },
-
             objective = {
-                order = 3,
+                order = 2,
                 type = "input",
                 width = "full",
                 name = L["Objective"],
@@ -675,7 +655,7 @@ function addon:GetObjectiveBuilderOptions_Trackers(objectiveTitle, trackerKey)
                 end,
             },
             countsFor = {
-                order = 4,
+                order = 3,
                 type = "input",
                 width = "full",
                 name = L["Counts For"],
@@ -692,7 +672,7 @@ function addon:GetObjectiveBuilderOptions_Trackers(objectiveTitle, trackerKey)
                 end,
             },
             deleteTracker = {
-                order = 5,
+                order = 4,
                 type = "execute",
                 width = "full",
                 name = L["Delete Tracker"],
@@ -701,6 +681,46 @@ function addon:GetObjectiveBuilderOptions_Trackers(objectiveTitle, trackerKey)
                 end,
                 confirm = function(...)
                     return L.Options_ObjectiveBuilder("tracker.deleteTracker")
+                end,
+            },
+            moveUp = {
+                order = 5,
+                type = "execute",
+                name = L["Move Up"],
+                disabled = function()
+                    return trackerInfo.order == 1
+                end,
+                func = function()
+                    local currentOrder = trackerInfo.order
+                    local previousOrder = currentOrder - 1
+                    for trackerKey, trackerInfo in pairs(trackers) do
+                        if trackerInfo.order == previousOrder then
+                            trackers[trackerKey].order = currentOrder
+                            break
+                        end
+                    end
+                    trackerInfo.order = previousOrder
+                    addon:RefreshOptions()
+                end,
+            },
+            moveDown = {
+                order = 6,
+                type = "execute",
+                name = L["Move Down"],
+                disabled = function()
+                    return trackerInfo.order == addon.tcount(trackers)
+                end,
+                func = function()
+                    local currentOrder = trackerInfo.order
+                    local nextOrder = currentOrder + 1
+                    for trackerKey, trackerInfo in pairs(trackers) do
+                        if trackerInfo.order == nextOrder then
+                            trackers[trackerKey].order = currentOrder
+                            break
+                        end
+                    end
+                    trackerInfo.order = nextOrder
+                    addon:RefreshOptions()
                 end,
             },
         },
