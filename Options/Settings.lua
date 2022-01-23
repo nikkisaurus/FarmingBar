@@ -192,7 +192,6 @@ function addon:GetSettingsOptions()
                                     order = 1,
                                     type = "toggle",
                                     width = "full",
-                                    disabled = true, -- ! temporary until implemented
                                     name = L["Auto loot items on use"],
                                     desc = L.Options_settings_global_misc_autoLootOnUse,
                                 },

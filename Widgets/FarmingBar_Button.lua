@@ -51,8 +51,7 @@ local postClickMethods = {
         self.obj.quickAddEditBox:Show()
     end,
 
---@retail@
-
+    --@retail@
     showQuickAddCurrencyEditBox = function(self, ...)
         self.obj:SetUserData("quickAddEditbox", "CURRENCY")
         self.obj.quickAddEditBox:Show()
@@ -72,6 +71,19 @@ local postClickMethods = {
 
     moveAllToBank = function(self, ...)
         print("Keybind in maintenenance.")
+    end,
+
+    useItem = function(self, ...)
+        if not addon:GetDBValue("global", "settings.misc.autoLootOnUse") then return end
+
+        local buttonDB = self.obj:GetButtonDB()
+        if buttonDB.action == "ITEM" and GetItemSpell(buttonDB.actionInfo) then
+            if not GetCVar("autoLootDefault") and GetNumLootItems() > 0 then
+                for i = 1, GetNumLootItems() do
+                    LootSlot(i)
+                end
+            end
+        end
     end,
 }
 
@@ -622,7 +634,7 @@ local methods = {
         self:UpdateObjective()
 
         local newProgressCount, newProgressTotal = bar:GetProgress()
-        -- bar:AlertProgress("objectiveSet", newProgressTotal > progressTotal and "complete" or "lost")
+        bar:AlertProgress("progress", newProgressTotal > progressTotal and "complete" or "lost")
 
         addon:UpdateButtons()
     end,

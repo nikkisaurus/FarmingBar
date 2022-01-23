@@ -11,8 +11,10 @@
 - Merged hideObjectiveInfo with hint enableModifier into tooltip condensedTooltip
 - Implemented option to create objective from a button item
 - You can now open the objective editor from an empty button to link an objective template
+- Implemented auto loot on use
 - Bug fixes:
   - -- Fixed lua error when configuring bars after changing profiles
+  - -- Fixed bar alerts so that progress is announced when objectives change
   - -- Disabled "Copy From" in bar configuration when only one bar exists
   - -- Objectives now properly clear when deleted from the mouse
   - -- DragFrame should only attempt to clear an objective when it is loaded

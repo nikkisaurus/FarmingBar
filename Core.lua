@@ -32,9 +32,11 @@ function addon:OnInitialize()
     self.tooltip_keyvalue = {1, .82, 0, 1, 1, 1, 1}
     
     self.barProgress = [[function(info)
-        -- info keys: progressCount, progressTotal, barIDName, barNameLong, progressColor
+        -- info keys: progressCount, progressTotal, barIDName, barNameLong, progressColor, difference.sign, difference.color
 
-        return format("Progress: %s %s%d/%d|r", info.barNameLong, info.progressColor, info.progressCount, info.progressTotal)
+        local difference = format("%s%s1|r", info.difference.color or "", info.difference.sign or "")
+
+        return format("Progress: %s %s%d/%d|r (%s)|r", info.barNameLong, info.progressColor, info.progressCount, info.progressTotal, difference)
     end]]
     self.withObjective = [[function(info)
         -- info keys: objectiveTitle, objective.color, objective.count, oldCount, newCount, difference.sign, difference.color, difference.count

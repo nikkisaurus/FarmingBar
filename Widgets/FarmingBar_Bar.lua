@@ -192,6 +192,10 @@ local methods = {
                     barIDName = barIDName,
                     barNameLong = format("%s%s", barIDName, barDB.title),
                     progressColor = (newCompletion == "lost" and red) or (progressCount < progressTotal and gold) or green,
+                    difference = {
+                        sign = newCompletion == "lost" and "-" or "+",
+                        color = newCompletion == "lost" and "|cffff0000" or "|cff00ff00",
+                    },
                 }
 
                 -- Validate format func
@@ -217,8 +221,10 @@ local methods = {
                 if alertSettings.sound.enabled and newCompletion ~= "lost" then
                     PlaySoundFile(LSM:Fetch("sound", alertSettings.sound[progressCount >= progressTotal and "complete" or "progress"]))
                 end
-            elseif alertType == "setObjective" then
-                print("Number of objectives changed, add a new format for alert.")
+            --elseif alertType == "objectiveSet" then
+            --    if newCompletion == "lost" then
+            --    elseif newCompletion == "complete" then
+            --    end
             end
         end
     end,
