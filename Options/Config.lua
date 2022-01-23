@@ -306,6 +306,43 @@ function addon:GetBarConfigOptions(barID)
                             self.bars[barID]:SetAlpha()
                         end,
                     },
+                    backdrop = {
+                        order = 2,
+                        type = "select",
+                        style = "dropdown",
+                        control = "LSM30_Background",
+                        name = L["Backdrop"],
+                        values = AceGUIWidgetLSMlists.background,
+                        set = function(info, value)
+                            addon:SetBarDBValue(info[#info], value, barID)
+                            self.bars[barID]:UpdateBackdrop()
+                        end,
+                    },
+                    backdropPadding = {
+                        order = 3,
+                        type = "range",
+                        name = L["Backdrop Padding"],
+                        min = 0,
+                        max = 10,
+                        step = 1,
+                        set = function(info, value)
+                            addon:SetBarDBValue(info[#info], value, barID)
+                            self.bars[barID]:SetBackdropAnchor()
+                        end,
+                    },
+                    backdropColor = {
+                        order = 4,
+                        type = "color",
+                        name = L["Backdrop Color"],
+                        hasAlpha = true,
+                        get = function(info)
+                            return unpack(addon:GetBarDBValue(info[#info], barID))
+                        end,
+                        set = function(info, ...)
+                            addon:SetBarDBValue(info[#info], {...}, barID)
+                            self.bars[barID]:UpdateBackdrop()
+                        end,
+                    },
                 },
             },
             charSpecific = {

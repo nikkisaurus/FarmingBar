@@ -454,7 +454,7 @@ local methods = {
         end
     end,
 
-    UpdateBackdrop = function(self, lastButton)
+    UpdateBackdrop = function(self)
         local backdrop, backdropTexture = self.backdrop, self.backdropTexture
         backdrop:ClearAllPoints()
         backdropTexture:ClearAllPoints()
@@ -464,15 +464,24 @@ local methods = {
         if numVisibleButtons == 0 then
             return
         else
-            backdropTexture:SetTexture(self:GetBarDB().backdrop)
-            backdropTexture:SetAllPoints(backdrop)
-            local grow = self:GetBarDB().grow
+            local barDB = self:GetBarDB()
+
+            backdropTexture:SetTexture(LSM:Fetch("background", barDB.backdrop))
+            backdropTexture:SetAllPoints(backdrop)            
+            if barDB.backdrop == "Solid" then
+                backdropTexture:SetVertexColor(unpack(barDB.backdropColor))
+            else
+                backdropTexture:SetVertexColor(1, 1, 1, 1)
+            end
+
+            local grow = barDB.grow
             local hDirection, vDirection = grow[1], grow[2]
             local anchors = self:GetUserData("anchors")
 
             if not anchors then
                 return
             end
+
             backdrop:SetPoint(unpack(anchors[hDirection][vDirection][1]))
             backdrop:SetPoint(unpack(anchors[hDirection][vDirection][2]))
             backdrop:SetPoint(unpack(anchors[hDirection][vDirection][3]))

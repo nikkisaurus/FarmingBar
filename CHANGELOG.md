@@ -6,6 +6,7 @@
 - Implemented objective duplication
 - Implemented objective import and export
 - Options have been rearranged
+- Added configuration for bar backdrop
 - Bug fixes:
   - -- Fixed lua error when configuring bars after changing profiles
   - -- Disabled "Copy From" in bar configuration when only one bar exists

@@ -126,6 +126,9 @@ end
 -- Core.lua
 L["Auction Open"] = true
 L["Auction Close"] = true
+L["Backdrop"] = true
+L["Backdrop Color"] = true
+L["Backdrop Padding"] = true
 L["Code Viewer"] = true
 L["Export Frame"] = true
 L["Import Frame"] = true

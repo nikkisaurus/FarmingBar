@@ -215,12 +215,15 @@ function addon:SizeBarToButtons(barID)
     self.bars[barID]:UpdateVisibleButtons()
 end
 
-function addon:UpdateBars()
+function addon:UpdateBars(callback, ...)
     -- Update bar visuals
     for _, bar in pairs(self.bars) do
         bar:ApplySkin()
         bar:SetSize()
         bar:SetAlpha()
+        if callback then
+           bar[callback](bar, ...)
+        end
         for _, button in pairs(bar:GetUserData("buttons")) do
             button:UpdateLayers()
         end
