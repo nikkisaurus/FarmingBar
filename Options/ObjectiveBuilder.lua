@@ -91,130 +91,160 @@ function addon:GetObjectiveBuilderOptions()
 
             end,
         },
+        quickAdd = {
+            order = 3,
+            type = "group",
+            name = L["Quick Add"],
+            inline = true,
+            args = {
+                description = {
+                    order = 0,
+                    type = "description",
+                    name = L.Options_ObjectiveBuilder("objective.quickAddDesc"),
+                },
+                spacer = {
+                    order = 1,
+                    type = "header",
+                    name = "",
+                },
+            },
+        },
     }
 
     for objectiveTitle, objectiveInfo in self.pairs(self:GetDBValue("global", "objectives")) do
-        local autoFilterEnabled = self:GetDBValue("global", "settings.filterQuickObjectives")
-        local autoFiltered = autoFilterEnabled and self:IsObjectiveAutoItem(objectiveTitle)
+        -- Objective configuration
+        options[objectiveTitle] = {
+            type = "group",
+            name = objectiveTitle,                
+            icon = function()
+                return self:GetObjectiveTemplateIcon(objectiveTitle), 35, 35
+            end,
+            childGroups = "tab",
+            args = {
+                objective = {
+                    order = 1,
+                    type = "group",
+                    name = L["Objective"],
+                    args = self:GetObjectiveBuilderOptions_Objective(objectiveTitle),
+                },
+                trackers = {
+                    order = 2,
+                    type = "group",
+                    name = L["Trackers"],
+                    args = {
+                        condition = {
+                            order = 1,
+                            type = "select",
+                            name = L["Condition"],
+                            values = trackerConditions,
+                            sorting = trackerConditionSort,
+                            get = function(info)
+                                return self:GetObjectiveDBValue(info[#info], objectiveTitle)
+                            end,
+                            set = function(info, value)
+                                self:SetObjectiveDBValue(info[#info], value, objectiveTitle)
+                                addon:UpdateButtons()
+                            end,
+                        },
+                        conditionInfo = {
+                            order = 2,
+                            type = "input",
+                            width = "full",
+                            multiline = true,
+                            name = L["Custom"],
+                            hidden = function()
+                                return self:GetObjectiveDBValue("condition", objectiveTitle) ~= "CUSTOM"
+                            end,
+                            get = function(info)
+                                return self:GetObjectiveDBValue(info[#info], objectiveTitle)
+                            end,
+                            validate = function(_, value)
+                                if value == "" then
+                                    return true
+                                end
+                                local validCondition, err = self:ValidateCustomCondition(value)
 
-        if not autoFiltered then
+                                if err then
+                                    addon:ReportError(L.InvalidCustomCondition)
+                                    print(err)
+                                else
+                                    return true
+                                end
+                            end,
+                            set = function(info, value)
+                                self:SetObjectiveDBValue(info[#info], value, objectiveTitle)
+                                addon:UpdateButtons()
+                            end,
+                        },
+                        --@retail@
+                        type = {
+                            order = 4,
+                            type = "select",
+                            name = L["Type"],
+                            values = trackers,
+                            sorting = trackerSort,
+                            get = function(info)
+                                return newTrackerType
+                            end,
+                            set = function(info, value)
+                                newTrackerType = value
+                            end,
+                        },
+                        --@end-retail@
+                        newTrackerID = {
+                            order = 5,
+                            type = "input",
+                            width = "full",
+                            name = function()
+                                return GetTrackerIDLabel()
+                            end,
+                            validate = function(_, value)
+                                local validTrackerID = self:ValidateTrackerData(newTrackerType, value)
+                                local trackerIDExists = validTrackerID and self:TrackerExists(self:GetDBValue("global", "objectives")[objectiveTitle], strupper(newTrackerType) .. ":" .. validTrackerID)
 
-            options[objectiveTitle] = {
-                type = "group",
-                name = objectiveTitle,                
-                icon = function()
-                    return self:GetObjectiveTemplateIcon(objectiveTitle), 35, 35
-                end,
-                childGroups = "tab",
-                args = {
-                    objective = {
-                        order = 1,
-                        type = "group",
-                        name = L["Objective"],
-                        args = self:GetObjectiveBuilderOptions_Objective(objectiveTitle),
-                    },
-                    trackers = {
-                        order = 2,
-                        type = "group",
-                        name = L["Trackers"],
-                        args = {
-                            condition = {
-                                order = 1,
-                                type = "select",
-                                name = L["Condition"],
-                                values = trackerConditions,
-                                sorting = trackerConditionSort,
-                                get = function(info)
-                                    return self:GetObjectiveDBValue(info[#info], objectiveTitle)
-                                end,
-                                set = function(info, value)
-                                    self:SetObjectiveDBValue(info[#info], value, objectiveTitle)
+                                if trackerIDExists then
+                                    return format(L.TrackerIDExists, value)
+                                else
+                                    return validTrackerID or format(L.InvalidTrackerID, newTrackerType, value)
+                                end
+                            end,
+                            set = function(info, value)
+                                local validTrackerID = self:ValidateTrackerData(newTrackerType, value)
+
+                                local trackerKey = addon:CreateTracker(self:GetDBValue("global", "objectives")[objectiveTitle], newTrackerType, validTrackerID)
+                                if trackerKey then
+                                    ACD:SelectGroup(addonName, "objectiveBuilder", objectiveTitle, "trackers", trackerKey)
                                     addon:UpdateButtons()
-                                end,
-                            },
-                            conditionInfo = {
-                                order = 2,
-                                type = "input",
-                                width = "full",
-                                multiline = true,
-                                name = L["Custom"],
-                                hidden = function()
-                                    return self:GetObjectiveDBValue("condition", objectiveTitle) ~= "CUSTOM"
-                                end,
-                                get = function(info)
-                                    return self:GetObjectiveDBValue(info[#info], objectiveTitle)
-                                end,
-                                validate = function(_, value)
-                                    if value == "" then
-                                        return true
-                                    end
-                                    local validCondition, err = self:ValidateCustomCondition(value)
-
-                                    if err then
-                                        addon:ReportError(L.InvalidCustomCondition)
-                                        print(err)
-                                    else
-                                        return true
-                                    end
-                                end,
-                                set = function(info, value)
-                                    self:SetObjectiveDBValue(info[#info], value, objectiveTitle)
-                                    addon:UpdateButtons()
-                                end,
-                            },
-                            --@retail@
-                            type = {
-                                order = 4,
-                                type = "select",
-                                name = L["Type"],
-                                values = trackers,
-                                sorting = trackerSort,
-                                get = function(info)
-                                    return newTrackerType
-                                end,
-                                set = function(info, value)
-                                    newTrackerType = value
-                                end,
-                            },
-                            --@end-retail@
-                            newTrackerID = {
-                                order = 5,
-                                type = "input",
-                                width = "full",
-                                name = function()
-                                    return GetTrackerIDLabel()
-                                end,
-                                validate = function(_, value)
-                                    local validTrackerID = self:ValidateTrackerData(newTrackerType, value)
-                                    local trackerIDExists = validTrackerID and self:TrackerExists(self:GetDBValue("global", "objectives")[objectiveTitle], strupper(newTrackerType) .. ":" .. validTrackerID)
-
-                                    if trackerIDExists then
-                                        return format(L.TrackerIDExists, value)
-                                    else
-                                        return validTrackerID or format(L.InvalidTrackerID, newTrackerType, value)
-                                    end
-                                end,
-                                set = function(info, value)
-                                    local validTrackerID = self:ValidateTrackerData(newTrackerType, value)
-
-                                    local trackerKey = addon:CreateTracker(self:GetDBValue("global", "objectives")[objectiveTitle], newTrackerType, validTrackerID)
-                                    if trackerKey then
-                                        ACD:SelectGroup(addonName, "objectiveBuilder", objectiveTitle, "trackers", trackerKey)
-                                        addon:UpdateButtons()
-                                    end
-                                end,
-                            },
+                                end
+                            end,
                         },
                     },
                 },
-            }
+            },
+        }
 
-            for tracker, trackerInfo in pairs(self:GetDBValue("global", "objectives")[objectiveTitle].trackers) do
-                if trackerInfo.order ~= 0 then
-                    options[objectiveTitle].args.trackers.args[tracker] = self:GetObjectiveBuilderOptions_Trackers(objectiveTitle, tracker)
-                end
+        for tracker, trackerInfo in pairs(self:GetDBValue("global", "objectives")[objectiveTitle].trackers) do
+            if trackerInfo.order ~= 0 then
+                options[objectiveTitle].args.trackers.args[tracker] = self:GetObjectiveBuilderOptions_Trackers(objectiveTitle, tracker)
             end
         end
+        
+        -- Quick add button
+        options.quickAdd.args[objectiveTitle] = {
+            type = "execute",
+            name = objectiveTitle,
+            width = 1 / 3,
+            image = function()
+                return self:GetObjectiveTemplateIcon(objectiveTitle), 35, 35
+            end,
+            func = function()
+                if IsControlKeyDown() then
+                    ACD:SelectGroup(addonName, "objectiveBuilder", objectiveTitle)
+                else                  
+                    self.DragFrame:LoadObjectiveTemplate(objectiveTitle)
+                end
+            end,
+        }
     end
 
     return options
@@ -397,6 +427,7 @@ function addon:GetObjectiveBuilderOptions_Objective(objectiveTitle)
                     name = L["Delete Objective"],
                     func = function()
                         self:DeleteObjectiveTemplate(objectiveTitle)
+                        ACD:SelectGroup(addonName, "objectiveBuilder")
                     end,
                     confirm = function()
                         return format(L.Options_ObjectiveBuilder("objective.manage.DeleteObjectiveTemplate_confirm"), objectiveTitle)

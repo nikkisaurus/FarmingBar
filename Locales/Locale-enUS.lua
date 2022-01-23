@@ -288,6 +288,7 @@ L["Preserve Template Data"] = true
 L["Preserve Template Order"] = true
 L["Profile"] = true
 L["PROMPT"] = true
+L["Quick Add"] = true
 L["Settings"] = true
 L["Shift"] = true
 L["Skin"] = true
@@ -307,7 +308,6 @@ L.Options_settings_global_general_hints_ObjectiveBuilder = "Displays tooltip hin
 L.Options_settings_global_general_hints_enableModifier = "Allows tooltip hints to be shown only when a modifier is held down."
 L.Options_settings_global_general_hints_modifier = "Sets the modifier key used to show tooltip hints."
 L.Options_settings_global_misc_autoLootOnUse = "Temporarily enables auto loot when using an item"
-L.Options_settings_global_misc_filterQuickObjectives = "Hides automatically created item objectives from the Objective Builder list"
 L.Options_settings_global_templates_deleteTemplate = "Permanently deletes a user-defined template."
 L.Options_settings_global_templates_deleteTemplateConfirm = [[Are you sure you want to permanently delete the template "%s"?]]
 L.Options_settings_global_templates_preserveTemplateData = "Includes objective data when loading user-defined templates."
@@ -448,6 +448,7 @@ L.Options_ObjectiveBuilder = function(widget)
         ["objective.dropper"] = "Click to place this objective onto a bar.",
         ["objective.manage.DeleteObjectiveTemplate_confirm"] = [[Are you sure you want to delete the objective template "%s"?]],
         ["tracker.deleteTracker"] = [[Are you sure you want to permanently delete this tracker?]],
+        ["objective.quickAddDesc"] = "Left-click an icon to place the objective on a bar. Control+left-click to configure the objective.",
     }
 
     return strings[widget]

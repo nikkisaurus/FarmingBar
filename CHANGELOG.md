@@ -2,6 +2,7 @@
 ## Version 3.0
 ### 3.0-alpha18
 - Implemented remaining alert settings
+- Implemented objective quick add buttons in the Objective Builder
 - Options have been rearranged
 - Bug fixes:
   - -- Objectives now properly clear when deleted from the mouse
