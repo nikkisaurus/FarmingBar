@@ -68,8 +68,8 @@ end
 function addon:CURSOR_UPDATE()
     local cursorType, cursorID = GetCursorInfo()
 
-    for _, bar in pairs(self.bars) do
-        bar:SetAlpha(cursorType == "item")
+    for _, bar in pairs(self.bars) do        
+        bar:SetAlpha(cursorType == "item" and "hasObjective")
     end
 end
 

@@ -273,7 +273,9 @@ local methods = {
     SetAlpha = function(self, hasFocus)
         local db = self:GetBarDB()
         local alpha = (hasFocus or (not db.mouseover and not db.anchorMouseover)) and db.alpha or 0
-        self.anchor:SetAlpha(alpha)
+        if not (hasFocus == "hasObjective" and db.anchorMouseover) then
+            self.anchor:SetAlpha(alpha)
+        end
 
         local cursorType, cursorID = GetCursorInfo()
         local objectiveTitle, objectiveInfo = addon.DragFrame and addon.DragFrame:GetObjective()

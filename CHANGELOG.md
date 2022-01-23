@@ -7,10 +7,12 @@
 - Implemented objective import and export
 - Options have been rearranged
 - Bug fixes:
-  - -- Objectives now properly clear when deleted from the mouse
   - -- Fixed lua error when configuring bars after changing profiles
   - -- Disabled "Copy From" in bar configuration when only one bar exists
+  - -- Objectives now properly clear when deleted from the mouse
   - -- DragFrame should only attempt to clear an objective when it is loaded
+  - -- "CURSOR_UPDATE" now only calls bar:SetAlpha when an item is on the cursor
+  - -- Anchors no longer show when anchorMouseover is enabled and hidden empty buttons are temporarily visible (unless anchor is focus)
 
 ### 3.0-alpha17
 - Bug fixes:

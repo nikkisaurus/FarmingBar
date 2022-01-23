@@ -7,7 +7,9 @@ local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 
 local function DragFrame_OnShow()
     for _, bar in pairs(addon.bars) do
-        bar:SetAlpha(true)
+        if not bar:GetBarDB().showEmpty then
+            bar:SetAlpha("hasObjective")
+        end
     end
 end
 
