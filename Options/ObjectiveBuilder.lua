@@ -205,8 +205,8 @@ function addon:GetObjectiveBuilderOptions()
                         })
                         
                         local editbox = AceGUI:Create("MultiLineEditBox")
-                        addon.indent.enable(editbox.editBox, _, 4) 
                         editbox:DisableButton(true)
+                        editbox:SetDisabled(true)
                         treeGroup:AddChild(editbox)
 
                         treeGroup:SetCallback("OnGroupSelected", function(_, _, value)

@@ -38,6 +38,7 @@ local methods = {
     end,
 
     OnRelease = function(self)
+        addon.indent.disable(self.frame.editBox)
         self.frame.obj:Release()
         addon:Unhook(self.editbox, "OnTextChanged")
     end,

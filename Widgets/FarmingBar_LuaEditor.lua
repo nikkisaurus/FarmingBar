@@ -20,6 +20,7 @@ local methods = {
 
     OnRelease = function(self)
         self.window.obj:Release()
+        addon.indent.disable(self.editbox.editBox)
         self.editbox.obj:Release()
     end,
 
