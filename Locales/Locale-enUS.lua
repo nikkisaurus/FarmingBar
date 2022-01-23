@@ -126,6 +126,9 @@ end
 -- Core.lua
 L["Auction Open"] = true
 L["Auction Close"] = true
+L["Code Viewer"] = true
+L["Export Frame"] = true
+L["Import Frame"] = true
 L["Loot Coin"] = true
 L["Quest Activate"] = true
 L["Quest Complete"] = true
