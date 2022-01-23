@@ -76,14 +76,15 @@ local postClickMethods = {
     useItem = function(self, ...)
         if not addon:GetDBValue("global", "settings.misc.autoLootOnUse") then return end
 
-        local buttonDB = self.obj:GetButtonDB()
-        if buttonDB.action == "ITEM" and GetItemSpell(buttonDB.actionInfo) then
-            if not GetCVar("autoLootDefault") and GetNumLootItems() > 0 then
+        C_Timer.After(0.1, function()
+            local buttonDB = self.obj:GetButtonDB()
+            local autoLoot = GetCVar("autoLootDefault")
+            if (not autoLoot or autoLoot == "0") and buttonDB.action == "ITEM" and GetNumLootItems() > 0 then
                 for i = 1, GetNumLootItems() do
                     LootSlot(i)
                 end
             end
-        end
+        end)
     end,
 }
 
