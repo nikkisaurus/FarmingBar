@@ -2,6 +2,8 @@
 ## Version 3.0
 ### 3.0-alpha18
 - Implemented remaining alert settings
+- Bug fixes:
+  - -- Objectives now properly clear when deleted from the mouse
 
 ### 3.0-alpha17
 - Bug fixes:
