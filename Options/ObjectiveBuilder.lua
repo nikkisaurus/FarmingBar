@@ -407,9 +407,8 @@ function addon:GetObjectiveBuilderOptions_Objective(objectiveTitle)
                     order = 1,
                     type = "execute",
                     name = L["Duplicate Objective"],
-                    disabled = true,
                     func = function()
-                        self:CreateObjectiveTemplate(objectiveTitle, self:GetObjectiveInfo(objectiveTitle)) -- ! self:GetObjectiveInfo(objectiveTitle) doesn't exist anymore.
+                        self:DuplicateObjective(objectiveTitle)
                     end,
                 },
                 exportObjective = {
