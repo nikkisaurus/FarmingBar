@@ -33,6 +33,11 @@ end
 
 local methods = {
     Clear = function(self)
+        local widget = addon.movingButton
+        if widget then
+            widget[1]:ClearObjective()
+        end
+
         self.icon:SetTexture("")
         self.text:SetText("")
         self:Hide()

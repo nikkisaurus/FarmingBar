@@ -110,7 +110,6 @@ local function frame_OnDragStart(self, buttonClicked, ...)
             widget:SetUserData("isDragging", true)
             addon.movingButton = {widget, addon:CloneTable(widget:GetButtonDB())}
             addon.DragFrame:LoadObjective(widget)
-            -- widget:ClearObjective()
         end
     end
 end
@@ -353,6 +352,9 @@ local methods = {
             end
         end
 
+        
+        UIFrameFlashStop(self.Flash)
+        self.Flash:Hide()
         self:UpdateLayers()
         ACD:Close(addonName .. "ObjectiveEditor")
     end,
