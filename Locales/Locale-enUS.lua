@@ -110,7 +110,7 @@ L.ButtonHints = function(command, commandInfo)
 end
 
 L["Progress"] = true
-L["Show Hints"] = true
+L["Expand Tooltip"] = true
 
 L.ToggleMovable = function(barTitle, movable)
     return format("%s %s.", barTitle, movable and "unlocked" or "locked")
@@ -271,7 +271,7 @@ L["CUSTOM"] = true
 L["Debug"] = true
 L["Delete Template"] = true
 L["DISABLED"] = true
-L["Enable Modifier"] = true
+L["Condensed Tooltip"] = true
 L["Enabled"] = true
 L["ENABLED"] = true
 L["Face"] = true
@@ -306,15 +306,17 @@ L["Templates"] = true
 L["Tooltips"] = true
 L["THICKOUTLINE"] = true
 L["USE EXISTING"] = true
+L["Use Game Tooltip"] = true
 
 L.Options_settings_global_general_tooltips_bar = "Enables bar tooltips."
 L.Options_settings_global_general_tooltips_button = "Enables button tooltips."
 L.Options_settings_global_general_tooltips_hideObjectiveInfo = "Hides objective information on button tooltips."
+L.Options_settings_global_general_tooltips_useGameTooltip = "Use the default GameTooltip for item objectives. This can allow you to view information from other addons, but may significantly increase the size of the tooltip."
 L.Options_settings_global_general_hints_bars = "Displays keybind hints at the bottom of bar tooltips."
 L.Options_settings_global_general_hints_buttons = "Displays keybind hints at the bottom of button tooltips."
 L.Options_settings_global_general_hints_ObjectiveBuilder = "Displays tooltip hints on Objective Builder widgets."
-L.Options_settings_global_general_hints_enableModifier = "Allows tooltip hints to be shown only when a modifier is held down."
-L.Options_settings_global_general_hints_modifier = "Sets the modifier key used to show tooltip hints."
+L.Options_settings_global_general_hints_condensedTooltip = "Removes objective information and hints from tooltips unless modifier is held down."
+L.Options_settings_global_general_hints_modifier = "Sets the modifier key used to expand tooltips."
 L.Options_settings_global_misc_autoLootOnUse = "Temporarily enables auto loot when using an item"
 L.Options_settings_global_templates_deleteTemplate = "Permanently deletes a user-defined template."
 L.Options_settings_global_templates_deleteTemplateConfirm = [[Are you sure you want to permanently delete the template "%s"?]]

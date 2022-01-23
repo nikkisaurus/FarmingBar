@@ -212,9 +212,9 @@ function addon:GetModifierString()
 end
 
 function addon:IsTooltipMod()
-    if not self:GetDBValue("global", "settings.hints.enableModifier") then
+    if not self:GetDBValue("global", "settings.tooltips.condensedTooltip") then
         return true
     else
-        return _G["Is" .. self:GetDBValue("global", "settings.hints.modifier") .. "KeyDown"]()
+        return _G["Is" .. self:GetDBValue("global", "settings.tooltips.modifier") .. "KeyDown"]()
     end
 end

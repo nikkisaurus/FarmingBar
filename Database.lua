@@ -246,12 +246,11 @@ function addon:InitializeDB()
                 tooltips = {
                     bar = true,
                     button = true,
-                    hideObjectiveInfo = false,
+                    condensedTooltip = false, -- global.tooltips.enableMod
+                    modifier = "Alt", -- global.tooltips.mod
+                    useGameTooltip = false,
                 },
                 hints = {
-                    enableModifier = false, -- global.tooltips.enableMod
-                    modifier = "Alt", -- global.tooltips.mod
-
                     bars = true, -- global.tooltips.barTips
                     buttons = true, -- global.tooltips.buttonTips
                 },

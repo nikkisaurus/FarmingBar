@@ -41,16 +41,39 @@ function addon:GetSettingsOptions()
                                     desc = L.Options_settings_global_general_tooltips_bar,
                                 },
                                 button = {
-                                    order = 1,
+                                    order = 2,
                                     type = "toggle",
                                     name = L["Button"],
                                     desc = L.Options_settings_global_general_tooltips_button,
                                 },
-                                hideObjectiveInfo = {
-                                    order = 1,
+                                useGameTooltip = {
+                                    order = 3,
                                     type = "toggle",
-                                    name = L["Hide Objective Info"],
-                                    desc = L.Options_settings_global_general_tooltips_hideObjectiveInfo,
+                                    name = L["Use Game Tooltip"],
+                                    desc = L.Options_settings_global_general_tooltips_useGameTooltip,
+                                },
+                                condensedTooltip = {
+                                    order = 4,
+                                    type = "toggle",
+                                    name = L["Condensed Tooltip"],
+                                    desc = L.Options_settings_global_general_hints_condensedTooltip,
+                                },
+                                modifier = {
+                                    order = 5,
+                                    type = "select",
+                                    style = "dropdown",
+                                    name = L["Modifier"],
+                                    desc = L.Options_settings_global_general_hints_modifier,
+                                    values = function(info)
+                                        local info = {
+                                            Alt = L["Alt"],
+                                            Control = L["Control"],
+                                            Shift = L["Shift"],
+                                        }
+
+                                        return info
+                                    end,
+                                    sorting = {"Alt", "Control", "Shift"},
                                 },
                             },
                         },
@@ -77,29 +100,6 @@ function addon:GetSettingsOptions()
                                     type = "toggle",
                                     name = L["Buttons"],
                                     desc = L.Options_settings_global_general_hints_buttons,
-                                },
-                                enableModifier = {
-                                    order = 3,
-                                    type = "toggle",
-                                    name = L["Enable Modifier"],
-                                    desc = L.Options_settings_global_general_hints_enableModifier,
-                                },
-                                modifier = {
-                                    order = 4,
-                                    type = "select",
-                                    style = "dropdown",
-                                    name = L["Modifier"],
-                                    desc = L.Options_settings_global_general_hints_modifier,
-                                    values = function(info)
-                                        local info = {
-                                            Alt = L["Alt"],
-                                            Control = L["Control"],
-                                            Shift = L["Shift"],
-                                        }
-
-                                        return info
-                                    end,
-                                    sorting = {"Alt", "Control", "Shift"},
                                 },
                             },
                         },

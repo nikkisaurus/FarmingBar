@@ -11,7 +11,7 @@ function addon:InitializeOptions()
     ACD:SetDefaultSize(addonName, 850, 600)
 
      C_Timer.After(1, function()
-         ACD:SelectGroup(addonName, "bar", "bar1")
+         ACD:SelectGroup(addonName, "config", "bar1")
          ACD:Open(addonName)
      end)
 end

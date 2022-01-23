@@ -7,6 +7,8 @@
 - Implemented objective import and export
 - Options have been rearranged
 - Added configuration for bar backdrop
+- Option added to use GameTooltip instead of FarmingBar_Tooltip
+- Merged hideObjectiveInfo with hint enableModifier into tooltip condensedTooltip
 - Bug fixes:
   - -- Fixed lua error when configuring bars after changing profiles
   - -- Disabled "Copy From" in bar configuration when only one bar exists
