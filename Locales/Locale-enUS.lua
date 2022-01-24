@@ -365,6 +365,7 @@ L["Color"] = true
 L["Completed Objectives"] = true
 L["Count Fontstring"] = true
 L["Ctrl"] = true
+L["Custom Hide Condition"] = true
 L["Disabled"] = true
 L["Down"] = true
 L["Duplicate Bar"] = true

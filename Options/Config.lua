@@ -223,6 +223,22 @@ function addon:GetBarConfigOptions(barID)
                         type = "toggle",
                         name = L["Show on Anchor Mouseover"],
                     },
+                    customHide = {
+                        order = 5,
+                        type = "input",
+                        name = L["Custom Hide Condition"],
+                        width = "full",
+                        multiline = true,
+                        dialogControl = "FarmingBar_LuaEditBox",
+                        disabled = true,
+                        get = function(info)
+                            return addon:GetBarDBValue(info[#info], barID)
+                        end,
+                        set = function(info, value)
+                            addon:SetBarDBValue(info[#info], value, barID)
+                        end,
+                        arg = {"profile", "customHide", "UpdateBars", {"SetHidden"}, barID},
+                    },
                 },
             },
             point = {

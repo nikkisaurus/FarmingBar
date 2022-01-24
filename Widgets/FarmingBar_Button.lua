@@ -612,7 +612,10 @@ local methods = {
 
     SetHidden = function(self)
         local barDB = self:GetUserData("barDB")
-        if barDB and barDB.hidden then
+        if not barDB then self.frame:Show() return end
+
+        local preview, err = addon:CustomHide(self:GetBar())
+        if barDB.hidden or (preview and not err) then
             self.frame:Hide()
         else
             self.frame:Show()

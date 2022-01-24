@@ -67,6 +67,13 @@ function addon:OnInitialize()
         return format("Tracker update: %s %s %s", title, count, difference)
     end]]
 
+    self.customHide = [[function()
+        -- This function must return a boolean flag to indicate if the bar should be hidden.
+            
+        return false
+    end
+    ]]
+
     -- Register sounds
     --@retail@
     LSM:Register("sound", L["Auction Open"], 567482) -- id:5274

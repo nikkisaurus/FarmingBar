@@ -59,7 +59,11 @@ local function Constructor()
 
     editbox:SetCallback("OnEnterPressed", function(self, _, text)
         local info = self:GetUserData("info")
-        addon:SetDBValue(info[1], info[2], text)
+        if info[5] then
+            addon:SetBarDBValue(info[2], text, info[5])
+        else
+            addon:SetDBValue(info[1], info[2], text)
+        end
         self.obj:Release()
     end)
 

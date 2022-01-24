@@ -401,7 +401,8 @@ local methods = {
     end,
 
     SetHidden = function(self)
-        if self:GetUserData("barDB").hidden then
+        local preview, err = addon:CustomHide(self)
+        if self:GetUserData("barDB").hidden or (preview and not err) then
             self.frame:Hide()
         else
             self.frame:Show()

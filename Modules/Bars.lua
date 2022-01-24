@@ -142,6 +142,24 @@ function addon:ClearBar(barID)
     end
 end
 
+function addon:CustomHide(bar)
+    local barDB = bar:GetBarDB()
+    if not barDB then return end
+    local customHide = barDB.customHide
+    
+    -- Transform the string into a function
+    local userFunc, err = loadstring("return " .. customHide)
+    if not userFunc then
+        return L.InvalidSyntax(err), true
+    end
+
+    -- Verify that userFunc is actually a valid function
+    local success, userParseFunc = pcall(userFunc)
+    if success and userParseFunc then
+        return userParseFunc()
+    end
+end
+
 function addon:ReindexButtons(barID)
     local bar = self.bars[barID]
     local buttons = bar:GetButtons()
