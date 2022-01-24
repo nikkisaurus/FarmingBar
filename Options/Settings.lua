@@ -962,51 +962,8 @@ function addon:GetProfileSettingsOptions()
                 self:UpdateBars()
             end,
         },
-        count = {
-            order = 2,
-            type = "group",
-            inline = true,
-            name = L["Count Fontstring"],
-            args = {
-                style = {
-                    order = 1,
-                    type = "select",
-                    name = L["Style"],
-                    desc = L.Options_settings_profile_count_style,
-                    values = {
-                        ["CUSTOM"] = L["CUSTOM"],
-                        ["INCLUDEAUTOLAYERS"] = L["INCLUDE ACCOUNT AND BANK"],
-                        ["INCLUDEALLCHARS"] = L["ACCOUNT COUNTS"],
-                        ["INCLUDEBANK"] = L["BANK INCLUSION"],
-                        ["ITEMQUALITY"] = L["ITEM QUALITY"],
-                    },
-                    sorting = {"CUSTOM", "INCLUDEAUTOLAYERS", "INCLUDEALLCHARS", "INCLUDEBANK", "ITEMQUALITY"},
-                    get = function(info)
-                        return addon:GetDBValue("profile", "style.font.fontStrings.count.style")
-                    end,
-                    set = function(info, value)
-                        self:SetDBValue("profile", "style.font.fontStrings.count.style", value)
-                        self:UpdateBars()
-                    end,
-                },
-                color = {
-                    order = 2,
-                    type = "color",
-                    hasAlpha = true,
-                    name = "  " .. L["Color"], -- I don't like how close the label is to the color picker so I've added extra space to the start of the name
-                    desc = L.Options_settings_profile_count_color,
-                    get = function(info)
-                        return unpack(self:GetDBValue("profile", "style.font.fontStrings.count.color"))
-                    end,
-                    set = function(info, ...)
-                        self:SetDBValue("profile", "style.font.fontStrings.count.color", {...})
-                        self:UpdateBars()
-                    end,
-                },
-            },
-        },
         buttonLayers = {
-            order = 3,
+            order = 2,
             type = "group",
             inline = true,
             name = L["Button Layers"],
@@ -1051,7 +1008,7 @@ function addon:GetProfileSettingsOptions()
             },
         },
         fonts = {
-            order = 4,
+            order = 3,
             type = "group",
             inline = true,
             name = L["Fonts"],
@@ -1092,6 +1049,49 @@ function addon:GetProfileSettingsOptions()
                     min = self.minFontSize,
                     max = self.maxFontSize,
                     step = 1,
+                },
+            },
+        },
+        count = {
+            order = 4,
+            type = "group",
+            inline = true,
+            name = L["Count Fontstring"],
+            args = {
+                style = {
+                    order = 1,
+                    type = "select",
+                    name = L["Style"],
+                    desc = L.Options_settings_profile_count_style,
+                    values = {
+                        ["CUSTOM"] = L["CUSTOM"],
+                        ["INCLUDEAUTOLAYERS"] = L["INCLUDE ACCOUNT AND BANK"],
+                        ["INCLUDEALLCHARS"] = L["ACCOUNT COUNTS"],
+                        ["INCLUDEBANK"] = L["BANK INCLUSION"],
+                        ["ITEMQUALITY"] = L["ITEM QUALITY"],
+                    },
+                    sorting = {"CUSTOM", "INCLUDEAUTOLAYERS", "INCLUDEALLCHARS", "INCLUDEBANK", "ITEMQUALITY"},
+                    get = function(info)
+                        return addon:GetDBValue("profile", "style.font.fontStrings.count.style")
+                    end,
+                    set = function(info, value)
+                        self:SetDBValue("profile", "style.font.fontStrings.count.style", value)
+                        self:UpdateBars()
+                    end,
+                },
+                color = {
+                    order = 2,
+                    type = "color",
+                    hasAlpha = true,
+                    name = "  " .. L["Color"], -- I don't like how close the label is to the color picker so I've added extra space to the start of the name
+                    desc = L.Options_settings_profile_count_color,
+                    get = function(info)
+                        return unpack(self:GetDBValue("profile", "style.font.fontStrings.count.color"))
+                    end,
+                    set = function(info, ...)
+                        self:SetDBValue("profile", "style.font.fontStrings.count.color", {...})
+                        self:UpdateBars()
+                    end,
                 },
             },
         },

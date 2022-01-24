@@ -306,20 +306,8 @@ function addon:GetBarConfigOptions(barID)
                             self.bars[barID]:SetAlpha()
                         end,
                     },
-                    backdrop = {
-                        order = 2,
-                        type = "select",
-                        style = "dropdown",
-                        control = "LSM30_Background",
-                        name = L["Backdrop"],
-                        values = AceGUIWidgetLSMlists.background,
-                        set = function(info, value)
-                            addon:SetBarDBValue(info[#info], value, barID)
-                            self.bars[barID]:UpdateBackdrop()
-                        end,
-                    },
                     backdropPadding = {
-                        order = 3,
+                        order = 2,
                         type = "range",
                         name = L["Backdrop Padding"],
                         min = 0,
@@ -328,6 +316,18 @@ function addon:GetBarConfigOptions(barID)
                         set = function(info, value)
                             addon:SetBarDBValue(info[#info], value, barID)
                             self.bars[barID]:SetBackdropAnchor()
+                        end,
+                    },
+                    backdrop = {
+                        order = 3,
+                        type = "select",
+                        style = "dropdown",
+                        control = "LSM30_Background",
+                        name = L["Backdrop"],
+                        values = AceGUIWidgetLSMlists.background,
+                        set = function(info, value)
+                            addon:SetBarDBValue(info[#info], value, barID)
+                            self.bars[barID]:UpdateBackdrop()
                         end,
                     },
                     backdropColor = {
