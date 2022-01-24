@@ -11,7 +11,7 @@ function addon:InitializeOptions()
     ACD:SetDefaultSize(addonName, 850, 600)
 
     -- C_Timer.After(1, function()
-    --     ACD:SelectGroup(addonName, "config", "bar1")
+    --     ACD:SelectGroup(addonName, "globalSettings", "keybinds")
     --     ACD:Open(addonName)
     -- end)
 end
@@ -33,21 +33,28 @@ function addon:GetOptions()
                 name = L["Objectives"],
                 args = self:GetObjectiveBuilderOptions(),
             },
-            settings = {
-                order = 3,
-                type = "group",
-                name = L["Settings"],
-                args = self:GetSettingsOptions(),
-            },
             styleEditor = {
-                order = 4,
+                order = 3,
                 type = "group",
                 name = L["Styles"],
                 args = self:GetStyleEditorOptions(),
             },
+            globalSettings = {
+                order = 4,
+                type = "group",
+                name = L["Global Settings"],
+                childGroups = "tab",
+                args = self:GetGlobalSettingsOptions(),
+            },
+            profileSettings = {
+                order = 4,
+                type = "group",
+                name = L["Profile Settings"],
+                args = self:GetProfileSettingsOptions(),
+            },
             profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db),
             help = {
-                order = 6,
+                order = 7,
                 type = "group",
                 name = L["Help"],
                 args = self:GetHelpOptions(),
@@ -55,7 +62,7 @@ function addon:GetOptions()
         },
     }
 
-    self.options.args.profiles.order = 5
+    self.options.args.profiles.order = 6
 
     return self.options
 end

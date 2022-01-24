@@ -34,7 +34,7 @@ local postClickMethods = {
     end,
 
     openSettings = function(self, ...)
-        ACD:SelectGroup(addonName, "settings")
+        ACD:SelectGroup(addonName, "globalSettings")
         ACD:Open(addonName)
     end,
 
@@ -63,12 +63,17 @@ local function addButton_OnClick(self)
     end
 end
 
-local function anchor_OnDragStart(self)
+local function anchor_OnDragStart(self, clickedButton)
     local frame = self.obj.frame
     if not frame:IsMovable() then
         return
     end
-    frame:StartMoving()
+
+    local keybindInfo = addon:GetDBValue("global", "settings.keybinds.bar.moveBar")
+    local modifier, button = keybindInfo.modifier, keybindInfo.button
+    if modifier == addon:GetModifierString() and clickedButton == button then
+        frame:StartMoving()
+    end
 end
 
 local function anchor_OnDragStop(self)
@@ -544,7 +549,7 @@ local function Constructor()
     anchor:EnableMouse(true)
     anchor:RegisterForClicks("AnyUp")
     anchor:SetMovable(true)
-    anchor:RegisterForDrag("LeftButton")
+    anchor:RegisterForDrag("LeftButton", "RightButton")
 
     anchor:SetScript("OnDragStart", anchor_OnDragStart)
     anchor:SetScript("OnDragStop", anchor_OnDragStop)

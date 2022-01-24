@@ -12,7 +12,9 @@
 - Implemented option to create objective from a button item
 - You can now open the objective editor from an empty button to link an objective template
 - Implemented auto loot on use
+- Implemented keybind configurations
 - Bug fixes:
+  - -- Fixed bug where bar was movable with the wrong button click
   - -- Fixed lua error when configuring bars after changing profiles
   - -- Fixed bar alerts so that progress is announced when objectives change
   - -- Disabled "Copy From" in bar configuration when only one bar exists

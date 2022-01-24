@@ -230,8 +230,7 @@ function addon:InitializeDB()
                             button = "LeftButton",
                             modifier = "alt",
                         },
---@retail@
-
+                        --@retail@
                         showQuickAddCurrencyEditBox = {
                             button = "RightButton",
                             modifier = "alt",
