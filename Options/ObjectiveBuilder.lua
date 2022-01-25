@@ -175,6 +175,17 @@ function addon:GetObjectiveBuilderOptions()
                                     {
                                         value = "progress",
                                         text = L["Progress Format"],
+                                        func = function()
+                                            return addon:GetDBValue("global", "settings.alerts.bar.format.progress")
+                                        end,
+                                    },
+                                    {
+                                        value = "customHide",
+                                        text = L["Custom Hide Function"],
+                                        func = function()
+                                            return ""
+                                            --return addon:GetBarDBValue("global", "settings.alerts.bar.format.customHide")
+                                        end,
                                     },
                                 },
                             },
@@ -185,10 +196,16 @@ function addon:GetObjectiveBuilderOptions()
                                     {
                                         value = "withObjective",
                                         text = L["Format With Objective"],
+                                        func = function()
+                                            return addon:GetDBValue("global", "settings.alerts.button.format.withObjective")
+                                        end,
                                     },
                                     {
                                         value = "withoutObjective",
                                         text = L["Format Without Objective"],
+                                        func = function()
+                                            return addon:GetDBValue("global", "settings.alerts.button.format.withoutObjective")
+                                        end,
                                     },
                                 },
                             },
@@ -199,6 +216,9 @@ function addon:GetObjectiveBuilderOptions()
                                     {
                                         value = "progress",
                                         text = L["Progress Format"],
+                                        func = function()
+                                            return addon:GetDBValue("global", "settings.alerts.tracker.format.progress")
+                                        end,
                                     },
                                 },
                             },
@@ -209,14 +229,21 @@ function addon:GetObjectiveBuilderOptions()
                         editbox:SetDisabled(true)
                         treeGroup:AddChild(editbox)
 
-                        treeGroup:SetCallback("OnGroupSelected", function(_, _, value)
+                        treeGroup:SetCallback("OnGroupSelected", function(treeGroup, _, value)
                             local group, setting = strsplit("\001", value)
 
-                            if setting then
-                                editbox:SetText(addon:GetDBValue("global", format("settings.alerts.%s.format.%s", group, setting)))
-                            else
-                                editbox:SetText("")
-                            end                            
+                            for _, v in pairs(treeGroup.tree) do
+                                if group == v.value then
+                                    for _, V in pairs(v.children) do
+                                        if setting == V.value then
+                                            editbox:SetText(V.func())
+                                            return
+                                        end
+                                    end
+                                end
+                            end
+
+                            editbox:SetText("")                         
                         end)
                     end)
 
