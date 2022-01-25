@@ -191,51 +191,46 @@ local methods = {
     AlertProgress = function(self, alertType, newCompletion)
         local barDB = self:GetBarCharDB()
         if barDB.alerts.barProgress then
-            if alertType == "progress" then
-                local barIDName = format("%s %d", L["Bar"], self:GetBarID())
-                local progressCount, progressTotal = self:GetProgress()
+            local barIDName = format("%s %d", L["Bar"], self:GetBarID())
+            local progressCount, progressTotal = self:GetProgress()
 
-                if progressTotal == 0 then return end
+            if progressTotal == 0 then return end
 
-                local alertInfo = {
-                    progressCount = progressCount,
-                    progressTotal = progressTotal,
-                    barIDName = barIDName,
-                    barNameLong = format("%s%s", barIDName, barDB.title),
-                    progressColor = (newCompletion == "lost" and red) or (progressCount < progressTotal and gold) or green,
-                    difference = {
-                        sign = newCompletion == "lost" and "-" or "+",
-                        color = newCompletion == "lost" and "|cffff0000" or "|cff00ff00",
-                    },
-                }
+            local alertInfo = {
+                progressCount = progressCount,
+                progressTotal = progressTotal,
+                barIDName = barIDName,
+                barNameLong = format("%s (%s)", barIDName, barDB.title),
+                progressColor = (alertType ~= "removed" and newCompletion == "lost" and red) or (progressCount < progressTotal and gold) or green,
+                objectiveSet = alertType == "added" or alertType == "removed",
+                difference = {
+                    sign = newCompletion == "lost" and "-" or "+",
+                    color = newCompletion == "lost" and "|cffff0000" or "|cff00ff00",
+                },
+            }
 
-                -- Validate format func
-                local success, formatFunc = pcall(addon.alerts.bar.progress)
-                if not success then
-                    return
+            -- Validate format func
+            local success, formatFunc = pcall(addon.alerts.bar.progress)
+            if not success then
+                return
+            end
+
+            local alertSettings = addon:GetDBValue("global", "settings.alerts.bar")
+
+            -- Get parsed alert
+            local parsedAlert = formatFunc(alertInfo)
+            if parsedAlert then
+                -- Send alert
+                if alertSettings.chat then
+                    addon:Print(parsedAlert)
+                elseif alertSettings.screen then
+                    UIErrorsFrame:AddMessage(parsedAlert, 1, 1, 1)
                 end
+            end
 
-                local alertSettings = addon:GetDBValue("global", "settings.alerts.bar")
-
-                -- Get parsed alert
-                local parsedAlert = formatFunc(alertInfo)
-                if parsedAlert then
-                    -- Send alert
-                    if alertSettings.chat then
-                        addon:Print(parsedAlert)
-                    elseif alertSettings.screen then
-                        UIErrorsFrame:AddMessage(parsedAlert, 1, 1, 1)
-                    end
-                end
-
-                -- Send sound alert
-                if alertSettings.sound.enabled and newCompletion ~= "lost" then
-                    PlaySoundFile(LSM:Fetch("sound", alertSettings.sound[progressCount >= progressTotal and "complete" or "progress"]))
-                end
-            --elseif alertType == "objectiveSet" then
-            --    if newCompletion == "lost" then
-            --    elseif newCompletion == "complete" then
-            --    end
+            -- Send sound alert
+            if alertSettings.sound.enabled and newCompletion ~= "lost" then
+                PlaySoundFile(LSM:Fetch("sound", alertSettings.sound[progressCount >= progressTotal and "complete" or "progress"]))
             end
         end
     end,

@@ -636,11 +636,16 @@ local methods = {
         self:SetUserData("objective", objective)
         self:SetDBValue("objective", objective)
         self:UpdateObjective()
-
-        local newProgressCount, newProgressTotal = bar:GetProgress()
-        bar:AlertProgress("progress", newProgressTotal > progressTotal and "complete" or "lost")
-
         addon:UpdateButtons()
+
+        local alerts = addon:GetBarDBValue("alerts", bar:GetBarID(), true)
+        local buttonDB = self:GetButtonDB()
+        local muteAll = alerts and alerts.muteAll 
+        local muted = buttonDB and buttonDB.mute
+
+        if not muteAll and not muted then
+            bar:AlertProgress((objective and objective == 0 or not objective) and "removed" or "added")
+        end
     end,
 
     SetPoint = function(self, ...) -- point, anchor, relpoint, x, y
