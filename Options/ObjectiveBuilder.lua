@@ -179,14 +179,6 @@ function addon:GetObjectiveBuilderOptions()
                                             return addon:GetDBValue("global", "settings.alerts.bar.format.progress")
                                         end,
                                     },
-                                    {
-                                        value = "customHide",
-                                        text = L["Custom Hide Function"],
-                                        func = function()
-                                            return ""
-                                            --return addon:GetBarDBValue("global", "settings.alerts.bar.format.customHide")
-                                        end,
-                                    },
                                 },
                             },
                             {
@@ -223,6 +215,16 @@ function addon:GetObjectiveBuilderOptions()
                                 },
                             },
                         })
+
+                        for barID, bar in pairs(addon.bars) do
+                            tinsert(treeGroup.tree[1].children, {
+                                value = "customHide" .. barID,
+                                text = L["Custom Hide Function"] .. " " .. barID,
+                                func = function()
+                                    return addon:GetBarDBValue("customHide.func", barID)
+                                end,
+                            })
+                        end
                         
                         local editbox = AceGUI:Create("MultiLineEditBox")
                         editbox:DisableButton(true)
