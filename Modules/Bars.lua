@@ -146,9 +146,20 @@ function addon:CustomHide(bar)
     local barDB = bar:GetBarDB()
     if not barDB then return end
     local customHide = barDB.customHide
+
+    local frame = bar.frame
+    frame:UnregisterAllEvents()
+
+    -- Register events
+    for _, event in pairs(customHide.events) do
+        frame:RegisterEvent(event)
+    end    
+
+    frame:RegisterEvent("PLAYER_REGEN_ENABLED")
+    frame:RegisterEvent("PLAYER_REGEN_DISABLED")
     
     -- Transform the string into a function
-    local userFunc, err = loadstring("return " .. customHide)
+    local userFunc, err = loadstring("return " .. customHide.func)
     if not userFunc then
         return L.InvalidSyntax(err), true
     end

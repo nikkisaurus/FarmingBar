@@ -140,11 +140,15 @@ end
 
 local function frame_OnEvent(self, event)
     local widget = self.obj
+    local barDB = widget:GetBarDB()
+
     if event == "PLAYER_REGEN_DISABLED" then
         widget.addButton:Disable()
         widget.removeButton:Disable()
     elseif event == "PLAYER_REGEN_ENABLED" then
         widget:SetQuickButtonStates()
+    elseif barDB then
+        widget:SetHidden()
     end
 end
 
@@ -531,9 +535,6 @@ local function Constructor()
     frame:SetScale(UIParent:GetEffectiveScale())
     frame:Hide()
     frame:SetClampedToScreen(true)
-
-    frame:RegisterEvent("PLAYER_REGEN_ENABLED")
-    frame:RegisterEvent("PLAYER_REGEN_DISABLED")
 
     frame:SetScript("OnEvent", frame_OnEvent)
 

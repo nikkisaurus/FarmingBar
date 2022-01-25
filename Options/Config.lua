@@ -223,21 +223,53 @@ function addon:GetBarConfigOptions(barID)
                         type = "toggle",
                         name = L["Show on Anchor Mouseover"],
                     },
+                    customHideEvents = {
+                        order = 5,
+                        type = "input",
+                        name = L["Custom Hide Events"],
+                        desc = L.CustomHideEventsDesc,
+                        width = "full",
+                        validate = function(_, input)
+                            if input == "" then return true end
+                            input = gsub(input, " ", "")
+                            local events = {strsplit(",", input)}
+                            for _, event in pairs(events) do
+                                local frame = addon.bars[barID].frame
+                                local success = pcall(frame.RegisterEvent, frame, event)
+                                if not success then                   
+                                    return L.InvalidEvent(event)
+                                end
+                            end
+                            return true
+                        end,
+                        get = function(info)
+                            return table.concat(addon:GetBarDBValue("customHide.events", barID),",")
+                        end,
+                        set = function(info, value)
+                            value = gsub(value, " ", "")
+                            addon:SetBarDBValue("customHide.events", value == "" and {} or {strsplit(",", value)}, barID)
+                            addon:CustomHide(addon.bars[barID])
+                        end,
+                    },
                     customHide = {
                         order = 5,
                         type = "input",
-                        name = L["Custom Hide Condition"],
+                        name = L["Custom Hide Function"],
                         width = "full",
                         multiline = true,
                         dialogControl = "FarmingBar_LuaEditBox",
-                        disabled = true,
+                        validate = function(_, input)                                                        
+                            local success, err = pcall(loadstring("return " .. input))
+                            return success or (L["Custom Hide Function"] .. ": " .. err)
+                        end,
                         get = function(info)
-                            return addon:GetBarDBValue(info[#info], barID)
+                            return addon:GetBarDBValue("customHide.func", barID)
                         end,
                         set = function(info, value)
-                            addon:SetBarDBValue(info[#info], value, barID)
+                            addon:SetBarDBValue("customHide.func", value, barID)
+                            addon:CustomHide(addon.bars[barID])
                         end,
-                        arg = {"profile", "customHide", "UpdateBars", {"SetHidden"}, barID},
+                        arg = {"profile", "customHide.func", "UpdateBars", {"SetHidden"}, barID},
                     },
                 },
             },

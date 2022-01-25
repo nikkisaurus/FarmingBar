@@ -14,33 +14,31 @@ local Version = 1
 -- Widget methods
 
 local methods = {
-    OnAcquire = function(self)
-        self.editBox:HookScript("OnTextChanged", function(this)   
-            local info = self:GetUserData("info")
-            local scope, key, func, args = unpack(info)
-            if not func or not addon[func] then
-                return
-            else
-                func = addon[func]
-            end
-
-            -- Updates whether the accept button is active, based on the validity of the userInput
-            local preview, err = func(addon, addon.unpack(args, {}), this:GetText())
-
-            C_Timer.After(0.01, function()
-                if err then
-                    self.button:Disable()
-                else
-                    self.button:Enable()
-                end
-            end)
+    OnAcquire = function(self)     
+        local editbox = self.editBox
+        addon.indent.enable(editbox, _, 4) -- adds syntax highlighting
+        self:SetUserData("OnUpdate", editbox:GetScript("OnUpdate"))
+        editbox:SetScript("OnUpdate", function(this)
+            self:GetUserData("OnUpdate")(this)
+            this.obj.button:Enable()
         end)
     end,
 
     OnRelease = function(self)
-        addon.indent.disable(self.frame.editBox)
+        local editbox = self.editBox
+        addon.indent.disable(self.editBox) 
+        editbox:SetScript("OnUpdate", self:GetUserData("OnUpdate"))  
+
+        self.editBox:SetEnabled(true)
+        self.button:SetEnabled(true)
+
         self.frame.obj:Release()
-        addon:Unhook(self.editbox, "OnTextChanged")
+    end,
+
+    SetDisabled = function(self, flag)
+        self.editBox:SetEnabled(not flag)
+        self.button:SetEnabled(not flag)
+        self.expandButton:SetEnabled(not flag)
     end,
 }
 
@@ -49,7 +47,6 @@ local methods = {
 
 local function Constructor()
     local frame = AceGUI:Create("MultiLineEditBox")
-    addon.indent.enable(frame.editBox, _, 4) -- adds syntax highlighting
 
     local expandButton = CreateFrame("Button", Type .. AceGUI:GetNextWidgetNum(Type) .. "ExpandButton", frame.frame, "UIPanelButtonTemplate")
     expandButton:SetText(L["Expand"])
@@ -92,6 +89,7 @@ local function Constructor()
 
     local widget = frame
     widget.expandButton = expandButton
+    widget.editBox = frame.editBox
 
     for method, func in pairs(methods) do
         widget[method] = func

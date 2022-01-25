@@ -365,7 +365,8 @@ L["Color"] = true
 L["Completed Objectives"] = true
 L["Count Fontstring"] = true
 L["Ctrl"] = true
-L["Custom Hide Condition"] = true
+L["Custom Hide Events"] = true
+L["Custom Hide Function"] = true
 L["Disabled"] = true
 L["Down"] = true
 L["Duplicate Bar"] = true
@@ -438,6 +439,11 @@ L["Use Long Name"] = true
 L["Visibility"] = true
 L["X Offset"] = true
 L["Y Offset"] = true
+
+L.CustomHideEventsDesc = "Comma separated list of events to trigger your custom hide function."
+L.InvalidEvent = function(event)
+    return format([[Event "%s" does not exist.]], event)
+end
 
 ------------------------------------------------------------
 

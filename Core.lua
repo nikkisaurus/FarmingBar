@@ -69,6 +69,11 @@ function addon:OnInitialize()
 
     self.customHide = [[function()
         -- This function must return a boolean flag to indicate if the bar should be hidden.
+        -- Example:
+        -- function()
+        --     -- Shows the bar when fishing pole is equipped
+        --     return not IsEquippedItem("Underlight Angler")
+        -- end        
             
         return false
     end

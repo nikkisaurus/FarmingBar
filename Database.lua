@@ -268,11 +268,11 @@ function addon:InitializeDB()
                     enabled = false,
                     movable = true,
                     hidden = false,
-                    --customHide = {
-                    --    func = addon.customHide,
-                    --    events = {}
-                    --},
-                    customHide = addon.customHide,
+                    customHide = {
+                        func = addon.customHide,
+                        events = {}
+                    },
+                    --customHide = addon.customHide,
                     backdrop = "None",
                     backdropPadding = 2,
                     backdropColor = {255, 255, 255, 1},
