@@ -199,29 +199,29 @@ function addon:GetBarConfigOptions(barID)
                     self.bars[barID]:SetAlpha()
                 end,
                 args = {
-                    hidden = {
+                    showEmpty = {
                         order = 1,
+                        type = "toggle",
+                        name = L["Show Empty Buttons"],
+                    },
+                    mouseover = {
+                        order = 2,
+                        type = "toggle",
+                        name = L["Show on Mouseover"],
+                    },
+                    anchorMouseover = {
+                        order = 3,
+                        type = "toggle",
+                        name = L["Show on Anchor Mouseover"],
+                    },
+                    hidden = {
+                        order = 4,
                         type = "toggle",
                         name = L["Hidden"],
                         set = function(info, value)
                             addon:SetBarDBValue(info[#info], value, barID)
                             self.bars[barID]:SetHidden()
                         end,
-                    },
-                    showEmpty = {
-                        order = 2,
-                        type = "toggle",
-                        name = L["Show Empty Buttons"],
-                    },
-                    mouseover = {
-                        order = 3,
-                        type = "toggle",
-                        name = L["Show on Mouseover"],
-                    },
-                    anchorMouseover = {
-                        order = 4,
-                        type = "toggle",
-                        name = L["Show on Anchor Mouseover"],
                     },
                     customHideEvents = {
                         order = 5,
@@ -248,11 +248,11 @@ function addon:GetBarConfigOptions(barID)
                         set = function(info, value)
                             value = gsub(value, " ", "")
                             addon:SetBarDBValue("customHide.events", value == "" and {} or {strsplit(",", value)}, barID)
-                            addon:CustomHide(addon.bars[barID])
+                            addon.bars[barID]:SetHidden()
                         end,
                     },
                     customHide = {
-                        order = 5,
+                        order = 6,
                         type = "input",
                         name = L["Custom Hide Function"],
                         width = "full",
@@ -267,7 +267,7 @@ function addon:GetBarConfigOptions(barID)
                         end,
                         set = function(info, value)
                             addon:SetBarDBValue("customHide.func", value, barID)
-                            addon:CustomHide(addon.bars[barID])
+                            addon.bars[barID]:SetHidden()
                         end,
                         arg = {"profile", "customHide.func", "UpdateBars", {"SetHidden"}, barID},
                     },
