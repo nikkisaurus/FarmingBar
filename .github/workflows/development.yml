@@ -34,3 +34,4 @@ jobs:
 
       - name: Package and release for Retail
         uses: BigWigsMods/packager@master
+          args: -g retail -w 0
