@@ -422,7 +422,9 @@ function addon:GetObjectiveBuilderOptions()
             func = function()
                 if IsControlKeyDown() then
                     ACD:SelectGroup(addonName, "objectiveBuilder", objectiveTitle)
-                else                  
+                elseif self.DragFrame:GetObjective() then
+                    self.DragFrame:Clear()
+                else              
                     self.DragFrame:LoadObjectiveTemplate(objectiveTitle)
                 end
             end,
@@ -446,8 +448,12 @@ function addon:GetObjectiveBuilderOptions_Objective(objectiveTitle)
             image = function()
                 return self:GetObjectiveTemplateIcon(objectiveTitle), 35, 35
             end,
-            func = function()
-                self.DragFrame:LoadObjectiveTemplate(objectiveTitle)
+            func = function()                
+                if self.DragFrame:GetObjective() then
+                    self.DragFrame:Clear()
+                else              
+                    self.DragFrame:LoadObjectiveTemplate(objectiveTitle)
+                end
             end,
         },
         title = {

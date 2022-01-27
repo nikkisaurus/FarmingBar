@@ -121,6 +121,10 @@ local function anchor_OnLeave(self)
 end
 
 local function anchor_PostClick(self, buttonClicked, ...)
+    if addon.DragFrame:GetObjective() then
+        addon.DragFrame:Clear()
+    end
+
     ClearCursor()
 
     local keybinds = addon:GetDBValue("global", "settings.keybinds.bar")

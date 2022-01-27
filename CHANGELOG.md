@@ -14,6 +14,7 @@
 - Implemented auto loot on use
 - Implemented keybind configurations
 - Implemented bar custom hide function
+- To compensate for BCC's lack of a GLOBAL_MOUSE_DOWN event, clicking a bar's anchor or an icon dropper in the objective builder now clears the objective from the mouse
 - Bug fixes:
   - -- Fixed bug where bar was movable with the wrong button click
   - -- Fixed lua error when configuring bars after changing profiles
