@@ -29,17 +29,20 @@ local methods = {
     OnRelease = function(self)
         local editbox = self.editBox
         addon.indent.disable(self.editBox) 
-        editbox:SetScript("OnUpdate", self:GetUserData("OnUpdate"))        
+        editbox:SetScript("OnUpdate", self:GetUserData("OnUpdate"))  
 
         self.window.obj:Release()
         self.editbox.obj:Release()
     end,
 
-    LoadCode = function(self, info, text)
+    LoadCode = function(self, info, widget, set)
         self.editbox:SetUserData("info", info)
-        self.editbox:SetText(text)
+        self.editbox:SetText(widget:GetText())
         self.editbox:Fire("OnTextChanged")
         self.frame:Show()
+        self.editbox.button:HookScript("OnClick", function()
+            set(_, self.editbox:GetText())
+        end)
     end,
 
     SetStatusText = function(self, text)

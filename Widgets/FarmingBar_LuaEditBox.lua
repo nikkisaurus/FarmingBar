@@ -64,7 +64,7 @@ local function Constructor()
         ACD:Close(addonName)
 
         editor:SetTitle(format("%s %s", L.addon, L["Lua Editor"]))
-        editor:LoadCode(info, frame:GetText())
+        editor:LoadCode(info, frame, frame.userdata.option.set)
         editor:SetCallback("OnClose", function(self)
             self:Release()
             ACD:Open(addonName)
@@ -90,6 +90,7 @@ local function Constructor()
     local widget = frame
     widget.expandButton = expandButton
     widget.editBox = frame.editBox
+    frame.obj = widget
 
     for method, func in pairs(methods) do
         widget[method] = func
