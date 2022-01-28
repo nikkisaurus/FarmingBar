@@ -574,7 +574,8 @@ function addon:GetObjectiveBuilderOptions_Objective(objectiveTitle)
                 return self:GetObjectiveDBValue("autoIcon", objectiveTitle)
             end,
             func = function()
-                addon:GetObjectiveTemplateIcon(objectiveTitle)
+                local selectorFrame = AceGUI:Create("FarmingBar_IconSelector")
+                --selectorFrame:Load(objectiveTitle)
             end
         },
         action = {

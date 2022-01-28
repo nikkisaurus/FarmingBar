@@ -17,6 +17,8 @@ local methods = {
     OnAcquire = function(self)
     end,
     OnRelease = function(self)
+    end,
+    Load = function(self, objectiveTitle)
     end
 }
 
@@ -29,7 +31,6 @@ local function Constructor()
     if IsAddOnLoaded("ElvUI") then
         local E = unpack(_G["ElvUI"])
         local S = E:GetModule("Skins")
-        S:HandleButton(expandButton)
     end
 
     local widget = frame
