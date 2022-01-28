@@ -10,15 +10,19 @@ local LSM = LibStub("LibSharedMedia-3.0")
 function addon:InitializeAlerts()
     self.alerts = {
         bar = {
-            progress = loadstring("return " .. self:GetDBValue("global", "settings.alerts.bar.format.progress")),
+            progress = loadstring("return " .. self:GetDBValue("global", "settings.alerts.bar.format.progress"))
         },
         button = {
-            withObjective = loadstring("return " .. self:GetDBValue("global", "settings.alerts.button.format.withObjective")),
-            withoutObjective = loadstring("return " .. self:GetDBValue("global", "settings.alerts.button.format.withoutObjective")),
+            withObjective = loadstring(
+                "return " .. self:GetDBValue("global", "settings.alerts.button.format.withObjective")
+            ),
+            withoutObjective = loadstring(
+                "return " .. self:GetDBValue("global", "settings.alerts.button.format.withoutObjective")
+            )
         },
         tracker = {
-            progress = loadstring("return " .. self:GetDBValue("global", "settings.alerts.tracker.format.progress")),
-        },
+            progress = loadstring("return " .. self:GetDBValue("global", "settings.alerts.tracker.format.progress"))
+        }
     }
 end
 
@@ -32,7 +36,7 @@ function addon:PreviewAlert(alertType, input, info)
     local alertInfo
 
     -- Setup alertInfo
-    if alertType == "bar" then        
+    if alertType == "bar" then
         local barIDName = format("%s %s", L["Bar"], 1)
         local progressCount = self:GetDBValue("global", "settings.alerts.bar.preview.count")
         local progressTotal = self:GetDBValue("global", "settings.alerts.bar.preview.total")
@@ -43,11 +47,13 @@ function addon:PreviewAlert(alertType, input, info)
             progressTotal = progressTotal,
             barIDName = barIDName,
             barNameLong = format("%s (%s)", barIDName, L["My Bar Name"]),
-            progressColor = (progressCount == progressTotal and alertType ~= "lost") and "|cff00ff00" or alertType == "complete" and "|cffffcc00" or alertType == "lost" and "|cffff0000",
+            progressColor = (progressCount == progressTotal and alertType ~= "lost") and "|cff00ff00" or
+                alertType == "complete" and "|cffffcc00" or
+                alertType == "lost" and "|cffff0000",
             difference = {
                 sign = alertType == "lost" and "-" or "+",
-                color = alertType == "lost" and "|cffff0000" or "|cff00ff00",
-            },
+                color = alertType == "lost" and "|cffff0000" or "|cff00ff00"
+            }
         }
     elseif alertType == "button" then
         local objective = self:GetDBValue("global", "settings.alerts.button.preview.objective")
@@ -59,15 +65,15 @@ function addon:PreviewAlert(alertType, input, info)
             objectiveTitle = L["Hearthstone"],
             objective = {
                 color = (objective and objective > 0) and (newCount >= objective and "|cff00ff00" or "|cffffcc00") or "",
-                count = objective,
+                count = objective
             },
             oldCount = oldCount,
             newCount = newCount,
             difference = {
                 sign = difference > 0 and "+" or difference < 0 and "",
                 color = difference > 0 and "|cff00ff00" or difference < 0 and "|cffff0000",
-                count = difference,
-            },
+                count = difference
+            }
         }
     elseif alertType == "tracker" then
         local oldTrackerCount = self:GetDBValue("global", "settings.alerts.tracker.preview.oldCount")
@@ -83,19 +89,22 @@ function addon:PreviewAlert(alertType, input, info)
             trackerTitle = L["Hearthstone"],
             objective = {
                 color = (objective and objective > 0) and (newCount >= objective and "|cff00ff00" or "|cffffcc00") or "",
-                count = objective,
+                count = objective
             },
             trackerObjective = {
-                color = newTrackerCount >= ((objective and objective > 0) and objective * trackerObjective or trackerObjective) and "|cff00ff00" or "|cffffcc00",
-                count = (objective and objective > 0) and objective * trackerObjective or trackerObjective,
+                color = newTrackerCount >=
+                    ((objective and objective > 0) and objective * trackerObjective or trackerObjective) and
+                    "|cff00ff00" or
+                    "|cffffcc00",
+                count = (objective and objective > 0) and objective * trackerObjective or trackerObjective
             },
             oldTrackerCount = oldTrackerCount,
             newTrackerCount = newTrackerCount,
             trackerDifference = {
                 sign = trackerDifference > 0 and "+" or trackerDifference < 0 and "",
                 color = trackerDifference > 0 and "|cff00ff00" or trackerDifference < 0 and "|cffff0000",
-                count = trackerDifference,
-            },
+                count = trackerDifference
+            }
         }
     else
         return
@@ -154,7 +163,9 @@ function addon:SendAlert(bar, alertType, alert, alertInfo, soundID, isTracker)
 
     -- Send sound alert
     local barDB = bar:GetBarCharDB()
-    local newCompletion = (alertInfo.objective.count or 0) and (alertInfo.newCount or 0) > (alertInfo.objective.count or 0) and (alertInfo.oldCount or 0) < (alertInfo.objective.count or 0)
+    local newCompletion =
+        (alertInfo.objective.count or 0) and (alertInfo.newCount or 0) > (alertInfo.objective.count or 0) and
+        (alertInfo.oldCount or 0) < (alertInfo.objective.count or 0)
     local showBarAlert = barDB.alerts.barProgress and barDB.alerts.completedObjectives
 
     if alertSettings.sound.enabled and soundID and not (newCompletion and showBarAlert) then
@@ -167,6 +178,6 @@ function addon:SendAlert(bar, alertType, alert, alertInfo, soundID, isTracker)
         local newCompletion = oldCount < objective and newCount > objective
         local lostCompletion = oldCount > objective and newCount < objective
 
-         bar:AlertProgress("progress", (newCompletion and "complete") or (lostCompletion and "lost"))
+        bar:AlertProgress("progress", (newCompletion and "complete") or (lostCompletion and "lost"))
     end
 end

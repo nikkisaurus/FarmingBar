@@ -116,7 +116,7 @@ lib.bytes = bytes
 bytes.BYTE_LINEBREAK_UNIX = stringbyte("\n")
 bytes.BYTE_LINEBREAK_MAC = stringbyte("\r")
 bytes.BYTE_SINGLE_QUOTE = stringbyte("'")
-bytes.BYTE_DOUBLE_QUOTE = stringbyte("\"")
+bytes.BYTE_DOUBLE_QUOTE = stringbyte('"')
 bytes.BYTE_0 = stringbyte("0")
 bytes.BYTE_9 = stringbyte("9")
 bytes.BYTE_PERIOD = stringbyte(".")
@@ -597,9 +597,11 @@ function lib.colorCodeCode(code, colorTable, caretPosition)
             break
         end
 
-        if tokenType == tokens.TOKEN_COLORCODE_START or tokenType == tokens.TOKEN_COLORCODE_STOP or tokenType == tokens.TOKEN_UNKNOWN then
+        if
+            tokenType == tokens.TOKEN_COLORCODE_START or tokenType == tokens.TOKEN_COLORCODE_STOP or
+                tokenType == tokens.TOKEN_UNKNOWN
+         then
             -- ignore color codes
-
         elseif tokenType == tokens.TOKEN_LINEBREAK or tokenType == tokens.TOKEN_WHITESPACE then
             if tokenType == tokens.TOKEN_LINEBREAK then
                 numLines = numLines + 1
@@ -767,7 +769,10 @@ function lib.indentCode(code, tabWidth, colorTable, caretPosition)
                 workingTable2[tsize2] = s
                 totalLen2 = totalLen2 + stringlen(s)
             end
-        elseif tokenType == tokens.TOKEN_COLORCODE_START or tokenType == tokens.TOKEN_COLORCODE_STOP or tokenType == tokens.TOKEN_UNKNOWN then
+        elseif
+            tokenType == tokens.TOKEN_COLORCODE_START or tokenType == tokens.TOKEN_COLORCODE_STOP or
+                tokenType == tokens.TOKEN_UNKNOWN
+         then
             -- skip these, though they shouldn't be encountered here anyway
         else
             hitNonWhitespace = true
@@ -836,7 +841,6 @@ function lib.indentCode(code, tabWidth, colorTable, caretPosition)
                 tsize2 = tsize2 + 1
                 workingTable2[tsize2] = str
                 totalLen2 = totalLen2 + nextPos - pos
-
             end
         end
         pos = nextPos
@@ -851,7 +855,6 @@ local editboxSetText
 local editboxGetText
 
 function lib.stripWowColors(code)
-
     -- HACK!
     -- This is a fix for a bug, where an unfinished string causes a lot of newlines to be created.
     -- The reason for the bug, is that a |r\n\n gets converted to \n\n|r after the next indent-run
@@ -878,7 +881,6 @@ function lib.stripWowColors(code)
         else
             if prevVertical and not even then
                 if byte == bytes.BYTE_c then
-
                     if pos - 2 >= selectionStart then
                         tsize = tsize + 1
                         workingTable[tsize] = stringsub(code, selectionStart, pos - 2)
@@ -887,7 +889,6 @@ function lib.stripWowColors(code)
                     pos = pos + 8
                     selectionStart = pos + 1
                 elseif byte == bytes.BYTE_r then
-
                     if pos - 2 >= selectionStart then
                         tsize = tsize + 1
                         workingTable[tsize] = stringsub(code, selectionStart, pos - 2)
@@ -945,7 +946,6 @@ function lib.padWithLinebreaks(code)
         return code .. "\n", true
     end
     return code .. "\n\n", true
-
 end
 
 local defaultTabWidth = 2

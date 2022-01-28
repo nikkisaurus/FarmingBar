@@ -30,8 +30,13 @@ StaticPopupDialogs["FARMINGBAR_INCLUDE_TEMPLATE_DATA"] = {
                 dialog.data = {data[1], data[2], true}
             end
         else
-            addon:LoadTemplate("user", data[1], data[2], true,
-                addon:GetDBValue("global", "settings.misc.preserveTemplateOrder") == "ENABLED")
+            addon:LoadTemplate(
+                "user",
+                data[1],
+                data[2],
+                true,
+                addon:GetDBValue("global", "settings.misc.preserveTemplateOrder") == "ENABLED"
+            )
         end
     end,
     OnCancel = function(_, data)
@@ -41,8 +46,13 @@ StaticPopupDialogs["FARMINGBAR_INCLUDE_TEMPLATE_DATA"] = {
                 dialog.data = {data[1], data[2], false}
             end
         else
-            addon:LoadTemplate("user", data[1], data[2], false,
-                addon:GetDBValue("global", "settings.misc.preserveTemplateOrder") == "ENABLED")
+            addon:LoadTemplate(
+                "user",
+                data[1],
+                data[2],
+                false,
+                addon:GetDBValue("global", "settings.misc.preserveTemplateOrder") == "ENABLED"
+            )
         end
     end,
     timeout = 0,

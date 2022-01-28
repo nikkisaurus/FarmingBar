@@ -18,7 +18,7 @@ local actions = {
     --@end-retail@
     MACROTEXT = L["Macrotext"],
     RECIPE = L["Recipe"],
-    NONE = L["None"],
+    NONE = L["None"]
 }
 --@retail@
 local actionSort = {"ITEM", "CURRENCY", "MACROTEXT", "RECIPE", "NONE"}
@@ -31,7 +31,7 @@ local newTrackerType = "ITEM"
 --@retail@
 local trackers = {
     ITEM = L["Item"],
-    CURRENCY = L["Currency"],
+    CURRENCY = L["Currency"]
 }
 local trackerSort = {"ITEM", "CURRENCY"}
 --@end-retail@
@@ -39,7 +39,7 @@ local trackerSort = {"ITEM", "CURRENCY"}
 local trackerConditions = {
     ANY = L["Any"],
     ALL = L["All"],
-    CUSTOM = L["Custom"],
+    CUSTOM = L["Custom"]
 }
 local trackerConditionSort = {"ANY", "ALL", "CUSTOM"}
 
@@ -50,11 +50,11 @@ local function GetActionInfoLabel(objectiveTitle)
     local trackerType = addon:GetDBValue("global", "objectives")[objectiveTitle].action
 
     if trackerType == "ITEM" then
-        return L["Item ID/Name/Link"]
         --@retail@
+        return L["Item ID/Name/Link"]
     elseif trackerType == "CURRENCY" then
-        return L["Currency ID/Link"]
         --@end-retail@
+        return L["Currency ID/Link"]
     elseif trackerType == "RECIPE" then
         return L["Recipe String"]
     elseif trackerType == "MACROTEXT" then
@@ -64,11 +64,11 @@ end
 
 local function GetTrackerIDLabel()
     if newTrackerType == "ITEM" then
-        return L["Item ID/Name/Link"]
         --@retail@
+        return L["Item ID/Name/Link"]
     elseif newTrackerType == "CURRENCY" then
         return L["Currency ID/Link"]
-        --@end-retail@
+    --@end-retail@
     end
 end
 
@@ -83,195 +83,239 @@ function addon:GetObjectiveBuilderOptions()
             name = L["New"],
             func = function()
                 self:CreateObjectiveTemplate()
-            end,
+            end
         },
         import = {
             order = 2,
             type = "execute",
             name = L["Import"],
             func = function()
-                local importFrame = AceGUI:Create("Frame")                
+                local importFrame = AceGUI:Create("Frame")
                 importFrame:SetTitle(L.addon .. " - " .. L["Import Frame"])
                 importFrame:SetLayout("Fill")
-                importFrame:SetCallback("OnClose", function(self)
-                    self:Release()
-                    ACD:Open(addonName)
-                end)
+                importFrame:SetCallback(
+                    "OnClose",
+                    function(self)
+                        self:Release()
+                        ACD:Open(addonName)
+                    end
+                )
 
                 local editbox = AceGUI:Create("MultiLineEditBox")
                 editbox:SetLabel("")
                 editbox:DisableButton(true)
                 importFrame:AddChild(editbox)
 
-                editbox:SetCallback("OnTextChanged", function(self)
-                    -- Decode
-                    local decoded = LibDeflate:DecodeForPrint(self:GetText())
-                    if not decoded then return end
-                    local decompressed = LibDeflate:DecompressDeflate(decoded)
-                    if not decompressed then return end
-                    local success, objectiveInfo = LibSerialize:Deserialize(decompressed)
-                    if not success then return end
-                    
-                    importFrame:Fire("OnClose")
-                    ACD:Close(addonName)
-
-                    -- Create objective import frame
-                    local importObjective = AceGUI:Create("Window")
-                    importObjective:SetTitle(L.addon .. " - " .. L["Import"])
-                    importObjective:SetLayout("Flow")
-                    importObjective:SetWidth(300)
-                    importObjective:SetHeight(200)
-                    importObjective:SetCallback("OnClose", function(self)
-                        self:Release()
-                        ACD:Open(addonName)
-                    end)
-
-                    local icon = AceGUI:Create("Icon")
-                    icon:SetWidth(50)
-                    icon:SetImage(addon:GetObjectiveTemplateIcon(objectiveInfo.title))
-                    icon:SetImageSize(40, 40)
-                    importObjective:AddChild(icon)
-
-                    local objective = AceGUI:Create("Label")
-                    objective:SetText(addon.ColorFontString(objectiveInfo.title, "SEXBLUE"))
-                    objective:SetFontObject(GameFontNormalLarge)
-                    importObjective:AddChild(objective)
-
-                    local warning = AceGUI:Create("Label")
-                    warning:SetFullWidth(true)
-                    warning:SetText(addon.ColorFontString(L.CustomCodeWarning, "red"))
-                    importObjective:AddChild(warning)
-
-                    local spacer = AceGUI:Create("Label")
-                    spacer:SetFullWidth(true)
-                    spacer:SetText(" ")
-                    importObjective:AddChild(spacer)
-
-                    local codeButton = AceGUI:Create("Button")
-                    codeButton:SetRelativeWidth(0.5)
-                    codeButton:SetText(L["View Code"])
-                    importObjective:AddChild(codeButton)
-
-                    local codeFrame
-                    codeButton:SetCallback("OnClick", function()
-                        codeFrame = codeFrame or AceGUI:Create("Frame")
-                        codeFrame:SetTitle(L.addon .. " - " .. L["Code Viewer"])
-                        codeFrame:SetLayout("Fill")
-                        codeFrame:SetCallback("OnClose", function(self)
-                            self:Release()
-                            codeFrame = nil
-                        end)
-                        
-                        local treeGroup = AceGUI:Create("TreeGroup")
-                        treeGroup:SetFullWidth(true)
-                        treeGroup:SetLayout("Fill")
-                        codeFrame:AddChild(treeGroup)
-
-                        treeGroup:SetTree({
-                            {
-                                value = "bar",
-                                text = L["Bar"],
-                                children = {
-                                    {
-                                        value = "progress",
-                                        text = L["Progress Format"],
-                                        func = function()
-                                            return addon:GetDBValue("global", "settings.alerts.bar.format.progress")
-                                        end,
-                                    },
-                                },
-                            },
-                            {
-                                value = "button",
-                                text = L["Button"],
-                                children = {
-                                    {
-                                        value = "withObjective",
-                                        text = L["Format With Objective"],
-                                        func = function()
-                                            return addon:GetDBValue("global", "settings.alerts.button.format.withObjective")
-                                        end,
-                                    },
-                                    {
-                                        value = "withoutObjective",
-                                        text = L["Format Without Objective"],
-                                        func = function()
-                                            return addon:GetDBValue("global", "settings.alerts.button.format.withoutObjective")
-                                        end,
-                                    },
-                                },
-                            },
-                            {
-                                value = "tracker",
-                                text = L["Tracker"],
-                                children = {
-                                    {
-                                        value = "progress",
-                                        text = L["Progress Format"],
-                                        func = function()
-                                            return addon:GetDBValue("global", "settings.alerts.tracker.format.progress")
-                                        end,
-                                    },
-                                },
-                            },
-                        })
-
-                        for barID, bar in pairs(addon.bars) do
-                            tinsert(treeGroup.tree[1].children, {
-                                value = "customHide" .. barID,
-                                text = L["Custom Hide Function"] .. " " .. barID,
-                                func = function()
-                                    return addon:GetBarDBValue("customHide.func", barID)
-                                end,
-                            })
+                editbox:SetCallback(
+                    "OnTextChanged",
+                    function(self)
+                        -- Decode
+                        local decoded = LibDeflate:DecodeForPrint(self:GetText())
+                        if not decoded then
+                            return
                         end
-                        
-                        local editbox = AceGUI:Create("MultiLineEditBox")
-                        editbox:DisableButton(true)
-                        editbox:SetDisabled(true)
-                        treeGroup:AddChild(editbox)
+                        local decompressed = LibDeflate:DecompressDeflate(decoded)
+                        if not decompressed then
+                            return
+                        end
+                        local success, objectiveInfo = LibSerialize:Deserialize(decompressed)
+                        if not success then
+                            return
+                        end
 
-                        treeGroup:SetCallback("OnGroupSelected", function(treeGroup, _, value)
-                            local group, setting = strsplit("\001", value)
+                        importFrame:Fire("OnClose")
+                        ACD:Close(addonName)
 
-                            for _, v in pairs(treeGroup.tree) do
-                                if group == v.value then
-                                    for _, V in pairs(v.children) do
-                                        if setting == V.value then
-                                            editbox:SetText(V.func())
-                                            return
-                                        end
-                                    end
-                                end
+                        -- Create objective import frame
+                        local importObjective = AceGUI:Create("Window")
+                        importObjective:SetTitle(L.addon .. " - " .. L["Import"])
+                        importObjective:SetLayout("Flow")
+                        importObjective:SetWidth(300)
+                        importObjective:SetHeight(200)
+                        importObjective:SetCallback(
+                            "OnClose",
+                            function(self)
+                                self:Release()
+                                ACD:Open(addonName)
                             end
+                        )
 
-                            editbox:SetText("")                         
-                        end)
-                    end)
+                        local icon = AceGUI:Create("Icon")
+                        icon:SetWidth(50)
+                        icon:SetImage(addon:GetObjectiveTemplateIcon(objectiveInfo.title))
+                        icon:SetImageSize(40, 40)
+                        importObjective:AddChild(icon)
 
-                    local codeButton = AceGUI:Create("Button")
-                    codeButton:SetRelativeWidth(0.5)
-                    codeButton:SetText(L["Import"])
-                    importObjective:AddChild(codeButton)
+                        local objective = AceGUI:Create("Label")
+                        objective:SetText(addon.ColorFontString(objectiveInfo.title, "SEXBLUE"))
+                        objective:SetFontObject(GameFontNormalLarge)
+                        importObjective:AddChild(objective)
 
-                    codeButton:SetCallback("OnClick", function()
-                        if codeFrame then
-                            codeFrame:Fire("OnClose")
-                        end
-                        importObjective:Fire("OnClose")
+                        local warning = AceGUI:Create("Label")
+                        warning:SetFullWidth(true)
+                        warning:SetText(addon.ColorFontString(L.CustomCodeWarning, "red"))
+                        importObjective:AddChild(warning)
 
-                        local objectiveTitle = addon:DuplicateObjective(objectiveInfo.title, objectiveInfo)
-                        ACD:SelectGroup(addonName, "objectiveBuilder", objectiveTitle)
-                        ACD:Open(addonName)
-                    end)
-                end)
+                        local spacer = AceGUI:Create("Label")
+                        spacer:SetFullWidth(true)
+                        spacer:SetText(" ")
+                        importObjective:AddChild(spacer)
+
+                        local codeButton = AceGUI:Create("Button")
+                        codeButton:SetRelativeWidth(0.5)
+                        codeButton:SetText(L["View Code"])
+                        importObjective:AddChild(codeButton)
+
+                        local codeFrame
+                        codeButton:SetCallback(
+                            "OnClick",
+                            function()
+                                codeFrame = codeFrame or AceGUI:Create("Frame")
+                                codeFrame:SetTitle(L.addon .. " - " .. L["Code Viewer"])
+                                codeFrame:SetLayout("Fill")
+                                codeFrame:SetCallback(
+                                    "OnClose",
+                                    function(self)
+                                        self:Release()
+                                        codeFrame = nil
+                                    end
+                                )
+
+                                local treeGroup = AceGUI:Create("TreeGroup")
+                                treeGroup:SetFullWidth(true)
+                                treeGroup:SetLayout("Fill")
+                                codeFrame:AddChild(treeGroup)
+
+                                treeGroup:SetTree(
+                                    {
+                                        {
+                                            value = "bar",
+                                            text = L["Bar"],
+                                            children = {
+                                                {
+                                                    value = "progress",
+                                                    text = L["Progress Format"],
+                                                    func = function()
+                                                        return addon:GetDBValue(
+                                                            "global",
+                                                            "settings.alerts.bar.format.progress"
+                                                        )
+                                                    end
+                                                }
+                                            }
+                                        },
+                                        {
+                                            value = "button",
+                                            text = L["Button"],
+                                            children = {
+                                                {
+                                                    value = "withObjective",
+                                                    text = L["Format With Objective"],
+                                                    func = function()
+                                                        return addon:GetDBValue(
+                                                            "global",
+                                                            "settings.alerts.button.format.withObjective"
+                                                        )
+                                                    end
+                                                },
+                                                {
+                                                    value = "withoutObjective",
+                                                    text = L["Format Without Objective"],
+                                                    func = function()
+                                                        return addon:GetDBValue(
+                                                            "global",
+                                                            "settings.alerts.button.format.withoutObjective"
+                                                        )
+                                                    end
+                                                }
+                                            }
+                                        },
+                                        {
+                                            value = "tracker",
+                                            text = L["Tracker"],
+                                            children = {
+                                                {
+                                                    value = "progress",
+                                                    text = L["Progress Format"],
+                                                    func = function()
+                                                        return addon:GetDBValue(
+                                                            "global",
+                                                            "settings.alerts.tracker.format.progress"
+                                                        )
+                                                    end
+                                                }
+                                            }
+                                        }
+                                    }
+                                )
+
+                                for barID, bar in pairs(addon.bars) do
+                                    tinsert(
+                                        treeGroup.tree[1].children,
+                                        {
+                                            value = "customHide" .. barID,
+                                            text = L["Custom Hide Function"] .. " " .. barID,
+                                            func = function()
+                                                return addon:GetBarDBValue("customHide.func", barID)
+                                            end
+                                        }
+                                    )
+                                end
+
+                                local editbox = AceGUI:Create("MultiLineEditBox")
+                                editbox:DisableButton(true)
+                                editbox:SetDisabled(true)
+                                treeGroup:AddChild(editbox)
+
+                                treeGroup:SetCallback(
+                                    "OnGroupSelected",
+                                    function(treeGroup, _, value)
+                                        local group, setting = strsplit("\001", value)
+
+                                        for _, v in pairs(treeGroup.tree) do
+                                            if group == v.value then
+                                                for _, V in pairs(v.children) do
+                                                    if setting == V.value then
+                                                        editbox:SetText(V.func())
+                                                        return
+                                                    end
+                                                end
+                                            end
+                                        end
+
+                                        editbox:SetText("")
+                                    end
+                                )
+                            end
+                        )
+
+                        local codeButton = AceGUI:Create("Button")
+                        codeButton:SetRelativeWidth(0.5)
+                        codeButton:SetText(L["Import"])
+                        importObjective:AddChild(codeButton)
+
+                        codeButton:SetCallback(
+                            "OnClick",
+                            function()
+                                if codeFrame then
+                                    codeFrame:Fire("OnClose")
+                                end
+                                importObjective:Fire("OnClose")
+
+                                local objectiveTitle = addon:DuplicateObjective(objectiveInfo.title, objectiveInfo)
+                                ACD:SelectGroup(addonName, "objectiveBuilder", objectiveTitle)
+                                ACD:Open(addonName)
+                            end
+                        )
+                    end
+                )
 
                 editbox:SetFocus()
-                
+
                 -- Hide options
                 ACD:Close(addonName)
                 importFrame:Show()
-            end,
+            end
         },
         quickAdd = {
             order = 3,
@@ -282,22 +326,22 @@ function addon:GetObjectiveBuilderOptions()
                 description = {
                     order = 0,
                     type = "description",
-                    name = L.Options_ObjectiveBuilder("objective.quickAddDesc"),
+                    name = L.Options_ObjectiveBuilder("objective.quickAddDesc")
                 },
                 spacer = {
                     order = 1,
                     type = "header",
-                    name = "",
-                },
-            },
-        },
+                    name = ""
+                }
+            }
+        }
     }
 
     for objectiveTitle, objectiveInfo in self.pairs(self:GetDBValue("global", "objectives")) do
         -- Objective configuration
         options[objectiveTitle] = {
             type = "group",
-            name = objectiveTitle,                
+            name = objectiveTitle,
             icon = function()
                 return self:GetObjectiveTemplateIcon(objectiveTitle), 35, 35
             end,
@@ -307,7 +351,7 @@ function addon:GetObjectiveBuilderOptions()
                     order = 1,
                     type = "group",
                     name = L["Objective"],
-                    args = self:GetObjectiveBuilderOptions_Objective(objectiveTitle),
+                    args = self:GetObjectiveBuilderOptions_Objective(objectiveTitle)
                 },
                 trackers = {
                     order = 2,
@@ -326,7 +370,7 @@ function addon:GetObjectiveBuilderOptions()
                             set = function(info, value)
                                 self:SetObjectiveDBValue(info[#info], value, objectiveTitle)
                                 addon:UpdateButtons()
-                            end,
+                            end
                         },
                         conditionInfo = {
                             order = 2,
@@ -356,7 +400,7 @@ function addon:GetObjectiveBuilderOptions()
                             set = function(info, value)
                                 self:SetObjectiveDBValue(info[#info], value, objectiveTitle)
                                 addon:UpdateButtons()
-                            end,
+                            end
                         },
                         --@retail@
                         type = {
@@ -370,7 +414,7 @@ function addon:GetObjectiveBuilderOptions()
                             end,
                             set = function(info, value)
                                 newTrackerType = value
-                            end,
+                            end
                         },
                         --@end-retail@
                         newTrackerID = {
@@ -382,7 +426,12 @@ function addon:GetObjectiveBuilderOptions()
                             end,
                             validate = function(_, value)
                                 local validTrackerID = self:ValidateTrackerData(newTrackerType, value)
-                                local trackerIDExists = validTrackerID and self:TrackerExists(self:GetDBValue("global", "objectives")[objectiveTitle], strupper(newTrackerType) .. ":" .. validTrackerID)
+                                local trackerIDExists =
+                                    validTrackerID and
+                                    self:TrackerExists(
+                                        self:GetDBValue("global", "objectives")[objectiveTitle],
+                                        strupper(newTrackerType) .. ":" .. validTrackerID
+                                    )
 
                                 if trackerIDExists then
                                     return format(L.TrackerIDExists, value)
@@ -393,24 +442,36 @@ function addon:GetObjectiveBuilderOptions()
                             set = function(info, value)
                                 local validTrackerID = self:ValidateTrackerData(newTrackerType, value)
 
-                                local trackerKey = addon:CreateTracker(self:GetDBValue("global", "objectives")[objectiveTitle], newTrackerType, validTrackerID)
+                                local trackerKey =
+                                    addon:CreateTracker(
+                                    self:GetDBValue("global", "objectives")[objectiveTitle],
+                                    newTrackerType,
+                                    validTrackerID
+                                )
                                 if trackerKey then
-                                    ACD:SelectGroup(addonName, "objectiveBuilder", objectiveTitle, "trackers", trackerKey)
+                                    ACD:SelectGroup(
+                                        addonName,
+                                        "objectiveBuilder",
+                                        objectiveTitle,
+                                        "trackers",
+                                        trackerKey
+                                    )
                                     addon:UpdateButtons()
                                 end
-                            end,
-                        },
-                    },
-                },
-            },
+                            end
+                        }
+                    }
+                }
+            }
         }
 
         for tracker, trackerInfo in pairs(self:GetDBValue("global", "objectives")[objectiveTitle].trackers) do
             if trackerInfo.order ~= 0 then
-                options[objectiveTitle].args.trackers.args[tracker] = self:GetObjectiveBuilderOptions_Trackers(objectiveTitle, tracker)
+                options[objectiveTitle].args.trackers.args[tracker] =
+                    self:GetObjectiveBuilderOptions_Trackers(objectiveTitle, tracker)
             end
         end
-        
+
         -- Quick add button
         options.quickAdd.args[objectiveTitle] = {
             type = "execute",
@@ -424,10 +485,10 @@ function addon:GetObjectiveBuilderOptions()
                     ACD:SelectGroup(addonName, "objectiveBuilder", objectiveTitle)
                 elseif self.DragFrame:GetObjective() then
                     self.DragFrame:Clear()
-                else              
+                else
                     self.DragFrame:LoadObjectiveTemplate(objectiveTitle)
                 end
-            end,
+            end
         }
     end
 
@@ -448,13 +509,13 @@ function addon:GetObjectiveBuilderOptions_Objective(objectiveTitle)
             image = function()
                 return self:GetObjectiveTemplateIcon(objectiveTitle), 35, 35
             end,
-            func = function()                
+            func = function()
                 if self.DragFrame:GetObjective() then
                     self.DragFrame:Clear()
-                else              
+                else
                     self.DragFrame:LoadObjectiveTemplate(objectiveTitle)
                 end
-            end,
+            end
         },
         title = {
             order = 1,
@@ -476,7 +537,7 @@ function addon:GetObjectiveBuilderOptions_Objective(objectiveTitle)
                 end
                 self:RenameObjectiveTemplate(objectiveTitle, value)
                 ACD:SelectGroup(addonName, "objectiveBuilder", value)
-            end,
+            end
         },
         autoIcon = {
             order = 2,
@@ -488,7 +549,7 @@ function addon:GetObjectiveBuilderOptions_Objective(objectiveTitle)
             set = function(info, value)
                 self:SetObjectiveDBValue(info[#info], value, objectiveTitle)
                 addon:UpdateButtons()
-            end,
+            end
         },
         icon = {
             order = 3,
@@ -503,7 +564,7 @@ function addon:GetObjectiveBuilderOptions_Objective(objectiveTitle)
             set = function(info, value)
                 self:SetObjectiveDBValue(info[#info], value, objectiveTitle)
                 addon:UpdateButtons()
-            end,
+            end
         },
         iconSelector = {
             order = 4,
@@ -513,8 +574,8 @@ function addon:GetObjectiveBuilderOptions_Objective(objectiveTitle)
                 return self:GetObjectiveDBValue("autoIcon", objectiveTitle)
             end,
             func = function()
-
-            end,
+                addon:GetObjectiveTemplateIcon(objectiveTitle)
+            end
         },
         action = {
             order = 5,
@@ -534,7 +595,7 @@ function addon:GetObjectiveBuilderOptions_Objective(objectiveTitle)
                     set = function(info, value)
                         self:SetObjectiveDBValue("action", value, objectiveTitle)
                         addon:UpdateButtons()
-                    end,
+                    end
                 },
                 actionInfo = {
                     order = 2,
@@ -581,9 +642,9 @@ function addon:GetObjectiveBuilderOptions_Objective(objectiveTitle)
                         end
 
                         addon:UpdateButtons()
-                    end,
-                },
-            },
+                    end
+                }
+            }
         },
         manage = {
             order = 6,
@@ -597,7 +658,7 @@ function addon:GetObjectiveBuilderOptions_Objective(objectiveTitle)
                     name = L["Duplicate Objective"],
                     func = function()
                         self:DuplicateObjective(objectiveTitle)
-                    end,
+                    end
                 },
                 exportObjective = {
                     order = 2,
@@ -608,16 +669,19 @@ function addon:GetObjectiveBuilderOptions_Objective(objectiveTitle)
                         local exportFrame = AceGUI:Create("Frame")
                         exportFrame:SetTitle(L.addon .. " - " .. L["Export Frame"])
                         exportFrame:SetLayout("Fill")
-                        exportFrame:SetCallback("OnClose", function(self)
-                            self:Release()
-                            ACD:Open(addonName)
-                        end)
+                        exportFrame:SetCallback(
+                            "OnClose",
+                            function(self)
+                                self:Release()
+                                ACD:Open(addonName)
+                            end
+                        )
 
                         local editbox = AceGUI:Create("MultiLineEditBox")
                         editbox:SetLabel(objectiveTitle)
                         editbox:DisableButton(true)
                         exportFrame:AddChild(editbox)
-                                
+
                         -- Hide options
                         ACD:Close(addonName)
                         exportFrame:Show()
@@ -626,12 +690,12 @@ function addon:GetObjectiveBuilderOptions_Objective(objectiveTitle)
                         local objective = self:GetDBValue("global", "objectives")[objectiveTitle]
                         local serialized = LibSerialize:Serialize(objective)
                         local compressed = LibDeflate:CompressDeflate(serialized)
-                        local encoded = LibDeflate:EncodeForPrint (compressed)
+                        local encoded = LibDeflate:EncodeForPrint(compressed)
 
                         editbox:SetText(encoded)
                         editbox:SetFocus()
                         editbox:HighlightText()
-                    end,
+                    end
                 },
                 DeleteObjectiveTemplate = {
                     order = 3,
@@ -642,11 +706,14 @@ function addon:GetObjectiveBuilderOptions_Objective(objectiveTitle)
                         ACD:SelectGroup(addonName, "objectiveBuilder")
                     end,
                     confirm = function()
-                        return format(L.Options_ObjectiveBuilder("objective.manage.DeleteObjectiveTemplate_confirm"), objectiveTitle)
-                    end,
-                },
-            },
-        },
+                        return format(
+                            L.Options_ObjectiveBuilder("objective.manage.DeleteObjectiveTemplate_confirm"),
+                            objectiveTitle
+                        )
+                    end
+                }
+            }
+        }
     }
 
     return options
@@ -670,7 +737,7 @@ function addon:GetObjectiveBuilderOptions_Trackers(objectiveTitle, trackerKey)
                 width = "full",
                 imageWidth = 20,
                 imageHeight = 20,
-                fontSize = "medium",
+                fontSize = "medium"
             },
             objective = {
                 order = 2,
@@ -687,7 +754,7 @@ function addon:GetObjectiveBuilderOptions_Trackers(objectiveTitle, trackerKey)
                 set = function(info, value)
                     self:SetTrackerDBValue(trackers, trackerKey, info[#info], tonumber(value))
                     addon:UpdateButtons()
-                end,
+                end
             },
             countsFor = {
                 order = 3,
@@ -704,7 +771,7 @@ function addon:GetObjectiveBuilderOptions_Trackers(objectiveTitle, trackerKey)
                 set = function(info, value)
                     self:SetTrackerDBValue(trackers, trackerKey, info[#info], tonumber(value))
                     addon:UpdateButtons()
-                end,
+                end
             },
             deleteTracker = {
                 order = 4,
@@ -716,7 +783,7 @@ function addon:GetObjectiveBuilderOptions_Trackers(objectiveTitle, trackerKey)
                 end,
                 confirm = function(...)
                     return L.Options_ObjectiveBuilder("tracker.deleteTracker")
-                end,
+                end
             },
             moveUp = {
                 order = 5,
@@ -736,7 +803,7 @@ function addon:GetObjectiveBuilderOptions_Trackers(objectiveTitle, trackerKey)
                     end
                     trackerInfo.order = previousOrder
                     addon:RefreshOptions()
-                end,
+                end
             },
             moveDown = {
                 order = 6,
@@ -756,16 +823,20 @@ function addon:GetObjectiveBuilderOptions_Trackers(objectiveTitle, trackerKey)
                     end
                     trackerInfo.order = nextOrder
                     addon:RefreshOptions()
-                end,
-            },
-        },
+                end
+            }
+        }
     }
 
     if trackerType == "ITEM" then
-        self.CacheItem(trackerID, function(itemID)
-            options.name = GetItemInfo(itemID)
-            options.args.title.name = self.ColorFontString(GetItemInfo(itemID), "gold")
-        end, trackerID)
+        self.CacheItem(
+            trackerID,
+            function(itemID)
+                options.name = GetItemInfo(itemID)
+                options.args.title.name = self.ColorFontString(GetItemInfo(itemID), "gold")
+            end,
+            trackerID
+        )
         options.icon = C_Item.GetItemIconByID(trackerID)
         options.args.title.image = C_Item.GetItemIconByID(trackerID)
     else

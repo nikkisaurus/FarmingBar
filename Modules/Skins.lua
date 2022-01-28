@@ -104,7 +104,6 @@ addon.skins = {
             }
         }
     },
-
     FarmingBar_Minimal = {
         bar = {
             FloatingBG = {
@@ -112,7 +111,6 @@ addon.skins = {
                 texCoords = {0, 1, 0, 1},
                 color = {0, 0, 0, .5}
             },
-
             Normal = {
                 texture = "INTERFACE\\ADDONS\\FARMINGBAR\\MEDIA\\ICONBORDERTHICK",
                 texCoords = {4 / 64, 60 / 64, 4 / 64, 60 / 64}, -- 1px border (5 - borderSize, 64 - left)
@@ -326,7 +324,6 @@ function addon:Initialize_Masque()
 
         self.MSQ.anchor:SetCallback(MSQ_Callback)
         self.MSQ.button:SetCallback(MSQ_Callback)
-
     end
     return MSQ
 end

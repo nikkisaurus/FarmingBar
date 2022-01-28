@@ -12,19 +12,20 @@ function addon:InitializeDB()
     local defaults = {
         char = {
             bars = {
-                ["**"] = { -- barID
+                ["**"] = {
+                    -- barID
                     title = "",
                     alerts = {
                         barProgress = false, -- bar.trackProgress
                         completedObjectives = true, -- bar.trackCompletedObjectives
-                        muteAll = false, -- bar.muteAlerts
+                        muteAll = false -- bar.muteAlerts
                     },
                     objectives = {
-                        ["**"] = { -- buttonID
+                        ["**"] = {
+                            -- buttonID
                             -- Char
                             objective = 0,
                             mute = false,
-
                             -- Template
                             template = false, -- global objective template
                             title = "",
@@ -35,34 +36,33 @@ function addon:InitializeDB()
                             condition = "ALL", -- trackerCondition
                             conditionInfo = "", -- customCondition
                             trackers = {
-                                ["**"] = { -- trackerID: "ITEM:1412", "CURRENCY:1803"
+                                ["**"] = {
+                                    -- trackerID: "ITEM:1412", "CURRENCY:1803"
                                     -- Char
                                     includeAllChars = false,
                                     includeBank = false,
---@retail@
+                                    --@retail@
 
                                     includeGuildBank = {},
                                     --@end-retail@
                                     exclude = {}, -- buttonIDs
-
                                     -- Template
                                     order = 0,
                                     objective = 1,
-                                    countsFor = 1,
-
-                                },
-                            },
-                        },
-                    },
-                },
-            },
+                                    countsFor = 1
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         },
-
         global = {
             skins = {},
             templates = {},
             objectives = {
-                ["**"] = { -- objectiveTitle
+                ["**"] = {
+                    -- objectiveTitle
                     title = "",
                     autoIcon = true,
                     icon = 134400,
@@ -71,20 +71,17 @@ function addon:InitializeDB()
                     condition = "ALL",
                     conditionInfo = "",
                     trackers = {
-                        ["**"] = { -- trackerID: "ITEM:1412", "CURRENCY:1803"
+                        ["**"] = {
+                            -- trackerID: "ITEM:1412", "CURRENCY:1803"
                             order = 0,
                             objective = 1,
-                            countsFor = 1,
-                        },
+                            countsFor = 1
+                        }
                     },
                     instances = {
-                        ["**"] = {
-                            -- ["profileKey"] = {
-                            --     ["buttonID"] = bool,
-                            -- },
-                        },
-                    },
-                },
+                        ["**"] = {}
+                    }
+                }
             },
             settings = {
                 commands = {
@@ -92,7 +89,7 @@ function addon:InitializeDB()
                     farmbar = true,
                     farm = true,
                     fbar = true,
-                    fb = false,
+                    fb = false
                 },
                 debug = {
                     enabled = false, -- ! Set false before releases; enables debug toggles in GUI
@@ -102,7 +99,7 @@ function addon:InitializeDB()
                     ConfigButtons = false, -- opens Config frame to buttons tab if Config enabled
                     ObjectiveBuilder = false, -- opens Objective Builder on reload
                     ObjectiveBuilderTrackers = false, -- opens Objective Builder to trackers tab if Objective Builder enabled
-                    StyleEditor = false, -- opens Style Editor on reload
+                    StyleEditor = false -- opens Style Editor on reload
                 },
                 alerts = {
                     bar = {
@@ -110,51 +107,48 @@ function addon:InitializeDB()
                         screen = true, -- global.alerts.barScreen
                         sound = {
                             enabled = true, -- global.alerts.barSound
-
                             complete = "Auction Close", -- global.sounds.barComplete
-                            progress = "Auction Open", -- global.sounds.barProgress
+                            progress = "Auction Open" -- global.sounds.barProgress
                         },
                         format = {
-                            progress = self.barProgress, -- global.alertFormats.barProgress
+                            progress = self.barProgress -- global.alertFormats.barProgress
                         },
                         preview = {
                             count = 1, -- global.alertFormats.barCountPreview
                             total = 5, -- global.alertFormats.barTotalPreview
                             withTitle = true, -- global.alertFormats.barTitlePreview
-                            alertType = "complete", -- "lost", "complete"
-                        },
+                            alertType = "complete" -- "lost", "complete"
+                        }
                     },
                     button = {
                         chat = true, -- global.alerts.chat
                         screen = true, -- global.alerts.screen
                         sound = {
                             enabled = true, -- global.alerts.sound
-
                             objectiveCleared = "Quest Failed", -- global.sounds.objectiveCleared
                             objectiveComplete = "Quest Complete", -- global.sounds.objectiveComplete
                             objectiveSet = "Quest Activate", -- global.sounds.objectiveSet
-                            progress = "Loot Coin", -- global.sounds.farmingProgress
+                            progress = "Loot Coin" -- global.sounds.farmingProgress
                         },
                         format = {
                             withObjective = self.withObjective, -- global.alertFormats.hasObjective
-                            withoutObjective = self.withoutObjective, -- global.alertFormats.noObjective
+                            withoutObjective = self.withoutObjective -- global.alertFormats.noObjective
                         },
                         preview = {
                             oldCount = 20, -- global.alertFormats.oldCountPreview
                             newCount = 25, -- global.alertFormats.newCountPreview
-                            objective = 200, -- global.alertFormats.objectivePreview
-                        },
+                            objective = 200 -- global.alertFormats.objectivePreview
+                        }
                     },
                     tracker = {
                         chat = true,
                         screen = true,
                         sound = {
                             enabled = true,
-
-                            progress = "Loot Coin",
+                            progress = "Loot Coin"
                         },
                         format = {
-                            progress = self.trackerProgress,
+                            progress = self.trackerProgress
                         },
                         preview = {
                             oldCount = 20,
@@ -162,109 +156,109 @@ function addon:InitializeDB()
                             objectiveInfo = {
                                 oldCount = 5,
                                 newCount = 6,
-                                objective = 20,
+                                objective = 20
                             },
-                            objective = 10,
-                        },
-                    },
+                            objective = 10
+                        }
+                    }
                 },
                 keybinds = {
                     bar = {
                         moveBar = {
                             type = "drag",
                             button = "LeftButton",
-                            modifier = "",
+                            modifier = ""
                         },
                         configBar = {
                             button = "RightButton",
-                            modifier = "shift",
+                            modifier = "shift"
                         },
                         toggleMovable = {
                             button = "LeftButton",
-                            modifier = "shift",
+                            modifier = "shift"
                         },
                         openSettings = {
                             button = "LeftButton",
-                            modifier = "ctrl",
+                            modifier = "ctrl"
                         },
                         openHelp = {
                             button = "RightButton",
-                            modifier = "",
+                            modifier = ""
                         },
                         showObjectiveBuilder = {
                             button = "RightButton",
-                            modifier = "ctrl",
-                        },
+                            modifier = "ctrl"
+                        }
                     },
                     button = {
                         clearObjective = {
                             button = "RightButton",
-                            modifier = "shift",
+                            modifier = "shift"
                         },
                         moveObjective = {
                             button = "LeftButton",
-                            modifier = "",
+                            modifier = ""
                         },
                         moveObjectiveToBank = {
                             button = "RightButton",
-                            modifier = "alt-ctrl",
+                            modifier = "alt-ctrl"
                         },
                         moveAllToBank = {
                             button = "LeftButton",
-                            modifier = "alt-ctrl",
+                            modifier = "alt-ctrl"
                         },
                         dragObjective = {
                             type = "drag",
                             button = "LeftButton",
-                            modifier = "shift",
+                            modifier = "shift"
                         },
                         showObjectiveEditBox = {
                             button = "LeftButton",
-                            modifier = "ctrl",
+                            modifier = "ctrl"
                         },
                         showObjectiveEditor = {
                             button = "RightButton",
-                            modifier = "ctrl",
+                            modifier = "ctrl"
                         },
                         showQuickAddEditBox = {
                             button = "LeftButton",
-                            modifier = "alt",
+                            modifier = "alt"
                         },
                         --@retail@
                         showQuickAddCurrencyEditBox = {
                             button = "RightButton",
-                            modifier = "alt",
+                            modifier = "alt"
                         },
                         --@end-retail@
                         useItem = {
                             button = "RightButton",
-                            modifier = "",
-                        },
-                    },
+                            modifier = ""
+                        }
+                    }
                 },
                 tooltips = {
                     bar = true,
                     button = true,
                     condensedTooltip = false, -- global.tooltips.enableMod
                     modifier = "Alt", -- global.tooltips.mod
-                    useGameTooltip = false,
+                    useGameTooltip = false
                 },
                 hints = {
                     bars = true, -- global.tooltips.barTips
-                    buttons = true, -- global.tooltips.buttonTips
+                    buttons = true -- global.tooltips.buttonTips
                 },
                 misc = {
                     autoLootOnUse = false, -- global.autoLootItems
                     preserveTemplateData = "DISABLED", -- PROMPT, ENABLED, DISABLED
-                    preserveTemplateOrder = "DISABLED", -- PROMPT, ENABLED, DISABLED
-                },
-            },
+                    preserveTemplateOrder = "DISABLED" -- PROMPT, ENABLED, DISABLED
+                }
+            }
         },
-
         profile = {
             enabled = true, -- enables bar creation for new users/characters; disable when user deletes all bars
             bars = {
-                ["**"] = { -- barID
+                ["**"] = {
+                    -- barID
                     enabled = false,
                     movable = true,
                     hidden = false,
@@ -291,16 +285,16 @@ function addon:InitializeDB()
                             count = {
                                 anchor = "BOTTOM",
                                 xOffset = -1,
-                                yOffset = 6,
+                                yOffset = 6
                             },
                             objective = {
                                 anchor = "TOPLEFT",
                                 xOffset = 6,
-                                yOffset = -4,
-                            },
-                        },
-                    },
-                },
+                                yOffset = -4
+                            }
+                        }
+                    }
+                }
             },
             style = {
                 skin = "FarmingBar_Default",
@@ -311,19 +305,19 @@ function addon:InitializeDB()
                     fontStrings = {
                         count = {
                             style = "CUSTOM", -- "CUSTOM", "INCLUDEAUTOLAYERS", "INCLUDEALLCHARS", "INCLUDEBANK", "ITEMQUALITY" --profile.style.count.type
-                            color = {1, 1, 1, 1}, -- profile.style.count.color
-                        },
-                    },
+                            color = {1, 1, 1, 1} -- profile.style.count.color
+                        }
+                    }
                 },
                 buttonLayers = {
                     AutoCastable = true, -- bank overlay
                     AccountOverlay = true, -- account overlay
                     Border = true, -- item quality
                     Cooldown = true,
-                    CooldownEdge = false,
-                },
-            },
-        },
+                    CooldownEdge = false
+                }
+            }
+        }
     }
 
     -- Register db with AceDB

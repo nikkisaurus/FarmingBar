@@ -16,24 +16,25 @@
 ## X-Wago-ID: BO67dYK3
 
 # Libraries
-Libs\LibStub\LibStub.lua
-Libs\CallbackHandler-1.0\CallbackHandler-1.0.xml
-Libs\AceAddon-3.0\AceAddon-3.0.xml
-Libs\AceEvent-3.0\AceEvent-3.0.xml
-Libs\AceTimer-3.0\AceTimer-3.0.xml
-Libs\AceDB-3.0\AceDB-3.0.xml
-Libs\AceDBOptions-3.0\AceDBOptions-3.0.xml
-Libs\AceLocale-3.0\AceLocale-3.0.xml
-Libs\AceConsole-3.0\AceConsole-3.0.xml
-Libs\AceGUI-3.0\AceGUI-3.0.xml
-Libs\AceConfig-3.0\AceConfig-3.0.xml
-Libs\AceHook-3.0\AceHook-3.0.xml
-Libs\LibSharedMedia-3.0\lib.xml
-Libs\AceGUI-3.0-SharedMediaWidgets\widget.xml
-Libs\LibDataBroker-1.1\LibDataBroker-1.1.lua
-Libs\LibDeflate\lib.xml
-Libs\LibSerialize-1.1.3\lib.xml
-Libs\LibAddonUtils\LibAddonUtils.xml
+#Libs\LibStub\LibStub.lua
+#Libs\CallbackHandler-1.0\CallbackHandler-1.0.xml
+#Libs\AceAddon-3.0\AceAddon-3.0.xml
+#Libs\AceEvent-3.0\AceEvent-3.0.xml
+#Libs\AceTimer-3.0\AceTimer-3.0.xml
+#Libs\AceDB-3.0\AceDB-3.0.xml
+#Libs\AceDBOptions-3.0\AceDBOptions-3.0.xml
+#Libs\AceLocale-3.0\AceLocale-3.0.xml
+#Libs\AceConsole-3.0\AceConsole-3.0.xml
+#Libs\AceGUI-3.0\AceGUI-3.0.xml
+#Libs\AceConfig-3.0\AceConfig-3.0.xml
+#Libs\AceHook-3.0\AceHook-3.0.xml
+#Libs\LibSharedMedia-3.0\lib.xml
+#Libs\AceGUI-3.0-SharedMediaWidgets\widget.xml
+#Libs\LibDataBroker-1.1\LibDataBroker-1.1.lua
+#Libs\LibDeflate\lib.xml
+#Libs\LibSerialize-1.1.3\lib.xml
+#Libs\LibAddonUtils\LibAddonUtils.xml
+Libs\libs.xml
 
 # Locales
 Locales\Locale-enUS.lua
@@ -42,6 +43,10 @@ Locales\Locale-enUS.lua
 Core.lua
 Database.lua
 StaticPopup.lua
+
+# Data
+FileDataRetail.lua
+FileDataClassic.lua
 
 # Frame
 Widgets\Widgets.xml

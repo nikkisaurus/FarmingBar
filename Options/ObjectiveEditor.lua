@@ -15,7 +15,7 @@ function addon:InitializeObjectiveEditorOptions(...)
     LibStub("AceConfigDialog-3.0"):SetDefaultSize(addonName .. "ObjectiveEditor", 525, 400)
 end
 
-function addon:GetObjectiveEditorOptions()    
+function addon:GetObjectiveEditorOptions()
     local barID, buttonID, buttonDB
     if widget then
         barID, buttonID = widget:GetBarID(), widget:GetUserData("buttonID")
@@ -25,7 +25,7 @@ function addon:GetObjectiveEditorOptions()
     local options = {
         type = "group",
         name = format("%s - %s", L.addon, L["Objective Editor"]),
-        args = {          
+        args = {
             template = {
                 order = 1,
                 type = "select",
@@ -34,9 +34,9 @@ function addon:GetObjectiveEditorOptions()
                 desc = L.ObjectiveEditor_template,
                 values = function()
                     local values = {
-                        none = L["None"],
+                        none = L["None"]
                     }
-                    
+
                     for templateName, template in pairs(addon:GetDBValue("global", "objectives")) do
                         values[templateName] = template.title
                     end
@@ -62,10 +62,13 @@ function addon:GetObjectiveEditorOptions()
                     widget:UpdateLayers()
                     -- Update objective editor
                     addon:InitializeObjectiveEditorOptions(widget)
-                    C_Timer.After(0, function()
-                        ACD:Open(addonName .. "ObjectiveEditor")
-                    end)
-                end,
+                    C_Timer.After(
+                        0,
+                        function()
+                            ACD:Open(addonName .. "ObjectiveEditor")
+                        end
+                    )
+                end
             },
             createTemplate = {
                 order = 2,
@@ -85,8 +88,8 @@ function addon:GetObjectiveEditorOptions()
 
                     ACD:SelectGroup(addonName, "objectiveBuilder", objectiveTitle)
                     ACD:Open(addonName)
-                end,
-            },  
+                end
+            },
             mute = {
                 order = 3,
                 type = "toggle",
@@ -100,24 +103,29 @@ function addon:GetObjectiveEditorOptions()
                 end,
                 set = function(_, value)
                     widget:SetDBValue("mute", value)
-                end,
-            },
-        },
+                end
+            }
+        }
     }
 
     if widget then
         for trackerKey, trackerInfo in self.pairs(widget:GetButtonDB().trackers) do
             local trackerType, trackerID = self:ParseTrackerKey(trackerKey)
-    
-            self:GetTrackerDataTable(widget:GetButtonDB(), trackerType, trackerID, function(data)
-                options.args[trackerKey] = {
-                    order = trackerInfo.order,
-                    type = "group",
-                    name = data.name,
-                    args = self:GetObjectiveEditorOptions_Tracker(trackerKey, trackerInfo, data),
-                }
-                return options
-            end)
+
+            self:GetTrackerDataTable(
+                widget:GetButtonDB(),
+                trackerType,
+                trackerID,
+                function(data)
+                    options.args[trackerKey] = {
+                        order = trackerInfo.order,
+                        type = "group",
+                        name = data.name,
+                        args = self:GetObjectiveEditorOptions_Tracker(trackerKey, trackerInfo, data)
+                    }
+                    return options
+                end
+            )
         end
     end
 
@@ -139,7 +147,10 @@ function addon:GetObjectiveEditorOptions_IncludeAllChars()
             order = 0,
             type = "description",
             width = "full",
-            name = format(L.MissingIncludeAllCharsDependecies, red .. strjoin("|r, " .. red, unpack(missingDependencies))),
+            name = format(
+                L.MissingIncludeAllCharsDependecies,
+                red .. strjoin("|r, " .. red, unpack(missingDependencies))
+            )
         }
     end
 
@@ -151,23 +162,28 @@ function addon:GetObjectiveEditorOptions_IncludeAllChars()
         for trackerKey, trackerInfo in pairs(trackers) do
             local trackerType, trackerID = self:ParseTrackerKey(trackerKey)
 
-            self:GetTrackerDataTable(buttonDB, trackerType, trackerID, function(data)
-                options[trackerKey] = {
-                    order = trackerInfo.order,
-                    type = "toggle",
-                    width = "full",
-                    name = data.name,
-                    get = function()
-                        return self:GetTrackerDBInfo(trackers, trackerKey, "includeAllChars")
-                    end,
-                    set = function(_, value)
-                        self:SetTrackerDBValue(trackers, trackerKey, "includeAllChars", value)
-                        widget:UpdateLayers()
-                    end,
-                }
+            self:GetTrackerDataTable(
+                buttonDB,
+                trackerType,
+                trackerID,
+                function(data)
+                    options[trackerKey] = {
+                        order = trackerInfo.order,
+                        type = "toggle",
+                        width = "full",
+                        name = data.name,
+                        get = function()
+                            return self:GetTrackerDBInfo(trackers, trackerKey, "includeAllChars")
+                        end,
+                        set = function(_, value)
+                            self:SetTrackerDBValue(trackers, trackerKey, "includeAllChars", value)
+                            widget:UpdateLayers()
+                        end
+                    }
 
-                return options
-            end)
+                    return options
+                end
+            )
         end
     end
 
@@ -184,23 +200,28 @@ function addon:GetObjectiveEditorOptions_IncludeBank()
 
         for trackerKey, trackerInfo in pairs(trackers) do
             local trackerType, trackerID = self:ParseTrackerKey(trackerKey)
-            self:GetTrackerDataTable(buttonDB, trackerType, trackerID, function(data)
-                options[trackerKey] = {
-                    order = trackerInfo.order,
-                    type = "toggle",
-                    width = "full",
-                    name = data.name,
-                    get = function()
-                        return addon:GetTrackerDBInfo(trackers, trackerKey, "includeBank")
-                    end,
-                    set = function(_, value)
-                        addon:SetTrackerDBValue(trackers, trackerKey, "includeBank", value)
-                        widget:UpdateLayers()
-                    end,
-                }
+            self:GetTrackerDataTable(
+                buttonDB,
+                trackerType,
+                trackerID,
+                function(data)
+                    options[trackerKey] = {
+                        order = trackerInfo.order,
+                        type = "toggle",
+                        width = "full",
+                        name = data.name,
+                        get = function()
+                            return addon:GetTrackerDBInfo(trackers, trackerKey, "includeBank")
+                        end,
+                        set = function(_, value)
+                            addon:SetTrackerDBValue(trackers, trackerKey, "includeBank", value)
+                            widget:UpdateLayers()
+                        end
+                    }
 
-                return options
-            end)
+                    return options
+                end
+            )
         end
     end
 
@@ -214,8 +235,7 @@ function addon:GetObjectiveEditorOptions_Objective()
     local barID, buttonID = widget:GetBarID(), widget:GetUserData("buttonID")
     local buttonDB = widget:GetButtonDB()
 
-    return {
-    }
+    return {}
 end
 
 function addon:GetObjectiveEditorOptions_Tracker(trackerKey, trackerInfo, data)
@@ -233,7 +253,6 @@ function addon:GetObjectiveEditorOptions_Tracker(trackerKey, trackerInfo, data)
             name = L["Include All Characters"],
             disabled = function()
                 return #addon:IsDataStoreLoaded() > 0
-
             end,
             get = function()
                 return addon:GetTrackerDBInfo(trackers, trackerKey, "includeAllChars")
@@ -241,8 +260,8 @@ function addon:GetObjectiveEditorOptions_Tracker(trackerKey, trackerInfo, data)
             set = function(_, value)
                 addon:SetTrackerDBValue(trackers, trackerKey, "includeAllChars", value)
                 widget:SetCount()
-            end,
-        },
+            end
+        }
     }
 
     if trackerType == "ITEM" then
@@ -257,7 +276,7 @@ function addon:GetObjectiveEditorOptions_Tracker(trackerKey, trackerInfo, data)
             set = function(_, value)
                 addon:SetTrackerDBValue(trackers, trackerKey, "includeBank", value)
                 widget:SetCount()
-            end,
+            end
         }
         --@retail@
         if IsAddOnLoaded("DataStore") then
@@ -268,9 +287,8 @@ function addon:GetObjectiveEditorOptions_Tracker(trackerKey, trackerInfo, data)
                 name = L["Include Guild Bank"],
                 disabled = function()
                     return #addon:IsDataStoreLoaded() > 0
-
                 end,
-                args = {},
+                args = {}
             }
 
             trackers[trackerKey].includeGuildBank = trackers[trackerKey].includeGuildBank or {}
@@ -288,12 +306,12 @@ function addon:GetObjectiveEditorOptions_Tracker(trackerKey, trackerInfo, data)
                         set = function(_, value)
                             addon:GetTrackerDBInfo(trackers, trackerKey, "includeGuildBank")[guild] = value
                             widget:SetCount()
-                        end,
+                        end
                     }
                 end
             end
         end
-        --@end-retail@
+    --@end-retail@
     end
 
     return options

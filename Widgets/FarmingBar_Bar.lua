@@ -24,7 +24,6 @@ local postClickMethods = {
         ACD:SelectGroup(addonName, "config", "bar" .. barID)
         ACD:Open(addonName)
     end,
-
     toggleMovable = function(self, ...)
         local widget = self.obj
         widget:SetDBValue("movable", "_TOGGLE_")
@@ -32,21 +31,18 @@ local postClickMethods = {
 
         addon:Print(L.ToggleMovable(widget:GetBarTitle(), widget:GetUserData("barDB").movable))
     end,
-
     openSettings = function(self, ...)
         ACD:SelectGroup(addonName, "globalSettings")
         ACD:Open(addonName)
     end,
-
     showObjectiveBuilder = function(self, ...)
         ACD:SelectGroup(addonName, "objectiveBuilder")
         ACD:Open(addonName)
     end,
-
     openHelp = function(self, ...)
         ACD:SelectGroup(addonName, "help")
         ACD:Open(addonName)
-    end,
+    end
 }
 
 -- *------------------------------------------------------------------------
@@ -94,13 +90,17 @@ local function anchor_OnEnter(self)
 
     local tooltip = widget:GetUserData("tooltip")
     if tooltip and not addon.DragFrame:GetObjective() then
-        local tooltipFrame = addon:GetDBValue("global", "settings.tooltips.useGameTooltip") and GameTooltip or addon.tooltip
-        tooltipFrame:SetScript("OnUpdate", function()
-            tooltipFrame:ClearLines()
-            tooltipFrame:SetOwner(self, "ANCHOR_BOTTOMRIGHT", 0, 0)
-            addon[tooltip](addon, widget, tooltipFrame)
-            tooltipFrame:Show()
-        end)
+        local tooltipFrame =
+            addon:GetDBValue("global", "settings.tooltips.useGameTooltip") and GameTooltip or addon.tooltip
+        tooltipFrame:SetScript(
+            "OnUpdate",
+            function()
+                tooltipFrame:ClearLines()
+                tooltipFrame:SetOwner(self, "ANCHOR_BOTTOMRIGHT", 0, 0)
+                addon[tooltip](addon, widget, tooltipFrame)
+                tooltipFrame:Show()
+            end
+        )
         tooltipFrame:GetScript("OnUpdate")()
     end
 end
@@ -113,7 +113,8 @@ local function anchor_OnLeave(self)
 
     local tooltip = widget:GetUserData("tooltip")
     if tooltip and not addon.DragFrame:GetObjective() then
-        local tooltipFrame = addon:GetDBValue("global", "settings.tooltips.useGameTooltip") and GameTooltip or addon.tooltip
+        local tooltipFrame =
+            addon:GetDBValue("global", "settings.tooltips.useGameTooltip") and GameTooltip or addon.tooltip
         tooltipFrame:ClearLines()
         tooltipFrame:Hide()
         tooltipFrame:SetScript("OnUpdate", nil)
@@ -175,7 +176,6 @@ local methods = {
         self:SetUserData("tooltip", "GetBarTooltip")
         self:SetUserData("buttons", {})
     end,
-
     OnRelease = function(self)
         if not self:GetUserData("buttons") then
             return
@@ -184,33 +184,35 @@ local methods = {
             button:Release()
         end
     end,
-
     AddButton = function(self, buttonID)
         local button = AceGUI:Create("FarmingBar_Button")
         tinsert(self:GetUserData("buttons"), button)
         button:SetBar(self, buttonID)
         self:SetQuickButtonStates()
     end,
-
     AlertProgress = function(self, alertType, newCompletion)
         local barDB = self:GetBarCharDB()
         if barDB.alerts.barProgress then
             local barIDName = format("%s %d", L["Bar"], self:GetBarID())
             local progressCount, progressTotal = self:GetProgress()
 
-            if progressTotal == 0 then return end
+            if progressTotal == 0 then
+                return
+            end
 
             local alertInfo = {
                 progressCount = progressCount,
                 progressTotal = progressTotal,
                 barIDName = barIDName,
                 barNameLong = format("%s (%s)", barIDName, barDB.title),
-                progressColor = (alertType ~= "removed" and newCompletion == "lost" and red) or (progressCount < progressTotal and gold) or green,
+                progressColor = (alertType ~= "removed" and newCompletion == "lost" and red) or
+                    (progressCount < progressTotal and gold) or
+                    green,
                 objectiveSet = alertType == "added" or alertType == "removed",
                 difference = {
                     sign = newCompletion == "lost" and "-" or "+",
-                    color = newCompletion == "lost" and "|cffff0000" or "|cff00ff00",
-                },
+                    color = newCompletion == "lost" and "|cffff0000" or "|cff00ff00"
+                }
             }
 
             -- Validate format func
@@ -234,41 +236,35 @@ local methods = {
 
             -- Send sound alert
             if alertSettings.sound.enabled and newCompletion ~= "lost" then
-                PlaySoundFile(LSM:Fetch("sound", alertSettings.sound[progressCount >= progressTotal and "complete" or "progress"]))
+                PlaySoundFile(
+                    LSM:Fetch("sound", alertSettings.sound[progressCount >= progressTotal and "complete" or "progress"])
+                )
             end
         end
     end,
-
     AnchorButtons = function(self)
         for _, button in pairs(self:GetUserData("buttons")) do
             button:Anchor()
         end
     end,
-
     ApplySkin = function(self)
         addon:SkinBar(self, addon:GetDBValue("profile", "style.skin"))
     end,
-
     GetBarID = function(self)
         return self:GetUserData("barID")
     end,
-
     GetBarDB = function(self)
         return self:GetUserData("barDB")
     end,
-
     GetBarCharDB = function(self)
         return addon:GetDBValue("char", "bars")[self:GetBarID()]
     end,
-
     GetBarTitle = function(self)
         return addon:GetBarTitle(self:GetBarID())
     end,
-
     GetButtons = function(self)
         return self:GetUserData("buttons")
     end,
-
     GetProgress = function(self)
         local complete, total = 0, 0
         for _, button in pairs(self:GetButtons()) do
@@ -278,7 +274,6 @@ local methods = {
 
         return complete, total
     end,
-
     RemoveButton = function(self)
         local buttons = self:GetUserData("buttons")
 
@@ -287,7 +282,6 @@ local methods = {
 
         self:SetQuickButtonStates()
     end,
-
     SetAlpha = function(self, hasFocus)
         local db = self:GetBarDB()
         local alpha = (hasFocus or (not db.mouseover and not db.anchorMouseover)) and db.alpha or 0
@@ -300,12 +294,13 @@ local methods = {
         for _, button in pairs(self:GetUserData("buttons")) do
             local isDragging = cursorType or objectiveTitle or addon.isMoving
 
-            local showButton = (db.showEmpty or not button:IsEmpty() or isDragging) and (hasFocus or not db.mouseover or db.anchorMouseover)
+            local showButton =
+                (db.showEmpty or not button:IsEmpty() or isDragging) and
+                (hasFocus or not db.mouseover or db.anchorMouseover)
 
             button:SetAlpha(showButton and db.alpha or 0)
         end
     end,
-
     SetBackdropAnchor = function(self)
         local barDB = self:GetBarDB()
         local buttons = self:GetUserData("buttons")
@@ -316,68 +311,71 @@ local methods = {
         local lastButton = buttons[#buttons]
         local wrapButton = (#buttons <= buttonWrap and lastButton) or buttons[buttonWrap]
 
-        self:SetUserData("anchors", lastButton and {
-            RIGHT = {
-                DOWN = {
-                    [1] = {"TOP", self.anchor, "TOP", 0, padding},
-                    [2] = {"LEFT", buttons[1].frame, "LEFT", -padding, 0},
-                    [3] = {"RIGHT", wrapButton.frame, "RIGHT", padding, 0},
-                    [4] = {"BOTTOM", lastButton.frame, "BOTTOM", 0, -padding},
-                },
-                UP = {
-                    [1] = {"TOP", lastButton.frame, "TOP", 0, padding},
-                    [2] = {"LEFT", buttons[1].frame, "LEFT", -padding, 0},
-                    [3] = {"RIGHT", wrapButton.frame, "RIGHT", padding, 0},
-                    [4] = {"BOTTOM", buttons[1].frame, "BOTTOM", 0, -padding},
-                },
-            },
-            LEFT = {
-                DOWN = {
-                    [1] = {"TOP", self.anchor, "TOP", 0, padding},
-                    [2] = {"LEFT", wrapButton.frame, "LEFT", -padding, 0},
-                    [3] = {"RIGHT", buttons[1].frame, "RIGHT", padding, 0},
-                    [4] = {"BOTTOM", lastButton.frame, "BOTTOM", 0, -padding},
-                },
-                UP = {
-                    [1] = {"TOP", lastButton.frame, "TOP", 0, padding},
-                    [2] = {"LEFT", wrapButton.frame, "LEFT", -padding, 0},
-                    [3] = {"RIGHT", buttons[1].frame, "RIGHT", padding, 0},
-                    [4] = {"BOTTOM", buttons[1].frame, "BOTTOM", 0, -padding},
-                },
-            },
-            UP = {
-                DOWN = {
-                    [1] = {"TOP", wrapButton.frame, "TOP", 0, padding},
-                    [2] = {"LEFT", buttons[1].frame, "LEFT", -padding, 0},
-                    [3] = {"RIGHT", lastButton.frame, "RIGHT", padding, 0},
-                    [4] = {"BOTTOM", buttons[1].frame, "BOTTOM", 0, -padding},
-                },
-                UP = {
-                    [1] = {"TOP", wrapButton.frame, "TOP", 0, padding},
-                    [2] = {"LEFT", lastButton.frame, "LEFT", -padding, 0},
-                    [3] = {"RIGHT", buttons[1].frame, "RIGHT", padding, 0},
-                    [4] = {"BOTTOM", buttons[1].frame, "BOTTOM", 0, -padding},
-                },
-            },
-            DOWN = {
-                DOWN = {
-                    [1] = {"TOP", buttons[1].frame, "TOP", 0, padding},
-                    [2] = {"LEFT", buttons[1].frame, "LEFT", -padding, 0},
-                    [3] = {"RIGHT", lastButton.frame, "RIGHT", padding, 0},
-                    [4] = {"BOTTOM", wrapButton.frame, "BOTTOM", 0, -padding},
-                },
-                UP = {
-                    [1] = {"TOP", buttons[1].frame, "TOP", 0, padding},
-                    [2] = {"LEFT", lastButton.frame, "LEFT", -padding, 0},
-                    [3] = {"RIGHT", buttons[1].frame, "RIGHT", padding, 0},
-                    [4] = {"BOTTOM", wrapButton.frame, "BOTTOM", 0, -padding},
-                },
-            },
-        })
+        self:SetUserData(
+            "anchors",
+            lastButton and
+                {
+                    RIGHT = {
+                        DOWN = {
+                            [1] = {"TOP", self.anchor, "TOP", 0, padding},
+                            [2] = {"LEFT", buttons[1].frame, "LEFT", -padding, 0},
+                            [3] = {"RIGHT", wrapButton.frame, "RIGHT", padding, 0},
+                            [4] = {"BOTTOM", lastButton.frame, "BOTTOM", 0, -padding}
+                        },
+                        UP = {
+                            [1] = {"TOP", lastButton.frame, "TOP", 0, padding},
+                            [2] = {"LEFT", buttons[1].frame, "LEFT", -padding, 0},
+                            [3] = {"RIGHT", wrapButton.frame, "RIGHT", padding, 0},
+                            [4] = {"BOTTOM", buttons[1].frame, "BOTTOM", 0, -padding}
+                        }
+                    },
+                    LEFT = {
+                        DOWN = {
+                            [1] = {"TOP", self.anchor, "TOP", 0, padding},
+                            [2] = {"LEFT", wrapButton.frame, "LEFT", -padding, 0},
+                            [3] = {"RIGHT", buttons[1].frame, "RIGHT", padding, 0},
+                            [4] = {"BOTTOM", lastButton.frame, "BOTTOM", 0, -padding}
+                        },
+                        UP = {
+                            [1] = {"TOP", lastButton.frame, "TOP", 0, padding},
+                            [2] = {"LEFT", wrapButton.frame, "LEFT", -padding, 0},
+                            [3] = {"RIGHT", buttons[1].frame, "RIGHT", padding, 0},
+                            [4] = {"BOTTOM", buttons[1].frame, "BOTTOM", 0, -padding}
+                        }
+                    },
+                    UP = {
+                        DOWN = {
+                            [1] = {"TOP", wrapButton.frame, "TOP", 0, padding},
+                            [2] = {"LEFT", buttons[1].frame, "LEFT", -padding, 0},
+                            [3] = {"RIGHT", lastButton.frame, "RIGHT", padding, 0},
+                            [4] = {"BOTTOM", buttons[1].frame, "BOTTOM", 0, -padding}
+                        },
+                        UP = {
+                            [1] = {"TOP", wrapButton.frame, "TOP", 0, padding},
+                            [2] = {"LEFT", lastButton.frame, "LEFT", -padding, 0},
+                            [3] = {"RIGHT", buttons[1].frame, "RIGHT", padding, 0},
+                            [4] = {"BOTTOM", buttons[1].frame, "BOTTOM", 0, -padding}
+                        }
+                    },
+                    DOWN = {
+                        DOWN = {
+                            [1] = {"TOP", buttons[1].frame, "TOP", 0, padding},
+                            [2] = {"LEFT", buttons[1].frame, "LEFT", -padding, 0},
+                            [3] = {"RIGHT", lastButton.frame, "RIGHT", padding, 0},
+                            [4] = {"BOTTOM", wrapButton.frame, "BOTTOM", 0, -padding}
+                        },
+                        UP = {
+                            [1] = {"TOP", buttons[1].frame, "TOP", 0, padding},
+                            [2] = {"LEFT", lastButton.frame, "LEFT", -padding, 0},
+                            [3] = {"RIGHT", buttons[1].frame, "RIGHT", padding, 0},
+                            [4] = {"BOTTOM", wrapButton.frame, "BOTTOM", 0, -padding}
+                        }
+                    }
+                }
+        )
 
         self:UpdateBackdrop()
     end,
-
     SetBarDB = function(self, barID)
         self:SetUserData("barID", barID)
         self.barID:SetText(barID or "")
@@ -398,11 +396,9 @@ local methods = {
         self:SetPoint(unpack(barDB.point))
         self:SetQuickButtonStates()
     end,
-
     SetDBValue = function(self, key, value, isCharDB)
         addon:SetBarDBValue(key, value, self:GetBarID(), isCharDB)
     end,
-
     SetHidden = function(self)
         local preview, err = addon:CustomHide(self)
         if self:GetUserData("barDB").hidden or (preview and not err) then
@@ -415,22 +411,21 @@ local methods = {
             button:SetHidden()
         end
     end,
-
     SetMovable = function(self)
         self.frame:SetMovable(self:GetUserData("barDB").movable)
         addon:RefreshOptions()
     end,
-
     SetPoint = function(self, ...) -- point, anchor, relpoint, x, y
         self.frame:ClearAllPoints()
         self.frame:SetPoint(...)
     end,
-
     SetQuickButtonStates = function(self)
         local addButton = self.addButton
         local removeButton = self.removeButton
         local barDB = self:GetUserData("barDB")
-        if not barDB then return end
+        if not barDB then
+            return
+        end
         local numVisibleButtons = barDB.numVisibleButtons
 
         if numVisibleButtons == 0 then
@@ -451,7 +446,6 @@ local methods = {
         -- Update backdrop
         self:SetBackdropAnchor()
     end,
-
     SetSize = function(self)
         local frameSize = self:GetUserData("barDB").button.size
         local paddingSize = (2 / 20 * frameSize)
@@ -474,7 +468,6 @@ local methods = {
             button:SetSize(frameSize, frameSize)
         end
     end,
-
     UpdateBackdrop = function(self)
         local backdrop, backdropTexture = self.backdrop, self.backdropTexture
         backdrop:ClearAllPoints()
@@ -488,7 +481,7 @@ local methods = {
             local barDB = self:GetBarDB()
 
             backdropTexture:SetTexture(LSM:Fetch("background", barDB.backdrop))
-            backdropTexture:SetAllPoints(backdrop)            
+            backdropTexture:SetAllPoints(backdrop)
             if barDB.backdrop == "Solid" then
                 backdropTexture:SetVertexColor(unpack(barDB.backdropColor))
             else
@@ -509,7 +502,6 @@ local methods = {
             backdrop:SetPoint(unpack(anchors[hDirection][vDirection][4]))
         end
     end,
-
     UpdateVisibleButtons = function(self)
         local buttons = self:GetUserData("buttons")
         local difference = self:GetUserData("barDB").numVisibleButtons - #buttons
@@ -523,7 +515,7 @@ local methods = {
                 self:RemoveButton()
             end
         end
-    end,
+    end
 }
 
 -- *------------------------------------------------------------------------
@@ -572,9 +564,12 @@ local function Constructor()
     addButton:SetDisabledTexture([[INTERFACE\ADDONS\FARMINGBAR\MEDIA\PLUS-DISABLED]])
 
     addButton:SetScript("OnClick", addButton_OnClick)
-    addButton:SetScript("OnEnter", function(self)
-        frame.obj:SetAlpha(true)
-    end)
+    addButton:SetScript(
+        "OnEnter",
+        function(self)
+            frame.obj:SetAlpha(true)
+        end
+    )
     addButton:SetScript("OnLeave", OnLeave)
 
     local removeButton = CreateFrame("Button", "$parentRemoveButton", anchor)
@@ -582,9 +577,12 @@ local function Constructor()
     removeButton:SetDisabledTexture([[INTERFACE\ADDONS\FARMINGBAR\MEDIA\MINUS-DISABLED]])
 
     removeButton:SetScript("OnClick", removeButton_OnClick)
-    removeButton:SetScript("OnEnter", function(self)
-        frame.obj:SetAlpha(true)
-    end)
+    removeButton:SetScript(
+        "OnEnter",
+        function(self)
+            frame.obj:SetAlpha(true)
+        end
+    )
     removeButton:SetScript("OnLeave", OnLeave)
 
     local barID = anchor:CreateFontString("$parentBarIDButton", "OVERLAY")
@@ -599,17 +597,20 @@ local function Constructor()
         FloatingBG = FloatingBG,
         addButton = addButton,
         removeButton = removeButton,
-        barID = barID,
+        barID = barID
     }
 
     frame.obj, anchor.obj, addButton.obj, removeButton.obj, backdrop.obj = widget, widget, widget, widget, widget
 
-    backdrop:SetScript("OnEnter", function(self)
-        local barDB = self.obj:GetUserData("barDB")
-        if not barDB.anchorMouseover then
-            widget:SetAlpha(true)
+    backdrop:SetScript(
+        "OnEnter",
+        function(self)
+            local barDB = self.obj:GetUserData("barDB")
+            if not barDB.anchorMouseover then
+                widget:SetAlpha(true)
+            end
         end
-    end)
+    )
 
     backdrop:SetScript("OnLeave", OnLeave)
 

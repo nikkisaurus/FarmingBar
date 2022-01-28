@@ -10,7 +10,7 @@ addon.editors = {}
 -- *------------------------------------------------------------------------
 
 function addon:GetGlobalSettingsOptions()
-    local options = {        
+    local options = {
         general = {
             order = 1,
             type = "group",
@@ -32,25 +32,25 @@ function addon:GetGlobalSettingsOptions()
                             order = 1,
                             type = "toggle",
                             name = L["Bar"],
-                            desc = L.Options_settings_global_general_tooltips_bar,
+                            desc = L.Options_settings_global_general_tooltips_bar
                         },
                         button = {
                             order = 2,
                             type = "toggle",
                             name = L["Button"],
-                            desc = L.Options_settings_global_general_tooltips_button,
+                            desc = L.Options_settings_global_general_tooltips_button
                         },
                         useGameTooltip = {
                             order = 3,
                             type = "toggle",
                             name = L["Use Game Tooltip"],
-                            desc = L.Options_settings_global_general_tooltips_useGameTooltip,
+                            desc = L.Options_settings_global_general_tooltips_useGameTooltip
                         },
                         condensedTooltip = {
                             order = 4,
                             type = "toggle",
                             name = L["Condensed Tooltip"],
-                            desc = L.Options_settings_global_general_hints_condensedTooltip,
+                            desc = L.Options_settings_global_general_hints_condensedTooltip
                         },
                         modifier = {
                             order = 5,
@@ -62,14 +62,14 @@ function addon:GetGlobalSettingsOptions()
                                 local info = {
                                     Alt = L["Alt"],
                                     Control = L["Control"],
-                                    Shift = L["Shift"],
+                                    Shift = L["Shift"]
                                 }
 
                                 return info
                             end,
-                            sorting = {"Alt", "Control", "Shift"},
-                        },
-                    },
+                            sorting = {"Alt", "Control", "Shift"}
+                        }
+                    }
                 },
                 hints = {
                     order = 2,
@@ -87,15 +87,15 @@ function addon:GetGlobalSettingsOptions()
                             order = 1,
                             type = "toggle",
                             name = L["Bars"],
-                            desc = L.Options_settings_global_general_hints_bars,
+                            desc = L.Options_settings_global_general_hints_bars
                         },
                         buttons = {
                             order = 2,
                             type = "toggle",
                             name = L["Buttons"],
-                            desc = L.Options_settings_global_general_hints_buttons,
-                        },
-                    },
+                            desc = L.Options_settings_global_general_hints_buttons
+                        }
+                    }
                 },
                 templates = {
                     order = 3,
@@ -132,7 +132,7 @@ function addon:GetGlobalSettingsOptions()
                             end,
                             set = function(_, value)
                                 self:DeleteTemplate(value)
-                            end,
+                            end
                         },
                         preserveTemplateData = {
                             order = 2,
@@ -144,12 +144,12 @@ function addon:GetGlobalSettingsOptions()
                                 local info = {
                                     ENABLED = L["ENABLED"],
                                     DISABLED = L["DISABLED"],
-                                    PROMPT = L["PROMPT"],
+                                    PROMPT = L["PROMPT"]
                                 }
 
                                 return info
                             end,
-                            sorting = {"ENABLED", "DISABLED", "PROMPT"},
+                            sorting = {"ENABLED", "DISABLED", "PROMPT"}
                         },
                         preserveTemplateOrder = {
                             order = 3,
@@ -161,14 +161,14 @@ function addon:GetGlobalSettingsOptions()
                                 local info = {
                                     ENABLED = L["ENABLED"],
                                     DISABLED = L["DISABLED"],
-                                    PROMPT = L["PROMPT"],
+                                    PROMPT = L["PROMPT"]
                                 }
 
                                 return info
                             end,
-                            sorting = {"ENABLED", "DISABLED", "PROMPT"},
-                        },
-                    },
+                            sorting = {"ENABLED", "DISABLED", "PROMPT"}
+                        }
+                    }
                 },
                 misc = {
                     order = 4,
@@ -187,9 +187,9 @@ function addon:GetGlobalSettingsOptions()
                             type = "toggle",
                             width = "full",
                             name = L["Auto loot items on use"],
-                            desc = L.Options_settings_global_misc_autoLootOnUse,
-                        },
-                    },
+                            desc = L.Options_settings_global_misc_autoLootOnUse
+                        }
+                    }
                 },
                 commands = {
                     order = 5,
@@ -207,29 +207,29 @@ function addon:GetGlobalSettingsOptions()
                         farmingbar = {
                             order = 1,
                             type = "toggle",
-                            name = "/farmingbar",
+                            name = "/farmingbar"
                         },
                         farmbar = {
                             order = 2,
                             type = "toggle",
-                            name = "/farmbar",
+                            name = "/farmbar"
                         },
                         farm = {
                             order = 3,
                             type = "toggle",
-                            name = "/farm",
+                            name = "/farm"
                         },
                         fbar = {
                             order = 4,
                             type = "toggle",
-                            name = "/fbar",
+                            name = "/fbar"
                         },
                         fb = {
                             order = 5,
                             type = "toggle",
-                            name = "/fb",
-                        },
-                    },
+                            name = "/fb"
+                        }
+                    }
                 },
                 debug = {
                     order = 99,
@@ -242,9 +242,9 @@ function addon:GetGlobalSettingsOptions()
                     set = function(info, value)
                         self:SetDBValue("global", "settings.debug." .. info[#info], value)
                     end,
-                    args = {},
-                },
-            },
+                    args = {}
+                }
+            }
         },
         alerts = {
             order = 2,
@@ -265,12 +265,12 @@ function addon:GetGlobalSettingsOptions()
                         chat = {
                             order = 1,
                             type = "toggle",
-                            name = L["Chat"],
+                            name = L["Chat"]
                         },
                         screen = {
                             order = 2,
                             type = "toggle",
-                            name = L["Screen"],
+                            name = L["Screen"]
                         },
                         sound = {
                             order = 3,
@@ -281,7 +281,7 @@ function addon:GetGlobalSettingsOptions()
                             end,
                             set = function(_, value)
                                 self:SetDBValue("global", "settings.alerts.bar.sound.enabled", value)
-                            end,
+                            end
                         },
                         format = {
                             order = 4,
@@ -303,12 +303,12 @@ function addon:GetGlobalSettingsOptions()
                                         addon:SetDBValue("global", "settings.alerts.bar.format.progress", value)
                                         addon:UpdateAlert("bar", "progress", value)
                                     end,
-                                    arg = {"global", "settings.alerts.bar.format.progress", "PreviewAlert", {"bar"}},
+                                    arg = {"global", "settings.alerts.bar.format.progress", "PreviewAlert", {"bar"}}
                                 },
                                 previewSettings = {
                                     order = 2,
                                     type = "header",
-                                    name = L["Preview Settings"],
+                                    name = L["Preview Settings"]
                                 },
                                 previewCount = {
                                     order = 3,
@@ -322,7 +322,7 @@ function addon:GetGlobalSettingsOptions()
                                     end,
                                     set = function(_, value)
                                         addon:SetDBValue("global", "settings.alerts.bar.preview.count", value)
-                                    end,
+                                    end
                                 },
                                 previewTotal = {
                                     order = 4,
@@ -336,7 +336,7 @@ function addon:GetGlobalSettingsOptions()
                                     end,
                                     set = function(_, value)
                                         addon:SetDBValue("global", "settings.alerts.bar.preview.total", value)
-                                    end,
+                                    end
                                 },
                                 alertType = {
                                     order = 5,
@@ -346,7 +346,7 @@ function addon:GetGlobalSettingsOptions()
                                     values = function()
                                         return {
                                             complete = L["Gain"],
-                                            lost = L["Loss"],
+                                            lost = L["Loss"]
                                         }
                                     end,
                                     get = function()
@@ -354,7 +354,7 @@ function addon:GetGlobalSettingsOptions()
                                     end,
                                     set = function(_, value)
                                         addon:SetDBValue("global", "settings.alerts.bar.preview.alertType", value)
-                                    end,
+                                    end
                                 },
                                 toggle = {
                                     order = 6,
@@ -365,9 +365,9 @@ function addon:GetGlobalSettingsOptions()
                                     end,
                                     set = function(_, value)
                                         addon:SetDBValue("global", "settings.alerts.bar.preview.withTitle", value)
-                                    end,
-                                },
-                            },
+                                    end
+                                }
+                            }
                         },
                         sounds = {
                             order = 5,
@@ -387,7 +387,7 @@ function addon:GetGlobalSettingsOptions()
                                     style = "dropdown",
                                     name = L["Bar Progress"],
                                     control = "LSM30_Sound",
-                                    values = AceGUIWidgetLSMlists.sound,
+                                    values = AceGUIWidgetLSMlists.sound
                                 },
                                 complete = {
                                     order = 2,
@@ -395,11 +395,11 @@ function addon:GetGlobalSettingsOptions()
                                     style = "dropdown",
                                     name = L["Bar Complete"],
                                     control = "LSM30_Sound",
-                                    values = AceGUIWidgetLSMlists.sound,
-                                },
-                            },
-                        },
-                    },
+                                    values = AceGUIWidgetLSMlists.sound
+                                }
+                            }
+                        }
+                    }
                 },
                 button = {
                     order = 1,
@@ -415,12 +415,12 @@ function addon:GetGlobalSettingsOptions()
                         chat = {
                             order = 1,
                             type = "toggle",
-                            name = L["Chat"],
+                            name = L["Chat"]
                         },
                         screen = {
                             order = 2,
                             type = "toggle",
-                            name = L["Screen"],
+                            name = L["Screen"]
                         },
                         sound = {
                             order = 3,
@@ -431,7 +431,7 @@ function addon:GetGlobalSettingsOptions()
                             end,
                             set = function(_, value)
                                 self:SetDBValue("global", "settings.alerts.button.sound.enabled", value)
-                            end,
+                            end
                         },
                         format = {
                             order = 4,
@@ -453,7 +453,12 @@ function addon:GetGlobalSettingsOptions()
                                         addon:SetDBValue("global", "settings.alerts.button.format.withObjective", value)
                                         addon:UpdateAlert("button", "withObjective", value)
                                     end,
-                                    arg = {"global", "settings.alerts.button.format.withObjective", "PreviewAlert", {"button"}},
+                                    arg = {
+                                        "global",
+                                        "settings.alerts.button.format.withObjective",
+                                        "PreviewAlert",
+                                        {"button"}
+                                    }
                                 },
                                 withObjectivePreview = {
                                     order = 2,
@@ -461,7 +466,7 @@ function addon:GetGlobalSettingsOptions()
                                     name = function(text)
                                         return text
                                     end,
-                                    width = "full",
+                                    width = "full"
                                 },
                                 withoutObjective = {
                                     order = 3,
@@ -471,18 +476,30 @@ function addon:GetGlobalSettingsOptions()
                                     multiline = true,
                                     dialogControl = "FarmingBar_LuaEditBox",
                                     get = function(info)
-                                        return addon:GetDBValue("global", "settings.alerts.button.format.withoutObjective")
+                                        return addon:GetDBValue(
+                                            "global",
+                                            "settings.alerts.button.format.withoutObjective"
+                                        )
                                     end,
                                     set = function(info, value)
-                                        addon:SetDBValue("global", "settings.alerts.button.format.withoutObjective", value)
+                                        addon:SetDBValue(
+                                            "global",
+                                            "settings.alerts.button.format.withoutObjective",
+                                            value
+                                        )
                                         addon:UpdateAlert("button", "withoutObjective", value)
                                     end,
-                                    arg = {"global", "settings.alerts.button.format.withoutObjective", "PreviewAlert", {"button"}},
+                                    arg = {
+                                        "global",
+                                        "settings.alerts.button.format.withoutObjective",
+                                        "PreviewAlert",
+                                        {"button"}
+                                    }
                                 },
                                 previewSettings = {
                                     order = 4,
                                     type = "header",
-                                    name = L["Preview Settings"],
+                                    name = L["Preview Settings"]
                                 },
                                 oldCount = {
                                     order = 5,
@@ -494,11 +511,17 @@ function addon:GetGlobalSettingsOptions()
                                         return count and count >= 0
                                     end,
                                     get = function()
-                                        return tostring(addon:GetDBValue("global", "settings.alerts.button.preview.oldCount"))
+                                        return tostring(
+                                            addon:GetDBValue("global", "settings.alerts.button.preview.oldCount")
+                                        )
                                     end,
                                     set = function(_, value)
-                                        addon:SetDBValue("global", "settings.alerts.button.preview.oldCount", tonumber(value))
-                                    end,
+                                        addon:SetDBValue(
+                                            "global",
+                                            "settings.alerts.button.preview.oldCount",
+                                            tonumber(value)
+                                        )
+                                    end
                                 },
                                 newCount = {
                                     order = 6,
@@ -510,11 +533,17 @@ function addon:GetGlobalSettingsOptions()
                                         return count and count >= 0
                                     end,
                                     get = function()
-                                        return tostring(addon:GetDBValue("global", "settings.alerts.button.preview.newCount"))
+                                        return tostring(
+                                            addon:GetDBValue("global", "settings.alerts.button.preview.newCount")
+                                        )
                                     end,
                                     set = function(_, value)
-                                        addon:SetDBValue("global", "settings.alerts.button.preview.newCount", tonumber(value))
-                                    end,
+                                        addon:SetDBValue(
+                                            "global",
+                                            "settings.alerts.button.preview.newCount",
+                                            tonumber(value)
+                                        )
+                                    end
                                 },
                                 objective = {
                                     order = 7,
@@ -526,13 +555,19 @@ function addon:GetGlobalSettingsOptions()
                                         return count and count >= 1
                                     end,
                                     get = function()
-                                        return tostring(addon:GetDBValue("global", "settings.alerts.button.preview.objective"))
+                                        return tostring(
+                                            addon:GetDBValue("global", "settings.alerts.button.preview.objective")
+                                        )
                                     end,
                                     set = function(_, value)
-                                        addon:SetDBValue("global", "settings.alerts.button.preview.objective", tonumber(value))
-                                    end,
-                                },
-                            },
+                                        addon:SetDBValue(
+                                            "global",
+                                            "settings.alerts.button.preview.objective",
+                                            tonumber(value)
+                                        )
+                                    end
+                                }
+                            }
                         },
                         sounds = {
                             order = 5,
@@ -552,7 +587,7 @@ function addon:GetGlobalSettingsOptions()
                                     style = "dropdown",
                                     name = L["Objective Set"],
                                     control = "LSM30_Sound",
-                                    values = AceGUIWidgetLSMlists.sound,
+                                    values = AceGUIWidgetLSMlists.sound
                                 },
                                 objectiveCleared = {
                                     order = 2,
@@ -560,7 +595,7 @@ function addon:GetGlobalSettingsOptions()
                                     style = "dropdown",
                                     name = L["Objective Cleared"],
                                     control = "LSM30_Sound",
-                                    values = AceGUIWidgetLSMlists.sound,
+                                    values = AceGUIWidgetLSMlists.sound
                                 },
                                 progress = {
                                     order = 3,
@@ -568,7 +603,7 @@ function addon:GetGlobalSettingsOptions()
                                     style = "dropdown",
                                     name = L["Progress"],
                                     control = "LSM30_Sound",
-                                    values = AceGUIWidgetLSMlists.sound,
+                                    values = AceGUIWidgetLSMlists.sound
                                 },
                                 objectiveComplete = {
                                     order = 4,
@@ -576,13 +611,12 @@ function addon:GetGlobalSettingsOptions()
                                     style = "dropdown",
                                     name = L["Objective Complete"],
                                     control = "LSM30_Sound",
-                                    values = AceGUIWidgetLSMlists.sound,
-                                },
-                            },
-                        },
-                    },
+                                    values = AceGUIWidgetLSMlists.sound
+                                }
+                            }
+                        }
+                    }
                 },
-
                 tracker = {
                     order = 1,
                     type = "group",
@@ -591,12 +625,12 @@ function addon:GetGlobalSettingsOptions()
                         chat = {
                             order = 1,
                             type = "toggle",
-                            name = L["Chat"],
+                            name = L["Chat"]
                         },
                         screen = {
                             order = 2,
                             type = "toggle",
-                            name = L["Screen"],
+                            name = L["Screen"]
                         },
                         sound = {
                             order = 3,
@@ -607,14 +641,14 @@ function addon:GetGlobalSettingsOptions()
                             end,
                             set = function(_, value)
                                 self:SetDBValue("global", "settings.alerts.tracker.sound.enabled", value)
-                            end,
+                            end
                         },
                         format = {
                             order = 4,
                             type = "group",
                             name = L["Formats"],
                             inline = true,
-                            args = {                                        
+                            args = {
                                 progress = {
                                     order = 1,
                                     type = "input",
@@ -629,12 +663,17 @@ function addon:GetGlobalSettingsOptions()
                                         addon:SetDBValue("global", "settings.alerts.tracker.format.progress", value)
                                         addon:UpdateAlert("tracker", "progress", value)
                                     end,
-                                    arg = {"global", "settings.alerts.tracker.format.progress", "PreviewAlert", {"tracker"}},
+                                    arg = {
+                                        "global",
+                                        "settings.alerts.tracker.format.progress",
+                                        "PreviewAlert",
+                                        {"tracker"}
+                                    }
                                 },
                                 previewSettings = {
                                     order = 2,
                                     type = "header",
-                                    name = L["Preview Settings - Tracker"],
+                                    name = L["Preview Settings - Tracker"]
                                 },
                                 oldCount = {
                                     order = 3,
@@ -646,11 +685,17 @@ function addon:GetGlobalSettingsOptions()
                                         return count and count >= 0
                                     end,
                                     get = function()
-                                        return tostring(addon:GetDBValue("global", "settings.alerts.tracker.preview.oldCount"))
+                                        return tostring(
+                                            addon:GetDBValue("global", "settings.alerts.tracker.preview.oldCount")
+                                        )
                                     end,
                                     set = function(_, value)
-                                        addon:SetDBValue("global", "settings.alerts.tracker.preview.oldCount", tonumber(value))
-                                    end,
+                                        addon:SetDBValue(
+                                            "global",
+                                            "settings.alerts.tracker.preview.oldCount",
+                                            tonumber(value)
+                                        )
+                                    end
                                 },
                                 newCount = {
                                     order = 4,
@@ -662,11 +707,17 @@ function addon:GetGlobalSettingsOptions()
                                         return count and count >= 0
                                     end,
                                     get = function()
-                                        return tostring(addon:GetDBValue("global", "settings.alerts.tracker.preview.newCount"))
+                                        return tostring(
+                                            addon:GetDBValue("global", "settings.alerts.tracker.preview.newCount")
+                                        )
                                     end,
                                     set = function(_, value)
-                                        addon:SetDBValue("global", "settings.alerts.tracker.preview.newCount", tonumber(value))
-                                    end,
+                                        addon:SetDBValue(
+                                            "global",
+                                            "settings.alerts.tracker.preview.newCount",
+                                            tonumber(value)
+                                        )
+                                    end
                                 },
                                 objective = {
                                     order = 5,
@@ -678,16 +729,22 @@ function addon:GetGlobalSettingsOptions()
                                         return count and count >= 1
                                     end,
                                     get = function()
-                                        return tostring(addon:GetDBValue("global", "settings.alerts.tracker.preview.objective"))
+                                        return tostring(
+                                            addon:GetDBValue("global", "settings.alerts.tracker.preview.objective")
+                                        )
                                     end,
                                     set = function(_, value)
-                                        addon:SetDBValue("global", "settings.alerts.tracker.preview.objective", tonumber(value))
-                                    end,
+                                        addon:SetDBValue(
+                                            "global",
+                                            "settings.alerts.tracker.preview.objective",
+                                            tonumber(value)
+                                        )
+                                    end
                                 },
                                 objectivePreviewSettings = {
                                     order = 6,
                                     type = "header",
-                                    name = L["Preview Settings - Objective"],
+                                    name = L["Preview Settings - Objective"]
                                 },
                                 objectiveOldCount = {
                                     order = 7,
@@ -699,11 +756,20 @@ function addon:GetGlobalSettingsOptions()
                                         return count and count >= 0
                                     end,
                                     get = function()
-                                        return tostring(addon:GetDBValue("global", "settings.alerts.tracker.preview.objectiveInfo.oldCount"))
+                                        return tostring(
+                                            addon:GetDBValue(
+                                                "global",
+                                                "settings.alerts.tracker.preview.objectiveInfo.oldCount"
+                                            )
+                                        )
                                     end,
                                     set = function(_, value)
-                                        addon:SetDBValue("global", "settings.alerts.tracker.preview.objectiveInfo.oldCount", tonumber(value))
-                                    end,
+                                        addon:SetDBValue(
+                                            "global",
+                                            "settings.alerts.tracker.preview.objectiveInfo.oldCount",
+                                            tonumber(value)
+                                        )
+                                    end
                                 },
                                 objectiveNewCount = {
                                     order = 8,
@@ -715,11 +781,20 @@ function addon:GetGlobalSettingsOptions()
                                         return count and count >= 0
                                     end,
                                     get = function()
-                                        return tostring(addon:GetDBValue("global", "settings.alerts.tracker.preview.objectiveInfo.newCount"))
+                                        return tostring(
+                                            addon:GetDBValue(
+                                                "global",
+                                                "settings.alerts.tracker.preview.objectiveInfo.newCount"
+                                            )
+                                        )
                                     end,
                                     set = function(_, value)
-                                        addon:SetDBValue("global", "settings.alerts.tracker.preview.objectiveInfo.newCount", tonumber(value))
-                                    end,
+                                        addon:SetDBValue(
+                                            "global",
+                                            "settings.alerts.tracker.preview.objectiveInfo.newCount",
+                                            tonumber(value)
+                                        )
+                                    end
                                 },
                                 objectiveObjective = {
                                     order = 9,
@@ -731,13 +806,22 @@ function addon:GetGlobalSettingsOptions()
                                         return count and count >= 1
                                     end,
                                     get = function()
-                                        return tostring(addon:GetDBValue("global", "settings.alerts.tracker.preview.objectiveInfo.objective"))
+                                        return tostring(
+                                            addon:GetDBValue(
+                                                "global",
+                                                "settings.alerts.tracker.preview.objectiveInfo.objective"
+                                            )
+                                        )
                                     end,
                                     set = function(_, value)
-                                        addon:SetDBValue("global", "settings.alerts.tracker.preview.objectiveInfo.objective", tonumber(value))
-                                    end,
-                                },
-                            },
+                                        addon:SetDBValue(
+                                            "global",
+                                            "settings.alerts.tracker.preview.objectiveInfo.objective",
+                                            tonumber(value)
+                                        )
+                                    end
+                                }
+                            }
                         },
                         sounds = {
                             order = 5,
@@ -757,13 +841,13 @@ function addon:GetGlobalSettingsOptions()
                                     style = "dropdown",
                                     name = L["Progress"],
                                     control = "LSM30_Sound",
-                                    values = AceGUIWidgetLSMlists.sound,
-                                },
-                            },
-                        },
-                    },
-                },
-            },
+                                    values = AceGUIWidgetLSMlists.sound
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         },
         keybinds = {
             order = 3,
@@ -775,18 +859,16 @@ function addon:GetGlobalSettingsOptions()
                     order = 1,
                     type = "group",
                     name = L["Bar"],
-                    args = {},
+                    args = {}
                 },
                 button = {
                     order = 2,
                     type = "group",
                     name = L["Button"],
-                    args = {
-                    },
-                },
-
-            },
-        },
+                    args = {}
+                }
+            }
+        }
     }
 
     local globalKeybinds = addon:GetDBValue("global", "settings.keybinds")
@@ -797,7 +879,7 @@ function addon:GetGlobalSettingsOptions()
                 type = "group",
                 inline = true,
                 name = L[keybind],
-                desc = keybind,           
+                desc = keybind,
                 validate = function(info, key, value)
                     -- Get saved modifierString and button
                     local mod, button = keybindInfo.modifier, keybindInfo.button
@@ -808,19 +890,22 @@ function addon:GetGlobalSettingsOptions()
                         -- If not value, remove the key from the modifiers
                         if not value then
                             for k, v in pairs(mods) do
-                                if v == key then           
+                                if v == key then
                                     tremove(mods, k)
                                     break
                                 end
                             end
-                        else -- add the key                            
+                        else -- add the key
                             tinsert(mods, key)
                         end
-                        
+
                         -- Sort the table to be sure the string is in the correct order
-                        sort(mods, function(a, b)
-                            return a < b
-                        end)
+                        sort(
+                            mods,
+                            function(a, b)
+                                return a < b
+                            end
+                        )
 
                         -- Convert back to string
                         local modifier = table.concat(mods, "-")
@@ -842,7 +927,7 @@ function addon:GetGlobalSettingsOptions()
 
                     return true
                 end,
-                args = {                                
+                args = {
                     modifier = {
                         order = 1,
                         type = "multiselect",
@@ -851,15 +936,23 @@ function addon:GetGlobalSettingsOptions()
                             return {
                                 alt = L["Alt"],
                                 ctrl = L["Ctrl"],
-                                shift = L["Shift"],
+                                shift = L["Shift"]
                             }
                         end,
                         get = function(info, key)
-                            local modifier = addon:GetDBValue("global", format("settings.keybinds.%s.%s.%s", widgetType, keybind, info[#info]))
+                            local modifier =
+                                addon:GetDBValue(
+                                "global",
+                                format("settings.keybinds.%s.%s.%s", widgetType, keybind, info[#info])
+                            )
                             return strfind(modifier, key)
                         end,
                         set = function(info, modifier, value)
-                            local mod = addon:GetDBValue("global", format("settings.keybinds.%s.%s.%s", widgetType, keybind, info[#info]))
+                            local mod =
+                                addon:GetDBValue(
+                                "global",
+                                format("settings.keybinds.%s.%s.%s", widgetType, keybind, info[#info])
+                            )
                             local mods = info.option.values()
 
                             local keys = {}
@@ -881,10 +974,14 @@ function addon:GetGlobalSettingsOptions()
                             if keys.alt then
                                 modifierString = "alt" .. (modifierString ~= "" and "-" or "") .. modifierString
                             end
-                            
-                            addon:SetDBValue("global", format("settings.keybinds.%s.%s.%s", widgetType, keybind, info[#info]), modifierString)
-                        end,
-                    },                                
+
+                            addon:SetDBValue(
+                                "global",
+                                format("settings.keybinds.%s.%s.%s", widgetType, keybind, info[#info]),
+                                modifierString
+                            )
+                        end
+                    },
                     button = {
                         order = 2,
                         type = "select",
@@ -893,17 +990,24 @@ function addon:GetGlobalSettingsOptions()
                         values = function()
                             return {
                                 LeftButton = L["Left Button"],
-                                RightButton = L["Right Button"],
+                                RightButton = L["Right Button"]
                             }
                         end,
                         get = function(info)
-                            return addon:GetDBValue("global", format("settings.keybinds.%s.%s.%s", widgetType, keybind, info[#info]))
+                            return addon:GetDBValue(
+                                "global",
+                                format("settings.keybinds.%s.%s.%s", widgetType, keybind, info[#info])
+                            )
                         end,
-                        set = function(info, value)                             
-                            addon:SetDBValue("global", format("settings.keybinds.%s.%s.%s", widgetType, keybind, info[#info]), value)
-                        end,
-                    },
-                },
+                        set = function(info, value)
+                            addon:SetDBValue(
+                                "global",
+                                format("settings.keybinds.%s.%s.%s", widgetType, keybind, info[#info]),
+                                value
+                            )
+                        end
+                    }
+                }
             }
         end
     end
@@ -912,7 +1016,7 @@ function addon:GetGlobalSettingsOptions()
         if k ~= "enabled" then
             options.general.args.debug.args[k] = {
                 type = "toggle",
-                name = k,
+                name = k
             }
         end
     end
@@ -936,7 +1040,7 @@ function addon:GetProfileSettingsOptions()
             values = function(info)
                 local info = {
                     FarmingBar_Default = "FarmingBar_Default",
-                    FarmingBar_Minimal = "FarmingBar_Minimal",
+                    FarmingBar_Minimal = "FarmingBar_Minimal"
                 }
 
                 for k, _ in pairs(addon:GetDBValue("global", "skins")) do
@@ -960,7 +1064,7 @@ function addon:GetProfileSettingsOptions()
             set = function(_, value)
                 self:SetDBValue("profile", "style.skin", value)
                 self:UpdateBars()
-            end,
+            end
         },
         buttonLayers = {
             order = 2,
@@ -979,33 +1083,33 @@ function addon:GetProfileSettingsOptions()
                     order = 1,
                     type = "toggle",
                     name = L["Account Counts Overlay"],
-                    desc = L.Options_settings_profile_buttonLayers_AccountOverlay,
+                    desc = L.Options_settings_profile_buttonLayers_AccountOverlay
                 },
                 AutoCastable = {
                     order = 1,
                     type = "toggle",
                     name = L["Bank Overlay"],
-                    desc = L.Options_settings_profile_buttonLayers_AutoCastable,
+                    desc = L.Options_settings_profile_buttonLayers_AutoCastable
                 },
                 Border = {
                     order = 2,
                     type = "toggle",
                     name = L["Item Quality"],
-                    desc = L.Options_settings_profile_buttonLayers_Border,
+                    desc = L.Options_settings_profile_buttonLayers_Border
                 },
                 Cooldown = {
                     order = 3,
                     type = "toggle",
                     name = L["Cooldown"],
-                    desc = L.Options_settings_profile_buttonLayers_Cooldown,
+                    desc = L.Options_settings_profile_buttonLayers_Cooldown
                 },
                 CooldownEdge = {
                     order = 4,
                     type = "toggle",
                     name = L["Cooldown Edge"],
-                    desc = L.Options_settings_profile_buttonLayers_CooldownEdge,
-                },
-            },
+                    desc = L.Options_settings_profile_buttonLayers_CooldownEdge
+                }
+            }
         },
         fonts = {
             order = 3,
@@ -1026,7 +1130,7 @@ function addon:GetProfileSettingsOptions()
                     name = L["Face"],
                     desc = L.Options_settings_profile_fonts_face,
                     dialogControl = "LSM30_Font",
-                    values = AceGUIWidgetLSMlists.font,
+                    values = AceGUIWidgetLSMlists.font
                 },
                 outline = {
                     order = 2,
@@ -1037,9 +1141,9 @@ function addon:GetProfileSettingsOptions()
                         ["MONOCHROME"] = L["MONOCHROME"],
                         ["OUTLINE"] = L["OUTLINE"],
                         ["THICKOUTLINE"] = L["THICKOUTLINE"],
-                        ["NONE"] = L["NONE"],
+                        ["NONE"] = L["NONE"]
                     },
-                    sorting = {"MONOCHROME", "OUTLINE", "THICKOUTLINE", "NONE"},
+                    sorting = {"MONOCHROME", "OUTLINE", "THICKOUTLINE", "NONE"}
                 },
                 size = {
                     order = 3,
@@ -1048,9 +1152,9 @@ function addon:GetProfileSettingsOptions()
                     desc = L.Options_settings_profile_fonts_outline,
                     min = self.minFontSize,
                     max = self.maxFontSize,
-                    step = 1,
-                },
-            },
+                    step = 1
+                }
+            }
         },
         count = {
             order = 4,
@@ -1068,7 +1172,7 @@ function addon:GetProfileSettingsOptions()
                         ["INCLUDEAUTOLAYERS"] = L["INCLUDE ACCOUNT AND BANK"],
                         ["INCLUDEALLCHARS"] = L["ACCOUNT COUNTS"],
                         ["INCLUDEBANK"] = L["BANK INCLUSION"],
-                        ["ITEMQUALITY"] = L["ITEM QUALITY"],
+                        ["ITEMQUALITY"] = L["ITEM QUALITY"]
                     },
                     sorting = {"CUSTOM", "INCLUDEAUTOLAYERS", "INCLUDEALLCHARS", "INCLUDEBANK", "ITEMQUALITY"},
                     get = function(info)
@@ -1077,7 +1181,7 @@ function addon:GetProfileSettingsOptions()
                     set = function(info, value)
                         self:SetDBValue("profile", "style.font.fontStrings.count.style", value)
                         self:UpdateBars()
-                    end,
+                    end
                 },
                 color = {
                     order = 2,
@@ -1091,10 +1195,10 @@ function addon:GetProfileSettingsOptions()
                     set = function(info, ...)
                         self:SetDBValue("profile", "style.font.fontStrings.count.color", {...})
                         self:UpdateBars()
-                    end,
-                },
-            },
-        },
+                    end
+                }
+            }
+        }
     }
 
     return options

@@ -72,8 +72,10 @@ function addon:GetObjectiveTemplateIcon(objectiveTitle)
     else
         if objectiveInfo.icon then
             -- Convert db icon value to number if it's a file ID, otherwise use the string value
-            icon = (tonumber(objectiveInfo.icon) and tonumber(objectiveInfo.icon) ~= objectiveInfo.icon) and
-                       tonumber(objectiveInfo.icon) or objectiveInfo.icon
+            icon =
+                (tonumber(objectiveInfo.icon) and tonumber(objectiveInfo.icon) ~= objectiveInfo.icon) and
+                tonumber(objectiveInfo.icon) or
+                objectiveInfo.icon
             icon = (icon == "" or not icon) and 134400 or icon
         end
     end
@@ -99,7 +101,8 @@ end
 
 function addon:DeleteObjectiveTemplate(objectiveTitle, confirmed)
     -- Update objective template links
-    self:UpdateObjectiveTemplateLinks(self:GetDBValue("global", "objectives")[objectiveTitle].instances,
+    self:UpdateObjectiveTemplateLinks(
+        self:GetDBValue("global", "objectives")[objectiveTitle].instances,
         function(instances, buttonDB)
             if not buttonDB then
                 return
@@ -111,7 +114,8 @@ function addon:DeleteObjectiveTemplate(objectiveTitle, confirmed)
                     buttonDB[k] = v
                 end
             end
-        end)
+        end
+    )
 
     self:GetDBValue("global", "objectives")[objectiveTitle] = nil
     -- self:UpdateExclusions(objectiveTitle)
@@ -131,10 +135,13 @@ function addon:RenameObjectiveTemplate(objectiveTitle, newObjectiveTitle)
     objectives[objectiveTitle] = nil
 
     -- Update objective template links
-    self:UpdateObjectiveTemplateLinks(objectives[newObjectiveTitle].instances, function(_, buttonDB)
-        buttonDB.template = newObjectiveTitle
-        buttonDB.title = newObjectiveTitle
-    end)
+    self:UpdateObjectiveTemplateLinks(
+        objectives[newObjectiveTitle].instances,
+        function(_, buttonDB)
+            buttonDB.template = newObjectiveTitle
+            buttonDB.title = newObjectiveTitle
+        end
+    )
 
     -- self:UpdateExclusions(objectiveTitle, newObjectiveTitle)
 

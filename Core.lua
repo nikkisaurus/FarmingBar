@@ -30,15 +30,17 @@ function addon:OnInitialize()
     self.OffsetY = 10
     self.tooltip_description = {1, 1, 1, 1, 1, 1, 1}
     self.tooltip_keyvalue = {1, .82, 0, 1, 1, 1, 1}
-    
-    self.barProgress = [[function(info)
+
+    self.barProgress =
+        [[function(info)
         -- info keys: progressCount, progressTotal, barIDName, barNameLong, progressColor, objectiveSet, difference.sign, difference.color
         
         local difference = not info.objectiveSet and format(" (%s%s1|r)|r", info.difference.color or "", info.difference.sign or "") or ""
 
         return format("Progress: %s %s%d/%d|r%s", info.barNameLong, info.progressColor, info.progressCount, info.progressTotal, difference)
     end]]
-    self.withObjective = [[function(info)
+    self.withObjective =
+        [[function(info)
         -- info keys: objectiveTitle, objective.color, objective.count, oldCount, newCount, difference.sign, difference.color, difference.count
 
         local percent = floor((info.newCount / info.objective.count) * 100)
@@ -50,14 +52,16 @@ function addon:OnInitialize()
 
         return format("%s %s %s (%s%s)", status, info.objectiveTitle, count, objectiveReps > 1 and "x"..objectiveReps.." " or "", difference)
     end]]
-    self.withoutObjective = [[function(info)
+    self.withoutObjective =
+        [[function(info)
         -- info keys: objectiveTitle, objective.color, objective.count, oldCount, newCount, difference.sign, difference.color, difference.count
 
         local difference = format("%s%s%d|r", info.difference.color, info.difference.sign, info.difference.count)
 
         return format("Farming update: %s x%d (%s)", info.objectiveTitle, info.newCount, difference)
     end]]
-    self.trackerProgress = [[function(info)
+    self.trackerProgress =
+        [[function(info)
         -- info keys: objectiveTitle, trackerTitle, objective.color, objective.count, trackerObjective.color, trackerObjective.count, oldTrackerCount, newTrackerCount, trackerDifference.sign, trackerDifference.color, trackerDifference.count
 
         local title = format("(%s) %s", info.objectiveTitle, info.trackerTitle)
@@ -67,7 +71,8 @@ function addon:OnInitialize()
         return format("Tracker update: %s %s %s", title, count, difference)
     end]]
 
-    self.customHide = [[function()
+    self.customHide =
+        [[function()
         -- This function must return a boolean flag to indicate if the bar should be hidden.
         -- Example:
         -- function()
@@ -114,7 +119,6 @@ function addon:OnEnable()
 end
 
 function addon:OnDisable()
-
 end
 
 function addon:OnProfile_(...)
@@ -124,9 +128,7 @@ end
 
 function addon:InitializeEvents()
     self:RegisterEvent("BAG_UPDATE_DELAYED")
---@retail@
-
-
+    --@retail@
 
     self:RegisterEvent("CURRENCY_DISPLAY_UPDATE")
     --@end-retail@

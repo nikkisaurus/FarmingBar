@@ -25,7 +25,11 @@ function addon:BAG_UPDATE_DELAYED(...)
                 -- Change in objective count
                 if oldCount ~= newCount then
                     if objective and objective > 0 then
-                        if alerts.completedObjectives or (not alerts.completedObjectives and ((oldCount < objective) or (newCount < oldCount and newCount < objective))) then
+                        if
+                            alerts.completedObjectives or
+                                (not alerts.completedObjectives and
+                                    ((oldCount < objective) or (newCount < oldCount and newCount < objective)))
+                         then
                             alert = "withObjective"
 
                             if oldCount < objective and newCount >= objective then
@@ -45,16 +49,18 @@ function addon:BAG_UPDATE_DELAYED(...)
                     alertInfo = {
                         objectiveTitle = buttonDB.title,
                         objective = {
-                            color = (objective and objective > 0) and (newCount >= objective and "|cff00ff00" or "|cffffcc00") or "",
-                            count = objective,
+                            color = (objective and objective > 0) and
+                                (newCount >= objective and "|cff00ff00" or "|cffffcc00") or
+                                "",
+                            count = objective
                         },
                         oldCount = oldCount,
                         newCount = newCount,
                         difference = {
                             sign = difference > 0 and "+" or difference < 0 and "",
                             color = difference > 0 and "|cff00ff00" or difference < 0 and "|cffff0000",
-                            count = difference,
-                        },
+                            count = difference
+                        }
                     }
                 end
 
@@ -73,29 +79,44 @@ function addon:BAG_UPDATE_DELAYED(...)
                             alertInfo = {
                                 objectiveTitle = buttonDB.title,
                                 objective = {
-                                    color = (objective and objective > 0) and (newCount >= objective and "|cff00ff00" or "|cffffcc00") or "",
-                                    count = objective,
+                                    color = (objective and objective > 0) and
+                                        (newCount >= objective and "|cff00ff00" or "|cffffcc00") or
+                                        "",
+                                    count = objective
                                 },
                                 trackerObjective = {
-                                    color = newTrackerCount >= ((objective and objective > 0) and objective * trackerObjective or trackerObjective) and "|cff00ff00" or "|cffffcc00",
-                                    count = (objective and objective > 0) and objective * trackerObjective or trackerObjective,
+                                    color = newTrackerCount >=
+                                        ((objective and objective > 0) and objective * trackerObjective or
+                                            trackerObjective) and
+                                        "|cff00ff00" or
+                                        "|cffffcc00",
+                                    count = (objective and objective > 0) and objective * trackerObjective or
+                                        trackerObjective
                                 },
                                 oldTrackerCount = oldTrackerCount,
                                 newTrackerCount = newTrackerCount,
                                 trackerDifference = {
                                     sign = trackerDifference > 0 and "+" or trackerDifference < 0 and "",
-                                    color = trackerDifference > 0 and "|cff00ff00" or trackerDifference < 0 and "|cffff0000",
-                                    count = trackerDifference,
-                                },
+                                    color = trackerDifference > 0 and "|cff00ff00" or
+                                        trackerDifference < 0 and "|cffff0000",
+                                    count = trackerDifference
+                                }
                             }
 
                             local trackerType, trackerID = self:ParseTrackerKey(trackerKey)
 
                             if trackerType == "ITEM" then
-                                self.CacheItem(trackerID, function(itemID, alert, alertInfo, soundID)
-                                    alertInfo.trackerTitle = (GetItemInfo(itemID))
-                                    addon:SendAlert(bar, "tracker", alert, alertInfo, soundID, true)
-                                end, trackerID, alert, alertInfo, soundID)
+                                self.CacheItem(
+                                    trackerID,
+                                    function(itemID, alert, alertInfo, soundID)
+                                        alertInfo.trackerTitle = (GetItemInfo(itemID))
+                                        addon:SendAlert(bar, "tracker", alert, alertInfo, soundID, true)
+                                    end,
+                                    trackerID,
+                                    alert,
+                                    alertInfo,
+                                    soundID
+                                )
                             else
                                 alertInfo.trackerTitle = C_CurrencyInfo.GetCurrencyInfo(trackerID).name
                                 self:SendAlert(bar, "tracker", alert, alertInfo, soundID, true)
@@ -152,7 +173,7 @@ function addon:GetDataStoreItemCount(itemID, trackerInfo)
         end
     end
 
---@retail@
+    --@retail@
 
     local guilds = DS:HashValueToSortedArray(DS:GetGuilds())
     for guildName, guild in pairs(guilds) do
@@ -234,7 +255,7 @@ function addon:GetObjectiveCount(widget, objectiveTitle)
             local countsUsed = {} -- Keeps track of items already counted toward the objective
 
             for key, objectiveGroup in pairs(customCondition) do
-                local pendingCount -- Count to be added to running total
+                local pendingCount  -- Count to be added to running total
 
                 for trackerKey, overrideObjective in self.pairs(objectiveGroup) do
                     local ratio1, key1, ratio2, key2 = strmatch(trackerKey, "^(%d+)t(%d+):(%d+)t(%d+)$")
@@ -303,15 +324,20 @@ function addon:GetTrackerCount(widget, trackerKey, overrideObjective)
     local count
 
     if trackerType == "ITEM" then
---@retail@
-
-        count = (trackerInfo.includeAllChars or trackerInfo.includeGuildBank) and self:GetDataStoreItemCount(trackerID, trackerInfo) or GetItemCount(trackerID, trackerInfo.includeBank)
         --@end-retail@
         --[===[@non-retail@
         count = trackerInfo.includeAllChars and self:GetDataStoreItemCount(trackerID, trackerInfo) or GetItemCount(trackerID, trackerInfo.includeBank)
         --@end-non-retail@]===]
+        --@retail@
+
+        count =
+            (trackerInfo.includeAllChars or trackerInfo.includeGuildBank) and
+            self:GetDataStoreItemCount(trackerID, trackerInfo) or
+            GetItemCount(trackerID, trackerInfo.includeBank)
     elseif trackerType == "CURRENCY" then
-        count = trackerInfo.includeAllChars and self:GetDataStoreCurrencyCount(trackerID, trackerInfo) or (C_CurrencyInfo.GetCurrencyInfo(trackerID) and C_CurrencyInfo.GetCurrencyInfo(trackerID).quantity)
+        count =
+            trackerInfo.includeAllChars and self:GetDataStoreCurrencyCount(trackerID, trackerInfo) or
+            (C_CurrencyInfo.GetCurrencyInfo(trackerID) and C_CurrencyInfo.GetCurrencyInfo(trackerID).quantity)
     end
 
     if not count then
@@ -381,7 +407,7 @@ function addon:IsDataStoreLoaded()
         tinsert(missing, "DataStore_Characters")
     end
 
---@retail@
+    --@retail@
 
     if not IsAddOnLoaded("DataStore_Currencies") then
         tinsert(missing, "DataStore_Currencies")

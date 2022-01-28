@@ -32,9 +32,12 @@ function addon:CreateTracker(objectiveInfo, trackerType, trackerID)
     ------------------------------------------------------------
 
     -- Update objective template links
-    self:UpdateObjectiveTemplateLinks(objectiveInfo.instances, function(_, buttonDB)
-        buttonDB.trackers[trackerKey] = self:CloneTable(tracker)
-    end)
+    self:UpdateObjectiveTemplateLinks(
+        objectiveInfo.instances,
+        function(_, buttonDB)
+            buttonDB.trackers[trackerKey] = self:CloneTable(tracker)
+        end
+    )
 
     self:RefreshOptions()
 
@@ -83,23 +86,27 @@ function addon:GetTrackerDataTable(...)
     local callback = select(4, ...)
 
     if dataType == "ITEM" then
-        self:CacheItem(dataID, function(buttonDB, dataType, dataID, callback)
-            local name, _, _, _, _, _, _, _, _, icon = GetItemInfo(dataID)
-            local data = {
-                conditionInfo = buttonDB.conditionInfo,
-                name = (not name or name == "") and L["Invalid Tracker"] or name,
-                icon = icon or 134400,
-                label = addon:GetTrackerTypeLabel(dataType),
-                trackerType = dataType,
-                trackerID = dataID,
-            }
+        self:CacheItem(
+            dataID,
+            function(buttonDB, dataType, dataID, callback)
+                local name, _, _, _, _, _, _, _, _, icon = GetItemInfo(dataID)
+                local data = {
+                    conditionInfo = buttonDB.conditionInfo,
+                    name = (not name or name == "") and L["Invalid Tracker"] or name,
+                    icon = icon or 134400,
+                    label = addon:GetTrackerTypeLabel(dataType),
+                    trackerType = dataType,
+                    trackerID = dataID
+                }
 
-            if callback then
-                callback(data)
-            else
-                return data
-            end
-        end, ...)
+                if callback then
+                    callback(data)
+                else
+                    return data
+                end
+            end,
+            ...
+        )
     elseif dataType == "CURRENCY" then
         local currency = C_CurrencyInfo.GetCurrencyInfo(tonumber(dataID) or 0)
         local data = {
@@ -108,7 +115,7 @@ function addon:GetTrackerDataTable(...)
             icon = currency and currency.iconFileID or 134400,
             label = self:GetTrackerTypeLabel(dataType),
             trackerType = dataType,
-            trackerID = dataID,
+            trackerID = dataID
         }
 
         if callback then

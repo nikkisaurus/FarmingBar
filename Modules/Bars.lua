@@ -68,7 +68,7 @@ end
 function addon:CURSOR_UPDATE()
     local cursorType, cursorID = GetCursorInfo()
 
-    for _, bar in pairs(self.bars) do        
+    for _, bar in pairs(self.bars) do
         bar:SetAlpha(cursorType == "item" and "hasObjective")
     end
 end
@@ -144,7 +144,9 @@ end
 
 function addon:CustomHide(bar)
     local barDB = bar:GetBarDB()
-    if not barDB then return end
+    if not barDB then
+        return
+    end
     local customHide = barDB.customHide
 
     local frame = bar.frame
@@ -153,11 +155,11 @@ function addon:CustomHide(bar)
     -- Register events
     for _, event in pairs(customHide.events) do
         frame:RegisterEvent(event)
-    end    
+    end
 
     frame:RegisterEvent("PLAYER_REGEN_ENABLED")
     frame:RegisterEvent("PLAYER_REGEN_DISABLED")
-    
+
     -- Transform the string into a function
     local userFunc, err = loadstring("return " .. customHide.func)
     if not userFunc then
@@ -191,9 +193,12 @@ function addon:ReindexButtons(barID)
         end
     end
 
-    sort(objectives, function(a, b)
-        return a.title == b.title and ((b.objective or 0) < (a.objective or 0)) or (a.title < b.title)
-    end)
+    sort(
+        objectives,
+        function(a, b)
+            return a.title == b.title and ((b.objective or 0) < (a.objective or 0)) or (a.title < b.title)
+        end
+    )
 
     -- Add objectives back to bar
     for buttonID, buttonDB in pairs(objectives) do
@@ -251,7 +256,7 @@ function addon:UpdateBars(callback, ...)
         bar:SetSize()
         bar:SetAlpha()
         if callback then
-           bar[callback](bar, ...)
+            bar[callback](bar, ...)
         end
         for _, button in pairs(bar:GetUserData("buttons")) do
             button:UpdateLayers()

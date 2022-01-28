@@ -100,10 +100,16 @@ function addon:CreateObjectiveFromItemID(widget, itemID)
     local tracker = buttonDB.trackers["ITEM:" .. itemID]
     tracker.order = 1
 
-    self:CacheItem(itemID, function(widget, buttonDB, itemID)
-        buttonDB.title = (GetItemInfo(itemID))
-        widget:UpdateLayers()
-    end, widget, buttonDB, itemID)
+    self:CacheItem(
+        itemID,
+        function(widget, buttonDB, itemID)
+            buttonDB.title = (GetItemInfo(itemID))
+            widget:UpdateLayers()
+        end,
+        widget,
+        buttonDB,
+        itemID
+    )
 end
 
 function addon:CreateObjectiveFromTemplate(widget, template)
@@ -201,7 +207,9 @@ function addon:GetObjectiveIcon(widget)
     else
         if buttonDB.icon then
             -- Convert db icon value to number if it's a file ID, otherwise use the string value
-            icon = (tonumber(buttonDB.icon) and tonumber(buttonDB.icon) ~= buttonDB.icon) and tonumber(buttonDB.icon) or buttonDB.icon
+            icon =
+                (tonumber(buttonDB.icon) and tonumber(buttonDB.icon) ~= buttonDB.icon) and tonumber(buttonDB.icon) or
+                buttonDB.icon
             icon = (icon == "" or not icon) and 134400 or icon
         end
     end

@@ -48,11 +48,9 @@ local methods = {
             bar:SetAlpha()
         end
     end,
-
     GetObjective = function(self)
         return self.text:GetText(), self.objectiveInfo
     end,
-
     LoadObjective = function(self, widget)
         local buttonDB = widget:GetButtonDB()
 
@@ -63,7 +61,6 @@ local methods = {
 
         self:Show()
     end,
-
     LoadObjectiveTemplate = function(self, objectiveTitle)
         local objectiveInfo = addon:GetDBValue("global", "objectives")[objectiveTitle]
 
@@ -76,7 +73,7 @@ local methods = {
         self.objectiveInfo.template = objectiveTitle
 
         self:Show()
-    end,
+    end
 }
 
 -- *------------------------------------------------------------------------
@@ -89,7 +86,7 @@ function addon:InitializeDragFrame()
     DragFrame:SetFrameStrata("TOOLTIP")
     addon.DragFrame = DragFrame
 
---@retail@
+    --@retail@
 
     DragFrame:RegisterEvent("GLOBAL_MOUSE_DOWN")
     --@end-retail@
