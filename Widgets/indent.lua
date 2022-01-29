@@ -19,7 +19,8 @@
 -- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 -- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 -- THE SOFTWARE.
---]] -- For All Indents And Purposes -
+--]]
+-- For All Indents And Purposes -
 -- a indentation + syntax highlighting library
 -- All valid lua code should be processed correctly.
 -- For both variants:
@@ -46,18 +47,18 @@ local stringgsub = string.gsub
 local workingTable = {}
 local workingTable2 = {}
 local function tableclear(t)
-    for k in next, t do
-        t[k] = nil
-    end
+	for k in next, t do
+		t[k] = nil
+	end
 end
 
 local function stringinsert(s, pos, insertStr)
-    return stringsub(s, 1, pos) .. insertStr .. stringsub(s, pos + 1)
+	return stringsub(s, 1, pos) .. insertStr .. stringsub(s, pos + 1)
 end
 lib.stringinsert = stringinsert
 
 local function stringdelete(s, pos1, pos2)
-    return stringsub(s, 1, pos1 - 1) .. stringsub(s, pos2 + 1)
+	return stringsub(s, 1, pos1 - 1) .. stringsub(s, pos2 + 1)
 end
 lib.stringdelete = stringdelete
 
@@ -192,179 +193,179 @@ specialCharacters[bytes.BYTE_HASH] = tokens.TOKEN_HASH
 specialCharacters[bytes.BYTE_PERCENT] = tokens.TOKEN_PERCENT
 
 local function nextNumberExponentPartInt(text, pos)
-    while true do
-        local byte = stringbyte(text, pos)
-        if not byte then
-            return tokens.TOKEN_NUMBER, pos
-        end
+	while true do
+		local byte = stringbyte(text, pos)
+		if not byte then
+			return tokens.TOKEN_NUMBER, pos
+		end
 
-        if byte >= bytes.BYTE_0 and byte <= bytes.BYTE_9 then
-            pos = pos + 1
-        else
-            return tokens.TOKEN_NUMBER, pos
-        end
-    end
+		if byte >= bytes.BYTE_0 and byte <= bytes.BYTE_9 then
+			pos = pos + 1
+		else
+			return tokens.TOKEN_NUMBER, pos
+		end
+	end
 end
 
 local function nextNumberExponentPart(text, pos)
-    local byte = stringbyte(text, pos)
-    if not byte then
-        return tokens.TOKEN_NUMBER, pos
-    end
+	local byte = stringbyte(text, pos)
+	if not byte then
+		return tokens.TOKEN_NUMBER, pos
+	end
 
-    if byte == bytes.BYTE_MINUS then
-        -- handle this case: a = 1.2e-- some comment
-        -- i decide to let 1.2e be parsed as a a number
-        byte = stringbyte(text, pos + 1)
-        if byte == bytes.BYTE_MINUS then
-            return tokens.TOKEN_NUMBER, pos
-        end
-        return nextNumberExponentPartInt(text, pos + 1)
-    end
+	if byte == bytes.BYTE_MINUS then
+		-- handle this case: a = 1.2e-- some comment
+		-- i decide to let 1.2e be parsed as a a number
+		byte = stringbyte(text, pos + 1)
+		if byte == bytes.BYTE_MINUS then
+			return tokens.TOKEN_NUMBER, pos
+		end
+		return nextNumberExponentPartInt(text, pos + 1)
+	end
 
-    return nextNumberExponentPartInt(text, pos)
+	return nextNumberExponentPartInt(text, pos)
 end
 
 local function nextNumberFractionPart(text, pos)
-    while true do
-        local byte = stringbyte(text, pos)
-        if not byte then
-            return tokens.TOKEN_NUMBER, pos
-        end
+	while true do
+		local byte = stringbyte(text, pos)
+		if not byte then
+			return tokens.TOKEN_NUMBER, pos
+		end
 
-        if byte >= bytes.BYTE_0 and byte <= bytes.BYTE_9 then
-            pos = pos + 1
-        elseif byte == bytes.BYTE_E or byte == bytes.BYTE_e then
-            return nextNumberExponentPart(text, pos + 1)
-        else
-            return tokens.TOKEN_NUMBER, pos
-        end
-    end
+		if byte >= bytes.BYTE_0 and byte <= bytes.BYTE_9 then
+			pos = pos + 1
+		elseif byte == bytes.BYTE_E or byte == bytes.BYTE_e then
+			return nextNumberExponentPart(text, pos + 1)
+		else
+			return tokens.TOKEN_NUMBER, pos
+		end
+	end
 end
 
 local function nextNumberIntPart(text, pos)
-    while true do
-        local byte = stringbyte(text, pos)
-        if not byte then
-            return tokens.TOKEN_NUMBER, pos
-        end
+	while true do
+		local byte = stringbyte(text, pos)
+		if not byte then
+			return tokens.TOKEN_NUMBER, pos
+		end
 
-        if byte >= bytes.BYTE_0 and byte <= bytes.BYTE_9 then
-            pos = pos + 1
-        elseif byte == bytes.BYTE_PERIOD then
-            return nextNumberFractionPart(text, pos + 1)
-        elseif byte == bytes.BYTE_E or byte == bytes.BYTE_e then
-            return nextNumberExponentPart(text, pos + 1)
-        else
-            return tokens.TOKEN_NUMBER, pos
-        end
-    end
+		if byte >= bytes.BYTE_0 and byte <= bytes.BYTE_9 then
+			pos = pos + 1
+		elseif byte == bytes.BYTE_PERIOD then
+			return nextNumberFractionPart(text, pos + 1)
+		elseif byte == bytes.BYTE_E or byte == bytes.BYTE_e then
+			return nextNumberExponentPart(text, pos + 1)
+		else
+			return tokens.TOKEN_NUMBER, pos
+		end
+	end
 end
 
 local function nextIdentifier(text, pos)
-    while true do
-        local byte = stringbyte(text, pos)
+	while true do
+		local byte = stringbyte(text, pos)
 
-        if not byte or linebreakCharacters[byte] or whitespaceCharacters[byte] or specialCharacters[byte] then
-            return tokens.TOKEN_IDENTIFIER, pos
-        end
-        pos = pos + 1
-    end
+		if not byte or linebreakCharacters[byte] or whitespaceCharacters[byte] or specialCharacters[byte] then
+			return tokens.TOKEN_IDENTIFIER, pos
+		end
+		pos = pos + 1
+	end
 end
 
 -- returns false or: true, nextPos, equalsCount
 local function isBracketStringNext(text, pos)
-    local byte = stringbyte(text, pos)
-    if byte == bytes.BYTE_LEFTBRACKET then
-        local pos2 = pos + 1
-        byte = stringbyte(text, pos2)
-        while byte == bytes.BYTE_EQUALS do
-            pos2 = pos2 + 1
-            byte = stringbyte(text, pos2)
-        end
-        if byte == bytes.BYTE_LEFTBRACKET then
-            return true, pos2 + 1, (pos2 - 1) - pos
-        else
-            return false
-        end
-    else
-        return false
-    end
+	local byte = stringbyte(text, pos)
+	if byte == bytes.BYTE_LEFTBRACKET then
+		local pos2 = pos + 1
+		byte = stringbyte(text, pos2)
+		while byte == bytes.BYTE_EQUALS do
+			pos2 = pos2 + 1
+			byte = stringbyte(text, pos2)
+		end
+		if byte == bytes.BYTE_LEFTBRACKET then
+			return true, pos2 + 1, (pos2 - 1) - pos
+		else
+			return false
+		end
+	else
+		return false
+	end
 end
 
 -- Already parsed the [==[ part when get here
 local function nextBracketString(text, pos, equalsCount)
-    local state = 0
-    while true do
-        local byte = stringbyte(text, pos)
-        if not byte then
-            return tokens.TOKEN_STRING, pos
-        end
+	local state = 0
+	while true do
+		local byte = stringbyte(text, pos)
+		if not byte then
+			return tokens.TOKEN_STRING, pos
+		end
 
-        if byte == bytes.BYTE_RIGHTBRACKET then
-            if state == 0 then
-                state = 1
-            elseif state == equalsCount + 1 then
-                return tokens.TOKEN_STRING, pos + 1
-            else
-                state = 0
-            end
-        elseif byte == bytes.BYTE_EQUALS then
-            if state > 0 then
-                state = state + 1
-            end
-        else
-            state = 0
-        end
-        pos = pos + 1
-    end
+		if byte == bytes.BYTE_RIGHTBRACKET then
+			if state == 0 then
+				state = 1
+			elseif state == equalsCount + 1 then
+				return tokens.TOKEN_STRING, pos + 1
+			else
+				state = 0
+			end
+		elseif byte == bytes.BYTE_EQUALS then
+			if state > 0 then
+				state = state + 1
+			end
+		else
+			state = 0
+		end
+		pos = pos + 1
+	end
 end
 
 local function nextComment(text, pos)
-    -- When we get here we have already parsed the "--"
-    -- Check for long comment
-    local isBracketString, nextPos, equalsCount = isBracketStringNext(text, pos)
-    if isBracketString then
-        local tokenType, nextPos2 = nextBracketString(text, nextPos, equalsCount)
-        return tokens.TOKEN_COMMENT_LONG, nextPos2
-    end
+	-- When we get here we have already parsed the "--"
+	-- Check for long comment
+	local isBracketString, nextPos, equalsCount = isBracketStringNext(text, pos)
+	if isBracketString then
+		local tokenType, nextPos2 = nextBracketString(text, nextPos, equalsCount)
+		return tokens.TOKEN_COMMENT_LONG, nextPos2
+	end
 
-    local byte = stringbyte(text, pos)
+	local byte = stringbyte(text, pos)
 
-    -- Short comment, find the first linebreak
-    while true do
-        byte = stringbyte(text, pos)
-        if not byte then
-            return tokens.TOKEN_COMMENT_SHORT, pos
-        end
-        if linebreakCharacters[byte] then
-            return tokens.TOKEN_COMMENT_SHORT, pos
-        end
-        pos = pos + 1
-    end
+	-- Short comment, find the first linebreak
+	while true do
+		byte = stringbyte(text, pos)
+		if not byte then
+			return tokens.TOKEN_COMMENT_SHORT, pos
+		end
+		if linebreakCharacters[byte] then
+			return tokens.TOKEN_COMMENT_SHORT, pos
+		end
+		pos = pos + 1
+	end
 end
 
 local function nextString(text, pos, character)
-    local even = true
-    while true do
-        local byte = stringbyte(text, pos)
-        if not byte then
-            return tokens.TOKEN_STRING, pos
-        end
+	local even = true
+	while true do
+		local byte = stringbyte(text, pos)
+		if not byte then
+			return tokens.TOKEN_STRING, pos
+		end
 
-        if byte == character then
-            if even then
-                return tokens.TOKEN_STRING, pos + 1
-            end
-        end
-        if byte == bytes.BYTE_BACKSLASH then
-            even = not even
-        else
-            even = true
-        end
+		if byte == character then
+			if even then
+				return tokens.TOKEN_STRING, pos + 1
+			end
+		end
+		if byte == bytes.BYTE_BACKSLASH then
+			even = not even
+		else
+			even = true
+		end
 
-        pos = pos + 1
-    end
+		pos = pos + 1
+	end
 end
 
 -- INPUT
@@ -374,137 +375,137 @@ end
 -- 1: token type
 -- 2: position after the last character of the token
 function lib.nextToken(text, pos)
-    local byte = stringbyte(text, pos)
-    if not byte then
-        return nil
-    end
+	local byte = stringbyte(text, pos)
+	if not byte then
+		return nil
+	end
 
-    if linebreakCharacters[byte] then
-        return tokens.TOKEN_LINEBREAK, pos + 1
-    end
+	if linebreakCharacters[byte] then
+		return tokens.TOKEN_LINEBREAK, pos + 1
+	end
 
-    if whitespaceCharacters[byte] then
-        while true do
-            pos = pos + 1
-            byte = stringbyte(text, pos)
-            if not byte or not whitespaceCharacters[byte] then
-                return tokens.TOKEN_WHITESPACE, pos
-            end
-        end
-    end
+	if whitespaceCharacters[byte] then
+		while true do
+			pos = pos + 1
+			byte = stringbyte(text, pos)
+			if not byte or not whitespaceCharacters[byte] then
+				return tokens.TOKEN_WHITESPACE, pos
+			end
+		end
+	end
 
-    local token = specialCharacters[byte]
-    if token then
-        if token ~= -1 then
-            return token, pos + 1
-        end
+	local token = specialCharacters[byte]
+	if token then
+		if token ~= -1 then
+			return token, pos + 1
+		end
 
-        -- WoW specific (for color codes)
-        if byte == bytes.BYTE_VERTICAL then
-            byte = stringbyte(text, pos + 1)
-            if byte == bytes.BYTE_VERTICAL then
-                return tokens.TOKEN_VERTICAL, pos + 2
-            end
-            if byte == bytes.BYTE_c then
-                return tokens.TOKEN_COLORCODE_START, pos + 10
-            end
-            if byte == bytes.BYTE_r then
-                return tokens.TOKEN_COLORCODE_STOP, pos + 2
-            end
-            return tokens.TOKEN_UNKNOWN, pos + 1
-        end
+		-- WoW specific (for color codes)
+		if byte == bytes.BYTE_VERTICAL then
+			byte = stringbyte(text, pos + 1)
+			if byte == bytes.BYTE_VERTICAL then
+				return tokens.TOKEN_VERTICAL, pos + 2
+			end
+			if byte == bytes.BYTE_c then
+				return tokens.TOKEN_COLORCODE_START, pos + 10
+			end
+			if byte == bytes.BYTE_r then
+				return tokens.TOKEN_COLORCODE_STOP, pos + 2
+			end
+			return tokens.TOKEN_UNKNOWN, pos + 1
+		end
 
-        if byte == bytes.BYTE_MINUS then
-            byte = stringbyte(text, pos + 1)
-            if byte == bytes.BYTE_MINUS then
-                return nextComment(text, pos + 2)
-            end
-            return tokens.TOKEN_MINUS, pos + 1
-        end
+		if byte == bytes.BYTE_MINUS then
+			byte = stringbyte(text, pos + 1)
+			if byte == bytes.BYTE_MINUS then
+				return nextComment(text, pos + 2)
+			end
+			return tokens.TOKEN_MINUS, pos + 1
+		end
 
-        if byte == bytes.BYTE_SINGLE_QUOTE then
-            return nextString(text, pos + 1, bytes.BYTE_SINGLE_QUOTE)
-        end
+		if byte == bytes.BYTE_SINGLE_QUOTE then
+			return nextString(text, pos + 1, bytes.BYTE_SINGLE_QUOTE)
+		end
 
-        if byte == bytes.BYTE_DOUBLE_QUOTE then
-            return nextString(text, pos + 1, bytes.BYTE_DOUBLE_QUOTE)
-        end
+		if byte == bytes.BYTE_DOUBLE_QUOTE then
+			return nextString(text, pos + 1, bytes.BYTE_DOUBLE_QUOTE)
+		end
 
-        if byte == bytes.BYTE_LEFTBRACKET then
-            local isBracketString, nextPos, equalsCount = isBracketStringNext(text, pos)
-            if isBracketString then
-                return nextBracketString(text, nextPos, equalsCount)
-            else
-                return tokens.TOKEN_LEFTBRACKET, pos + 1
-            end
-        end
+		if byte == bytes.BYTE_LEFTBRACKET then
+			local isBracketString, nextPos, equalsCount = isBracketStringNext(text, pos)
+			if isBracketString then
+				return nextBracketString(text, nextPos, equalsCount)
+			else
+				return tokens.TOKEN_LEFTBRACKET, pos + 1
+			end
+		end
 
-        if byte == bytes.BYTE_EQUALS then
-            byte = stringbyte(text, pos + 1)
-            if not byte then
-                return tokens.TOKEN_ASSIGNMENT, pos + 1
-            end
-            if byte == bytes.BYTE_EQUALS then
-                return tokens.TOKEN_EQUALITY, pos + 2
-            end
-            return tokens.TOKEN_ASSIGNMENT, pos + 1
-        end
+		if byte == bytes.BYTE_EQUALS then
+			byte = stringbyte(text, pos + 1)
+			if not byte then
+				return tokens.TOKEN_ASSIGNMENT, pos + 1
+			end
+			if byte == bytes.BYTE_EQUALS then
+				return tokens.TOKEN_EQUALITY, pos + 2
+			end
+			return tokens.TOKEN_ASSIGNMENT, pos + 1
+		end
 
-        if byte == bytes.BYTE_PERIOD then
-            byte = stringbyte(text, pos + 1)
-            if not byte then
-                return tokens.TOKEN_PERIOD, pos + 1
-            end
-            if byte == bytes.BYTE_PERIOD then
-                byte = stringbyte(text, pos + 2)
-                if byte == bytes.BYTE_PERIOD then
-                    return tokens.TOKEN_TRIPLEPERIOD, pos + 3
-                end
-                return tokens.TOKEN_DOUBLEPERIOD, pos + 2
-            elseif byte >= bytes.BYTE_0 and byte <= bytes.BYTE_9 then
-                return nextNumberFractionPart(text, pos + 2)
-            end
-            return tokens.TOKEN_PERIOD, pos + 1
-        end
+		if byte == bytes.BYTE_PERIOD then
+			byte = stringbyte(text, pos + 1)
+			if not byte then
+				return tokens.TOKEN_PERIOD, pos + 1
+			end
+			if byte == bytes.BYTE_PERIOD then
+				byte = stringbyte(text, pos + 2)
+				if byte == bytes.BYTE_PERIOD then
+					return tokens.TOKEN_TRIPLEPERIOD, pos + 3
+				end
+				return tokens.TOKEN_DOUBLEPERIOD, pos + 2
+			elseif byte >= bytes.BYTE_0 and byte <= bytes.BYTE_9 then
+				return nextNumberFractionPart(text, pos + 2)
+			end
+			return tokens.TOKEN_PERIOD, pos + 1
+		end
 
-        if byte == bytes.BYTE_LESSTHAN then
-            byte = stringbyte(text, pos + 1)
-            if byte == bytes.BYTE_EQUALS then
-                return tokens.TOKEN_LTE, pos + 2
-            end
-            return tokens.TOKEN_LT, pos + 1
-        end
+		if byte == bytes.BYTE_LESSTHAN then
+			byte = stringbyte(text, pos + 1)
+			if byte == bytes.BYTE_EQUALS then
+				return tokens.TOKEN_LTE, pos + 2
+			end
+			return tokens.TOKEN_LT, pos + 1
+		end
 
-        if byte == bytes.BYTE_GREATERTHAN then
-            byte = stringbyte(text, pos + 1)
-            if byte == bytes.BYTE_EQUALS then
-                return tokens.TOKEN_GTE, pos + 2
-            end
-            return tokens.TOKEN_GT, pos + 1
-        end
+		if byte == bytes.BYTE_GREATERTHAN then
+			byte = stringbyte(text, pos + 1)
+			if byte == bytes.BYTE_EQUALS then
+				return tokens.TOKEN_GTE, pos + 2
+			end
+			return tokens.TOKEN_GT, pos + 1
+		end
 
-        if byte == bytes.BYTE_TILDE then
-            byte = stringbyte(text, pos + 1)
-            if byte == bytes.BYTE_EQUALS then
-                return tokens.TOKEN_NOTEQUAL, pos + 2
-            end
-            return tokens.TOKEN_TILDE, pos + 1
-        end
+		if byte == bytes.BYTE_TILDE then
+			byte = stringbyte(text, pos + 1)
+			if byte == bytes.BYTE_EQUALS then
+				return tokens.TOKEN_NOTEQUAL, pos + 2
+			end
+			return tokens.TOKEN_TILDE, pos + 1
+		end
 
-        return tokens.TOKEN_UNKNOWN, pos + 1
-    elseif byte >= bytes.BYTE_0 and byte <= bytes.BYTE_9 then
-        return nextNumberIntPart(text, pos + 1)
-    else
-        return nextIdentifier(text, pos + 1)
-    end
+		return tokens.TOKEN_UNKNOWN, pos + 1
+	elseif byte >= bytes.BYTE_0 and byte <= bytes.BYTE_9 then
+		return nextNumberIntPart(text, pos + 1)
+	else
+		return nextIdentifier(text, pos + 1)
+	end
 end
 
 -- Cool stuff begins here! (indentation and highlighting)
 
-local noIndentEffect = {0, 0}
-local indentLeft = {-1, 0}
-local indentRight = {0, 1}
-local indentBoth = {-1, 1}
+local noIndentEffect = { 0, 0 }
+local indentLeft = { -1, 0 }
+local indentRight = { 0, 1 }
+local indentBoth = { -1, 1 }
 
 local keywords = {}
 lib.keywords = keywords
@@ -544,308 +545,310 @@ tokenIndentation[tokens.TOKEN_RIGHTBRACKET] = indentLeft
 tokenIndentation[tokens.TOKEN_RIGHTWING] = indentLeft
 
 local function fillWithTabs(n)
-    return stringrep("\t", n)
+	return stringrep("\t", n)
 end
 
 local function fillWithSpaces(a, b)
-    return stringrep(" ", a * b)
+	return stringrep(" ", a * b)
 end
 
 function lib.colorCodeCode(code, colorTable, caretPosition)
-    local stopColor = colorTable and colorTable[0]
-    if not stopColor then
-        return code, caretPosition
-    end
+	local stopColor = colorTable and colorTable[0]
+	if not stopColor then
+		return code, caretPosition
+	end
 
-    local stopColorLen = stringlen(stopColor)
+	local stopColorLen = stringlen(stopColor)
 
-    tableclear(workingTable)
-    local tsize = 0
-    local totalLen = 0
+	tableclear(workingTable)
+	local tsize = 0
+	local totalLen = 0
 
-    local numLines = 0
-    local newCaretPosition
-    local prevTokenWasColored = false
-    local prevTokenWidth = 0
+	local numLines = 0
+	local newCaretPosition
+	local prevTokenWasColored = false
+	local prevTokenWidth = 0
 
-    local pos = 1
-    local level = 0
+	local pos = 1
+	local level = 0
 
-    while true do
-        if caretPosition and not newCaretPosition and pos >= caretPosition then
-            if pos == caretPosition then
-                newCaretPosition = totalLen
-            else
-                newCaretPosition = totalLen
-                local diff = pos - caretPosition
-                if diff > prevTokenWidth then
-                    diff = prevTokenWidth
-                end
-                if prevTokenWasColored then
-                    diff = diff + stopColorLen
-                end
-                newCaretPosition = newCaretPosition - diff
-            end
-        end
+	while true do
+		if caretPosition and not newCaretPosition and pos >= caretPosition then
+			if pos == caretPosition then
+				newCaretPosition = totalLen
+			else
+				newCaretPosition = totalLen
+				local diff = pos - caretPosition
+				if diff > prevTokenWidth then
+					diff = prevTokenWidth
+				end
+				if prevTokenWasColored then
+					diff = diff + stopColorLen
+				end
+				newCaretPosition = newCaretPosition - diff
+			end
+		end
 
-        prevTokenWasColored = false
-        prevTokenWidth = 0
+		prevTokenWasColored = false
+		prevTokenWidth = 0
 
-        local tokenType, nextPos = lib.nextToken(code, pos)
+		local tokenType, nextPos = lib.nextToken(code, pos)
 
-        if not tokenType then
-            break
-        end
+		if not tokenType then
+			break
+		end
 
-        if
-            tokenType == tokens.TOKEN_COLORCODE_START or tokenType == tokens.TOKEN_COLORCODE_STOP or
-                tokenType == tokens.TOKEN_UNKNOWN
-         then
-            -- ignore color codes
-        elseif tokenType == tokens.TOKEN_LINEBREAK or tokenType == tokens.TOKEN_WHITESPACE then
-            if tokenType == tokens.TOKEN_LINEBREAK then
-                numLines = numLines + 1
-            end
-            local str = stringsub(code, pos, nextPos - 1)
-            prevTokenWidth = nextPos - pos
+		if
+			tokenType == tokens.TOKEN_COLORCODE_START
+			or tokenType == tokens.TOKEN_COLORCODE_STOP
+			or tokenType == tokens.TOKEN_UNKNOWN
+		then
+			-- ignore color codes
+		elseif tokenType == tokens.TOKEN_LINEBREAK or tokenType == tokens.TOKEN_WHITESPACE then
+			if tokenType == tokens.TOKEN_LINEBREAK then
+				numLines = numLines + 1
+			end
+			local str = stringsub(code, pos, nextPos - 1)
+			prevTokenWidth = nextPos - pos
 
-            tsize = tsize + 1
-            workingTable[tsize] = str
-            totalLen = totalLen + stringlen(str)
-        else
-            local str = stringsub(code, pos, nextPos - 1)
+			tsize = tsize + 1
+			workingTable[tsize] = str
+			totalLen = totalLen + stringlen(str)
+		else
+			local str = stringsub(code, pos, nextPos - 1)
 
-            prevTokenWidth = nextPos - pos
+			prevTokenWidth = nextPos - pos
 
-            -- Add coloring
-            if keywords[str] then
-                tokenType = tokens.TOKEN_KEYWORD
-            end
+			-- Add coloring
+			if keywords[str] then
+				tokenType = tokens.TOKEN_KEYWORD
+			end
 
-            local color
-            if stopColor then
-                color = colorTable[str]
-                if not color then
-                    color = colorTable[tokenType]
-                    if not color then
-                        if tokenType == tokens.TOKEN_IDENTIFIER then
-                            color = colorTable[tokens.TOKEN_IDENTIFIER]
-                        else
-                            color = colorTable[tokens.TOKEN_SPECIAL]
-                        end
-                    end
-                end
-            end
+			local color
+			if stopColor then
+				color = colorTable[str]
+				if not color then
+					color = colorTable[tokenType]
+					if not color then
+						if tokenType == tokens.TOKEN_IDENTIFIER then
+							color = colorTable[tokens.TOKEN_IDENTIFIER]
+						else
+							color = colorTable[tokens.TOKEN_SPECIAL]
+						end
+					end
+				end
+			end
 
-            if color then
-                tsize = tsize + 1
-                workingTable[tsize] = color
-                tsize = tsize + 1
-                workingTable[tsize] = str
-                tsize = tsize + 1
-                workingTable[tsize] = stopColor
+			if color then
+				tsize = tsize + 1
+				workingTable[tsize] = color
+				tsize = tsize + 1
+				workingTable[tsize] = str
+				tsize = tsize + 1
+				workingTable[tsize] = stopColor
 
-                totalLen = totalLen + stringlen(color) + (nextPos - pos) + stopColorLen
-                prevTokenWasColored = true
-            else
-                tsize = tsize + 1
-                workingTable[tsize] = str
+				totalLen = totalLen + stringlen(color) + (nextPos - pos) + stopColorLen
+				prevTokenWasColored = true
+			else
+				tsize = tsize + 1
+				workingTable[tsize] = str
 
-                totalLen = totalLen + stringlen(str)
-            end
-        end
+				totalLen = totalLen + stringlen(str)
+			end
+		end
 
-        pos = nextPos
-    end
-    return table.concat(workingTable), newCaretPosition, numLines
+		pos = nextPos
+	end
+	return table.concat(workingTable), newCaretPosition, numLines
 end
 
 function lib.indentCode(code, tabWidth, colorTable, caretPosition)
-    local fillFunction
-    if tabWidth == nil then
-        tabWidth = defaultTabWidth
-    end
-    if tabWidth then
-        fillFunction = fillWithSpaces
-    else
-        fillFunction = fillWithTabs
-    end
+	local fillFunction
+	if tabWidth == nil then
+		tabWidth = defaultTabWidth
+	end
+	if tabWidth then
+		fillFunction = fillWithSpaces
+	else
+		fillFunction = fillWithTabs
+	end
 
-    tableclear(workingTable)
-    local tsize = 0
-    local totalLen = 0
+	tableclear(workingTable)
+	local tsize = 0
+	local totalLen = 0
 
-    tableclear(workingTable2)
-    local tsize2 = 0
-    local totalLen2 = 0
+	tableclear(workingTable2)
+	local tsize2 = 0
+	local totalLen2 = 0
 
-    local stopColor = colorTable and colorTable[0]
-    local stopColorLen = not stopColor or stringlen(stopColor)
+	local stopColor = colorTable and colorTable[0]
+	local stopColorLen = not stopColor or stringlen(stopColor)
 
-    local newCaretPosition
-    local newCaretPositionFinalized = false
-    local prevTokenWasColored = false
-    local prevTokenWidth = 0
+	local newCaretPosition
+	local newCaretPositionFinalized = false
+	local prevTokenWasColored = false
+	local prevTokenWidth = 0
 
-    local pos = 1
-    local level = 0
+	local pos = 1
+	local level = 0
 
-    local hitNonWhitespace = false
-    local hitIndentRight = false
-    local preIndent = 0
-    local postIndent = 0
-    while true do
-        if caretPosition and not newCaretPosition and pos >= caretPosition then
-            if pos == caretPosition then
-                newCaretPosition = totalLen + totalLen2
-            else
-                newCaretPosition = totalLen + totalLen2
-                local diff = pos - caretPosition
-                if diff > prevTokenWidth then
-                    diff = prevTokenWidth
-                end
-                if prevTokenWasColored then
-                    diff = diff + stopColorLen
-                end
-                newCaretPosition = newCaretPosition - diff
-            end
-        end
+	local hitNonWhitespace = false
+	local hitIndentRight = false
+	local preIndent = 0
+	local postIndent = 0
+	while true do
+		if caretPosition and not newCaretPosition and pos >= caretPosition then
+			if pos == caretPosition then
+				newCaretPosition = totalLen + totalLen2
+			else
+				newCaretPosition = totalLen + totalLen2
+				local diff = pos - caretPosition
+				if diff > prevTokenWidth then
+					diff = prevTokenWidth
+				end
+				if prevTokenWasColored then
+					diff = diff + stopColorLen
+				end
+				newCaretPosition = newCaretPosition - diff
+			end
+		end
 
-        prevTokenWasColored = false
-        prevTokenWidth = 0
+		prevTokenWasColored = false
+		prevTokenWidth = 0
 
-        local tokenType, nextPos = lib.nextToken(code, pos)
+		local tokenType, nextPos = lib.nextToken(code, pos)
 
-        if not tokenType or tokenType == tokens.TOKEN_LINEBREAK then
-            level = level + preIndent
-            if level < 0 then
-                level = 0
-            end
+		if not tokenType or tokenType == tokens.TOKEN_LINEBREAK then
+			level = level + preIndent
+			if level < 0 then
+				level = 0
+			end
 
-            local s = fillFunction(level, tabWidth)
+			local s = fillFunction(level, tabWidth)
 
-            tsize = tsize + 1
-            workingTable[tsize] = s
-            totalLen = totalLen + stringlen(s)
+			tsize = tsize + 1
+			workingTable[tsize] = s
+			totalLen = totalLen + stringlen(s)
 
-            if newCaretPosition and not newCaretPositionFinalized then
-                newCaretPosition = newCaretPosition + stringlen(s)
-                newCaretPositionFinalized = true
-            end
+			if newCaretPosition and not newCaretPositionFinalized then
+				newCaretPosition = newCaretPosition + stringlen(s)
+				newCaretPositionFinalized = true
+			end
 
-            for k, v in next, workingTable2 do
-                tsize = tsize + 1
-                workingTable[tsize] = v
-                totalLen = totalLen + stringlen(v)
-            end
+			for k, v in next, workingTable2 do
+				tsize = tsize + 1
+				workingTable[tsize] = v
+				totalLen = totalLen + stringlen(v)
+			end
 
-            if not tokenType then
-                break
-            end
+			if not tokenType then
+				break
+			end
 
-            tsize = tsize + 1
-            workingTable[tsize] = stringsub(code, pos, nextPos - 1)
-            totalLen = totalLen + nextPos - pos
+			tsize = tsize + 1
+			workingTable[tsize] = stringsub(code, pos, nextPos - 1)
+			totalLen = totalLen + nextPos - pos
 
-            level = level + postIndent
-            if level < 0 then
-                level = 0
-            end
+			level = level + postIndent
+			if level < 0 then
+				level = 0
+			end
 
-            tableclear(workingTable2)
-            tsize2 = 0
-            totalLen2 = 0
+			tableclear(workingTable2)
+			tsize2 = 0
+			totalLen2 = 0
 
-            hitNonWhitespace = false
-            hitIndentRight = false
-            preIndent = 0
-            postIndent = 0
-        elseif tokenType == tokens.TOKEN_WHITESPACE then
-            if hitNonWhitespace then
-                prevTokenWidth = nextPos - pos
+			hitNonWhitespace = false
+			hitIndentRight = false
+			preIndent = 0
+			postIndent = 0
+		elseif tokenType == tokens.TOKEN_WHITESPACE then
+			if hitNonWhitespace then
+				prevTokenWidth = nextPos - pos
 
-                tsize2 = tsize2 + 1
-                local s = stringsub(code, pos, nextPos - 1)
-                workingTable2[tsize2] = s
-                totalLen2 = totalLen2 + stringlen(s)
-            end
-        elseif
-            tokenType == tokens.TOKEN_COLORCODE_START or tokenType == tokens.TOKEN_COLORCODE_STOP or
-                tokenType == tokens.TOKEN_UNKNOWN
-         then
-            -- skip these, though they shouldn't be encountered here anyway
-        else
-            hitNonWhitespace = true
+				tsize2 = tsize2 + 1
+				local s = stringsub(code, pos, nextPos - 1)
+				workingTable2[tsize2] = s
+				totalLen2 = totalLen2 + stringlen(s)
+			end
+		elseif
+			tokenType == tokens.TOKEN_COLORCODE_START
+			or tokenType == tokens.TOKEN_COLORCODE_STOP
+			or tokenType == tokens.TOKEN_UNKNOWN
+		then
+			-- skip these, though they shouldn't be encountered here anyway
+		else
+			hitNonWhitespace = true
 
-            local str = stringsub(code, pos, nextPos - 1)
+			local str = stringsub(code, pos, nextPos - 1)
 
-            prevTokenWidth = nextPos - pos
+			prevTokenWidth = nextPos - pos
 
-            -- See if this is an indent-modifier
-            local indentTable
-            if tokenType == tokens.TOKEN_IDENTIFIER then
-                indentTable = keywords[str]
-            else
-                indentTable = tokenIndentation[tokenType]
-            end
+			-- See if this is an indent-modifier
+			local indentTable
+			if tokenType == tokens.TOKEN_IDENTIFIER then
+				indentTable = keywords[str]
+			else
+				indentTable = tokenIndentation[tokenType]
+			end
 
-            if indentTable then
-                if hitIndentRight then
-                    postIndent = postIndent + indentTable[1] + indentTable[2]
-                else
-                    local pre = indentTable[1]
-                    local post = indentTable[2]
-                    if post > 0 then
-                        hitIndentRight = true
-                    end
-                    preIndent = preIndent + pre
-                    postIndent = postIndent + post
-                end
-            end
+			if indentTable then
+				if hitIndentRight then
+					postIndent = postIndent + indentTable[1] + indentTable[2]
+				else
+					local pre = indentTable[1]
+					local post = indentTable[2]
+					if post > 0 then
+						hitIndentRight = true
+					end
+					preIndent = preIndent + pre
+					postIndent = postIndent + post
+				end
+			end
 
-            -- Add coloring
-            if keywords[str] then
-                tokenType = tokens.TOKEN_KEYWORD
-            end
+			-- Add coloring
+			if keywords[str] then
+				tokenType = tokens.TOKEN_KEYWORD
+			end
 
-            local color
-            if stopColor then
-                color = colorTable[str]
-                if not color then
-                    color = colorTable[tokenType]
-                    if not color then
-                        if tokenType == tokens.TOKEN_IDENTIFIER then
-                            color = colorTable[tokens.TOKEN_IDENTIFIER]
-                        else
-                            color = colorTable[tokens.TOKEN_SPECIAL]
-                        end
-                    end
-                end
-            end
+			local color
+			if stopColor then
+				color = colorTable[str]
+				if not color then
+					color = colorTable[tokenType]
+					if not color then
+						if tokenType == tokens.TOKEN_IDENTIFIER then
+							color = colorTable[tokens.TOKEN_IDENTIFIER]
+						else
+							color = colorTable[tokens.TOKEN_SPECIAL]
+						end
+					end
+				end
+			end
 
-            if color then
-                tsize2 = tsize2 + 1
-                workingTable2[tsize2] = color
-                totalLen2 = totalLen2 + stringlen(color)
+			if color then
+				tsize2 = tsize2 + 1
+				workingTable2[tsize2] = color
+				totalLen2 = totalLen2 + stringlen(color)
 
-                tsize2 = tsize2 + 1
-                workingTable2[tsize2] = str
-                totalLen2 = totalLen2 + nextPos - pos
+				tsize2 = tsize2 + 1
+				workingTable2[tsize2] = str
+				totalLen2 = totalLen2 + nextPos - pos
 
-                tsize2 = tsize2 + 1
-                workingTable2[tsize2] = stopColor
-                totalLen2 = totalLen2 + stopColorLen
+				tsize2 = tsize2 + 1
+				workingTable2[tsize2] = stopColor
+				totalLen2 = totalLen2 + stopColorLen
 
-                prevTokenWasColored = true
-            else
-                tsize2 = tsize2 + 1
-                workingTable2[tsize2] = str
-                totalLen2 = totalLen2 + nextPos - pos
-            end
-        end
-        pos = nextPos
-    end
-    return table.concat(workingTable), newCaretPosition
+				prevTokenWasColored = true
+			else
+				tsize2 = tsize2 + 1
+				workingTable2[tsize2] = str
+				totalLen2 = totalLen2 + nextPos - pos
+			end
+		end
+		pos = nextPos
+	end
+	return table.concat(workingTable), newCaretPosition
 end
 
 -- WoW specific code:
@@ -855,97 +858,97 @@ local editboxSetText
 local editboxGetText
 
 function lib.stripWowColors(code)
-    -- HACK!
-    -- This is a fix for a bug, where an unfinished string causes a lot of newlines to be created.
-    -- The reason for the bug, is that a |r\n\n gets converted to \n\n|r after the next indent-run
-    -- The fix is to remove those last two linebreaks when stripping
-    code = stringgsub(code, "|r\n\n$", "|r")
+	-- HACK!
+	-- This is a fix for a bug, where an unfinished string causes a lot of newlines to be created.
+	-- The reason for the bug, is that a |r\n\n gets converted to \n\n|r after the next indent-run
+	-- The fix is to remove those last two linebreaks when stripping
+	code = stringgsub(code, "|r\n\n$", "|r")
 
-    tableclear(workingTable)
-    local tsize = 0
+	tableclear(workingTable)
+	local tsize = 0
 
-    local pos = 1
+	local pos = 1
 
-    local prevVertical = false
-    local even = true
-    local selectionStart = 1
+	local prevVertical = false
+	local even = true
+	local selectionStart = 1
 
-    while true do
-        local byte = stringbyte(code, pos)
-        if not byte then
-            break
-        end
-        if byte == bytes.BYTE_VERTICAL then
-            even = not even
-            prevVertical = true
-        else
-            if prevVertical and not even then
-                if byte == bytes.BYTE_c then
-                    if pos - 2 >= selectionStart then
-                        tsize = tsize + 1
-                        workingTable[tsize] = stringsub(code, selectionStart, pos - 2)
-                    end
+	while true do
+		local byte = stringbyte(code, pos)
+		if not byte then
+			break
+		end
+		if byte == bytes.BYTE_VERTICAL then
+			even = not even
+			prevVertical = true
+		else
+			if prevVertical and not even then
+				if byte == bytes.BYTE_c then
+					if pos - 2 >= selectionStart then
+						tsize = tsize + 1
+						workingTable[tsize] = stringsub(code, selectionStart, pos - 2)
+					end
 
-                    pos = pos + 8
-                    selectionStart = pos + 1
-                elseif byte == bytes.BYTE_r then
-                    if pos - 2 >= selectionStart then
-                        tsize = tsize + 1
-                        workingTable[tsize] = stringsub(code, selectionStart, pos - 2)
-                    end
-                    selectionStart = pos + 1
-                end
-            end
-            prevVertical = false
-            even = true
-        end
-        pos = pos + 1
-    end
-    if pos >= selectionStart then
-        tsize = tsize + 1
-        workingTable[tsize] = stringsub(code, selectionStart, pos - 1)
-    end
-    return table.concat(workingTable)
+					pos = pos + 8
+					selectionStart = pos + 1
+				elseif byte == bytes.BYTE_r then
+					if pos - 2 >= selectionStart then
+						tsize = tsize + 1
+						workingTable[tsize] = stringsub(code, selectionStart, pos - 2)
+					end
+					selectionStart = pos + 1
+				end
+			end
+			prevVertical = false
+			even = true
+		end
+		pos = pos + 1
+	end
+	if pos >= selectionStart then
+		tsize = tsize + 1
+		workingTable[tsize] = stringsub(code, selectionStart, pos - 1)
+	end
+	return table.concat(workingTable)
 end
 
 function lib.decode(code)
-    if code then
-        code = lib.stripWowColors(code)
-        code = stringgsub(code, "||", "|")
-    end
-    return code or ""
+	if code then
+		code = lib.stripWowColors(code)
+		code = stringgsub(code, "||", "|")
+	end
+	return code or ""
 end
 
 function lib.encode(code)
-    if code then
-        code = stringgsub(code, "|", "||")
-    end
-    return code or ""
+	if code then
+		code = stringgsub(code, "|", "||")
+	end
+	return code or ""
 end
 
 function lib.stripWowColorsWithPos(code, pos)
-    code = stringinsert(code, pos, "\2")
-    code = lib.stripWowColors(code)
-    pos = stringfind(code, "\2", 1, 1)
-    code = stringdelete(code, pos, pos)
-    return code, pos
+	code = stringinsert(code, pos, "\2")
+	code = lib.stripWowColors(code)
+	pos = stringfind(code, "\2", 1, 1)
+	code = stringdelete(code, pos, pos)
+	return code, pos
 end
 
 -- returns the padded code, and true if modified, false if unmodified
 local linebreak = stringbyte("\n")
 function lib.padWithLinebreaks(code)
-    do
-        return code, false
-    end
+	do
+		return code, false
+	end
 
-    local len = stringlen(code)
-    if stringbyte(code, len) == linebreak then
-        if stringbyte(code, len - 1) == linebreak then
-            return code, false
-        end
-        return code .. "\n", true
-    end
-    return code .. "\n\n", true
+	local len = stringlen(code)
+	if stringbyte(code, len) == linebreak then
+		if stringbyte(code, len - 1) == linebreak then
+			return code, false
+		end
+		return code .. "\n", true
+	end
+	return code .. "\n\n", true
 end
 
 local defaultTabWidth = 2
@@ -962,249 +965,249 @@ local editboxStringCache = {}
 local editboxNumLinesCache = {}
 
 function lib.coloredGetText(editbox)
-    return editboxGetText(editbox)
+	return editboxGetText(editbox)
 end
 
 function lib.colorCodeEditbox(editbox)
-    dirty[editbox] = nil
+	dirty[editbox] = nil
 
-    local colorTable = editbox.faiap_colorTable or defaultColorTable
-    local tabWidth = editbox.faiap_tabWidth
+	local colorTable = editbox.faiap_colorTable or defaultColorTable
+	local tabWidth = editbox.faiap_tabWidth
 
-    local orgCode = editboxGetText(editbox)
-    local prevCode = editboxStringCache[editbox]
-    if prevCode == orgCode then
-        return
-    end
+	local orgCode = editboxGetText(editbox)
+	local prevCode = editboxStringCache[editbox]
+	if prevCode == orgCode then
+		return
+	end
 
-    local pos = editbox:GetCursorPosition()
+	local pos = editbox:GetCursorPosition()
 
-    local code
-    code, pos = lib.stripWowColorsWithPos(orgCode, pos)
+	local code
+	code, pos = lib.stripWowColorsWithPos(orgCode, pos)
 
-    colorTable[0] = "|r"
+	colorTable[0] = "|r"
 
-    local newCode, newPos, numLines = lib.colorCodeCode(code, colorTable, pos)
-    if editbox:IsMultiLine() then
-        newCode = lib.padWithLinebreaks(newCode)
-    end
+	local newCode, newPos, numLines = lib.colorCodeCode(code, colorTable, pos)
+	if editbox:IsMultiLine() then
+		newCode = lib.padWithLinebreaks(newCode)
+	end
 
-    editboxStringCache[editbox] = newCode
-    if orgCode ~= newCode then
-        decodeCache[editbox] = nil
-        local stringlenNewCode = stringlen(newCode)
+	editboxStringCache[editbox] = newCode
+	if orgCode ~= newCode then
+		decodeCache[editbox] = nil
+		local stringlenNewCode = stringlen(newCode)
 
-        editboxSetText(editbox, newCode)
-        if newPos then
-            if newPos < 0 then
-                newPos = 0
-            end
-            if newPos > stringlenNewCode then
-                newPos = stringlenNewCode
-            end
+		editboxSetText(editbox, newCode)
+		if newPos then
+			if newPos < 0 then
+				newPos = 0
+			end
+			if newPos > stringlenNewCode then
+				newPos = stringlenNewCode
+			end
 
-            editbox:SetCursorPosition(newPos)
-        end
-    end
+			editbox:SetCursorPosition(newPos)
+		end
+	end
 
-    if editboxNumLinesCache[editbox] ~= numLines then
-        lib.indentEditbox(editbox)
-    end
-    editboxNumLinesCache[editbox] = numLines
+	if editboxNumLinesCache[editbox] ~= numLines then
+		lib.indentEditbox(editbox)
+	end
+	editboxNumLinesCache[editbox] = numLines
 end
 
 function lib.indentEditbox(editbox)
-    dirty[editbox] = nil
+	dirty[editbox] = nil
 
-    local colorTable = editbox.faiap_colorTable or defaultColorTable
-    local tabWidth = editbox.faiap_tabWidth
+	local colorTable = editbox.faiap_colorTable or defaultColorTable
+	local tabWidth = editbox.faiap_tabWidth
 
-    local orgCode = editboxGetText(editbox)
-    local prevCode = editboxIndentCache[editbox]
-    if prevCode == orgCode then
-        return
-    end
+	local orgCode = editboxGetText(editbox)
+	local prevCode = editboxIndentCache[editbox]
+	if prevCode == orgCode then
+		return
+	end
 
-    local pos = editbox:GetCursorPosition()
+	local pos = editbox:GetCursorPosition()
 
-    local code
-    code, pos = lib.stripWowColorsWithPos(orgCode, pos)
+	local code
+	code, pos = lib.stripWowColorsWithPos(orgCode, pos)
 
-    colorTable[0] = "|r"
-    local newCode, newPos = lib.indentCode(code, tabWidth, colorTable, pos)
-    if editbox:IsMultiLine() then
-        newCode = lib.padWithLinebreaks(newCode)
-    end
+	colorTable[0] = "|r"
+	local newCode, newPos = lib.indentCode(code, tabWidth, colorTable, pos)
+	if editbox:IsMultiLine() then
+		newCode = lib.padWithLinebreaks(newCode)
+	end
 
-    editboxIndentCache[editbox] = newCode
-    if code ~= newCode then
-        decodeCache[editbox] = nil
+	editboxIndentCache[editbox] = newCode
+	if code ~= newCode then
+		decodeCache[editbox] = nil
 
-        local stringlenNewCode = stringlen(newCode)
+		local stringlenNewCode = stringlen(newCode)
 
-        editboxSetText(editbox, newCode)
+		editboxSetText(editbox, newCode)
 
-        if newPos then
-            if newPos < 0 then
-                newPos = 0
-            end
-            if newPos > stringlenNewCode then
-                newPos = stringlenNewCode
-            end
+		if newPos then
+			if newPos < 0 then
+				newPos = 0
+			end
+			if newPos > stringlenNewCode then
+				newPos = stringlenNewCode
+			end
 
-            editbox:SetCursorPosition(newPos)
-        end
-    end
+			editbox:SetCursorPosition(newPos)
+		end
+	end
 end
 
 local function hookHandler(editbox, handler, newFun)
-    local oldFun = editbox:GetScript(handler)
-    if oldFun == newFun then
-        -- already hooked, ignore it
-        return
-    end
-    editbox["faiap_old_" .. handler] = oldFun
-    editbox:SetScript(handler, newFun)
+	local oldFun = editbox:GetScript(handler)
+	if oldFun == newFun then
+		-- already hooked, ignore it
+		return
+	end
+	editbox["faiap_old_" .. handler] = oldFun
+	editbox:SetScript(handler, newFun)
 end
 
 local function textChangedHook(editbox, ...)
-    local oldFun = editbox["faiap_old_OnTextChanged"]
-    if oldFun then
-        oldFun(editbox, ...)
-    end
-    if enabled[editbox] then
-        dirty[editbox] = GetTime()
-    end
+	local oldFun = editbox["faiap_old_OnTextChanged"]
+	if oldFun then
+		oldFun(editbox, ...)
+	end
+	if enabled[editbox] then
+		dirty[editbox] = GetTime()
+	end
 end
 
 local function tabPressedHook(editbox, ...)
-    local oldFun = editbox["faiap_old_OnTabPressed"]
-    if oldFun then
-        oldFun(editbox, ...)
-    end
-    if enabled[editbox] then
-        return lib.indentEditbox(editbox)
-    end
+	local oldFun = editbox["faiap_old_OnTabPressed"]
+	if oldFun then
+		oldFun(editbox, ...)
+	end
+	if enabled[editbox] then
+		return lib.indentEditbox(editbox)
+	end
 end
 
 local function onUpdateHook(editbox, ...)
-    local oldFun = editbox["faiap_old_OnUpdate"]
-    if oldFun then
-        oldFun(editbox, ...)
-    end
-    if enabled[editbox] then
-        local now = GetTime()
-        local lastUpdate = dirty[editbox] or now
-        if now - lastUpdate > 0.2 then
-            decodeCache[editbox] = nil
-            return lib.colorCodeEditbox(editbox)
-        end
-    end
+	local oldFun = editbox["faiap_old_OnUpdate"]
+	if oldFun then
+		oldFun(editbox, ...)
+	end
+	if enabled[editbox] then
+		local now = GetTime()
+		local lastUpdate = dirty[editbox] or now
+		if now - lastUpdate > 0.2 then
+			decodeCache[editbox] = nil
+			return lib.colorCodeEditbox(editbox)
+		end
+	end
 end
 
 local function newGetText(editbox, raw)
-    if raw then
-        return lib.decode(editboxGetText(editbox))
-    end
+	if raw then
+		return lib.decode(editboxGetText(editbox))
+	end
 
-    local decoded = decodeCache[editbox]
-    if not decoded then
-        decoded = lib.decode(editboxGetText(editbox))
-        decodeCache[editbox] = decoded
-    end
-    return decoded or ""
+	local decoded = decodeCache[editbox]
+	if not decoded then
+		decoded = lib.decode(editboxGetText(editbox))
+		decodeCache[editbox] = decoded
+	end
+	return decoded or ""
 end
 
 local function newSetText(editbox, text)
-    decodeCache[editbox] = nil
-    if text then
-        local encoded = lib.encode(text)
+	decodeCache[editbox] = nil
+	if text then
+		local encoded = lib.encode(text)
 
-        return editboxSetText(editbox, encoded)
-    end
+		return editboxSetText(editbox, encoded)
+	end
 end
 
 function lib.enable(editbox, colorTable, tabWidth)
-    if not editboxSetText then
-        editboxSetText = editbox.SetText
-        editboxGetText = editbox.GetText
-    end
+	if not editboxSetText then
+		editboxSetText = editbox.SetText
+		editboxGetText = editbox.GetText
+	end
 
-    local modified
-    if editbox.faiap_colorTable ~= colorTable then
-        editbox.faiap_colorTable = colorTable
-        modified = true
-    end
-    if editbox.faiap_tabWidth ~= tabWidth then
-        editbox.faiap_tabWidth = tabWidth
-        modified = true
-    end
+	local modified
+	if editbox.faiap_colorTable ~= colorTable then
+		editbox.faiap_colorTable = colorTable
+		modified = true
+	end
+	if editbox.faiap_tabWidth ~= tabWidth then
+		editbox.faiap_tabWidth = tabWidth
+		modified = true
+	end
 
-    if enabled[editbox] then
-        if modified then
-            lib.indentEditbox(editbox)
-        end
-        return
-    end
+	if enabled[editbox] then
+		if modified then
+			lib.indentEditbox(editbox)
+		end
+		return
+	end
 
-    -- Editbox is possibly hooked, but disabled
-    enabled[editbox] = true
+	-- Editbox is possibly hooked, but disabled
+	enabled[editbox] = true
 
-    editbox.oldMaxBytes = editbox:GetMaxBytes()
-    editbox.oldMaxLetters = editbox:GetMaxLetters()
-    editbox:SetMaxBytes(0)
-    editbox:SetMaxLetters(0)
+	editbox.oldMaxBytes = editbox:GetMaxBytes()
+	editbox.oldMaxLetters = editbox:GetMaxLetters()
+	editbox:SetMaxBytes(0)
+	editbox:SetMaxLetters(0)
 
-    editbox.GetText = newGetText
-    editbox.SetText = newSetText
+	editbox.GetText = newGetText
+	editbox.SetText = newSetText
 
-    hookHandler(editbox, "OnTextChanged", textChangedHook)
-    hookHandler(editbox, "OnTabPressed", tabPressedHook)
-    hookHandler(editbox, "OnUpdate", onUpdateHook)
+	hookHandler(editbox, "OnTextChanged", textChangedHook)
+	hookHandler(editbox, "OnTabPressed", tabPressedHook)
+	hookHandler(editbox, "OnUpdate", onUpdateHook)
 
-    lib.indentEditbox(editbox)
+	lib.indentEditbox(editbox)
 end
 
 -- Deprecated function
 lib.addSmartCode = lib.enable
 
 function lib.disable(editbox)
-    if not enabled[editbox] then
-        return
-    end
-    enabled[editbox] = nil
+	if not enabled[editbox] then
+		return
+	end
+	enabled[editbox] = nil
 
-    -- revert settings for max bytes / letters
-    editbox:SetMaxBytes(editbox.oldMaxBytes)
-    editbox:SetMaxLetters(editbox.oldMaxLetters)
+	-- revert settings for max bytes / letters
+	editbox:SetMaxBytes(editbox.oldMaxBytes)
+	editbox:SetMaxLetters(editbox.oldMaxLetters)
 
-    -- try a real unhooking, if possible
-    if editbox:GetScript("OnTextChanged") == textChangedHook then
-        editbox:SetScript("OnTextChanged", editbox.faiap_old_OnTextChanged)
-        editbox.faiap_old_OnTextChanged = nil
-    end
+	-- try a real unhooking, if possible
+	if editbox:GetScript("OnTextChanged") == textChangedHook then
+		editbox:SetScript("OnTextChanged", editbox.faiap_old_OnTextChanged)
+		editbox.faiap_old_OnTextChanged = nil
+	end
 
-    if editbox:GetScript("OnTabPressed") == tabPressedHook then
-        editbox:SetScript("OnTabPressed", editbox.faiap_old_OnTabPressed)
-        editbox.faiap_old_OnTabPressed = nil
-    end
+	if editbox:GetScript("OnTabPressed") == tabPressedHook then
+		editbox:SetScript("OnTabPressed", editbox.faiap_old_OnTabPressed)
+		editbox.faiap_old_OnTabPressed = nil
+	end
 
-    if editbox:GetScript("OnUpdate") == onUpdateHook then
-        editbox:SetScript("OnUpdate", editbox.faiap_old_OnUpdate)
-        editbox.faiap_old_OnUpdate = nil
-    end
+	if editbox:GetScript("OnUpdate") == onUpdateHook then
+		editbox:SetScript("OnUpdate", editbox.faiap_old_OnUpdate)
+		editbox.faiap_old_OnUpdate = nil
+	end
 
-    editbox.GetText = nil
-    editbox.SetText = nil
+	editbox.GetText = nil
+	editbox.SetText = nil
 
-    -- change the text back to unformatted
-    editbox:SetText(newGetText(editbox))
+	-- change the text back to unformatted
+	editbox:SetText(newGetText(editbox))
 
-    -- clear caches
-    editboxIndentCache[editbox] = nil
-    decodeCache[editbox] = nil
-    editboxStringCache[editbox] = nil
-    editboxNumLinesCache[editbox] = nil
+	-- clear caches
+	editboxIndentCache[editbox] = nil
+	decodeCache[editbox] = nil
+	editboxStringCache[editbox] = nil
+	editboxNumLinesCache[editbox] = nil
 end
 
 defaultColorTable = {}

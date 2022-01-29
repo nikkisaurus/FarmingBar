@@ -31,9 +31,9 @@ L.InvalidCustomCondition = "Invalid custom condition:"
 L.InvalidCustomConditionReturn = [[Custom conditions must return a table with nested "trackerGroup" tables.]]
 L.InvalidCustomConditionTable = "Nested trackerGroups must be tables."
 L.InvalidCustomConditionID =
-    [[Nested trackerGroup keys must be in the format "t%d", where %d is the tracker ID or "%dt%d:%dt%d" expressing a ration between two tracker IDs, such that 10t1:1t2 represents the equivalency between 10 of tracker 1 and 1 of tracker 2.]]
+	[[Nested trackerGroup keys must be in the format "t%d", where %d is the tracker ID or "%dt%d:%dt%d" expressing a ration between two tracker IDs, such that 10t1:1t2 represents the equivalency between 10 of tracker 1 and 1 of tracker 2.]]
 L.InvalidCustomConditionObjective =
-    "Nested trackerGroup values must be an integer >= 0 representing the tracker objective."
+	"Nested trackerGroup values must be an integer >= 0 representing the tracker objective."
 L.InvalidObjectiveTitle = "Invalid objective title."
 L.InvalidTrackerExclusion = "Cannot exclude parent objective."
 L.ObjectiveIsExcluded = "Objective is already being excluded."
@@ -43,7 +43,7 @@ L.MissingCraftRecipeName = "Please specify a Recipe String"
 L.UnknownRecipe = "You do not know the recipe: %s"
 
 L.InvalidSyntax = function(err)
-    return "Syntax error: " .. (type(err) == "string" and err or "??")
+	return "Syntax error: " .. (type(err) == "string" and err or "??")
 end
 L.InvalidTrackerID = "Invalid tracker: %s:%s"
 -- L.InvalidTrackerID = function(trackerType, trackerID) return format("Invalid tracker ID: %s:%s", strupper(trackerType), trackerID) end
@@ -59,11 +59,10 @@ L["Hints"] = true
 -- Modules\ObjectiveBuilder.lua
 L.FilterAutoItemsHint = [[Check this option to hide automatically created item objectives (prepended by "item:").]]
 L.NewObjectiveHint = "You can drop an item on this button to quickly add it as an objective."
-L.ObjectiveContextMenuHint =
-    format(
-    "%sRight-click|r this button to open a context menu to rename, duplicate, or delete this objective.\n%sDrag|r this button onto a bar to track it.",
-    sexteal,
-    sexteal
+L.ObjectiveContextMenuHint = format(
+	"%sRight-click|r this button to open a context menu to rename, duplicate, or delete this objective.\n%sDrag|r this button onto a bar to track it.",
+	sexteal,
+	sexteal
 )
 L.RemoveExcludeHint = format("%sShift+right-click|r this objective to remove it from the list.", sexteal)
 L.TrackerContextMenuHint = format("%sRight-click|r this button to delete or move this tracker.", sexteal)
@@ -72,65 +71,65 @@ L.TrackerContextMenuHint = format("%sRight-click|r this button to delete or move
 
 -- Modules\Tooltips.lua
 local function GetCommandString(commandInfo)
-    -- Ctrl+right-click
-    local mods =
-        gsub(strupper(strsub(commandInfo.modifier, 1, 1)) .. strlower(strsub(commandInfo.modifier, 2)), "-", "+") -- Put in title case and replace - with +
-    local button =
-        (button == "LeftButton" or button == "RightButton") and gsub(commandInfo.button, "Button", "") or
-        commandInfo.button
-    button = mods == "" and button or format("+%s", strlower(button))
-    local clickType = commandInfo.type and "drag" or "click"
+	-- Ctrl+right-click
+	local mods = gsub(
+		strupper(strsub(commandInfo.modifier, 1, 1)) .. strlower(strsub(commandInfo.modifier, 2)),
+		"-",
+		"+"
+	) -- Put in title case and replace - with +
+	local button = (button == "LeftButton" or button == "RightButton") and gsub(commandInfo.button, "Button", "")
+		or commandInfo.button
+	button = mods == "" and button or format("+%s", strlower(button))
+	local clickType = commandInfo.type and "drag" or "click"
 
-    return utils.ColorFontString(format("%s%s-%s", mods, button, clickType), "SEXTEAL")
+	return utils.ColorFontString(format("%s%s-%s", mods, button, clickType), "SEXTEAL")
 end
 
 L.BarHints = function(command, commandInfo)
-    commandInfo =
-        commandInfo or
-        {
-            button = "",
-            modifier = ""
-        }
-    local commands = {
-        moveBar = format("%s to move this bar.", GetCommandString(commandInfo)),
-        configBar = format("%s to configure this bar.", GetCommandString(commandInfo)),
-        toggleMovable = format("%s to lock or unlock this bar.", GetCommandString(commandInfo)),
-        openHelp = format("%s to open the help documentation.", GetCommandString(commandInfo)),
-        openSettings = format("%s to configure addon settings.", GetCommandString(commandInfo)),
-        showObjectiveBuilder = format("%s to open the Objective Builder.", GetCommandString(commandInfo))
-    }
+	commandInfo = commandInfo or {
+		button = "",
+		modifier = "",
+	}
+	local commands = {
+		moveBar = format("%s to move this bar.", GetCommandString(commandInfo)),
+		configBar = format("%s to configure this bar.", GetCommandString(commandInfo)),
+		toggleMovable = format("%s to lock or unlock this bar.", GetCommandString(commandInfo)),
+		openHelp = format("%s to open the help documentation.", GetCommandString(commandInfo)),
+		openSettings = format("%s to configure addon settings.", GetCommandString(commandInfo)),
+		showObjectiveBuilder = format("%s to open the Objective Builder.", GetCommandString(commandInfo)),
+	}
 
-    return commands[command] or ""
+	return commands[command] or ""
 end
 
 L.ButtonHints = function(command, commandInfo)
-    local commands = {
-        useItem = format("%s to use the display item or run the display macrotext.", GetCommandString(commandInfo)),
-        moveObjective = format("%s to move this objective.", GetCommandString(commandInfo)),
-        dragObjective = format("%s to move this objective.", GetCommandString(commandInfo)),
-        clearObjective = format("%s to clear this objective.", GetCommandString(commandInfo)),
-        showObjectiveEditBox = format("%s to show the objective editbox.", GetCommandString(commandInfo)),
-        showQuickAddEditBox = format("%s to show the quick add editbox.", GetCommandString(commandInfo)),
-        showQuickAddCurrencyEditBox = format(
-            "%s to show the currency quick add editbox.",
-            GetCommandString(commandInfo)
-        ),
-        showObjectiveEditor = format("%s to show the objective editor.", GetCommandString(commandInfo)),
-        moveObjectiveToBank = format(
-            "%s to move all items until the objective to your bank.",
-            GetCommandString(commandInfo)
-        ),
-        moveAllToBank = format("%s to move all items to your bank.", GetCommandString(commandInfo))
-    }
+	local commands = {
+		useItem = format("%s to use the display item or run the display macrotext.", GetCommandString(commandInfo)),
+		moveObjective = format("%s to move this objective.", GetCommandString(commandInfo)),
+		dragObjective = format("%s to move this objective.", GetCommandString(commandInfo)),
+		clearObjective = format("%s to clear this objective.", GetCommandString(commandInfo)),
+		showObjectiveEditBox = format("%s to show the objective editbox.", GetCommandString(commandInfo)),
+		showQuickAddEditBox = format("%s to show the quick add editbox.", GetCommandString(commandInfo)),
+		showQuickAddCurrencyEditBox = format(
+			"%s to show the currency quick add editbox.",
+			GetCommandString(commandInfo)
+		),
+		showObjectiveEditor = format("%s to show the objective editor.", GetCommandString(commandInfo)),
+		moveObjectiveToBank = format(
+			"%s to move all items until the objective to your bank.",
+			GetCommandString(commandInfo)
+		),
+		moveAllToBank = format("%s to move all items to your bank.", GetCommandString(commandInfo)),
+	}
 
-    return commands[command] or ""
+	return commands[command] or ""
 end
 
 L["Progress"] = true
 L["Expand Tooltip"] = true
 
 L.ToggleMovable = function(barTitle, movable)
-    return format("%s %s.", barTitle, movable and "unlocked" or "locked")
+	return format("%s %s.", barTitle, movable and "unlocked" or "locked")
 end
 
 -- *------------------------------------------------------------------------
@@ -223,7 +222,7 @@ L["Type"] = true
 L["View Code"] = true
 
 L.DisplayReferenceDescription =
-    [[Actions allow you to set which item/currency you want to use for automatic objective information. This includes the icon chosen when using "Automatic Icon" and the item associated with a button's "use" attribute. However, when set to a macrotext, the icon will be unaffected.
+	[[Actions allow you to set which item/currency you want to use for automatic objective information. This includes the icon chosen when using "Automatic Icon" and the item associated with a button's "use" attribute. However, when set to a macrotext, the icon will be unaffected.
 
 Farming Bar provides a /craft command that you can use in your macrotexts. Simply use "/craft Recipe String". For example:
 
@@ -231,7 +230,7 @@ Farming Bar provides a /craft command that you can use in your macrotexts. Simpl
 /use Enchanting Vellum]]
 L.DisplayReferenceDescription_Gsub = "/currency"
 L.CustomCodeWarning =
-    "This objective may contain custom Lua code. Make sure you only import objectives from trusted sources."
+	"This objective may contain custom Lua code. Make sure you only import objectives from trusted sources."
 
 ------------------------------------------------------------
 
@@ -337,31 +336,31 @@ L.Options_settings_global_general_tooltips_bar = "Enables bar tooltips."
 L.Options_settings_global_general_tooltips_button = "Enables button tooltips."
 L.Options_settings_global_general_tooltips_hideObjectiveInfo = "Hides objective information on button tooltips."
 L.Options_settings_global_general_tooltips_useGameTooltip =
-    "Use the default GameTooltip for item objectives. This can allow you to view information from other addons, but may significantly increase the size of the tooltip."
+	"Use the default GameTooltip for item objectives. This can allow you to view information from other addons, but may significantly increase the size of the tooltip."
 L.Options_settings_global_general_hints_bars = "Displays keybind hints at the bottom of bar tooltips."
 L.Options_settings_global_general_hints_buttons = "Displays keybind hints at the bottom of button tooltips."
 L.Options_settings_global_general_hints_ObjectiveBuilder = "Displays tooltip hints on Objective Builder widgets."
 L.Options_settings_global_general_hints_condensedTooltip =
-    "Removes objective information and hints from tooltips unless modifier is held down."
+	"Removes objective information and hints from tooltips unless modifier is held down."
 L.Options_settings_global_general_hints_modifier = "Sets the modifier key used to expand tooltips."
 L.Options_settings_global_misc_autoLootOnUse = "Temporarily enables auto loot when using an item"
 L.Options_settings_global_templates_deleteTemplate = "Permanently deletes a user-defined template."
 L.Options_settings_global_templates_deleteTemplateConfirm =
-    [[Are you sure you want to permanently delete the template "%s"?]]
+	[[Are you sure you want to permanently delete the template "%s"?]]
 L.Options_settings_global_templates_preserveTemplateData =
-    "Includes objective data when loading user-defined templates."
+	"Includes objective data when loading user-defined templates."
 L.Options_settings_global_templates_preserveTemplateOrder =
-    "Saves the order of objectives loaded onto a bar from user-defined templates."
+	"Saves the order of objectives loaded onto a bar from user-defined templates."
 
 L.Options_settings_profile_skin = "Sets the skin for bars and buttons."
 L.Options_settings_profile_buttonLayers_AccountOverlay =
-    "Enables the four-point orange diamond border indicating account counts on buttons."
+	"Enables the four-point orange diamond border indicating account counts on buttons."
 L.Options_settings_profile_buttonLayers_AutoCastable =
-    "Enables the four-point gold border indicating bank inclusion on buttons."
+	"Enables the four-point gold border indicating bank inclusion on buttons."
 L.Options_settings_profile_buttonLayers_Border = "Enables the item quality border on buttons."
 L.Options_settings_profile_buttonLayers_Cooldown = "Enables the item cooldown swipe on buttons."
 L.Options_settings_profile_buttonLayers_CooldownEdge =
-    "Enables the bling on the edge of item cooldown swipes on buttons."
+	"Enables the bling on the edge of item cooldown swipes on buttons."
 L.Options_settings_profile_fonts_face = "Sets the font face for bar and button fontstrings."
 L.Options_settings_profile_fonts_size = "Sets the font size for bar and button fontstrings."
 L.Options_settings_profile_fonts_outline = "Sets the font outline for bar and button fontstrings."
@@ -458,6 +457,8 @@ L["Topleft"] = true
 L["Total Objectives"] = true
 L["Tracker"] = true
 L["Icon"] = true
+L["Icons"] = true
+L["Icon Selector"] = true
 L["Recipe"] = true
 L["Topright"] = true
 L["Up"] = true
@@ -468,7 +469,7 @@ L["Y Offset"] = true
 
 L.CustomHideEventsDesc = "Comma separated list of events to trigger your custom hide function."
 L.InvalidEvent = function(event)
-    return format([[Event "%s" does not exist.]], event)
+	return format([[Event "%s" does not exist.]], event)
 end
 
 ------------------------------------------------------------
@@ -481,7 +482,7 @@ L.InvalidItemID = "Invalid itemID: %d"
 L.InvalidCurrencyID = "Invalid currencyID: %d"
 L.MissingIncludeAllCharsDependecies = "The following addons are missing and required for this feature: %s"
 L.KeybindIsAssigned = function(action)
-    return format("Keybind is already assigned to %s.", action)
+	return format("Keybind is already assigned to %s.", action)
 end
 L.moveBar = "Move Bar"
 L.configBar = "Configure Bar Settings"
@@ -505,31 +506,30 @@ L.TemplateObjectiveMissing = [[Missing template objective "%s" not loaded.]]
 -- *------------------------------------------------------------------------
 
 L.Options_Config = function(widget)
-    local strings = {
-        ["charSpecific"] = [[*(Asterisk) denotes character specific database settings.]],
-        ["mixedSpecific"] = [[**(Double asterisk) denotes mixed character and profile specific database settings.]]
-    }
+	local strings = {
+		["charSpecific"] = [[*(Asterisk) denotes character specific database settings.]],
+		["mixedSpecific"] = [[**(Double asterisk) denotes mixed character and profile specific database settings.]],
+	}
 
-    return strings[widget]
+	return strings[widget]
 end
 
 -- *------------------------------------------------------------------------
 
 L.Options_ObjectiveBuilder = function(widget)
-    local strings = {
-        ["objective.dropper"] = "Click to place this objective onto a bar.",
-        ["objective.manage.DeleteObjectiveTemplate_confirm"] = [[Are you sure you want to delete the objective template "%s"?]],
-        ["tracker.deleteTracker"] = [[Are you sure you want to permanently delete this tracker?]],
-        ["objective.quickAddDesc"] = "Left-click an icon to place the objective on a bar. Control+left-click to configure the objective."
-    }
+	local strings = {
+		["objective.dropper"] = "Click to place this objective onto a bar.",
+		["objective.manage.DeleteObjectiveTemplate_confirm"] = [[Are you sure you want to delete the objective template "%s"?]],
+		["tracker.deleteTracker"] = [[Are you sure you want to permanently delete this tracker?]],
+		["objective.quickAddDesc"] = "Left-click an icon to place the objective on a bar. Control+left-click to configure the objective.",
+	}
 
-    return strings[widget]
+	return strings[widget]
 end
 
 -- *------------------------------------------------------------------------
 
-L.Options_Help =
-    [[|cffffcc00Farming Bar (v3.0-alpha18)|r
+L.Options_Help = [[|cffffcc00Farming Bar (v3.0-alpha18)|r
 
 Thank you for testing the alpha! If you have any suggestions or bug reports, please create an issue at |cff00ccff[ https://github.com/niketa-wow/farmingbar/issues ]|r and specify the current alpha version. Features in the stable release that are not yet implemented in this alpha are not bugs and should not be reported.
 

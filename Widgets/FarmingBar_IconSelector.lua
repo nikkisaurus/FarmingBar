@@ -14,32 +14,48 @@ local Version = 1
 -- Widget methods
 
 local methods = {
-    OnAcquire = function(self)
-    end,
-    OnRelease = function(self)
-    end,
-    Load = function(self, objectiveTitle)
-    end
+	OnAcquire = function(self)
+		self.frame:Show()
+	end,
+
+	LoadObjective = function(self, objectiveTitle)
+		self.window:SetTitle(format("%s %s - %s", L.addon, L["Icon Selector"], objectiveTitle))
+	end,
 }
 
 -- *------------------------------------------------------------------------
 -- Constructor
 
 local function Constructor()
-    local frame = AceGUI:Create("Frame")
+	local window = AceGUI:Create("Window")
+	window:SetTitle(L.addon)
+	window:SetLayout("Flow")
 
-    if IsAddOnLoaded("ElvUI") then
-        local E = unpack(_G["ElvUI"])
-        local S = E:GetModule("Skins")
-    end
+	local frame = window.frame
 
-    local widget = frame
+	local icon = AceGUI:Create("Icon")
+	icon:SetFullWidth(true)
+	icon:SetImage(134400)
+	icon:SetLabel("")
+	icon:SetImageSize(35, 35)
+	window:AddChild(icon)
 
-    for method, func in pairs(methods) do
-        widget[method] = func
-    end
+	local widget = {
+		type = Type,
+		window = window,
+		frame = frame,
+		icon = icon,
+		-- iconName = iconName,
+		-- searchbox = searchbox,
+	}
 
-    return AceGUI:RegisterAsWidget(widget)
+	window.obj = widget
+
+	for method, func in pairs(methods) do
+		widget[method] = func
+	end
+
+	return AceGUI:RegisterAsWidget(widget)
 end
 
 AceGUI:RegisterWidgetType(Type, Constructor, Version)

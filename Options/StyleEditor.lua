@@ -5,5 +5,5 @@ local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 -- *------------------------------------------------------------------------
 
 function addon:GetStyleEditorOptions()
-    return {}
+	return {}
 end
