@@ -22,13 +22,108 @@ local anchorSort = { "TOPLEFT", "TOP", "TOPRIGHT", "LEFT", "CENTER", "RIGHT", "B
 -- Get options
 
 function addon:GetConfigOptions()
-	local options = self:GetBarConfigOptions(0)
+	local options = {
+		addBar = {
+			order = 1,
+			type = "execute",
+			name = L["Add Bar"],
+			func = function()
+				self:CreateBar()
+			end,
+		},
+		spacer = {
+			order = 2,
+			type = "description",
+			name = " ",
+			width = 0.05,
+		},
+		RemoveBar = {
+			order = 3,
+			type = "select",
+			name = L["Remove Bar"],
+			disabled = function()
+				return self.tcount(self:GetDBValue("profile", "bars")) == 0
+			end,
+			values = function()
+				local values = {}
+				local bars = self:GetDBValue("profile", "bars")
+
+				for barID, _ in pairs(bars) do
+					values[barID] = L["Bar"] .. " " .. barID
+				end
+
+				return values
+			end,
+			sorting = function()
+				local sorting = {}
+				local bars = self:GetDBValue("profile", "bars")
+
+				for barID, _ in pairs(bars) do
+					tinsert(sorting, barID)
+				end
+
+				return sorting
+			end,
+			confirm = function(_, barID)
+				return format(L.ConfirmRemoveBar, barID)
+			end,
+			set = function(_, barID)
+				self:RemoveBar(barID)
+			end,
+		},
+		ToggleBarEnabled = {
+			order = 4,
+			type = "select",
+			name = L["Toggle Bar Enabled"],
+			disabled = function()
+				return self.tcount(self:GetDBValue("profile", "bars")) == 0
+			end,
+			values = function()
+				local values = {}
+				local bars = self:GetDBValue("profile", "bars")
+
+				for barID, _ in pairs(bars) do
+					values[barID] = L["Bar"] .. " " .. barID
+				end
+
+				return values
+			end,
+			sorting = function()
+				local sorting = {}
+				local bars = self:GetDBValue("profile", "bars")
+
+				for barID, _ in pairs(bars) do
+					tinsert(sorting, barID)
+				end
+
+				return sorting
+			end,
+			set = function(_, barID)
+				self:SetBarDisabled(barID, "_TOGGLE_")
+			end,
+		},
+		bar0 = {
+			order = 5,
+			type = "group",
+			name = L["All Bars"],
+			childGroups = "tab",
+			args = addon:GetBarConfigOptions(0),
+		},
+		container = {
+			order = 6,
+			type = "group",
+			name = L["Bars"],
+			args = {},
+		},
+	}
 
 	for barID, _ in pairs(self:GetDBValue("profile", "bars")) do
-		options["bar" .. barID] = {
+		local barName = L["Bar"] .. " " .. barID
+
+		options.container.args["bar" .. barID] = {
 			order = barID,
 			type = "group",
-			name = L["Bar"] .. " " .. barID,
+			name = barName,
 			childGroups = "tab",
 			args = {
 				bar = {
@@ -60,87 +155,7 @@ function addon:GetBarConfigOptions(barID)
 	local options
 
 	if barID == 0 then -- Config all bars
-		options = {
-			addBar = {
-				order = 1,
-				type = "execute",
-				name = L["Add Bar"],
-				func = function()
-					self:CreateBar()
-				end,
-			},
-			spacer = {
-				order = 2,
-				type = "description",
-				name = " ",
-				width = 0.05,
-			},
-			RemoveBar = {
-				order = 3,
-				type = "select",
-				name = L["Remove Bar"],
-				disabled = function()
-					return self.tcount(self:GetDBValue("profile", "bars")) == 0
-				end,
-				values = function()
-					local values = {}
-					local bars = self:GetDBValue("profile", "bars")
-
-					for barID, _ in pairs(bars) do
-						values[barID] = L["Bar"] .. " " .. barID
-					end
-
-					return values
-				end,
-				sorting = function()
-					local sorting = {}
-					local bars = self:GetDBValue("profile", "bars")
-
-					for barID, _ in pairs(bars) do
-						tinsert(sorting, barID)
-					end
-
-					return sorting
-				end,
-				confirm = function(_, barID)
-					return format(L.ConfirmRemoveBar, barID)
-				end,
-				set = function(_, barID)
-					self:RemoveBar(barID)
-				end,
-			},
-			ToggleBarEnabled = {
-				order = 4,
-				type = "select",
-				name = L["Toggle Bar Enabled"],
-				disabled = function()
-					return self.tcount(self:GetDBValue("profile", "bars")) == 0
-				end,
-				values = function()
-					local values = {}
-					local bars = self:GetDBValue("profile", "bars")
-
-					for barID, _ in pairs(bars) do
-						values[barID] = L["Bar"] .. " " .. barID
-					end
-
-					return values
-				end,
-				sorting = function()
-					local sorting = {}
-					local bars = self:GetDBValue("profile", "bars")
-
-					for barID, _ in pairs(bars) do
-						tinsert(sorting, barID)
-					end
-
-					return sorting
-				end,
-				set = function(_, barID)
-					self:SetBarDisabled(barID, "_TOGGLE_")
-				end,
-			},
-		}
+		options = {}
 	else -- Config barID
 		options = {
 			title = {
@@ -608,58 +623,8 @@ function addon:GetManageConfigOptions(barID)
 				addon:SetBarDisabled(barID, value)
 			end,
 		},
-		CopyFrom = {
-			order = 1,
-			type = "select",
-			style = "dropdown",
-			name = "Copy From",
-			disabled = function()
-				return addon.tcount(addon.bars) <= 1
-			end,
-			values = function()
-				local values = {}
-
-				for id, _ in pairs(addon:GetDBValue("profile", "bars")) do
-					if id ~= barID and id ~= "**" then
-						values[id] = format("%s %d", L["Bar"], id)
-					end
-				end
-				return values
-			end,
-			set = function(info, value)
-				local bars = addon:GetDBValue("profile", "bars")
-				local point = bars[barID].point
-				bars[barID] = addon:CloneTable(bars[value])
-				-- Preserve bar position, so there are not issues with moving a bar below another, and enabled status
-				bars[barID].point = addon:CloneTable(point)
-				-- Redraw bars
-				addon:ReleaseAllBars()
-				addon:InitializeBars()
-				addon:RefreshOptions()
-			end,
-		},
-		DuplicateBar = {
-			order = 3,
-			type = "execute",
-			name = L["Duplicate Bar"],
-			disabled = true,
-			func = function()
-				-- TODO: duplicate bar
-			end,
-		},
-		RemoveBar = {
-			order = 4,
-			type = "execute",
-			name = L["Remove Bar"],
-			confirm = function()
-				return format(L.ConfirmRemoveBar, barID)
-			end,
-			func = function()
-				self:RemoveBar(barID)
-			end,
-		},
 		template = {
-			order = 5,
+			order = 1,
 			type = "group",
 			inline = true,
 			width = "full",
@@ -755,7 +720,7 @@ function addon:GetManageConfigOptions(barID)
 			},
 		},
 		operations = {
-			order = 6,
+			order = 2,
 			type = "group",
 			inline = true,
 			width = "full",
@@ -786,6 +751,62 @@ function addon:GetManageConfigOptions(barID)
 					end,
 				},
 			},
+		},
+
+		CopyFrom = {
+			order = 3,
+			type = "select",
+			style = "dropdown",
+			name = "Copy From",
+			disabled = function()
+				return addon.tcount(addon.bars) <= 1
+			end,
+			values = function()
+				local values = {}
+
+				for id, _ in pairs(addon:GetDBValue("profile", "bars")) do
+					if id ~= barID and id ~= "**" then
+						values[id] = format("%s %d", L["Bar"], id)
+					end
+				end
+				return values
+			end,
+			set = function(info, value)
+				local bars = addon:GetDBValue("profile", "bars")
+				local point = bars[barID].point
+				bars[barID] = addon:CloneTable(bars[value])
+				-- Preserve bar position, so there are not issues with moving a bar below another, and enabled status
+				bars[barID].point = addon:CloneTable(point)
+				-- Redraw bars
+				addon:ReleaseAllBars()
+				addon:InitializeBars()
+				addon:RefreshOptions()
+			end,
+		},
+		DuplicateBar = {
+			order = 4,
+			type = "execute",
+			name = L["Duplicate Bar"],
+			disabled = true,
+			func = function()
+				-- TODO: duplicate bar
+			end,
+		},
+		RemoveBar = {
+			order = 5,
+			type = "execute",
+			name = L["Remove Bar"],
+			confirm = function()
+				return format(L.ConfirmRemoveBar, barID)
+			end,
+			func = function()
+				self:RemoveBar(barID)
+			end,
+		},
+		spacer = {
+			order = 6,
+			type = "description",
+			name = "",
 		},
 		charSpecific = {
 			order = 7,

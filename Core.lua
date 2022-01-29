@@ -180,7 +180,7 @@ function addon:SlashCommandFunc(input)
 		end
 	elseif cmd == "CONFIG" then
 		local arg = tonumber(arg)
-		ACD:SelectGroup(addonName, "config", addon.bars[arg] and "bar" .. arg)
+		ACD:SelectGroup(addonName, "config", "container", addon.bars[arg] and "bar" .. arg)
 		ACD:Open(addonName)
 	else
 		LibStub("AceConfigDialog-3.0"):Open(addonName)

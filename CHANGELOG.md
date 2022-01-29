@@ -5,7 +5,7 @@
 ### 3.0-alpha19
 
 - Implemented icon selector
-- Moved objective quick add help description into icon tooltips
+- Options have been rearranged
 - Bug fixes:
   - -- Duplicating an objective now opens the config for the new objective
 

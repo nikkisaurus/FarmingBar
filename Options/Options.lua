@@ -11,7 +11,7 @@ function addon:InitializeOptions()
 	ACD:SetDefaultSize(addonName, 850, 600)
 
 	C_Timer.After(1, function()
-		ACD:SelectGroup(addonName, "objectiveBuilder", "New")
+		ACD:SelectGroup(addonName, "config", "container", "bar1")
 		ACD:Open(addonName)
 	end)
 end
@@ -25,12 +25,14 @@ function addon:GetOptions()
 				order = 1,
 				type = "group",
 				name = L["Config"],
+				childGroups = "tab",
 				args = self:GetConfigOptions(),
 			},
 			objectiveBuilder = {
 				order = 2,
 				type = "group",
 				name = L["Objectives"],
+				childGroups = "tab",
 				args = self:GetObjectiveBuilderOptions(),
 			},
 			styleEditor = {
@@ -42,27 +44,22 @@ function addon:GetOptions()
 			globalSettings = {
 				order = 4,
 				type = "group",
-				name = L["Global Settings"],
+				name = L["Settings"],
 				childGroups = "tab",
-				args = self:GetGlobalSettingsOptions(),
-			},
-			profileSettings = {
-				order = 4,
-				type = "group",
-				name = L["Profile Settings"],
-				args = self:GetProfileSettingsOptions(),
+				args = self:GetSettingsOptions(),
 			},
 			profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db),
 			help = {
-				order = 7,
+				order = 6,
 				type = "group",
 				name = L["Help"],
+				childGroups = "tab",
 				args = self:GetHelpOptions(),
 			},
 		},
 	}
 
-	self.options.args.profiles.order = 6
+	self.options.args.profiles.order = 5
 
 	return self.options
 end

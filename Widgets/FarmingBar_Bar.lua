@@ -21,7 +21,7 @@ local Version = 2
 local postClickMethods = {
 	configBar = function(self, ...)
 		local barID = self.obj:GetBarID()
-		ACD:SelectGroup(addonName, "config", "bar" .. barID)
+		ACD:SelectGroup(addonName, "config", "container", "bar" .. barID)
 		ACD:Open(addonName)
 	end,
 	toggleMovable = function(self, ...)

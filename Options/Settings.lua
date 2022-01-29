@@ -9,12 +9,32 @@ addon.editors = {}
 
 -- *------------------------------------------------------------------------
 
+function addon:GetSettingsOptions()
+	local options = {
+		global = {
+			order = 1,
+			type = "group",
+			name = L["Global"],
+			args = addon:GetGlobalSettingsOptions(),
+		},
+		profile = {
+			order = 1,
+			type = "group",
+			name = L["Profile"],
+			args = addon:GetProfileSettingsOptions(),
+		},
+	}
+
+	return options
+end
+
 function addon:GetGlobalSettingsOptions()
 	local options = {
 		general = {
 			order = 1,
 			type = "group",
 			name = L["General"],
+			childGroups = "tab",
 			args = {
 				tooltips = {
 					order = 1,
@@ -254,6 +274,7 @@ function addon:GetGlobalSettingsOptions()
 			order = 2,
 			type = "group",
 			name = L["Alerts"],
+			childGroups = "tab",
 			args = {
 				bar = {
 					order = 1,

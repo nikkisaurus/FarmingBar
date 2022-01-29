@@ -279,17 +279,22 @@ function addon:GetObjectiveBuilderOptions()
 			end,
 		},
 		quickAdd = {
-			order = 3,
+			order = 1,
 			type = "group",
 			name = L["Quick Add"],
-			inline = true,
+			args = {},
+		},
+		objectives = {
+			order = 2,
+			type = "group",
+			name = L["Objectives"],
 			args = {},
 		},
 	}
 
 	for objectiveTitle, objectiveInfo in self.pairs(self:GetDBValue("global", "objectives")) do
 		-- Objective configuration
-		options[objectiveTitle] = {
+		options.objectives.args[objectiveTitle] = {
 			type = "group",
 			name = objectiveTitle,
 			icon = function()
@@ -415,10 +420,11 @@ function addon:GetObjectiveBuilderOptions()
 
 		for tracker, trackerInfo in pairs(self:GetDBValue("global", "objectives")[objectiveTitle].trackers) do
 			if trackerInfo.order ~= 0 then
-				options[objectiveTitle].args.trackers.args[tracker] = self:GetObjectiveBuilderOptions_Trackers(
-					objectiveTitle,
-					tracker
-				)
+				options.objectives.args[objectiveTitle].args.trackers.args[tracker] =
+					self:GetObjectiveBuilderOptions_Trackers(
+						objectiveTitle,
+						tracker
+					)
 			end
 		end
 
@@ -433,7 +439,7 @@ function addon:GetObjectiveBuilderOptions()
 			desc = L.Options_ObjectiveBuilder("objective.quickAddDesc"),
 			func = function()
 				if IsControlKeyDown() then
-					ACD:SelectGroup(addonName, "objectiveBuilder", objectiveTitle)
+					ACD:SelectGroup(addonName, "objectiveBuilder", "objectives", objectiveTitle)
 				elseif self.DragFrame:GetObjective() then
 					self.DragFrame:Clear()
 				else
