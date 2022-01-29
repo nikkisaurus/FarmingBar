@@ -283,14 +283,7 @@ function addon:GetObjectiveBuilderOptions()
 			type = "group",
 			name = L["Quick Add"],
 			inline = true,
-			args = {
-				description = {
-					order = 0,
-					type = "description",
-					name = L.Options_ObjectiveBuilder("objective.quickAddDesc"),
-				},
-				spacer = { order = 1, type = "header", name = "" },
-			},
+			args = {},
 		},
 	}
 
@@ -437,6 +430,7 @@ function addon:GetObjectiveBuilderOptions()
 			image = function()
 				return self:GetObjectiveTemplateIcon(objectiveTitle), 35, 35
 			end,
+			desc = L.Options_ObjectiveBuilder("objective.quickAddDesc"),
 			func = function()
 				if IsControlKeyDown() then
 					ACD:SelectGroup(addonName, "objectiveBuilder", objectiveTitle)
@@ -460,7 +454,7 @@ function addon:GetObjectiveBuilderOptions_Objective(objectiveTitle)
 		dropper = {
 			order = 0,
 			type = "execute",
-			name = " ",
+			name = L["Icon"],
 			desc = L.Options_ObjectiveBuilder("objective.dropper"),
 			width = 1 / 3,
 			image = function()
@@ -516,7 +510,8 @@ function addon:GetObjectiveBuilderOptions_Objective(objectiveTitle)
 				return self:GetObjectiveDBValue("autoIcon", objectiveTitle)
 			end,
 			get = function(info)
-				return self:GetObjectiveDBValue(info[#info], objectiveTitle)
+				local icon = self:GetObjectiveDBValue(info[#info], objectiveTitle) or 134400
+				return tostring(icon)
 			end,
 			set = function(info, value)
 				self:SetObjectiveDBValue(info[#info], value, objectiveTitle)
@@ -620,7 +615,8 @@ function addon:GetObjectiveBuilderOptions_Objective(objectiveTitle)
 					type = "execute",
 					name = L["Duplicate Objective"],
 					func = function()
-						self:DuplicateObjective(objectiveTitle)
+						local newObjectiveTitle = self:DuplicateObjective(objectiveTitle)
+						ACD:SelectGroup(addonName, "objectiveBuilder", newObjectiveTitle)
 					end,
 				},
 				exportObjective = {

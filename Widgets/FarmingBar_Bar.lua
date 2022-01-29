@@ -90,15 +90,13 @@ local function anchor_OnEnter(self)
 
 	local tooltip = widget:GetUserData("tooltip")
 	if tooltip and not addon.DragFrame:GetObjective() then
-		local tooltipFrame = addon:GetDBValue("global", "settings.tooltips.useGameTooltip") and GameTooltip
-			or addon.tooltip
-		tooltipFrame:SetScript("OnUpdate", function()
-			tooltipFrame:ClearLines()
-			tooltipFrame:SetOwner(self, "ANCHOR_BOTTOMRIGHT", 0, 0)
-			addon[tooltip](addon, widget, tooltipFrame)
-			tooltipFrame:Show()
+		addon.tooltipFrame:SetScript("OnUpdate", function()
+			addon.tooltipFrame:ClearLines()
+			addon.tooltipFrame:SetOwner(self, "ANCHOR_BOTTOMRIGHT", 0, 0)
+			addon[tooltip](addon, widget, addon.tooltipFrame)
+			addon.tooltipFrame:Show()
 		end)
-		tooltipFrame:GetScript("OnUpdate")()
+		addon.tooltipFrame:GetScript("OnUpdate")()
 	end
 end
 
@@ -110,11 +108,8 @@ local function anchor_OnLeave(self)
 
 	local tooltip = widget:GetUserData("tooltip")
 	if tooltip and not addon.DragFrame:GetObjective() then
-		local tooltipFrame = addon:GetDBValue("global", "settings.tooltips.useGameTooltip") and GameTooltip
-			or addon.tooltip
-		tooltipFrame:ClearLines()
-		tooltipFrame:Hide()
-		tooltipFrame:SetScript("OnUpdate", nil)
+		addon.tooltipFrame.Clear()
+		addon.tooltipFrame:SetScript("OnUpdate", nil)
 	end
 end
 

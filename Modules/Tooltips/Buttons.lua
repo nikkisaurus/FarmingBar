@@ -33,8 +33,6 @@ function addon:GetButtonTooltip(widget, tooltip)
 		return
 	end
 
-	local tooltipFrame = addon:GetDBValue("global", "settings.tooltips.useGameTooltip") and GameTooltip or addon.tooltip
-
 	-- Button has an objective
 	if not widget:IsEmpty() then
 		--  Set item or currency hyperlink
@@ -42,9 +40,9 @@ function addon:GetButtonTooltip(widget, tooltip)
 			tooltip:SetHyperlink(format("%s:%s", string.lower(buttonDB.action), buttonDB.actionInfo))
 
 			-- Divider
-			GameTooltip_AddBlankLinesToTooltip(tooltipFrame, 1)
-			GameTooltip_AddBlankLinesToTooltip(tooltipFrame, 1)
-			tooltipFrame:AddTexture(389194, {
+			GameTooltip_AddBlankLinesToTooltip(self.tooltipFrame, 1)
+			GameTooltip_AddBlankLinesToTooltip(self.tooltipFrame, 1)
+			self.tooltipFrame:AddTexture(389194, {
 				width = 200,
 				height = 10,
 			})
@@ -71,14 +69,14 @@ function addon:GetButtonTooltip(widget, tooltip)
 	-- Hints
 	if self:GetDBValue("global", "settings.hints.buttons") then
 		-- Spacer
-		GameTooltip_AddBlankLinesToTooltip(tooltipFrame, 1)
+		GameTooltip_AddBlankLinesToTooltip(self.tooltipFrame, 1)
 
 		if self:IsTooltipMod() then
-			tooltipFrame:AddLine(format("%s:", L["Hints"]))
+			self.tooltipFrame:AddLine(format("%s:", L["Hints"]))
 
 			-- Button doesn't have objective
 			if widget:IsEmpty() then
-				tooltipFrame:AddLine(
+				self.tooltipFrame:AddLine(
 					L.ButtonHints(
 						"showQuickAddEditBox",
 						self:GetDBValue("global", "settings.keybinds.button.showQuickAddEditBox")
@@ -87,7 +85,7 @@ function addon:GetButtonTooltip(widget, tooltip)
 				)
 
 				--@retail@
-				tooltipFrame:AddLine(
+				self.tooltipFrame:AddLine(
 					L.ButtonHints(
 						"showQuickAddCurrencyEditBox",
 						self:GetDBValue("global", "settings.keybinds.button.showQuickAddCurrencyEditBox")
@@ -96,7 +94,7 @@ function addon:GetButtonTooltip(widget, tooltip)
 				)
 				--@end-retail@
 
-				tooltipFrame:AddLine(
+				self.tooltipFrame:AddLine(
 					L.ButtonHints(
 						"showObjectiveEditor",
 						self:GetDBValue("global", "settings.keybinds.button.showObjectiveEditor")
@@ -108,7 +106,7 @@ function addon:GetButtonTooltip(widget, tooltip)
 					return buttonCommandSort[a] < buttonCommandSort[b]
 				end) do
 					if buttonDB or v.showOnEmpty then -- ! Not sure why we're checking for v.showOnEmpty?
-						tooltipFrame:AddLine(L.ButtonHints(k, v), unpack(self.tooltip_description))
+						self.tooltipFrame:AddLine(L.ButtonHints(k, v), unpack(self.tooltip_description))
 					end
 				end
 			end

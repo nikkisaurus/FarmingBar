@@ -55,6 +55,7 @@ L.TrackerIDExists = "Already tracking %s"
 
 L["Hint"] = true
 L["Hints"] = true
+L["Search"] = true
 
 -- Modules\ObjectiveBuilder.lua
 L.FilterAutoItemsHint = [[Check this option to hide automatically created item objectives (prepended by "item:").]]
@@ -127,6 +128,11 @@ end
 
 L["Progress"] = true
 L["Expand Tooltip"] = true
+L["Page"] = true
+L["First"] = true
+L["Previous"] = true
+L["Next"] = true
+L["Last"] = true
 
 L.ToggleMovable = function(barTitle, movable)
 	return format("%s %s.", barTitle, movable and "unlocked" or "locked")
@@ -155,6 +161,7 @@ L["Quest Failed"] = true
 
 L["Manage"] = true
 L.ConfirmRemoveBar = "Are you sure you want to permanently remove bar %d?"
+L.SelectIcon = "Shift+left-click to choose this icon."
 
 ------------------------------------------------------------
 
@@ -529,7 +536,7 @@ end
 
 -- *------------------------------------------------------------------------
 
-L.Options_Help = [[|cffffcc00Farming Bar (v3.0-alpha18)|r
+L.Options_Help = [[|cffffcc00Farming Bar (v3.0-alpha19)|r
 
 Thank you for testing the alpha! If you have any suggestions or bug reports, please create an issue at |cff00ccff[ https://github.com/niketa-wow/farmingbar/issues ]|r and specify the current alpha version. Features in the stable release that are not yet implemented in this alpha are not bugs and should not be reported.
 

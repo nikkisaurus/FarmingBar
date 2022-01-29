@@ -19,6 +19,7 @@ function addon:OnInitialize()
 	self.maxButtons = 108
 	self.maxButtonPadding = 40
 	self.maxButtonSize = 120
+	self.maxIcons = 500
 	self.maxFontSize = 64
 	self.maxTooltipTrackers = 10
 	self.minButtonPadding = -3
@@ -103,8 +104,15 @@ function addon:OnInitialize()
 end
 
 function addon:OnEnable()
-	addon.tooltip = CreateFrame("GameTooltip", "FarmingBar_Tooltip", UIParent, "GameTooltipTemplate")
-	addon:InitializeAlerts()
+	--@retail@
+	self.fileData = self:GetFileDataRetail()
+	--@end-retail@
+	--[===[@non-retail@
+	self.fileData = self:GetFileDataClassic()
+	--@end-non-retail@]===]
+
+	self:InitializeTooltips()
+	self:InitializeAlerts()
 	-- self:Initialize_Masque()
 	self:InitializeBars()
 	self:InitializeEvents()

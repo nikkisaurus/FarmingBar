@@ -23,8 +23,6 @@ function addon:GetBarTooltip(widget, tooltip)
 		return
 	end
 
-	local tooltipFrame = addon:GetDBValue("global", "settings.tooltips.useGameTooltip") and GameTooltip or addon.tooltip
-
 	-- Title
 	tooltip:AddLine(self:GetBarTitle(widget:GetBarID()), 0, 1, 0, 1)
 
@@ -77,15 +75,15 @@ function addon:GetBarTooltip(widget, tooltip)
 	-- Hints
 	if self:GetDBValue("global", "settings.hints.bars") then
 		-- Spacer
-		GameTooltip_AddBlankLinesToTooltip(tooltipFrame, 1)
+		GameTooltip_AddBlankLinesToTooltip(self.tooltipFrame, 1)
 
 		if self:IsTooltipMod() then
-			tooltipFrame:AddLine(format("%s:", L["Hints"]))
+			self.tooltipFrame:AddLine(format("%s:", L["Hints"]))
 
 			for k, v in self.pairs(self:GetDBValue("global", "settings.keybinds.bar"), function(a, b)
 				return barCommandSort[a] < barCommandSort[b]
 			end) do
-				tooltipFrame:AddLine(L.BarHints(k, v), unpack(self.tooltip_description))
+				self.tooltipFrame:AddLine(L.BarHints(k, v), unpack(self.tooltip_description))
 			end
 		else
 			tooltip:AddDoubleLine(

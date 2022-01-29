@@ -2,6 +2,13 @@
 
 ## Version 3.0
 
+### 3.0-alpha19
+
+- Implemented icon selector
+- Moved objective quick add help description into icon tooltips
+- Bug fixes:
+  - -- Duplicating an objective now opens the config for the new objective
+
 ### 3.0-alpha18
 
 - Implemented remaining alert settings

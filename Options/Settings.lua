@@ -25,7 +25,7 @@ function addon:GetGlobalSettingsOptions()
 						return addon:GetDBValue("global", "settings.tooltips." .. info[#info])
 					end,
 					set = function(info, value)
-						self:SetDBValue("global", "settings.tooltips." .. info[#info], value)
+						addon:SetDBValue("global", "settings.tooltips." .. info[#info], value)
 					end,
 					args = {
 						bar = {
@@ -45,6 +45,10 @@ function addon:GetGlobalSettingsOptions()
 							type = "toggle",
 							name = L["Use Game Tooltip"],
 							desc = L.Options_settings_global_general_tooltips_useGameTooltip,
+							set = function(info, value)
+								addon:SetDBValue("global", "settings.tooltips." .. info[#info], value)
+								addon:InitializeTooltips()
+							end,
 						},
 						condensedTooltip = {
 							order = 4,
