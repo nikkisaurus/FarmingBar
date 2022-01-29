@@ -538,8 +538,6 @@ L.Options_Help = [[|cffffcc00Farming Bar (v3.0-alpha19)|r
 
 Thank you for testing the alpha! If you have any suggestions or bug reports, please create an issue at |cff00ccff[ https://github.com/niketa-wow/farmingbar/issues ]|r and specify the current alpha version. Features in the stable release that are not yet implemented in this alpha are not bugs and should not be reported.
 
-For other questions, you can message me on Discord |cff00ccff@Niketa#1247|r or comment at |cff00ccff[ https://www.curseforge.com/wow/addons/farming-bar ]|r.
-
 As a reminder, if you switch back to the stable version from this alpha, your alpha settings will not be saved. Your stable database, however, will remain intact and be restored. There is no guarantee that alpha database versions will be protected during alpha restructures (though I will try my best not to restructure anything major).]]
 
 ------------------------------------------------------------
