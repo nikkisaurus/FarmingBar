@@ -167,8 +167,6 @@ function addon:GetDataStoreItemCount(itemID, trackerInfo)
 		end
 	end
 
-	--@retail@
-
 	local guilds = DS:HashValueToSortedArray(DS:GetGuilds())
 	for guildName, guild in pairs(guilds) do
 		-- From what I see, there is no function in DataStore to check the guild faction by the ID, so checking from the db instead
@@ -176,7 +174,6 @@ function addon:GetDataStoreItemCount(itemID, trackerInfo)
 			count = count + GetItemCount(itemID, trackerInfo.includeBank) + DS:GetGuildBankItemCount(guild, itemID)
 		end
 	end
-	--@end-retail@
 
 	count = count == 0 and GetItemCount(itemID, trackerInfo.includeBank) or count
 
@@ -318,12 +315,6 @@ function addon:GetTrackerCount(widget, trackerKey, overrideObjective)
 	local count
 
 	if trackerType == "ITEM" then
-		--@end-retail@
-		--[===[@non-retail@
-        count = trackerInfo.includeAllChars and self:GetDataStoreItemCount(trackerID, trackerInfo) or GetItemCount(trackerID, trackerInfo.includeBank)
-        --@end-non-retail@]===]
-		--@retail@
-
 		count = (trackerInfo.includeAllChars or trackerInfo.includeGuildBank)
 				and self:GetDataStoreItemCount(trackerID, trackerInfo)
 			or GetItemCount(trackerID, trackerInfo.includeBank)

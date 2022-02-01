@@ -11,8 +11,12 @@ function addon:InitializeTooltips()
 		tooltipFrame:ClearLines()
 		tooltipFrame:SetOwner(owner, anchor, x, y)
 		for _, line in pairs(lines) do
-			if line.double then
-				--tooltipFrame:AddDoubleLine(k, v, unpack(kColor), unpack(vColor)) -- TODO
+			if line.link then
+				tooltipFrame:SetHyperlink(line.line)
+			elseif line.texture then
+				tooltipFrame:AddTexture(line.line, line.size)
+			elseif line.double then
+				tooltipFrame:AddDoubleLine(line.k, line.v, unpack(line.color))
 			else
 				tooltipFrame:AddLine(line.line, unpack(line.color))
 			end

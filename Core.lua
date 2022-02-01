@@ -29,7 +29,7 @@ function addon:OnInitialize()
 	self.moveDelay = 0.4
 	self.OffsetX = 10
 	self.OffsetY = 10
-	self.tooltip_description = { 1, 1, 1, 1, 1, 1, 1 }
+	self.tooltip_desc = { 1, 1, 1, 1, 1, 1, 1 }
 	self.tooltip_keyvalue = { 1, 0.82, 0, 1, 1, 1, 1 }
 
 	self.barProgress = [[function(info)

@@ -91,10 +91,7 @@ local function anchor_OnEnter(self)
 	local tooltip = widget:GetUserData("tooltip")
 	if tooltip and not addon.DragFrame:GetObjective() then
 		addon.tooltipFrame:SetScript("OnUpdate", function()
-			addon.tooltipFrame:ClearLines()
-			addon.tooltipFrame:SetOwner(self, "ANCHOR_BOTTOMRIGHT", 0, 0)
-			addon[tooltip](addon, widget, addon.tooltipFrame)
-			addon.tooltipFrame:Show()
+			addon.tooltipFrame:Load(self, "ANCHOR_BOTTOMRIGHT", 0, 0, addon[tooltip](addon, widget, addon.tooltipFrame))
 		end)
 		addon.tooltipFrame:GetScript("OnUpdate")()
 	end

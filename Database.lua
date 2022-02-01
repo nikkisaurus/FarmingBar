@@ -41,10 +41,9 @@ function addon:InitializeDB()
 									-- Char
 									includeAllChars = false,
 									includeBank = false,
-									--@retail@
-
-									includeGuildBank = {},
-									--@end-retail@
+									includeGuildBank = {
+										["**"] = false,
+									},
 									exclude = {}, -- buttonIDs
 									-- Template
 									order = 0,

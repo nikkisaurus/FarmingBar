@@ -544,28 +544,28 @@ As a reminder, if you switch back to the stable version from this alpha, your al
 
 L.Options_Help_Alerts = [[|cffffcc00Alerts|r
 
-This is a description.
+Coming soon...
 ]]
 
 ------------------------------------------------------------
 
 L.Options_Help_Commands = [[|cffffcc00Commands|r
 
-This is a description.
+Coming soon...
 ]]
 
 ------------------------------------------------------------
 
 L.Options_Help_Objectives = [[|cffffcc00Objectives|r
 
-This is a description.
+Coming soon...
 ]]
 
 ------------------------------------------------------------
 
 L.Options_Help_Templates = [[|cffffcc00Templates|r
 
-This is a description.
+Coming soon...
 ]]
 
 L.FARMINGBAR_CONFIRM_OVERWRITE_TEMPLATE = [[Template "%s" already exists. Do you want to overwrite this template?]]
