@@ -19,6 +19,8 @@ function addon:CreateTracker(objectiveInfo, trackerType, trackerID)
 		lastIndex = max(v.order, lastIndex)
 	end
 	tracker.order = lastIndex + 1
+	tracker.includeGuildBank = {}
+	tracker.exclude = {}
 
 	------------------------------------------------------------
 	-- Debug-----------------------------------------------------

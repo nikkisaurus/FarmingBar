@@ -231,12 +231,18 @@ function addon:GetButtonTooltip(widget, tooltip)
 					color = kv,
 				})
 			else
-				tinsert(pending, {
-					line = L["Include Guild Bank"],
-					color = kv,
+				lines = InsertPending(lines, {
+					{
+						line = L["Include Guild Bank"],
+						color = kv,
+					},
 				})
 
-				for tracker, trackerInfo in pairs(buttonDB.trackers) do
+				local trackerCount = 0
+				for tracker, trackerInfo in self.pairs(buttonDB.trackers, function(a, b)
+					return buttonDB.trackers[a].order < buttonDB.trackers[b].order
+				end) do
+					trackerCount = trackerCount + 1
 					local included = 0
 					local numGuilds = self.tcount(trackerInfo.includeGuildBank)
 					for guild, isIncluded in pairs(trackerInfo.includeGuildBank) do
@@ -245,25 +251,40 @@ function addon:GetButtonTooltip(widget, tooltip)
 
 					local trackerType, trackerID = self:ParseTrackerKey(tracker)
 					self:GetTrackerDataTable(buttonDB, trackerType, trackerID, function(data)
-						tinsert(pending, {
-							double = true,
-							k = data.name,
-							v = format("%d / %d", included, numGuilds),
-							color = desc,
-						})
+						if trackerCount == (self.maxTooltipTrackers + 1) then -- Shorten list
+							pending = {
+								{
+									line = format("%d %s...", numTrackers - self.maxTooltipTrackers, L["more"]),
+									color = desc,
+								},
+								{
+									texture = true,
+									line = 134400,
+								},
+							}
 
-						tinsert(pending, {
-							texture = true,
-							line = data.icon,
-						})
+							lines = InsertPending(lines, pending)
+						elseif trackerCount < self.maxTooltipTrackers then
+							pending = {
+								{
+									double = true,
+									k = data.name,
+									v = format("%d / %d", included, numGuilds),
+									color = desc,
+								},
+								{
+									texture = true,
+									line = data.icon,
+								},
+							}
+
+							lines = InsertPending(lines, pending)
+						end
 					end)
 				end
 			end
 
-			lines = InsertPending(lines, pending)
-
 			-- Trackers
-			local trackerCount = 0
 			pending = {
 				{
 					line = " ",
@@ -279,9 +300,11 @@ function addon:GetButtonTooltip(widget, tooltip)
 
 			lines = InsertPending(lines, pending)
 
-			for key, trackerInfo in pairs(buttonDB.trackers) do
+			local trackerCount = 0
+			for key, trackerInfo in self.pairs(buttonDB.trackers, function(a, b)
+				return buttonDB.trackers[a].order < buttonDB.trackers[b].order
+			end) do
 				trackerCount = trackerCount + 1
-
 				if trackerCount > self.maxTooltipTrackers then -- Shorten list
 					pending = {
 						{
