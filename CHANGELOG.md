@@ -8,6 +8,7 @@
 - Options have been rearranged
 - Bug fixes:
   - -- Duplicating an objective now opens the config for the new objective
+  - -- Fixed error from misplaced packager tag for classic
 
 ### 3.0-alpha18
 

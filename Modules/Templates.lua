@@ -2205,8 +2205,8 @@ addon.templates = {
 		{
 			itemID = 172089,
 			objectiveTitle = "item:Desolate Leather",
-		}, --@end-retail@
-	},
+		},
+	}, --@end-retail@
 }
 
 -- *------------------------------------------------------------------------

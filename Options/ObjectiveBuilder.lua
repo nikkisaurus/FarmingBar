@@ -75,7 +75,10 @@ function addon:GetObjectiveBuilderOptions()
 			type = "execute",
 			name = L["New"],
 			func = function()
-				self:CreateObjectiveTemplate()
+				local objectiveTitle = self:CreateObjectiveTemplate()
+
+				ACD:SelectGroup(addonName, "objectiveBuilder", "objectives", objectiveTitle)
+				ACD:Open(addonName)
 			end,
 		},
 		import = {
@@ -266,7 +269,7 @@ function addon:GetObjectiveBuilderOptions()
 						importObjective:Fire("OnClose")
 
 						local objectiveTitle = addon:DuplicateObjective(objectiveInfo.title, objectiveInfo)
-						ACD:SelectGroup(addonName, "objectiveBuilder", objectiveTitle)
+						ACD:SelectGroup(addonName, "objectiveBuilder", "objectives", objectiveTitle)
 						ACD:Open(addonName)
 					end)
 				end)
@@ -405,6 +408,7 @@ function addon:GetObjectiveBuilderOptions()
 									ACD:SelectGroup(
 										addonName,
 										"objectiveBuilder",
+										"objectives",
 										objectiveTitle,
 										"trackers",
 										trackerKey
@@ -493,7 +497,7 @@ function addon:GetObjectiveBuilderOptions_Objective(objectiveTitle)
 					return
 				end
 				self:RenameObjectiveTemplate(objectiveTitle, value)
-				ACD:SelectGroup(addonName, "objectiveBuilder", value)
+				ACD:SelectGroup(addonName, "objectiveBuilder", "objectives", value)
 			end,
 		},
 		autoIcon = {
@@ -622,7 +626,7 @@ function addon:GetObjectiveBuilderOptions_Objective(objectiveTitle)
 					name = L["Duplicate Objective"],
 					func = function()
 						local newObjectiveTitle = self:DuplicateObjective(objectiveTitle)
-						ACD:SelectGroup(addonName, "objectiveBuilder", newObjectiveTitle)
+						ACD:SelectGroup(addonName, "objectiveBuilder", "objectives", newObjectiveTitle)
 					end,
 				},
 				exportObjective = {
