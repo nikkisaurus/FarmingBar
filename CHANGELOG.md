@@ -7,6 +7,7 @@
 - Options have been rearranged
 - Implemented icon selector
 - Implemented bar duplication
+- Implemented configuartion for all bars
 - Bug fixes:
   - -- Duplicating an objective now opens the config for the new objective
   - -- Fixed error from misplaced packager tag for classic

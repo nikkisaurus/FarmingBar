@@ -115,6 +115,9 @@ function addon:GetConfigOptions()
 			type = "group",
 			name = L["All Bars"],
 			childGroups = "tab",
+			disabled = function()
+				return #addon.bars == 0
+			end,
 			args = {
 				bar = {
 					order = 1,
@@ -126,15 +129,7 @@ function addon:GetConfigOptions()
 					order = 2,
 					type = "group",
 					name = L["Button"],
-					disabled = true,
 					args = self:GetButtonConfigOptions(0),
-				},
-				manage = {
-					order = 3,
-					type = "group",
-					name = L["Manage"],
-					disabled = true,
-					args = self:GetManageConfigOptions(0),
 				},
 			},
 		},
@@ -142,6 +137,9 @@ function addon:GetConfigOptions()
 			order = 6,
 			type = "group",
 			name = L["Bars"],
+			disabled = function()
+				return #addon.bars == 0
+			end,
 			args = {},
 		},
 	}
@@ -761,191 +759,481 @@ function addon:GetBarConfigOptions(barID)
 end
 
 function addon:GetButtonConfigOptions(barID)
-	local options = {
-		buttons = {
-			order = 1,
-			type = "group",
-			inline = true,
-			width = "full",
-			name = L["Buttons"],
-			get = function(info)
-				return self:GetBarDBValue(info[#info], barID)
-			end,
-			args = {
-				numVisibleButtons = {
-					order = 1,
-					type = "range",
-					name = L["Number of Buttons"],
-					min = 0,
-					max = self.maxButtons,
-					step = 1,
-					set = function(info, value)
-						self:SetBarDBValue(info[#info], value, barID)
-						self.bars[barID]:UpdateVisibleButtons()
-						self.bars[barID]:SetBackdropAnchor()
-					end,
-				},
-				buttonWrap = {
-					order = 2,
-					type = "range",
-					name = L["Buttons Per Wrap"],
-					min = 1,
-					max = self.maxButtons,
-					step = 1,
-					set = function(info, value)
-						self:SetBarDBValue(info[#info], value, barID)
-						self.bars[barID]:AnchorButtons()
-					end,
-				},
-			},
-		},
-		style = {
-			order = 2,
-			type = "group",
-			inline = true,
-			width = "full",
-			name = L["Style"],
-			args = {
-				size = {
-					order = 1,
-					type = "range",
-					name = L["Size"],
-					min = self.minButtonSize,
-					max = self.maxButtonSize,
-					step = 1,
-					get = function(info)
-						return self:GetBarDBValue("button." .. info[#info], barID)
-					end,
-					set = function(info, value)
-						self:SetBarDBValue("button." .. info[#info], value, barID)
-						self.bars[barID]:SetSize()
-					end,
-				},
-				padding = {
-					order = 2,
-					type = "range",
-					name = L["Padding"],
-					min = self.minButtonPadding,
-					max = self.maxButtonPadding,
-					step = 1,
-					get = function(info)
-						return self:GetBarDBValue("button." .. info[#info], barID)
-					end,
-					set = function(info, value)
-						self:SetBarDBValue("button." .. info[#info], value, barID)
-						self.bars[barID]:SetSize()
-						self.bars[barID]:AnchorButtons()
-					end,
-				},
-				countHeader = {
-					order = 3,
-					type = "header",
-					name = L["Count Fontstring"],
-				},
-				countAnchor = {
-					order = 4,
-					type = "select",
-					name = L["Anchor"],
-					values = anchors,
-					sorting = anchorSort,
-					get = function(info)
-						return self:GetBarDBValue("button.fontStrings.count.anchor", barID)
-					end,
-					set = function(info, value)
-						self:SetBarDBValue("button.fontStrings.count.anchor", value, barID)
-						self:UpdateButtons()
-					end,
-				},
-				countXOffset = {
-					order = 5,
-					type = "range",
-					name = L["X Offset"],
-					min = -self.OffsetX,
-					max = self.OffsetX,
-					step = 1,
-					get = function(info)
-						return self:GetBarDBValue("button.fontStrings.count.xOffset", barID)
-					end,
-					set = function(info, value)
-						self:SetBarDBValue("button.fontStrings.count.xOffset", value, barID)
-						self:UpdateButtons()
-					end,
-				},
-				countYOffset = {
-					order = 6,
-					type = "range",
-					name = L["Y Offset"],
-					min = -self.OffsetY,
-					max = self.OffsetY,
-					step = 1,
-					get = function(info)
-						return self:GetBarDBValue("button.fontStrings.count.yOffset", barID)
-					end,
-					set = function(info, value)
-						self:SetBarDBValue("button.fontStrings.count.yOffset", value, barID)
-						self:UpdateButtons()
-					end,
-				},
-				objectiveHeader = {
-					order = 7,
-					type = "header",
-					name = L["Objective Fontstring"],
-				},
-				objectiveAnchor = {
-					order = 8,
-					type = "select",
-					name = L["Anchor"],
-					values = anchors,
-					sorting = anchorSort,
-					get = function(info)
-						return self:GetBarDBValue("button.fontStrings.objective.anchor", barID)
-					end,
-					set = function(info, value)
-						self:SetBarDBValue("button.fontStrings.objective.anchor", value, barID)
-						self:UpdateButtons()
-					end,
-				},
-				objectiveXOffset = {
-					order = 9,
-					type = "range",
-					name = L["X Offset"],
-					min = -self.OffsetX,
-					max = self.OffsetX,
-					step = 1,
-					get = function(info)
-						return self:GetBarDBValue("button.fontStrings.objective.xOffset", barID)
-					end,
-					set = function(info, value)
-						self:SetBarDBValue("button.fontStrings.objective.xOffset", value, barID)
-						self:UpdateButtons()
-					end,
-				},
-				objectiveYOffset = {
-					order = 10,
-					type = "range",
-					name = L["Y Offset"],
-					min = -self.OffsetY,
-					max = self.OffsetY,
-					step = 1,
-					get = function(info)
-						return self:GetBarDBValue("button.fontStrings.objective.yOffset", barID)
-					end,
-					set = function(info, value)
-						self:SetBarDBValue("button.fontStrings.objective.yOffset", value, barID)
-						self:UpdateButtons()
-					end,
+	local options
+
+	if barID == 0 then
+		options = {
+			buttons = {
+				order = 1,
+				type = "group",
+				inline = true,
+				width = "full",
+				name = L["Buttons"],
+				get = function(info)
+					local value
+					for barID, _ in pairs(addon.bars) do
+						local val = addon:GetBarDBValue(info[#info], barID)
+						if not value then
+							value = val
+						elseif value ~= val then
+							return
+						end
+					end
+
+					return value
+				end,
+				args = {
+					numVisibleButtons = {
+						order = 1,
+						type = "range",
+						name = L["Number of Buttons"],
+						min = 0,
+						max = self.maxButtons,
+						step = 1,
+						set = function(info, value)
+							for barID, bar in pairs(addon.bars) do
+								addon:SetBarDBValue(info[#info], value, barID)
+								bar:UpdateVisibleButtons()
+								bar:SetBackdropAnchor()
+							end
+						end,
+					},
+					buttonWrap = {
+						order = 2,
+						type = "range",
+						name = L["Buttons Per Wrap"],
+						min = 1,
+						max = self.maxButtons,
+						step = 1,
+						set = function(info, value)
+							for barID, bar in pairs(addon.bars) do
+								addon:SetBarDBValue(info[#info], value, barID)
+								bar:AnchorButtons()
+							end
+						end,
+					},
 				},
 			},
-		},
-	}
+			style = {
+				order = 2,
+				type = "group",
+				inline = true,
+				width = "full",
+				name = L["Style"],
+				args = {
+					size = {
+						order = 1,
+						type = "range",
+						name = L["Size"],
+						min = self.minButtonSize,
+						max = self.maxButtonSize,
+						step = 1,
+						get = function(info)
+							local value
+							for barID, _ in pairs(addon.bars) do
+								local val = addon:GetBarDBValue("button." .. info[#info], barID)
+								if not value then
+									value = val
+								elseif value ~= val then
+									return
+								end
+							end
+
+							return value
+						end,
+						set = function(info, value)
+							for barID, bar in pairs(addon.bars) do
+								addon:SetBarDBValue("button." .. info[#info], value, barID)
+								bar:SetSize()
+							end
+						end,
+					},
+					padding = {
+						order = 2,
+						type = "range",
+						name = L["Padding"],
+						min = self.minButtonPadding,
+						max = self.maxButtonPadding,
+						step = 1,
+						get = function(info)
+							local value
+							for barID, _ in pairs(addon.bars) do
+								local val = addon:GetBarDBValue("button." .. info[#info], barID)
+								if not value then
+									value = val
+								elseif value ~= val then
+									return
+								end
+							end
+
+							return value
+						end,
+						set = function(info, value)
+							for barID, bar in pairs(addon.bars) do
+								addon:SetBarDBValue("button." .. info[#info], value, barID)
+								bar:SetSize()
+								bar:AnchorButtons()
+							end
+						end,
+					},
+					countHeader = {
+						order = 3,
+						type = "header",
+						name = L["Count Fontstring"],
+					},
+					countAnchor = {
+						order = 4,
+						type = "select",
+						name = L["Anchor"],
+						values = anchors,
+						sorting = anchorSort,
+						get = function(info)
+							local value
+							for barID, _ in pairs(addon.bars) do
+								local val = addon:GetBarDBValue("button.fontStrings.count.anchor", barID)
+								if not value then
+									value = val
+								elseif value ~= val then
+									return
+								end
+							end
+
+							return value
+						end,
+						set = function(info, value)
+							for barID, _ in pairs(addon.bars) do
+								addon:SetBarDBValue("button.fontStrings.count.anchor", value, barID)
+								addon:UpdateButtons()
+							end
+						end,
+					},
+					countXOffset = {
+						order = 5,
+						type = "range",
+						name = L["X Offset"],
+						min = -self.OffsetX,
+						max = self.OffsetX,
+						step = 1,
+						get = function(info)
+							local value
+							for barID, _ in pairs(addon.bars) do
+								local val = addon:GetBarDBValue("button.fontStrings.count.xOffset", barID)
+								if not value then
+									value = val
+								elseif value ~= val then
+									return
+								end
+							end
+
+							return value
+						end,
+						set = function(info, value)
+							for barID, _ in pairs(addon.bars) do
+								addon:SetBarDBValue("button.fontStrings.count.xOffset", value, barID)
+								addon:UpdateButtons()
+							end
+						end,
+					},
+					countYOffset = {
+						order = 6,
+						type = "range",
+						name = L["Y Offset"],
+						min = -self.OffsetY,
+						max = self.OffsetY,
+						step = 1,
+						get = function(info)
+							local value
+							for barID, _ in pairs(addon.bars) do
+								local val = addon:GetBarDBValue("button.fontStrings.count.yOffset", barID)
+								if not value then
+									value = val
+								elseif value ~= val then
+									return
+								end
+							end
+
+							return value
+						end,
+						set = function(info, value)
+							for barID, _ in pairs(addon.bars) do
+								addon:SetBarDBValue("button.fontStrings.count.yOffset", value, barID)
+								addon:UpdateButtons()
+							end
+						end,
+					},
+					objectiveHeader = {
+						order = 7,
+						type = "header",
+						name = L["Objective Fontstring"],
+					},
+					objectiveAnchor = {
+						order = 8,
+						type = "select",
+						name = L["Anchor"],
+						values = anchors,
+						sorting = anchorSort,
+						get = function(info)
+							local value
+							for barID, _ in pairs(addon.bars) do
+								local val = addon:GetBarDBValue("button.fontStrings.objective.anchor", barID)
+								if not value then
+									value = val
+								elseif value ~= val then
+									return
+								end
+							end
+
+							return value
+						end,
+						set = function(info, value)
+							for barID, _ in pairs(addon.bars) do
+								addon:SetBarDBValue("button.fontStrings.objective.anchor", value, barID)
+								addon:UpdateButtons()
+							end
+						end,
+					},
+					objectiveXOffset = {
+						order = 9,
+						type = "range",
+						name = L["X Offset"],
+						min = -self.OffsetX,
+						max = self.OffsetX,
+						step = 1,
+						get = function(info)
+							local value
+							for barID, _ in pairs(addon.bars) do
+								local val = addon:GetBarDBValue("button.fontStrings.objective.xOffset", barID)
+								if not value then
+									value = val
+								elseif value ~= val then
+									return
+								end
+							end
+
+							return value
+						end,
+						set = function(info, value)
+							for barID, _ in pairs(addon.bars) do
+								addon:SetBarDBValue("button.fontStrings.objective.xOffset", value, barID)
+								addon:UpdateButtons()
+							end
+						end,
+					},
+					objectiveYOffset = {
+						order = 10,
+						type = "range",
+						name = L["Y Offset"],
+						min = -self.OffsetY,
+						max = self.OffsetY,
+						step = 1,
+						get = function(info)
+							local value
+							for barID, _ in pairs(addon.bars) do
+								local val = addon:GetBarDBValue("button.fontStrings.objective.yOffset", barID)
+								if not value then
+									value = val
+								elseif value ~= val then
+									return
+								end
+							end
+
+							return value
+						end,
+						set = function(info, value)
+							for barID, _ in pairs(addon.bars) do
+								addon:SetBarDBValue("button.fontStrings.objective.yOffset", value, barID)
+								addon:UpdateButtons()
+							end
+						end,
+					},
+				},
+			},
+		}
+	else
+		options = {
+			buttons = {
+				order = 1,
+				type = "group",
+				inline = true,
+				width = "full",
+				name = L["Buttons"],
+				get = function(info)
+					return self:GetBarDBValue(info[#info], barID)
+				end,
+				args = {
+					numVisibleButtons = {
+						order = 1,
+						type = "range",
+						name = L["Number of Buttons"],
+						min = 0,
+						max = self.maxButtons,
+						step = 1,
+						set = function(info, value)
+							self:SetBarDBValue(info[#info], value, barID)
+							self.bars[barID]:UpdateVisibleButtons()
+							self.bars[barID]:SetBackdropAnchor()
+						end,
+					},
+					buttonWrap = {
+						order = 2,
+						type = "range",
+						name = L["Buttons Per Wrap"],
+						min = 1,
+						max = self.maxButtons,
+						step = 1,
+						set = function(info, value)
+							self:SetBarDBValue(info[#info], value, barID)
+							self.bars[barID]:AnchorButtons()
+						end,
+					},
+				},
+			},
+			style = {
+				order = 2,
+				type = "group",
+				inline = true,
+				width = "full",
+				name = L["Style"],
+				args = {
+					size = {
+						order = 1,
+						type = "range",
+						name = L["Size"],
+						min = self.minButtonSize,
+						max = self.maxButtonSize,
+						step = 1,
+						get = function(info)
+							return self:GetBarDBValue("button." .. info[#info], barID)
+						end,
+						set = function(info, value)
+							self:SetBarDBValue("button." .. info[#info], value, barID)
+							self.bars[barID]:SetSize()
+						end,
+					},
+					padding = {
+						order = 2,
+						type = "range",
+						name = L["Padding"],
+						min = self.minButtonPadding,
+						max = self.maxButtonPadding,
+						step = 1,
+						get = function(info)
+							return self:GetBarDBValue("button." .. info[#info], barID)
+						end,
+						set = function(info, value)
+							self:SetBarDBValue("button." .. info[#info], value, barID)
+							self.bars[barID]:SetSize()
+							self.bars[barID]:AnchorButtons()
+						end,
+					},
+					countHeader = {
+						order = 3,
+						type = "header",
+						name = L["Count Fontstring"],
+					},
+					countAnchor = {
+						order = 4,
+						type = "select",
+						name = L["Anchor"],
+						values = anchors,
+						sorting = anchorSort,
+						get = function(info)
+							return self:GetBarDBValue("button.fontStrings.count.anchor", barID)
+						end,
+						set = function(info, value)
+							self:SetBarDBValue("button.fontStrings.count.anchor", value, barID)
+							self:UpdateButtons()
+						end,
+					},
+					countXOffset = {
+						order = 5,
+						type = "range",
+						name = L["X Offset"],
+						min = -self.OffsetX,
+						max = self.OffsetX,
+						step = 1,
+						get = function(info)
+							return self:GetBarDBValue("button.fontStrings.count.xOffset", barID)
+						end,
+						set = function(info, value)
+							self:SetBarDBValue("button.fontStrings.count.xOffset", value, barID)
+							self:UpdateButtons()
+						end,
+					},
+					countYOffset = {
+						order = 6,
+						type = "range",
+						name = L["Y Offset"],
+						min = -self.OffsetY,
+						max = self.OffsetY,
+						step = 1,
+						get = function(info)
+							return self:GetBarDBValue("button.fontStrings.count.yOffset", barID)
+						end,
+						set = function(info, value)
+							self:SetBarDBValue("button.fontStrings.count.yOffset", value, barID)
+							self:UpdateButtons()
+						end,
+					},
+					objectiveHeader = {
+						order = 7,
+						type = "header",
+						name = L["Objective Fontstring"],
+					},
+					objectiveAnchor = {
+						order = 8,
+						type = "select",
+						name = L["Anchor"],
+						values = anchors,
+						sorting = anchorSort,
+						get = function(info)
+							return self:GetBarDBValue("button.fontStrings.objective.anchor", barID)
+						end,
+						set = function(info, value)
+							self:SetBarDBValue("button.fontStrings.objective.anchor", value, barID)
+							self:UpdateButtons()
+						end,
+					},
+					objectiveXOffset = {
+						order = 9,
+						type = "range",
+						name = L["X Offset"],
+						min = -self.OffsetX,
+						max = self.OffsetX,
+						step = 1,
+						get = function(info)
+							return self:GetBarDBValue("button.fontStrings.objective.xOffset", barID)
+						end,
+						set = function(info, value)
+							self:SetBarDBValue("button.fontStrings.objective.xOffset", value, barID)
+							self:UpdateButtons()
+						end,
+					},
+					objectiveYOffset = {
+						order = 10,
+						type = "range",
+						name = L["Y Offset"],
+						min = -self.OffsetY,
+						max = self.OffsetY,
+						step = 1,
+						get = function(info)
+							return self:GetBarDBValue("button.fontStrings.objective.yOffset", barID)
+						end,
+						set = function(info, value)
+							self:SetBarDBValue("button.fontStrings.objective.yOffset", value, barID)
+							self:UpdateButtons()
+						end,
+					},
+				},
+			},
+		}
+	end
 
 	return options
 end
 
 function addon:GetManageConfigOptions(barID)
-	local options
-
-	options = {
+	local options = {
 		enabled = {
 			order = 0,
 			type = "toggle",
