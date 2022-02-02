@@ -116,7 +116,7 @@ function addon:GetConfigOptions()
 			name = L["All Bars"],
 			childGroups = "tab",
 			disabled = function()
-				return #addon.bars == 0
+				return #addon.bars < 2
 			end,
 			args = {
 				bar = {
