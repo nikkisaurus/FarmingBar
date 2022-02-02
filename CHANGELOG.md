@@ -7,7 +7,7 @@
 - Options have been rearranged
 - Implemented icon selector
 - Implemented bar duplication
-- Implemented configuartion for all bars
+- Implemented configuration for all bars
 - Reinstated the "/craft" command for objective actions
   - -- Create your action as a macrotext using "/craft ProfessionName Recipe Name"
   - -- Don't forget to add vellums or other items you need to target during crafting:
@@ -16,7 +16,7 @@
 - Bug fixes:
   - -- Duplicating an objective now opens the config for the new objective
   - -- Fixed error from misplaced packager tag for classic
-  - -- Loading an objective onto the cursor now clears items or spells on the cursor
+  - -- Loading an objective onto the cursor now clears items or spells on the previously on the cursor
 
 ### 3.0-alpha18
 
