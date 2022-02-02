@@ -8,6 +8,11 @@
 - Implemented icon selector
 - Implemented bar duplication
 - Implemented configuartion for all bars
+- Reinstated the "/craft" command for objective actions
+  - -- Create your action as a macrotext using "/craft ProfessionName Recipe Name"
+  - -- Don't forget to add vellums or other items you need to target during crafting:
+  - -- -- /craft Enchanting Shadowlands Gathering
+  - -- -- /use Enchanting Vellum
 - Bug fixes:
   - -- Duplicating an objective now opens the config for the new objective
   - -- Fixed error from misplaced packager tag for classic

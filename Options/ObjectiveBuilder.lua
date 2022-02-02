@@ -17,14 +17,13 @@ local actions = {
 	CURRENCY = L["Currency"],
 	--@end-retail@
 	MACROTEXT = L["Macrotext"],
-	RECIPE = L["Recipe"],
 	NONE = L["None"],
 }
 --@retail@
-local actionSort = { "ITEM", "CURRENCY", "MACROTEXT", "RECIPE", "NONE" }
+local actionSort = { "ITEM", "CURRENCY", "MACROTEXT", "NONE" }
 --@end-retail@
 --[===[@non-retail@
-local actionSort = {"ITEM", "MACROTEXT", "RECIPE", "NONE"}
+local actionSort = {"ITEM", "MACROTEXT", "NONE"}
 --@end-non-retail@]===]
 
 local newTrackerType = "ITEM"
@@ -48,8 +47,6 @@ local function GetActionInfoLabel(objectiveTitle)
 	elseif trackerType == "CURRENCY" then
 		--@end-retail@
 		return L["Currency ID/Link"]
-	elseif trackerType == "RECIPE" then
-		return L["Recipe String"]
 	elseif trackerType == "MACROTEXT" then
 		return L["Macrotext"]
 	end
@@ -584,9 +581,6 @@ function addon:GetObjectiveBuilderOptions_Objective(objectiveTitle)
 
 						if action == "ITEM" or action == "CURRENCY" then
 							return self:ValidateTrackerData(action, value) or format(L.InvalidTrackerID, action, value)
-						elseif action == "RECIPE" then
-							-- TODO: validate recipe
-							return true
 						else -- MACROTEXT
 							return true
 						end

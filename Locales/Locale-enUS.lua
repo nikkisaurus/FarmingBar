@@ -38,10 +38,6 @@ L.InvalidObjectiveTitle = "Invalid objective title."
 L.InvalidTrackerExclusion = "Cannot exclude parent objective."
 L.ObjectiveIsExcluded = "Objective is already being excluded."
 
-L.InvalidCraftSkillID = "Invalid tradeskill name."
-L.MissingCraftRecipeName = "Please specify a Recipe String"
-L.UnknownRecipe = "You do not know the recipe: %s"
-
 L.InvalidSyntax = function(err)
 	return "Syntax error: " .. (type(err) == "string" and err or "??")
 end
@@ -571,3 +567,12 @@ Coming soon...
 L.FARMINGBAR_CONFIRM_OVERWRITE_TEMPLATE = [[Template "%s" already exists. Do you want to overwrite this template?]]
 L.FARMINGBAR_INCLUDE_TEMPLATE_DATA = [[Do you want to include objective data while loading templates "%s"]]
 L.FARMINGBAR_SAVE_TEMPLATE_ORDER = [[Do you want to save the objective order while loading template "%s"?]]
+
+L.InvalidCraftSkillID = "Invalid tradeskill name."
+L.MissingCraftRecipeName = "Please specify a tradeskill recipe name"
+L.UnknownRecipe = function(recipeName)
+	return format(
+		"You do not know the recipe: %s. If you believe this is an error, please manually open your tradeskill and try again.",
+		recipeName
+	)
+end

@@ -163,6 +163,8 @@ function addon:RegisterSlashCommands()
 			self:UnregisterChatCommand(command)
 		end
 	end
+
+	self:RegisterChatCommand("craft", "CraftTradeSkill")
 end
 
 function addon:SlashCommandFunc(input)
