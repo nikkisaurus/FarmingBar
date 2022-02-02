@@ -18,6 +18,14 @@ local anchors = {
 
 local anchorSort = { "TOPLEFT", "TOP", "TOPRIGHT", "LEFT", "CENTER", "RIGHT", "BOTTOMLEFT", "BOTTOM", "BOTTOMRIGHT" }
 
+-- https://wowwiki-archive.fandom.com/wiki/USERAPI_RGBToHex
+local function RGBToHex(r, g, b)
+	r = r <= 255 and r >= 0 and r or 0
+	g = g <= 255 and g >= 0 and g or 0
+	b = b <= 255 and b >= 0 and b or 0
+	return string.format("%02x%02x%02x", r, g, b)
+end
+
 -- *------------------------------------------------------------------------
 -- Get options
 
@@ -107,7 +115,28 @@ function addon:GetConfigOptions()
 			type = "group",
 			name = L["All Bars"],
 			childGroups = "tab",
-			args = addon:GetBarConfigOptions(0),
+			args = {
+				bar = {
+					order = 1,
+					type = "group",
+					name = L["Bar"],
+					args = self:GetBarConfigOptions(0),
+				},
+				button = {
+					order = 2,
+					type = "group",
+					name = L["Button"],
+					disabled = true,
+					args = self:GetButtonConfigOptions(0),
+				},
+				manage = {
+					order = 3,
+					type = "group",
+					name = L["Manage"],
+					disabled = true,
+					args = self:GetManageConfigOptions(0),
+				},
+			},
 		},
 		container = {
 			order = 6,
@@ -155,7 +184,314 @@ function addon:GetBarConfigOptions(barID)
 	local options
 
 	if barID == 0 then -- Config all bars
-		options = {}
+		options = {
+			alerts = {
+				order = 1,
+				type = "group",
+				inline = true,
+				width = "full",
+				name = "*" .. L["Alerts"],
+				get = function(info)
+					local count = 0
+					for barID, _ in pairs(addon.bars) do
+						count = addon:GetBarDBValue("alerts." .. info[#info], barID, true) and (count + 1) or count
+					end
+
+					if count == 0 then
+						return false
+					elseif count == #addon.bars then
+						return true
+					else
+						return nil
+					end
+				end,
+				set = function(info, value)
+					for barID, _ in pairs(addon.bars) do
+						addon:SetBarDBValue("alerts." .. info[#info], value, barID, true)
+					end
+				end,
+				args = {
+					muteAll = {
+						order = 1,
+						type = "toggle",
+						tristate = true,
+						name = L["Mute All"],
+					},
+					barProgress = {
+						order = 2,
+						type = "toggle",
+						tristate = true,
+						name = L["Bar Progress"],
+					},
+					completedObjectives = {
+						order = 3,
+						type = "toggle",
+						tristate = true,
+						name = L["Completed Objectives"],
+					},
+				},
+			},
+			visibility = {
+				order = 2,
+				type = "group",
+				inline = true,
+				width = "full",
+				name = L["Visibility"],
+				get = function(info)
+					local count = 0
+					for barID, _ in pairs(addon.bars) do
+						count = addon:GetBarDBValue(info[#info], barID) and (count + 1) or count
+					end
+
+					if count == 0 then
+						return false
+					elseif count == #addon.bars then
+						return true
+					else
+						return nil
+					end
+				end,
+				set = function(info, value)
+					for barID, bar in pairs(addon.bars) do
+						addon:SetBarDBValue(info[#info], value, barID)
+						bar:SetAlpha()
+					end
+				end,
+				args = {
+					showEmpty = {
+						order = 1,
+						type = "toggle",
+						tristate = true,
+						name = L["Show Empty Buttons"],
+					},
+					mouseover = {
+						order = 2,
+						type = "toggle",
+						tristate = true,
+						name = L["Show on Mouseover"],
+					},
+					anchorMouseover = {
+						order = 3,
+						type = "toggle",
+						tristate = true,
+						name = L["Show on Anchor Mouseover"],
+					},
+					hidden = {
+						order = 4,
+						type = "toggle",
+						tristate = true,
+						name = L["Hidden"],
+						set = function(info, value)
+							for barID, bar in pairs(addon.bars) do
+								addon:SetBarDBValue(info[#info], value, barID)
+								bar:SetHidden()
+							end
+						end,
+					},
+				},
+			},
+			point = {
+				order = 3,
+				type = "group",
+				inline = true,
+				width = "full",
+				name = L["Point"],
+				args = {
+					growthDirection = {
+						order = 1,
+						type = "select",
+						name = L["Growth Direction"],
+						values = {
+							RIGHT = L["Right"],
+							LEFT = L["Left"],
+							UP = L["Up"],
+							DOWN = L["Down"],
+						},
+						sorting = { "RIGHT", "LEFT", "UP", "DOWN" },
+						get = function()
+							local direction
+							for barID, _ in pairs(addon.bars) do
+								local grow = addon:GetBarDBValue("grow", barID)[1]
+								if not direction then
+									direction = grow
+								elseif direction ~= grow then
+									return
+								end
+							end
+
+							return direction
+						end,
+						set = function(_, value)
+							for barID, bar in pairs(addon.bars) do
+								addon:GetDBValue("profile", "bars")[barID].grow[1] = value
+								bar:AnchorButtons()
+							end
+						end,
+					},
+					growthType = {
+						order = 2,
+						type = "select",
+						name = L["Anchor"],
+						values = {
+							DOWN = L["Normal"],
+							UP = L["Reverse"],
+						},
+						sorting = { "DOWN", "UP" },
+						get = function()
+							local direction
+							for barID, _ in pairs(addon.bars) do
+								local grow = addon:GetBarDBValue("grow", barID)[2]
+								if not direction then
+									direction = grow
+								elseif direction ~= grow then
+									return
+								end
+							end
+
+							return direction
+						end,
+						set = function(info, value)
+							for barID, bar in pairs(addon.bars) do
+								addon:GetDBValue("profile", "bars")[barID].grow[2] = value
+								bar:AnchorButtons()
+							end
+						end,
+					},
+					movable = {
+						order = 3,
+						type = "toggle",
+						name = L["Movable"],
+						get = function(info)
+							local count = 0
+							for barID, _ in pairs(addon.bars) do
+								count = addon:GetBarDBValue(info[#info], barID) and (count + 1) or count
+							end
+
+							if count == 0 then
+								return false
+							elseif count == #addon.bars then
+								return true
+							else
+								return nil
+							end
+						end,
+						set = function(info, value)
+							for barID, bar in pairs(addon.bars) do
+								addon:SetBarDBValue(info[#info], value, barID)
+								bar:SetMovable()
+							end
+						end,
+					},
+				},
+			},
+			style = {
+				order = 4,
+				type = "group",
+				inline = true,
+				width = "full",
+				name = L["Style"],
+				get = function(info)
+					local value
+					for barID, _ in pairs(addon.bars) do
+						local val = addon:GetBarDBValue(info[#info], barID)
+						if not value then
+							value = val
+						elseif value ~= val then
+							return
+						end
+					end
+
+					return value
+				end,
+				args = {
+					alpha = {
+						order = 1,
+						type = "range",
+						name = L["Alpha"],
+						min = 0,
+						max = 1,
+						step = 0.01,
+						set = function(info, value)
+							for barID, bar in pairs(addon.bars) do
+								addon:SetBarDBValue(info[#info], value, barID)
+								bar:SetAlpha()
+							end
+						end,
+					},
+					backdropPadding = {
+						order = 2,
+						type = "range",
+						name = L["Backdrop Padding"],
+						min = 0,
+						max = 10,
+						step = 1,
+						set = function(info, value)
+							for barID, bar in pairs(addon.bars) do
+								addon:SetBarDBValue(info[#info], value, barID)
+								bar:SetBackdropAnchor()
+							end
+						end,
+					},
+					backdrop = {
+						order = 3,
+						type = "select",
+						style = "dropdown",
+						control = "LSM30_Background",
+						name = L["Backdrop"],
+						values = AceGUIWidgetLSMlists.background,
+						set = function(info, value)
+							for barID, bar in pairs(addon.bars) do
+								addon:SetBarDBValue(info[#info], value, barID)
+								bar:UpdateBackdrop()
+							end
+						end,
+					},
+					backdropColor = {
+						order = 4,
+						type = "color",
+						name = L["Backdrop Color"],
+						hasAlpha = true,
+						get = function(info)
+							local color = {}
+							for barID, bar in pairs(addon.bars) do
+								local val = addon:GetBarDBValue(info[#info], barID)
+								if #color == 0 then
+									for k, v in addon.pairs(val) do
+										if v > 1 then
+											v = v / 255
+										end
+										tinsert(color, v)
+									end
+								else
+									for k, v in addon.pairs(val) do
+										if v > 1 then
+											v = v / 255
+										end
+										if color[k] ~= v then
+											return
+										end
+									end
+								end
+							end
+
+							return unpack(color)
+						end,
+						set = function(info, ...)
+							for barID, bar in pairs(addon.bars) do
+								addon:SetBarDBValue(info[#info], { ... }, barID)
+								bar:UpdateBackdrop()
+							end
+						end,
+					},
+				},
+			},
+			charSpecific = {
+				order = 5,
+				type = "description",
+				width = "full",
+				name = L.Options_Config("charSpecific"),
+			},
+		}
 	else -- Config barID
 		options = {
 			title = {

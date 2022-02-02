@@ -8,6 +8,10 @@ function addon:InitializeTooltips()
 	local tooltipFrame = self.tooltipFrame
 
 	function tooltipFrame:Load(owner, anchor, x, y, lines)
+		if not lines or type(lines) ~= "table" then
+			return
+		end
+
 		tooltipFrame:ClearLines()
 		tooltipFrame:SetOwner(owner, anchor, x, y)
 		for _, line in pairs(lines) do
