@@ -52,6 +52,7 @@ local methods = {
 		return self.text:GetText(), self.objectiveInfo
 	end,
 	LoadObjective = function(self, widget)
+		ClearCursor()
 		local buttonDB = widget:GetButtonDB()
 
 		self.icon:SetTexture(buttonDB.icon)
@@ -62,6 +63,7 @@ local methods = {
 		self:Show()
 	end,
 	LoadObjectiveTemplate = function(self, objectiveTitle)
+		ClearCursor()
 		local objectiveInfo = addon:GetDBValue("global", "objectives")[objectiveTitle]
 
 		self.icon:SetTexture(objectiveInfo.icon)

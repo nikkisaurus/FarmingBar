@@ -41,16 +41,17 @@ end
 
 function addon:CreateBar()
 	local bars = self:GetDBValue("profile", "bars")
-	local numBars = #bars
+	local newBarID = #bars + 1
 
 	-- Keeps track of whether the profile is disabled because all bars were deleted
 	self:SetDBValue("profile", "enabled", true)
 
 	-- Create and load the bar
-	bars[numBars + 1].enabled = true
-	self:LoadBar(numBars + 1)
+	bars[newBarID].enabled = true
+	self:LoadBar(newBarID)
 
 	self:RefreshOptions()
+	return newBarID
 end
 
 function addon:LoadBar(barID)

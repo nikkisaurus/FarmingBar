@@ -787,9 +787,18 @@ function addon:GetManageConfigOptions(barID)
 			order = 4,
 			type = "execute",
 			name = L["Duplicate Bar"],
-			disabled = true,
 			func = function()
-				-- TODO: duplicate bar
+				local newBarID = addon:CreateBar()
+
+				local bars = addon:GetDBValue("profile", "bars")
+				local point = bars[newBarID].point
+				bars[newBarID] = addon:CloneTable(bars[barID])
+				-- Preserve bar position, so there are not issues with moving a bar below another, and enabled status
+				bars[newBarID].point = addon:CloneTable(point)
+				-- Redraw bars
+				addon:ReleaseAllBars()
+				addon:InitializeBars()
+				addon:RefreshOptions()
 			end,
 		},
 		RemoveBar = {

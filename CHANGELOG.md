@@ -4,11 +4,13 @@
 
 ### 3.0-alpha19
 
-- Implemented icon selector
 - Options have been rearranged
+- Implemented icon selector
+- Implemented bar duplication
 - Bug fixes:
   - -- Duplicating an objective now opens the config for the new objective
   - -- Fixed error from misplaced packager tag for classic
+  - -- Loading an objective onto the cursor now clears items or spells on the cursor
 
 ### 3.0-alpha18
 
