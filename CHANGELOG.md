@@ -9,6 +9,7 @@
 - Implemented bar duplication
 - Implemented configuration for all bars
 - Reinstated the "/craft" command for objective actions
+  - -- Designated recipe action is no longer planned because it would make it more difficult to add vellums to the script
   - -- Create your action as a macrotext using "/craft ProfessionName Recipe Name"
   - -- Don't forget to add vellums or other items you need to target during crafting:
   - -- -- /craft Enchanting Shadowlands Gathering

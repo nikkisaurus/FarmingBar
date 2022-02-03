@@ -132,7 +132,7 @@ function addon:GetObjectiveEditorOptions_IncludeAllChars()
 
 	-- Check for missing DataStore dependencies
 	local missingDependencies = self:IsDataStoreLoaded()
-	if #missingDependencies > 0 then
+	if addon.tcount(missingDependencies) > 0 then
 		local red = LibStub("LibAddonUtils-1.0").ChatColors["RED"]
 
 		options["missingDependencies"] = {
@@ -260,7 +260,6 @@ function addon:GetObjectiveEditorOptions_Tracker(trackerKey, trackerInfo, data)
 				widget:SetCount()
 			end,
 		}
-		--@retail@
 		if IsAddOnLoaded("DataStore") then
 			options.includeGuildBank = {
 				order = 3,
@@ -276,24 +275,25 @@ function addon:GetObjectiveEditorOptions_Tracker(trackerKey, trackerInfo, data)
 			trackers[trackerKey].includeGuildBank = trackers[trackerKey].includeGuildBank or {}
 
 			local DS = DataStore
-			for guildName, guild in self.pairs(DS:GetGuilds(DS.ThisRealm, DS.ThisAccount)) do
-				if DS.db.global.Guilds[guild].faction == UnitFactionGroup("player") then
-					options.includeGuildBank.args[guild] = {
-						type = "toggle",
-						width = "full",
-						name = guildName,
-						get = function()
-							return addon:GetTrackerDBInfo(trackers, trackerKey, "includeGuildBank")[guild]
-						end,
-						set = function(_, value)
-							addon:GetTrackerDBInfo(trackers, trackerKey, "includeGuildBank")[guild] = value
-							widget:SetCount()
-						end,
-					}
+			if DS then
+				for guildName, guild in self.pairs(DS:GetGuilds(DS.ThisRealm, DS.ThisAccount)) do
+					if DS.db.global.Guilds[guild].faction == UnitFactionGroup("player") then
+						options.includeGuildBank.args[guild] = {
+							type = "toggle",
+							width = "full",
+							name = guildName,
+							get = function()
+								return addon:GetTrackerDBInfo(trackers, trackerKey, "includeGuildBank")[guild]
+							end,
+							set = function(_, value)
+								addon:GetTrackerDBInfo(trackers, trackerKey, "includeGuildBank")[guild] = value
+								widget:SetCount()
+							end,
+						}
+					end
 				end
 			end
 		end
-		--@end-retail@
 	end
 
 	return options

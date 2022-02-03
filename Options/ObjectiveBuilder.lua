@@ -750,7 +750,7 @@ function addon:GetObjectiveBuilderOptions_Trackers(objectiveTitle, trackerKey)
 				type = "execute",
 				name = L["Move Up"],
 				disabled = function()
-					return trackerInfo.order == 1
+					return trackerInfo.order == 1 or addon.tcount(trackers) == 1
 				end,
 				func = function()
 					local currentOrder = trackerInfo.order
@@ -770,7 +770,7 @@ function addon:GetObjectiveBuilderOptions_Trackers(objectiveTitle, trackerKey)
 				type = "execute",
 				name = L["Move Down"],
 				disabled = function()
-					return trackerInfo.order == addon.tcount(trackers)
+					return trackerInfo.order == addon.tcount(trackers) or addon.tcount(trackers) == 1
 				end,
 				func = function()
 					local currentOrder = trackerInfo.order

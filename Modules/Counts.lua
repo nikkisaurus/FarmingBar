@@ -132,8 +132,8 @@ function addon:GetDataStoreCurrencyCount(currencyID, trackerInfo)
 	if #self:IsDataStoreLoaded() > 0 then
 		return
 	end -- Missing dependencies
-	local DS = DataStore
 
+	local DS = DataStore
 	local count = 0
 
 	if trackerInfo.includeAllChars then
@@ -151,8 +151,8 @@ function addon:GetDataStoreItemCount(itemID, trackerInfo)
 	if #self:IsDataStoreLoaded() > 0 then
 		return
 	end -- Missing dependencies
-	local DS = DataStore
 
+	local DS = DataStore
 	local count = 0
 
 	if trackerInfo.includeAllChars then
@@ -382,16 +382,15 @@ function addon:IsDataStoreLoaded()
 		tinsert(missing, "DataStore_Auctions")
 	end
 
-	if not IsAddOnLoaded("DataStore_Containers") then
-		tinsert(missing, "DataStore_Containers")
-	end
-
 	if not IsAddOnLoaded("DataStore_Characters") then
 		tinsert(missing, "DataStore_Characters")
 	end
 
-	--@retail@
+	if not IsAddOnLoaded("DataStore_Containers") then
+		tinsert(missing, "DataStore_Containers")
+	end
 
+	--@retail@
 	if not IsAddOnLoaded("DataStore_Currencies") then
 		tinsert(missing, "DataStore_Currencies")
 	end
