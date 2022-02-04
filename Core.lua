@@ -90,7 +90,7 @@ function addon:OnInitialize()
 
 --trackerKey can be obtained from buttonDB.trackers. It will be in the format "ITEM:000000". overrideObjective can be used to override the saved objective for the specific tracker. For example, if your tracker contains an objective of 5, but you want to get the count per 1, supply 1 as this argument.
 
---Example: custom tracker to level Shadowlands enchanting through different recipes (5x Bargain of Haste or Crafter\'s Mark I).
+--Example: custom tracker to level Shadowlands enchanting through different recipes (5x Bargain of Haste or Crafter's Mark I).
 
 
 --function(buttonDB, GetTrackerCount)
@@ -118,7 +118,7 @@ function addon:OnInitialize()
 --    trackerCounts[soulDust] = trackerCounts[soulDust] - (numBargains * 2)
 --    trackerCounts[sacredShard] = trackerCounts[sacredShard] - numBargains
     
---    -- Calculate the number of Crafter\'s Mark I
+--    -- Calculate the number of Crafter's Mark I
 --    local numMarks = min(floor(trackerCounts[soulDust] / 5), floor(trackerCounts[immortalShard] / 3))
     
 --    count = count + (numMarks or 0)

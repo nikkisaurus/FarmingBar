@@ -30,7 +30,7 @@ function addon:GetObjectiveEditorOptions()
 				order = 1,
 				type = "select",
 				style = "dropdown",
-				name = L["Link Objective Template"],
+				name = L["Objective Template"],
 				desc = L.ObjectiveEditor_template,
 				values = function()
 					local values = {
@@ -67,13 +67,28 @@ function addon:GetObjectiveEditorOptions()
 					end)
 				end,
 			},
-			createTemplate = {
+			editTemplate = {
 				order = 2,
 				type = "execute",
-				name = L["Create Objective"],
+				width = "half",
+				name = L["Edit"],
+				desc = L["Edit Template"],
+				disabled = function()
+					return not buttonDB.template
+				end,
+				func = function()
+					ACD:SelectGroup(addonName, "objectiveBuilder", "objectives", buttonDB.template)
+					ACD:Open(addonName)
+				end,
+			},
+			createTemplate = {
+				order = 3,
+				type = "execute",
+				width = "half",
+				name = L["Create"],
 				desc = L.ObjectiveEditor_CreateTemplate,
 				disabled = function()
-					return not buttonDB.title or buttonDB.title == ""
+					return not buttonDB.title or buttonDB.title == "" or buttonDB.template
 				end,
 				func = function()
 					local objectiveTitle = addon:DuplicateObjective(buttonDB.title, buttonDB)
@@ -83,12 +98,12 @@ function addon:GetObjectiveEditorOptions()
 					-- Add link to template's instances
 					addon:CreateObjectiveTemplateInstance(objectiveTitle, widget:GetButtonID())
 
-					ACD:SelectGroup(addonName, "objectiveBuilder", objectiveTitle)
+					ACD:SelectGroup(addonName, "objectiveBuilder", "objectives", objectiveTitle)
 					ACD:Open(addonName)
 				end,
 			},
 			mute = {
-				order = 3,
+				order = 4,
 				type = "toggle",
 				name = L["Mute Alerts"],
 				width = 0.75,
@@ -103,7 +118,7 @@ function addon:GetObjectiveEditorOptions()
 				end,
 			},
 			tracker0 = {
-				order = 4,
+				order = 5,
 				type = "group",
 				name = L["All Trackers"],
 				args = self:GetObjectiveEditorOptions_Tracker(0, widget:GetButtonDB().trackers),
