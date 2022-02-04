@@ -343,7 +343,7 @@ function addon:GetButtonTooltip(widget, tooltip)
 
 					self:GetTrackerDataTable(buttonDB, trackerType, trackerID, function(data)
 						-- Get count
-						local trackerCount = self:GetTrackerCount(widget, key)
+						local trackerCount = self:GetTrackerCount(buttonDB, key)
 						local trackerRawCount
 
 						if trackerType == "ITEM" then

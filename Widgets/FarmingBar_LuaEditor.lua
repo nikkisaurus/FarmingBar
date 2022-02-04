@@ -39,7 +39,7 @@ local methods = {
 		self.editbox:Fire("OnTextChanged")
 		self.frame:Show()
 		self.editbox.button:HookScript("OnClick", function()
-			set(_, self.editbox:GetText())
+			set(info, self.editbox:GetText())
 		end)
 	end,
 	SetStatusText = function(self, text)

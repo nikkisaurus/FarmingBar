@@ -80,6 +80,71 @@ function addon:OnInitialize()
     end
     ]]
 
+	self.customCondition =
+		[[--Custom functions must return a number value. How you derive this count is completely up to you, so you can create complex rules to count your objective. Your function will be supplied two arguments (buttonDB[table] and GetTrackerCount[function]).
+
+--buttonDB.trackers contains information about all trackers in this objective.
+--GetTrackerCount will return a count for the tracker based on your settings, such as includeAllChars, includeBank, includeGuildBank:
+
+    --local count = GetTrackerCount(_, buttonDB, trackerKey[, overrideObjective])
+
+--trackerKey can be obtained from buttonDB.trackers. It will be in the format "ITEM:000000". overrideObjective can be used to override the saved objective for the specific tracker. For example, if your tracker contains an objective of 5, but you want to get the count per 1, supply 1 as this argument.
+
+--Example: custom tracker to level Shadowlands enchanting through different recipes (5x Bargain of Haste or Crafter\'s Mark I).
+
+
+--function(buttonDB, GetTrackerCount)
+--    local min = math.min
+--    local floor = math.floor
+    
+--    -- Tracker keys:
+--    local soulDust = "ITEM:172230"
+--    local sacredShard = "ITEM:172231"
+--    local eternalCrystal = "ITEM:172232"
+--    local immortalShard = "ITEM:183951"
+    
+--    -- Get counts for each tracker
+--    local count = 0
+--    local trackerCounts = {}
+    
+--    for trackerKey, trackerInfo in pairs(buttonDB.trackers) do
+--        trackerCounts[trackerKey] = GetTrackerCount(_, buttonDB, trackerKey)
+--    end
+    
+--    -- Calculate the number of Bargain of Haste enchants
+--    local numBargains = min(floor(trackerCounts[soulDust] / 2), floor(trackerCounts[sacredShard]))
+    
+--    count = count + (numBargains or 0)
+--    trackerCounts[soulDust] = trackerCounts[soulDust] - (numBargains * 2)
+--    trackerCounts[sacredShard] = trackerCounts[sacredShard] - numBargains
+    
+--    -- Calculate the number of Crafter\'s Mark I
+--    local numMarks = min(floor(trackerCounts[soulDust] / 5), floor(trackerCounts[immortalShard] / 3))
+    
+--    count = count + (numMarks or 0)
+--    trackerCounts[soulDust] = trackerCounts[soulDust] - (numMarks * 5)
+--    trackerCounts[immortalShard] = trackerCounts[immortalShard] - (numMarks * 3)
+    
+    
+--    return count
+--end
+
+
+-- Condition: All
+function(buttonDB, GetTrackerCount)
+    local count
+    
+    for trackerKey, trackerInfo in pairs(buttonDB.trackers) do
+        local trackerCount = GetTrackerCount(_, buttonDB, trackerKey)
+        
+        count = not count and trackerCount or math.min(trackerCount, count)
+    end
+    
+    return count
+    
+end
+]]
+
 	-- Register sounds
 	--@retail@
 	LSM:Register("sound", L["Auction Open"], 567482) -- id:5274
@@ -137,18 +202,18 @@ function addon:InitializeEvents()
 end
 
 function addon:InitializeTrackers()
-	wipe(self.trackers)
+	wipe(addon.trackers)
 
-	for barID, bar in pairs(self.bars) do
+	for barID, bar in pairs(addon.bars) do
 		if not bar:GetButtons() then
 			return
 		end
 		for buttonID, button in pairs(bar:GetButtons()) do
 			if not button:IsEmpty() then
 				for trackerKey, tracker in pairs(button:GetButtonDB().trackers) do
-					local trackerType, trackerID = self:ParseTrackerKey(trackerKey)
-					self.trackers[trackerID] = self.trackers[trackerID] or {}
-					tinsert(self.trackers[trackerID], { barID, buttonID })
+					local trackerType, trackerID = addon:ParseTrackerKey(trackerKey)
+					addon.trackers[trackerID] = addon.trackers[trackerID] or {}
+					tinsert(addon.trackers[trackerID], { barID, buttonID })
 				end
 			end
 		end

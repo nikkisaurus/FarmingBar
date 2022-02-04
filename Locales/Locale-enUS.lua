@@ -26,6 +26,7 @@ L.InvalidBarPreviewTotal = "Progress total cannot be larger than progress count.
 
 -- Modules\ObjectiveBuilder.lua
 L["Tracked"] = true
+L["Custom Condition"] = true
 
 L.InvalidCustomCondition = "Invalid custom condition:"
 L.InvalidCustomConditionReturn = [[Custom conditions must return a table with nested "trackerGroup" tables.]]

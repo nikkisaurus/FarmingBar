@@ -333,29 +333,32 @@ function addon:GetObjectiveBuilderOptions()
 							width = "full",
 							multiline = true,
 							name = L["Custom"],
+							dialogControl = "FarmingBar_LuaEditBox",
 							hidden = function()
 								return self:GetObjectiveDBValue("condition", objectiveTitle) ~= "CUSTOM"
 							end,
 							get = function(info)
 								return self:GetObjectiveDBValue(info[#info], objectiveTitle)
 							end,
-							validate = function(_, value)
-								if value == "" then
+							validate = function(_, input)
+								if input == "" then
 									return true
 								end
-								local validCondition, err = self:ValidateCustomCondition(value)
 
-								if err then
-									addon:ReportError(L.InvalidCustomCondition)
-									print(err)
-								else
+								local success, func = pcall(loadstring("return " .. input))
+
+								if success and type(func) == "function" then
 									return true
+								elseif err then
+									return L["Custom Condition"] .. ": " .. err
 								end
 							end,
 							set = function(info, value)
-								self:SetObjectiveDBValue(info[#info], value, objectiveTitle)
+								local _, _, key = strsplit(".", info[#info])
+								self:SetObjectiveDBValue(key or info[#info], value, objectiveTitle)
 								addon:UpdateButtons()
 							end,
+							arg = { "global", "objectives." .. objectiveTitle .. ".conditionInfo" },
 						},
 						--@retail@
 						type = {

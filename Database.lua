@@ -34,7 +34,7 @@ function addon:InitializeDB()
 							action = "NONE", -- displayRef.trackerType: CURRENCY, ITEM, MACROTEXT, NONE
 							actionInfo = "", -- displayRef.trackerID
 							condition = "ALL", -- trackerCondition
-							conditionInfo = "", -- customCondition
+							conditionInfo = self.customCondition, -- customCondition
 							trackers = {
 								["**"] = {
 									-- trackerID: "ITEM:1412", "CURRENCY:1803"
@@ -68,7 +68,7 @@ function addon:InitializeDB()
 					action = "NONE",
 					actionInfo = "",
 					condition = "ALL",
-					conditionInfo = "",
+					conditionInfo = self.customCondition,
 					trackers = {
 						["**"] = {
 							-- trackerID: "ITEM:1412", "CURRENCY:1803"
