@@ -8,6 +8,7 @@
 - Implemented icon selector
 - Implemented bar duplication
 - Implemented configuration for all bars
+- Implemented configuration for all trackers within the objective editor
 - Reinstated the "/craft" command for objective actions
   - -- Designated recipe action is no longer planned because it would make it more difficult to add vellums to the script
   - -- Create your action as a macrotext using "/craft ProfessionName Recipe Name"

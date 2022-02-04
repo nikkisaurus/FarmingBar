@@ -102,6 +102,12 @@ function addon:GetObjectiveEditorOptions()
 					widget:SetDBValue("mute", value)
 				end,
 			},
+			tracker0 = {
+				order = 4,
+				type = "group",
+				name = L["All Trackers"],
+				args = self:GetObjectiveEditorOptions_Tracker(0, widget:GetButtonDB().trackers),
+			},
 		},
 	}
 
@@ -111,7 +117,7 @@ function addon:GetObjectiveEditorOptions()
 
 			self:GetTrackerDataTable(widget:GetButtonDB(), trackerType, trackerID, function(data)
 				options.args[trackerKey] = {
-					order = trackerInfo.order,
+					order = trackerInfo.order + 4,
 					type = "group",
 					name = data.name,
 					args = self:GetObjectiveEditorOptions_Tracker(trackerKey, trackerInfo, data),
@@ -224,42 +230,74 @@ function addon:GetObjectiveEditorOptions_Tracker(trackerKey, trackerInfo, data)
 	if not widget then
 		return {}
 	end
-	local trackerType, trackerID = self:ParseTrackerKey(trackerKey)
-	local trackers = widget:GetButtonDB().trackers
 
-	local options = {
-		includeAllChars = {
-			order = 1,
-			type = "toggle",
-			width = "full",
-			name = L["Include All Characters"],
-			disabled = function()
-				return #addon:IsDataStoreLoaded() > 0
-			end,
-			get = function()
-				return addon:GetTrackerDBInfo(trackers, trackerKey, "includeAllChars")
-			end,
-			set = function(_, value)
-				addon:SetTrackerDBValue(trackers, trackerKey, "includeAllChars", value)
-				widget:SetCount()
-			end,
-		},
-	}
+	local options
+	if trackerKey == 0 then
+		local trackers = trackerInfo
 
-	if trackerType == "ITEM" then
-		options.includeBank = {
-			order = 2,
-			type = "toggle",
-			width = "full",
-			name = L["Include Bank"],
-			get = function()
-				return addon:GetTrackerDBInfo(trackers, trackerKey, "includeBank")
-			end,
-			set = function(_, value)
-				addon:SetTrackerDBValue(trackers, trackerKey, "includeBank", value)
-				widget:SetCount()
-			end,
+		options = {
+			includeAllChars = {
+				order = 1,
+				type = "toggle",
+				tristate = true,
+				width = "full",
+				name = L["Include All Characters"],
+				disabled = function()
+					return #addon:IsDataStoreLoaded() > 0
+				end,
+				get = function()
+					local count = 0
+					for trackerKey, trackerInfo in pairs(trackers) do
+						count = addon:GetTrackerDBInfo(trackers, trackerKey, "includeAllChars") and (count + 1) or count
+					end
+
+					if count == 0 then
+						return false
+					elseif count == addon.tcount(trackers) then
+						return true
+					else
+						return nil
+					end
+				end,
+				set = function(_, value)
+					for trackerKey, trackerInfo in pairs(trackers) do
+						addon:SetTrackerDBValue(trackers, trackerKey, "includeAllChars", value)
+						widget:SetCount()
+					end
+				end,
+			},
+			includeBank = {
+				order = 2,
+				type = "toggle",
+				tristate = true,
+				width = "full",
+				name = L["Include Bank"],
+				disabled = function()
+					return #addon:IsDataStoreLoaded() > 0
+				end,
+				get = function()
+					local count = 0
+					for trackerKey, trackerInfo in pairs(trackers) do
+						count = addon:GetTrackerDBInfo(trackers, trackerKey, "includeBank") and (count + 1) or count
+					end
+
+					if count == 0 then
+						return false
+					elseif count == addon.tcount(trackers) then
+						return true
+					else
+						return nil
+					end
+				end,
+				set = function(_, value)
+					for trackerKey, trackerInfo in pairs(trackers) do
+						addon:SetTrackerDBValue(trackers, trackerKey, "includeBank", value)
+						widget:SetCount()
+					end
+				end,
+			},
 		}
+
 		if IsAddOnLoaded("DataStore") then
 			options.includeGuildBank = {
 				order = 3,
@@ -271,25 +309,114 @@ function addon:GetObjectiveEditorOptions_Tracker(trackerKey, trackerInfo, data)
 				end,
 				args = {},
 			}
+			for trackerKey, trackerInfo in pairs(trackers) do
+				trackers[trackerKey].includeGuildBank = trackers[trackerKey].includeGuildBank or {}
 
-			trackers[trackerKey].includeGuildBank = trackers[trackerKey].includeGuildBank or {}
+				local DS = DataStore
+				if DS then
+					for guildName, guild in addon.pairs(DS:GetGuilds(DS.ThisRealm, DS.ThisAccount)) do
+						if DS.db.global.Guilds[guild].faction == UnitFactionGroup("player") then
+							options.includeGuildBank.args[guild] = {
+								type = "toggle",
+								tristate = true,
+								width = "full",
+								name = guildName,
+								get = function()
+									local count = 0
+									for trackerKey, trackerInfo in pairs(trackers) do
+										count = addon:GetTrackerDBInfo(trackers, trackerKey, "includeGuildBank")[guild]
+												and (count + 1)
+											or count
+									end
 
-			local DS = DataStore
-			if DS then
-				for guildName, guild in self.pairs(DS:GetGuilds(DS.ThisRealm, DS.ThisAccount)) do
-					if DS.db.global.Guilds[guild].faction == UnitFactionGroup("player") then
-						options.includeGuildBank.args[guild] = {
-							type = "toggle",
-							width = "full",
-							name = guildName,
-							get = function()
-								return addon:GetTrackerDBInfo(trackers, trackerKey, "includeGuildBank")[guild]
-							end,
-							set = function(_, value)
-								addon:GetTrackerDBInfo(trackers, trackerKey, "includeGuildBank")[guild] = value
-								widget:SetCount()
-							end,
-						}
+									if count == 0 then
+										return false
+									elseif count == addon.tcount(trackers) then
+										return true
+									else
+										return nil
+									end
+								end,
+								set = function(_, value)
+									for trackerKey, trackerInfo in pairs(trackers) do
+										addon:GetTrackerDBInfo(trackers, trackerKey, "includeGuildBank")[guild] = value
+										widget:SetCount()
+									end
+								end,
+							}
+						end
+					end
+				end
+			end
+		end
+	else
+		local trackerType, trackerID = self:ParseTrackerKey(trackerKey)
+		local trackers = widget:GetButtonDB().trackers
+
+		options = {
+			includeAllChars = {
+				order = 1,
+				type = "toggle",
+				width = "full",
+				name = L["Include All Characters"],
+				disabled = function()
+					return #addon:IsDataStoreLoaded() > 0
+				end,
+				get = function()
+					return addon:GetTrackerDBInfo(trackers, trackerKey, "includeAllChars")
+				end,
+				set = function(_, value)
+					addon:SetTrackerDBValue(trackers, trackerKey, "includeAllChars", value)
+					widget:SetCount()
+				end,
+			},
+		}
+
+		if trackerType == "ITEM" then
+			options.includeBank = {
+				order = 2,
+				type = "toggle",
+				width = "full",
+				name = L["Include Bank"],
+				get = function()
+					return addon:GetTrackerDBInfo(trackers, trackerKey, "includeBank")
+				end,
+				set = function(_, value)
+					addon:SetTrackerDBValue(trackers, trackerKey, "includeBank", value)
+					widget:SetCount()
+				end,
+			}
+			if IsAddOnLoaded("DataStore") then
+				options.includeGuildBank = {
+					order = 3,
+					type = "group",
+					inline = true,
+					name = L["Include Guild Bank"],
+					disabled = function()
+						return #addon:IsDataStoreLoaded() > 0
+					end,
+					args = {},
+				}
+
+				trackers[trackerKey].includeGuildBank = trackers[trackerKey].includeGuildBank or {}
+
+				local DS = DataStore
+				if DS then
+					for guildName, guild in self.pairs(DS:GetGuilds(DS.ThisRealm, DS.ThisAccount)) do
+						if DS.db.global.Guilds[guild].faction == UnitFactionGroup("player") then
+							options.includeGuildBank.args[guild] = {
+								type = "toggle",
+								width = "full",
+								name = guildName,
+								get = function()
+									return addon:GetTrackerDBInfo(trackers, trackerKey, "includeGuildBank")[guild]
+								end,
+								set = function(_, value)
+									addon:GetTrackerDBInfo(trackers, trackerKey, "includeGuildBank")[guild] = value
+									widget:SetCount()
+								end,
+							}
+						end
 					end
 				end
 			end

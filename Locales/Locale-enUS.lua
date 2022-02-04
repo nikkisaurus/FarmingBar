@@ -374,6 +374,7 @@ L.Options_settings_profile_count_color = "Sets the custom color for button count
 L["Alerts"] = true
 L["Alert Type"] = true
 L["All Bars"] = true
+L["All Trackers"] = true
 L["Alpha"] = true
 L["Anchor"] = true
 L["Bar"] = true
