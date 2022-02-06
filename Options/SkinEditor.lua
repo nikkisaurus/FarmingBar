@@ -222,21 +222,14 @@ function addon:GetSkinEditorOptions_Skins(skins)
 					addon:UpdateBars()
 				end,
 				args = {
-					chooseTexture = {
-						order = 1,
-						type = "execute",
-						name = L["Explore Textures"],
-						disabled = true,
-						func = function() end,
-					},
 					texture = {
-						order = 2,
+						order = 1,
 						type = "input",
 						width = "full",
 						name = L["Texture"],
 					},
 					texCoords = {
-						order = 3,
+						order = 2,
 						type = "input",
 						name = L["Tex Coords"],
 						validate = function(_, value)
@@ -292,7 +285,7 @@ function addon:GetSkinEditorOptions_Skins(skins)
 						end,
 					},
 					color = {
-						order = 4,
+						order = 3,
 						type = "color",
 						name = L["Color"],
 						hasAlpha = true,
@@ -336,7 +329,6 @@ function addon:GetSkinEditorOptions_Skins(skins)
 		for key, value in pairs(skins[skinID].button) do
 			if key ~= "layers" then
 				options[skinID].args.buttonTextures.args[key] = {
-					order = 0,
 					type = "group",
 					inline = true,
 					name = key,
@@ -356,21 +348,14 @@ function addon:GetSkinEditorOptions_Skins(skins)
 						addon:UpdateBars()
 					end,
 					args = {
-						chooseTexture = {
-							order = 1,
-							type = "execute",
-							name = L["Explore Textures"],
-							disabled = true,
-							func = function() end,
-						},
 						texture = {
-							order = 2,
+							order = 1,
 							type = "input",
 							width = "full",
 							name = L["Texture"],
 						},
 						texCoords = {
-							order = 3,
+							order = 2,
 							type = "input",
 							name = L["Tex Coords"],
 							validate = function(_, value)
@@ -427,7 +412,7 @@ function addon:GetSkinEditorOptions_Skins(skins)
 							end,
 						},
 						insets = {
-							order = 4,
+							order = 3,
 							type = "input",
 							name = L["Insets"],
 							validate = function(_, value)
@@ -483,7 +468,7 @@ function addon:GetSkinEditorOptions_Skins(skins)
 							end,
 						},
 						blendMode = {
-							order = 5,
+							order = 4,
 							type = "select",
 							style = "dropdown",
 							name = L["Blend Mode"],
@@ -497,7 +482,7 @@ function addon:GetSkinEditorOptions_Skins(skins)
 							sorting = { "DISABLE", "BLEND", "ALPHAKEY", "ADD", "MOD" },
 						},
 						color = {
-							order = 6,
+							order = 5,
 							type = "color",
 							name = L["Color"],
 							hasAlpha = true,
@@ -541,7 +526,6 @@ function addon:GetSkinEditorOptions_Skins(skins)
 		-- Button Layer options
 		for key, value in pairs(skins[skinID].button.layers) do
 			options[skinID].args.buttonLayers.args[key] = {
-				order = 0,
 				type = "group",
 				inline = true,
 				name = key,
@@ -561,21 +545,14 @@ function addon:GetSkinEditorOptions_Skins(skins)
 					addon:UpdateBars()
 				end,
 				args = {
-					chooseTexture = {
-						order = 1,
-						type = "execute",
-						name = L["Explore Textures"],
-						disabled = true,
-						func = function() end,
-					},
 					texture = {
-						order = 2,
+						order = 1,
 						type = "input",
 						width = "full",
 						name = L["Texture"],
 					},
 					texCoords = {
-						order = 3,
+						order = 2,
 						type = "input",
 						name = L["Tex Coords"],
 						validate = function(_, value)
@@ -632,7 +609,7 @@ function addon:GetSkinEditorOptions_Skins(skins)
 						end,
 					},
 					insets = {
-						order = 4,
+						order = 3,
 						type = "input",
 						name = L["Insets"],
 						validate = function(_, value)
@@ -688,7 +665,7 @@ function addon:GetSkinEditorOptions_Skins(skins)
 						end,
 					},
 					blendMode = {
-						order = 5,
+						order = 4,
 						type = "select",
 						style = "dropdown",
 						name = L["Blend Mode"],
@@ -702,7 +679,7 @@ function addon:GetSkinEditorOptions_Skins(skins)
 						sorting = { "DISABLE", "BLEND", "ALPHAKEY", "ADD", "MOD" },
 					},
 					color = {
-						order = 7,
+						order = 6,
 						type = "color",
 						name = L["Color"],
 						hasAlpha = true,
@@ -744,7 +721,7 @@ function addon:GetSkinEditorOptions_Skins(skins)
 			-- Update options with anchors
 			if anchoredLayers[key] then
 				options[skinID].args.buttonLayers.args[key].args.anchor = {
-					order = 6,
+					order = 5,
 					type = "select",
 					style = "dropdown",
 					name = L["Anchor"],
