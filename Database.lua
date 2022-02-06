@@ -57,7 +57,92 @@ function addon:InitializeDB()
 			},
 		},
 		global = {
-			skins = {},
+			skins = {
+				["**"] = {
+					bar = {
+						FloatingBG = {
+							texture = [[INTERFACE\BUTTONS\UI-QUICKSLOT]],
+							texCoords = { 12 / 64, 52 / 64, 12 / 64, 52 / 64 },
+							color = { 1, 1, 1, 1 },
+						},
+						Normal = {
+							texture = "",
+							texCoords = { 0, 1, 0, 1 },
+							color = { 1, 1, 1, 1 },
+						},
+					},
+					button = {
+						Normal = {
+							texture = "INTERFACE\\BUTTONS\\UI-QUICKSLOT2",
+							texCoords = { 12 / 64, 51 / 64, 12 / 64, 51 / 64 },
+							color = { 1, 1, 1, 1 },
+							blendMode = "BLEND",
+							insets = { 0, 0, 0, 0 },
+						},
+						Pushed = {
+							texture = "INTERFACE\\BUTTONS\\UI-QUICKSLOT2",
+							texCoords = { 12 / 64, 51 / 64, 12 / 64, 51 / 64 },
+							color = { 1, 1, 1, 1 },
+							blendMode = "BLEND",
+							insets = { 0, 0, 0, 0 },
+						},
+						Highlight = {
+							texture = "INTERFACE\\BUTTONS\\BUTTONHILIGHT-SQUAREQUICKSLOT",
+							texCoords = { 0, 1, 0, 1 },
+							color = { 1, 1, 1, 1 },
+							blendMode = "ADD",
+							insets = { 2, 2, 0, 0 },
+						},
+						layers = {
+							FloatingBG = {
+								texture = [[INTERFACE\BUTTONS\UI-EMPTYSLOT-DISABLED]],
+								texCoords = { 10 / 64, 53 / 64, 10 / 64, 53 / 64 },
+								color = { 1, 1, 1, 1 },
+								blendMode = "BLEND",
+								insets = { 0, 0, 0, 0 },
+							},
+							Icon = {
+								texture = "",
+								texCoords = { 0, 1, 0, 1 },
+								color = { 1, 1, 1, 1 },
+								blendMode = "BLEND",
+								insets = { 2, 2.5, 2.5, 2.5 },
+							},
+							Flash = {
+								texture = "INTERFACE\\BUTTONS\\WHITE8X8",
+								texCoords = { 0, 1, 0, 1 },
+								color = { 1, 0, 0, 1 },
+								blendMode = "ADD",
+								insets = { 2, 2, 2, 2 },
+							},
+							Border = {
+								texture = "INTERFACE\\BUTTONS\\UI-ACTIONBUTTON-BORDER",
+								texCoords = { 12 / 64, 50 / 64, 14 / 64, 52 / 64 },
+								color = { 1, 1, 1, 1 },
+								blendMode = "ADD",
+								insets = { 0, 0, 0, 0 },
+								anchor = "Icon",
+							},
+							AccountOverlay = {
+								texture = [[INTERFACE\ADDONS\FARMINGBAR\MEDIA\4POINTDIAMOND]],
+								texCoords = { 0.1, 0.9, 0.1, 0.9 },
+								color = { 1, 33 / 51, 0, 1 },
+								blendMode = "BLEND",
+								insets = { -2, -2, -2, -2 },
+								anchor = "Icon",
+							},
+							AutoCastable = {
+								texture = "INTERFACE\\BUTTONS\\UI-AUTOCASTABLEOVERLAY",
+								texCoords = { 14 / 64, 49 / 64, 14 / 64, 49 / 64 },
+								color = { 1, 1, 1, 1 },
+								blendMode = "BLEND",
+								insets = { 0, 0, 0, 0 },
+								anchor = "Icon",
+							},
+						},
+					},
+				},
+			},
 			templates = {},
 			objectives = {
 				["**"] = {
@@ -98,7 +183,7 @@ function addon:InitializeDB()
 					ConfigButtons = false, -- opens Config frame to buttons tab if Config enabled
 					ObjectiveBuilder = false, -- opens Objective Builder on reload
 					ObjectiveBuilderTrackers = false, -- opens Objective Builder to trackers tab if Objective Builder enabled
-					StyleEditor = false, -- opens Style Editor on reload
+					SkinEditor = false, -- opens Skin Editor on reload
 				},
 				alerts = {
 					bar = {

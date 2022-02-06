@@ -1078,14 +1078,21 @@ function addon:GetProfileSettingsOptions()
 
 				return info
 			end,
-			sorting = function(info)
-				local info = { "FarmingBar_Default", "FarmingBar_Minimal" }
+			sorting = function()
+				local sorting = { "FarmingBar_Default", "FarmingBar_Minimal" }
 
-				for k, _ in self.pairs(addon:GetDBValue("global", "skins")) do
-					tinsert(info, k)
+				for skinID, _ in
+					addon.pairs(addon:GetDBValue("global", "skins"), function(a, b)
+						local prefixA, numA = strsplit(" ", a)
+						local prefixB, numB = strsplit(" ", b)
+
+						return tonumber(numA) < tonumber(numB)
+					end)
+				do
+					tinsert(sorting, skinID)
 				end
 
-				return info
+				return sorting
 			end,
 			get = function(...)
 				return addon:GetDBValue("profile", "style.skin")

@@ -53,6 +53,10 @@ L.TrackerIDExists = "Already tracking %s"
 L["Hint"] = true
 L["Hints"] = true
 L["Search"] = true
+L["Textures"] = true
+L["Duplicate Skin"] = true
+L["Export Skin"] = true
+L["Import"] = true
 
 -- Modules\ObjectiveBuilder.lua
 L.FilterAutoItemsHint = [[Check this option to hide automatically created item objectives (prepended by "item:").]]
@@ -178,7 +182,7 @@ L["Currency"] = true
 L["Custom"] = true
 L["Custom"] = true
 L["Delete Tracker"] = true
-L["Delete Objective"] = true
+L["Remove Objective"] = true
 L["Action"] = true
 L["Action"] = true
 L["Duplicate"] = true
@@ -203,7 +207,6 @@ L["more"] = true
 L["Move Up"] = true
 L["Move Down"] = true
 L["Mute Alerts"] = true
-L["New"] = true
 L["New Count"] = true
 L["New Tracker"] = true
 L["None"] = true
@@ -220,7 +223,7 @@ L["Preview Settings - Tracker"] = true
 L["Rename"] = true
 L["Condition"] = true
 L["Trackers"] = true
-L["Toggle Bar Enabled"] = true
+L["Enable / Disable"] = true
 L["TRUE"] = true
 L["Type"] = true
 L["View Code"] = true
@@ -267,7 +270,7 @@ L["Move Up"] = true
 ------------------------------------------------------------
 
 -- Options\Config.lua
-L["Add Bar"] = true
+L["New"] = true
 L["Bar"] = true
 L["Config"] = true
 L["Remove Bar"] = true
@@ -327,8 +330,9 @@ L["Quick Add"] = true
 L["Settings"] = true
 L["Shift"] = true
 L["Skin"] = true
+L["Skins"] = true
 L["Slash Commands"] = true
-L["Style Editor"] = true
+L["Skin Editor"] = true
 L["Templates"] = true
 L["Tooltips"] = true
 L["THICKOUTLINE"] = true
@@ -373,6 +377,9 @@ L.Options_settings_profile_fonts_size = "Sets the font size for bar and button f
 L.Options_settings_profile_fonts_outline = "Sets the font outline for bar and button fontstrings."
 L.Options_settings_profile_count_style = "Sets the color style for button count fontstrings."
 L.Options_settings_profile_count_color = "Sets the custom color for button count fontstrings."
+
+L["Remove Skin"] = true
+L.Options_skinEditor_skins_remove = [[Are you sure you want to permanently delete the skin "%s"?]]
 
 ------------------------------------------------------------
 
@@ -528,7 +535,7 @@ end
 L.Options_ObjectiveBuilder = function(widget)
 	local strings = {
 		["objective.dropper"] = "Click to place this objective onto a bar.",
-		["objective.manage.DeleteObjectiveTemplate_confirm"] = [[Are you sure you want to delete the objective template "%s"?]],
+		["objective.manage.RemoveObjectiveTemplate_confirm"] = [[Are you sure you want to delete the objective template "%s"?]],
 		["tracker.deleteTracker"] = [[Are you sure you want to permanently delete this tracker?]],
 		["objective.quickAddDesc"] = "Left-click an icon to place the objective on a bar. Control+left-click to configure the objective.",
 	}

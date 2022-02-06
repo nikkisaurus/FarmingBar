@@ -98,7 +98,7 @@ function addon:CreateObjectiveTemplateInstance(template, buttonID)
 	templateLinks[self:GetCharKey()][buttonID] = true
 end
 
-function addon:DeleteObjectiveTemplate(objectiveTitle, confirmed)
+function addon:RemoveObjectiveTemplate(objectiveTitle, confirmed)
 	-- Update objective template links
 	self:UpdateObjectiveTemplateLinks(
 		self:GetDBValue("global", "objectives")[objectiveTitle].instances,

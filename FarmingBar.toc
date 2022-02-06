@@ -55,5 +55,5 @@ Options\Config.lua
 Options\ObjectiveBuilder.lua
 Options\ObjectiveEditor.lua
 Options\Settings.lua
-Options\StyleEditor.lua
+Options\SkinEditor.lua
 Options\Help.lua

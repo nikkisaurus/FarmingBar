@@ -342,3 +342,60 @@ function addon:ApplyMasqueSkin(buttonType, button)
 	self.MSQ[buttonType]:AddButton(button)
 	self.MSQ[buttonType]:ReSkin(true)
 end
+
+-- *------------------------------------------------------------------------
+-- Skin Editor
+
+function addon:SkinExists(title)
+	return type(self:GetDBValue("global", "skins")[title].desc) == "string"
+end
+
+function addon:CreateSkin(skinID, overwrite)
+	local defaultTitle, newSkinTitle = L["Skin"]
+
+	-- Skin exists, so we need to add a number to the end
+	if (self:SkinExists(defaultTitle .. " 1") or skinID) and not overwrite then
+		local i = 2
+		while not newSkinTitle do
+			local title = format("%s %d", defaultTitle, i)
+
+			if not self:SkinExists(title) then
+				newSkinTitle = title
+			else
+				i = i + 1
+			end
+		end
+	else
+		newSkinTitle = defaultTitle .. " 1"
+	end
+
+	-- Create skin
+	local skin = self:GetDBValue("global", "skins")[newSkinTitle]
+	skin.desc = newSkinTitle
+
+	-- Refresh options
+	self:RefreshOptions()
+	LibStub("AceConfigDialog-3.0"):SelectGroup(addonName, "skinEditor", "skins", newSkinTitle)
+
+	return newSkinTitle
+end
+
+function addon:RemoveSkin(skin)
+	if self:GetDBValue("profile", "style.skin") == skin then
+		self:SetDBValue("profile", "style.skin", "FarmingBar_Default")
+		self:UpdateBars()
+	end
+
+	self:GetDBValue("global", "skins")[skin] = nil
+	self:RefreshOptions()
+end
+
+function addon:DuplicateSkin(skinID)
+	local skins = self:GetDBValue("global", "skins")
+	local newSkinTitle = self:CreateSkin(skinID)
+
+	skins[newSkinTitle] = self:CloneTable(skins[skinID])
+	skins[newSkinTitle].desc = newSkinTitle
+
+	self:RefreshOptions()
+end

@@ -66,21 +66,24 @@ end
 -- Initialize objective builder options
 
 function addon:GetObjectiveBuilderOptions()
+	local objectives = addon:GetDBValue("global", "objectives")
+
 	local options = {
 		new = {
 			order = 1,
 			type = "execute",
+			width = 0.75,
 			name = L["New"],
 			func = function()
 				local objectiveTitle = self:CreateObjectiveTemplate()
-
+				addon:RefreshOptions()
 				ACD:SelectGroup(addonName, "objectiveBuilder", "objectives", objectiveTitle)
-				ACD:Open(addonName)
 			end,
 		},
 		import = {
 			order = 2,
 			type = "execute",
+			width = 0.75,
 			name = L["Import"],
 			func = function()
 				local importFrame = AceGUI:Create("Frame")
@@ -288,14 +291,50 @@ function addon:GetObjectiveBuilderOptions()
 				importFrame:Show()
 			end,
 		},
+		remove = {
+			order = 3,
+			type = "select",
+			style = "dropdown",
+			name = L["Remove Objective"],
+			disabled = function()
+				return addon.tcount(objectives) == 0
+			end,
+			confirm = function(_, objectiveTitle)
+				return format(
+					L.Options_ObjectiveBuilder("objective.manage.RemoveObjectiveTemplate_confirm"),
+					objectiveTitle
+				)
+			end,
+			values = function()
+				local values = {}
+
+				for objectiveTitle, _ in addon.pairs(objectives) do
+					values[objectiveTitle] = objectiveTitle
+				end
+
+				return values
+			end,
+			sorting = function()
+				local sorting = {}
+
+				for objectiveTitle, _ in addon.pairs(objectives) do
+					tinsert(sorting, objectiveTitle)
+				end
+
+				return sorting
+			end,
+			set = function(_, value)
+				addon:RemoveObjectiveTemplate(value, true)
+			end,
+		},
 		quickAdd = {
-			order = 1,
+			order = 4,
 			type = "group",
 			name = L["Quick Add"],
 			args = {},
 		},
 		objectives = {
-			order = 2,
+			order = 5,
 			type = "group",
 			name = L["Objectives"],
 			args = {},
@@ -670,17 +709,17 @@ function addon:GetObjectiveBuilderOptions_Objective(objectiveTitle)
 						editbox:HighlightText()
 					end,
 				},
-				DeleteObjectiveTemplate = {
+				RemoveObjectiveTemplate = {
 					order = 3,
 					type = "execute",
-					name = L["Delete Objective"],
+					name = L["Remove Objective"],
 					func = function()
-						self:DeleteObjectiveTemplate(objectiveTitle)
+						self:RemoveObjectiveTemplate(objectiveTitle)
 						ACD:SelectGroup(addonName, "objectiveBuilder")
 					end,
 					confirm = function()
 						return format(
-							L.Options_ObjectiveBuilder("objective.manage.DeleteObjectiveTemplate_confirm"),
+							L.Options_ObjectiveBuilder("objective.manage.RemoveObjectiveTemplate_confirm"),
 							objectiveTitle
 						)
 					end,

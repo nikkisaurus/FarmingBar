@@ -11,7 +11,7 @@ function addon:InitializeOptions()
 	ACD:SetDefaultSize(addonName, 850, 600)
 
 	C_Timer.After(1, function()
-		ACD:SelectGroup(addonName, "objectiveBuilder")
+		ACD:SelectGroup(addonName, "skinEditor", "skins", "Skin 1", "textures")
 		ACD:Open(addonName)
 	end)
 end
@@ -35,18 +35,19 @@ function addon:GetOptions()
 				childGroups = "tab",
 				args = self:GetObjectiveBuilderOptions(),
 			},
-			styleEditor = {
-				order = 3,
-				type = "group",
-				name = L["Styles"],
-				args = self:GetStyleEditorOptions(),
-			},
 			settings = {
-				order = 4,
+				order = 3,
 				type = "group",
 				name = L["Settings"],
 				childGroups = "tab",
 				args = self:GetSettingsOptions(),
+			},
+			skinEditor = {
+				order = 4,
+				type = "group",
+				name = L["Skins"],
+				childGroups = "tab",
+				args = self:GetSkinEditorOptions(),
 			},
 			profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db),
 			help = {
@@ -77,6 +78,11 @@ function addon:RefreshOptions()
 	-- Update objective builder options
 	if self.options.args.objectiveBuilder then
 		self.options.args.objectiveBuilder.args = self:GetObjectiveBuilderOptions()
+	end
+
+	-- Update skin editor options
+	if self.options.args.skinEditor then
+		self.options.args.skinEditor.args = self:GetSkinEditorOptions()
 	end
 
 	LibStub("AceConfigRegistry-3.0"):NotifyChange(addonName)

@@ -34,7 +34,8 @@ function addon:GetConfigOptions()
 		addBar = {
 			order = 1,
 			type = "execute",
-			name = L["Add Bar"],
+			width = 0.75,
+			name = L["New"],
 			func = function()
 				self:CreateBar()
 			end,
@@ -45,8 +46,39 @@ function addon:GetConfigOptions()
 			name = " ",
 			width = 0.05,
 		},
-		RemoveBar = {
+		enableDisable = {
 			order = 3,
+			type = "select",
+			name = L["Enable / Disable"],
+			disabled = function()
+				return self.tcount(self:GetDBValue("profile", "bars")) == 0
+			end,
+			values = function()
+				local values = {}
+				local bars = self:GetDBValue("profile", "bars")
+
+				for barID, _ in pairs(bars) do
+					values[barID] = L["Bar"] .. " " .. barID
+				end
+
+				return values
+			end,
+			sorting = function()
+				local sorting = {}
+				local bars = self:GetDBValue("profile", "bars")
+
+				for barID, _ in pairs(bars) do
+					tinsert(sorting, barID)
+				end
+
+				return sorting
+			end,
+			set = function(_, barID)
+				self:SetBarDisabled(barID, "_TOGGLE_")
+			end,
+		},
+		RemoveBar = {
+			order = 4,
 			type = "select",
 			name = L["Remove Bar"],
 			disabled = function()
@@ -77,37 +109,6 @@ function addon:GetConfigOptions()
 			end,
 			set = function(_, barID)
 				self:RemoveBar(barID)
-			end,
-		},
-		ToggleBarEnabled = {
-			order = 4,
-			type = "select",
-			name = L["Toggle Bar Enabled"],
-			disabled = function()
-				return self.tcount(self:GetDBValue("profile", "bars")) == 0
-			end,
-			values = function()
-				local values = {}
-				local bars = self:GetDBValue("profile", "bars")
-
-				for barID, _ in pairs(bars) do
-					values[barID] = L["Bar"] .. " " .. barID
-				end
-
-				return values
-			end,
-			sorting = function()
-				local sorting = {}
-				local bars = self:GetDBValue("profile", "bars")
-
-				for barID, _ in pairs(bars) do
-					tinsert(sorting, barID)
-				end
-
-				return sorting
-			end,
-			set = function(_, barID)
-				self:SetBarDisabled(barID, "_TOGGLE_")
 			end,
 		},
 		bar0 = {
