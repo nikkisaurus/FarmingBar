@@ -11,7 +11,7 @@ function addon:InitializeOptions()
 	ACD:SetDefaultSize(addonName, 850, 600)
 
 	C_Timer.After(1, function()
-		ACD:SelectGroup(addonName, "skinEditor", "skins", "Skin 1", "textures")
+		ACD:SelectGroup(addonName, "skinEditor", "skins", "Skin 1")
 		ACD:Open(addonName)
 	end)
 end

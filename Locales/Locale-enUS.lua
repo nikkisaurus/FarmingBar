@@ -50,14 +50,36 @@ L.TrackerIDExists = "Already tracking %s"
 -- *------------------------------------------------------------------------
 -- *Hints-------------------------------------------------------------------
 
+L["Disable"] = true
+L["Blend"] = true
+L["AlphaKey"] = true
+L["Add"] = true
+L["Mod"] = true
+L["Insets"] = true
+L["Blend Mode"] = true
+
+L.GetBarTextureTitle = function(tex)
+	local strings = {
+		Normal = format("%s (%s)", tex, "Anchor Border"),
+		FloatingBG = format("%s (%s)", tex, "Anchor Background"),
+	}
+
+	return strings[tex]
+end
+
+L["Anchor Border"] = true
 L["Hint"] = true
 L["Hints"] = true
 L["Search"] = true
+L["Texture"] = true
 L["Bar Textures"] = true
 L["Button Textures"] = true
 L["Duplicate Skin"] = true
 L["Export Skin"] = true
+L["Description"] = true
 L["Import"] = true
+L["Tex Coords"] = true
+L["Explore Textures"] = true
 
 -- Modules\ObjectiveBuilder.lua
 L.FilterAutoItemsHint = [[Check this option to hide automatically created item objectives (prepended by "item:").]]

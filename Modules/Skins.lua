@@ -19,6 +19,13 @@ local panelBackdrop = {
 	},
 }
 
+addon.sortSkins = function(a, b)
+	local prefixA, numA = strsplit(" ", a)
+	local prefixB, numB = strsplit(" ", b)
+
+	return tonumber(numA) < tonumber(numB)
+end
+
 addon.skins = {
 	FarmingBar_Default = {
 		bar = {
