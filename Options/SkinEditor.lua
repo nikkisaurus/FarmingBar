@@ -734,13 +734,14 @@ function addon:GetSkinEditorOptions_Skins(skins)
 							return unpack(color)
 						end,
 						set = function(info, ...)
-							skins[skinID].button[key][info[#info]] = { ... }
+							skins[skinID].button.layers[key][info[#info]] = { ... }
 							addon:UpdateBars()
 						end,
 					},
 				},
 			}
 
+			-- Update options with anchors
 			if anchoredLayers[key] then
 				options[skinID].args.buttonLayers.args[key].args.anchor = {
 					order = 6,
@@ -759,6 +760,12 @@ function addon:GetSkinEditorOptions_Skins(skins)
 						return values
 					end,
 				}
+			end
+
+			-- Remove texture options from Icon layer
+			if options[skinID].args.buttonLayers.args.Icon then
+				options[skinID].args.buttonLayers.args.Icon.args.texture = nil
+				options[skinID].args.buttonLayers.args.Icon.args.chooseTexture = nil
 			end
 		end
 	end

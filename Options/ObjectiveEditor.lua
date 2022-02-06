@@ -279,6 +279,7 @@ function addon:GetObjectiveEditorOptions_Tracker(trackerKey, trackerInfo, data)
 						addon:SetTrackerDBValue(trackers, trackerKey, "includeAllChars", value)
 						widget:SetCount()
 					end
+					addon:UpdateBars()
 				end,
 			},
 			includeBank = {
@@ -309,6 +310,7 @@ function addon:GetObjectiveEditorOptions_Tracker(trackerKey, trackerInfo, data)
 						addon:SetTrackerDBValue(trackers, trackerKey, "includeBank", value)
 						widget:SetCount()
 					end
+					addon:UpdateBars()
 				end,
 			},
 		}
