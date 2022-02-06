@@ -289,6 +289,7 @@ L["Commands"] = true
 L["Control"] = "Ctrl"
 L["Cooldown"] = true
 L["Cooldown Edge"] = true
+L["Copy From"] = true
 L["CREATE NEW"] = true
 L["CUSTOM"] = true
 L["Debug"] = true
@@ -334,6 +335,8 @@ L["THICKOUTLINE"] = true
 L["USE EXISTING"] = true
 L["Use Game Tooltip"] = true
 
+L.Options_settings_profile_copyFrom =
+	"Copy profile style settings from another profile. This will not copy bars or bar settings."
 L.ObjectiveEditor_template = "Link this button to an objective template."
 L.ObjectiveEditor_CreateTemplate = "Create an objective template from this button."
 L.Options_settings_global_general_tooltips_bar = "Enables bar tooltips."

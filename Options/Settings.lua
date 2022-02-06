@@ -1228,6 +1228,33 @@ function addon:GetProfileSettingsOptions()
 				},
 			},
 		},
+		copyFrom = {
+			order = 5,
+			type = "select",
+			style = "dropdown",
+			name = L["Copy From"],
+			desc = L.Options_settings_profile_copyFrom,
+			values = function()
+				local values = {}
+
+				for _, profileKey in pairs(addon.db:GetProfiles()) do
+					values[profileKey] = profileKey
+				end
+
+				return values
+			end,
+			set = function(_, value)
+				local enabled = addon:GetDBValue("profile", "enabled")
+				local bars = addon:GetDBValue("profile", "bars")
+
+				addon.db:CopyProfile(value, true)
+				addon:SetDBValue("profile", "enabled", enabled)
+				addon:SetDBValue("profile", "bars", bars)
+
+				addon:OnProfile_()
+				addon:RefreshOptions()
+			end,
+		},
 	}
 
 	return options

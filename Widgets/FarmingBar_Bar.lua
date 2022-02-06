@@ -32,7 +32,7 @@ local postClickMethods = {
 		addon:Print(L.ToggleMovable(widget:GetBarTitle(), widget:GetUserData("barDB").movable))
 	end,
 	openSettings = function(self, ...)
-		ACD:SelectGroup(addonName, "globalSettings")
+		ACD:SelectGroup(addonName, "settings")
 		ACD:Open(addonName)
 	end,
 	showObjectiveBuilder = function(self, ...)

@@ -5,6 +5,7 @@
 ### 3.0-alpha19
 
 - Options have been rearranged
+- Implemented option to copy profile style settings from other profiles
 - Implemented icon selector
 - Implemented bar duplication
 - Implemented configuration for all bars

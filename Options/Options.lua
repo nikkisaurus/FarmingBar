@@ -11,7 +11,7 @@ function addon:InitializeOptions()
 	ACD:SetDefaultSize(addonName, 850, 600)
 
 	--C_Timer.After(1, function()
-	--	ACD:SelectGroup(addonName, "config", "bar0")
+	--	ACD:SelectGroup(addonName, "settings", "profile")
 	--	ACD:Open(addonName)
 	--end)
 end
@@ -41,7 +41,7 @@ function addon:GetOptions()
 				name = L["Styles"],
 				args = self:GetStyleEditorOptions(),
 			},
-			globalSettings = {
+			settings = {
 				order = 4,
 				type = "group",
 				name = L["Settings"],
