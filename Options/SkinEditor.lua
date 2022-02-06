@@ -214,8 +214,17 @@ function addon:GetSkinEditorOptions_Skins(skins)
 								addon:RefreshOptions()
 							end,
 						},
-						duplicateSkin = {
+						useSkin = {
 							order = 3,
+							type = "execute",
+							name = L["Use Skin"],
+							func = function()
+								self:SetDBValue("profile", "style.skin", skinID)
+								self:UpdateBars()
+							end,
+						},
+						duplicateSkin = {
+							order = 4,
 							type = "execute",
 							name = L["Duplicate Skin"],
 							func = function()
@@ -223,7 +232,7 @@ function addon:GetSkinEditorOptions_Skins(skins)
 							end,
 						},
 						exportSkin = {
-							order = 4,
+							order = 5,
 							type = "execute",
 							name = L["Export Skin"],
 							func = function()
@@ -257,7 +266,7 @@ function addon:GetSkinEditorOptions_Skins(skins)
 							end,
 						},
 						removeSkin = {
-							order = 5,
+							order = 6,
 							type = "execute",
 							name = L["Remove Skin"],
 							confirm = function()

@@ -79,6 +79,7 @@ L["Export Skin"] = true
 L["Description"] = true
 L["Import"] = true
 L["Tex Coords"] = true
+L["Use Skin"] = true
 
 -- Modules\ObjectiveBuilder.lua
 L.FilterAutoItemsHint = [[Check this option to hide automatically created item objectives (prepended by "item:").]]
