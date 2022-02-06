@@ -258,7 +258,12 @@ end
 function addon:SkinBar(bar, skin)
 	self:StripBarTextures(bar)
 
-	skin = (strmatch(skin, "^FarmingBar_") and self.skins[skin] or self:GetDBValue("global", "skins")[skin]).bar
+	if strmatch(skin, "^FarmingBar_") then
+		skin = self.skins[skin].bar
+	else
+		skin = self:GetDBValue("global", "skins")[skin].bar
+	end
+
 	local frame = bar.anchor
 
 	if frame:GetNormalTexture() then
@@ -278,7 +283,12 @@ end
 function addon:SkinButton(button, skin)
 	self:StripButtonTextures(button)
 
-	skin = (strmatch(skin, "^FarmingBar_") and addon.skins[skin] or self:GetDBValue("global", "skins")[skin]).button
+	if strmatch(skin, "^FarmingBar_") then
+		skin = self.skins[skin].button
+	else
+		skin = self:GetDBValue("global", "skins")[skin].button
+	end
+
 	local frame = button.frame
 
 	for layerName, layer in pairs(skin) do
@@ -388,13 +398,15 @@ function addon:CreateSkin(skinID, overwrite)
 end
 
 function addon:RemoveSkin(skin)
-	if self:GetDBValue("profile", "style.skin") == skin then
-		self:SetDBValue("profile", "style.skin", "FarmingBar_Default")
-		self:UpdateBars()
+	for profileKey, profile in pairs(FarmingBarDB.profiles) do
+		if profile.style then
+			FarmingBarDB.profiles[profileKey].style.skin = "FarmingBar_Default"
+		end
 	end
 
 	self:GetDBValue("global", "skins")[skin] = nil
 	self:RefreshOptions()
+	self:UpdateBars()
 end
 
 function addon:DuplicateSkin(skinID)
