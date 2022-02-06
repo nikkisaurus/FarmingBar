@@ -468,6 +468,106 @@ function addon:GetObjectiveBuilderOptions()
 						},
 					},
 				},
+				manage = {
+					order = 3,
+					type = "group",
+					name = L["Manage"],
+					args = {
+						copyFrom = {
+							order = 1,
+							type = "select",
+							name = L["Copy From"],
+							disabled = function()
+								return addon.tcount(objectives) == 0
+							end,
+							values = function()
+								local values = {}
+
+								for objectiveTitle, _ in addon.pairs(objectives) do
+									values[objectiveTitle] = objectiveTitle
+								end
+
+								return values
+							end,
+							sorting = function()
+								local sorting = {}
+
+								for objectiveTitle, _ in addon.pairs(objectives) do
+									tinsert(sorting, objectiveTitle)
+								end
+
+								return sorting
+							end,
+							set = function(_, value)
+								local title = addon:GetDBValue("global", "objectives")[objectiveTitle].title
+								addon:GetDBValue("global", "objectives")[objectiveTitle] = addon:CloneTable(
+									addon:GetDBValue("global", "objectives")[value]
+								)
+								addon:GetDBValue("global", "objectives")[objectiveTitle].title = title
+
+								addon:RefreshOptions()
+							end,
+						},
+						duplicateObjective = {
+							order = 2,
+							type = "execute",
+							name = L["Duplicate Objective"],
+							func = function()
+								local newObjectiveTitle = self:DuplicateObjective(objectiveTitle)
+								ACD:SelectGroup(addonName, "objectiveBuilder", "objectives", newObjectiveTitle)
+							end,
+						},
+						exportObjective = {
+							order = 3,
+							type = "execute",
+							name = L["Export Objective"],
+							func = function()
+								-- Create frame
+								local exportFrame = AceGUI:Create("Frame")
+								exportFrame:SetTitle(L.addon .. " - " .. L["Export Frame"])
+								exportFrame:SetLayout("Fill")
+								exportFrame:SetCallback("OnClose", function(self)
+									self:Release()
+									ACD:Open(addonName)
+								end)
+
+								local editbox = AceGUI:Create("MultiLineEditBox")
+								editbox:SetLabel(objectiveTitle)
+								editbox:DisableButton(true)
+								exportFrame:AddChild(editbox)
+
+								-- Hide options
+								ACD:Close(addonName)
+								exportFrame:Show()
+
+								-- Populate editbox
+								local objective = self:GetDBValue("global", "objectives")[objectiveTitle]
+								local serialized = LibSerialize:Serialize(objective)
+								local compressed = LibDeflate:CompressDeflate(serialized)
+								local encoded = LibDeflate:EncodeForPrint(compressed)
+
+								editbox:SetText(encoded)
+								editbox:SetFocus()
+								editbox:HighlightText()
+							end,
+						},
+						RemoveObjectiveTemplate = {
+							order = 4,
+							type = "execute",
+							name = L["Remove Objective"],
+							func = function()
+								self:RemoveObjectiveTemplate(objectiveTitle)
+								ACD:SelectGroup(addonName, "objectiveBuilder")
+							end,
+							confirm = function()
+								return format(
+									L.Options_ObjectiveBuilder("objective.manage.RemoveObjectiveTemplate_confirm"),
+									objectiveTitle
+								)
+							end,
+						},
+					},
+				},
 			},
 		}
 
@@ -656,72 +756,6 @@ function addon:GetObjectiveBuilderOptions_Objective(objectiveTitle)
 						end
 
 						addon:UpdateButtons()
-					end,
-				},
-			},
-		},
-		manage = {
-			order = 6,
-			type = "group",
-			inline = true,
-			name = L["Manage"],
-			args = {
-				duplicateObjective = {
-					order = 1,
-					type = "execute",
-					name = L["Duplicate Objective"],
-					func = function()
-						local newObjectiveTitle = self:DuplicateObjective(objectiveTitle)
-						ACD:SelectGroup(addonName, "objectiveBuilder", "objectives", newObjectiveTitle)
-					end,
-				},
-				exportObjective = {
-					order = 2,
-					type = "execute",
-					name = L["Export Objective"],
-					func = function()
-						-- Create frame
-						local exportFrame = AceGUI:Create("Frame")
-						exportFrame:SetTitle(L.addon .. " - " .. L["Export Frame"])
-						exportFrame:SetLayout("Fill")
-						exportFrame:SetCallback("OnClose", function(self)
-							self:Release()
-							ACD:Open(addonName)
-						end)
-
-						local editbox = AceGUI:Create("MultiLineEditBox")
-						editbox:SetLabel(objectiveTitle)
-						editbox:DisableButton(true)
-						exportFrame:AddChild(editbox)
-
-						-- Hide options
-						ACD:Close(addonName)
-						exportFrame:Show()
-
-						-- Populate editbox
-						local objective = self:GetDBValue("global", "objectives")[objectiveTitle]
-						local serialized = LibSerialize:Serialize(objective)
-						local compressed = LibDeflate:CompressDeflate(serialized)
-						local encoded = LibDeflate:EncodeForPrint(compressed)
-
-						editbox:SetText(encoded)
-						editbox:SetFocus()
-						editbox:HighlightText()
-					end,
-				},
-				RemoveObjectiveTemplate = {
-					order = 3,
-					type = "execute",
-					name = L["Remove Objective"],
-					func = function()
-						self:RemoveObjectiveTemplate(objectiveTitle)
-						ACD:SelectGroup(addonName, "objectiveBuilder")
-					end,
-					confirm = function()
-						return format(
-							L.Options_ObjectiveBuilder("objective.manage.RemoveObjectiveTemplate_confirm"),
-							objectiveTitle
-						)
 					end,
 				},
 			},

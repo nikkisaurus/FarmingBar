@@ -11,6 +11,7 @@
 - Implemented configuration for all bars
 - Implemented configuration for all trackers within the objective editor
 - You can now access configuration for linked objective templates from its button's objective editor
+- You can now copy settings from another template into objective templates
 - Custom tracker conditions have been redesigned to accept a function returning a numeric value indicating the count, which is to be calculated through your own custom code
 - Reinstated the "/craft" command for objective actions
   - -- Designated recipe action is no longer planned because it would make it more difficult to add vellums to the script

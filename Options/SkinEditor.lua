@@ -99,14 +99,20 @@ function addon:GetSkinEditorOptions_Skins(skins)
 			name = skinID,
 			childGroups = "tab",
 			args = {
-				textures = {
+				barTextures = {
 					order = 1,
 					type = "group",
-					name = L["Textures"],
+					name = L["Bar Textures"],
+					args = {},
+				},
+				buttonTextures = {
+					order = 2,
+					type = "group",
+					name = L["Button Textures"],
 					args = {},
 				},
 				manage = {
-					order = 2,
+					order = 3,
 					type = "group",
 					name = L["Manage"],
 					args = {
