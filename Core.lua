@@ -100,7 +100,6 @@ function addon:OnInitialize()
 --    -- Tracker keys:
 --    local soulDust = "ITEM:172230"
 --    local sacredShard = "ITEM:172231"
---    local eternalCrystal = "ITEM:172232"
 --    local immortalShard = "ITEM:183951"
     
 --    -- Get counts for each tracker

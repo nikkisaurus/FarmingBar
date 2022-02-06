@@ -221,6 +221,16 @@ function addon:GetObjectiveBuilderOptions()
 							},
 						})
 
+						if objectiveInfo.condition == "CUSTOM" then
+							tinsert(treeGroup.tree[3].children, {
+								value = "customTracker",
+								text = L["Custom Tracker Condition"],
+								func = function()
+									return objectiveInfo.conditionInfo
+								end,
+							})
+						end
+
 						for barID, bar in pairs(addon.bars) do
 							tinsert(treeGroup.tree[1].children, {
 								value = "customHide" .. barID,

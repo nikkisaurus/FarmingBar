@@ -400,6 +400,7 @@ L["Count Fontstring"] = true
 L["Ctrl"] = true
 L["Custom Hide Events"] = true
 L["Custom Hide Function"] = true
+L["Custom Tracker Condition"] = true
 L["Disabled"] = true
 L["Down"] = true
 L["Duplicate Bar"] = true
