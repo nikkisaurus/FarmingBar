@@ -3,6 +3,9 @@ local addon = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
 local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 
 local ACD = LibStub("AceConfigDialog-3.0")
+local AceGUI = LibStub("AceGUI-3.0", true)
+local LibSerialize = LibStub("LibSerialize")
+local LibDeflate = LibStub("LibDeflate")
 
 local anchoredLayers = {
 	Border = true,
@@ -30,8 +33,48 @@ function addon:GetSkinEditorOptions()
 			type = "execute",
 			width = 0.75,
 			name = L["Import"],
-			disabled = true,
-			func = function() end,
+			func = function()
+				local importFrame = AceGUI:Create("Frame")
+				importFrame:SetTitle(L.addon .. " - " .. L["Import Frame"])
+				importFrame:SetLayout("Fill")
+				importFrame:SetCallback("OnClose", function(self)
+					self:Release()
+					ACD:Open(addonName)
+				end)
+
+				local editbox = AceGUI:Create("MultiLineEditBox")
+				editbox:SetLabel("")
+				editbox:DisableButton(true)
+				importFrame:AddChild(editbox)
+
+				editbox:SetCallback("OnTextChanged", function(self)
+					-- Decode
+					local decoded = LibDeflate:DecodeForPrint(self:GetText())
+					if not decoded then
+						return
+					end
+					local decompressed = LibDeflate:DecompressDeflate(decoded)
+					if not decompressed then
+						return
+					end
+					local success, skinInfo = LibSerialize:Deserialize(decompressed)
+					if not success then
+						return
+					end
+					local newSkinTitle = addon:CreateSkin()
+					skins[newSkinTitle].desc = skinInfo.desc
+					skins[newSkinTitle] = addon:CloneTable(skinInfo)
+					ACD:SelectGroup(addonName, "skinEditor", "skins", newSkinTitle)
+
+					importFrame:Fire("OnClose")
+				end)
+
+				editbox:SetFocus()
+
+				-- Hide options
+				ACD:Close(addonName)
+				importFrame:Show()
+			end,
 		},
 		remove = {
 			order = 3,
@@ -91,7 +134,9 @@ function addon:GetSkinEditorOptions_Skins(skins)
 			order = count,
 			type = "group",
 			name = skinID,
-			desc = skinInfo.desc,
+			desc = function()
+				return skinInfo.desc
+			end,
 			childGroups = "tab",
 			args = {
 				barTextures = {
@@ -181,8 +226,35 @@ function addon:GetSkinEditorOptions_Skins(skins)
 							order = 4,
 							type = "execute",
 							name = L["Export Skin"],
-							disabled = true,
-							func = function() end,
+							func = function()
+								-- Create frame
+								local exportFrame = AceGUI:Create("Frame")
+								exportFrame:SetTitle(L.addon .. " - " .. L["Export Frame"])
+								exportFrame:SetLayout("Fill")
+								exportFrame:SetCallback("OnClose", function(self)
+									self:Release()
+									ACD:Open(addonName)
+								end)
+
+								local editbox = AceGUI:Create("MultiLineEditBox")
+								editbox:SetLabel(skinID)
+								editbox:DisableButton(true)
+								exportFrame:AddChild(editbox)
+
+								-- Hide options
+								ACD:Close(addonName)
+								exportFrame:Show()
+
+								-- Populate editbox
+								local skin = self:GetDBValue("global", "skins")[skinID]
+								local serialized = LibSerialize:Serialize(skin)
+								local compressed = LibDeflate:CompressDeflate(serialized)
+								local encoded = LibDeflate:EncodeForPrint(compressed)
+
+								editbox:SetText(encoded)
+								editbox:SetFocus()
+								editbox:HighlightText()
+							end,
 						},
 						removeSkin = {
 							order = 5,
