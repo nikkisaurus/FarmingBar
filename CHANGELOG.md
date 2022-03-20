@@ -27,6 +27,7 @@
   - -- Using GameTooltip no longer prevents comparing gear to equipped
   - -- Fixed an error where changing the tooltip from addon to GameTooltip and back to addon caused blank tooltips
   - -- Added barName to bar alert alertInfo
+  - -- Fixed an error from attempting to show or hide bars in combat
 
 ### 3.0-alpha18
 

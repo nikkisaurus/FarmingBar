@@ -163,9 +163,7 @@ local function frame_OnEvent(self, event, ...)
 	end
 
 	if event == "PLAYER_REGEN_ENABLED" then
-		-- TODO: print combat left
-		widget:SetAttribute()
-		self:UnregisterEvent(event)
+		widget:UpdateLayers()
 	elseif event == "SPELL_UPDATE_COOLDOWN" then
 		local buttonDB = widget:GetButtonDB()
 		local validTrackerID, trackerType = addon:ValidateTrackerData(buttonDB.action, buttonDB.actionInfo)
@@ -209,24 +207,37 @@ local function frame_PostClick(self, buttonClicked, ...)
 	if widget:GetUserData("isDragging") then
 		return
 	end
+
 	local cursorType, cursorID = GetCursorInfo()
 	local objectiveTitle, objectiveInfo = addon.DragFrame:GetObjective()
 
-	if cursorType == "item" and not IsModifierKeyDown() and buttonClicked == "LeftButton" then
-		widget:ClearObjective()
-		addon:CreateObjectiveFromCursor(widget)
-		return
-	elseif objectiveTitle then
-		if addon.movingButton then
-			widget:SwapButtons(addon.movingButton)
-		else
-			addon:CreateObjectiveFromDragFrame(widget, objectiveInfo)
+	if UnitAffectingCombat("player") then
+		widget:SetUserData("ChangeObjective", { cursorType, cursorID, objectiveTitle, objectiveInfo })
+	else
+		if widget:GetUserData("ChangeObjective") then
+			widget:SetUserData("ChangeObjective", nil)
+			cursorType, cursorID, objectiveTitle, objectiveInfo = unpack(
+				addon.widget:GetUserData("ChangeObjective"),
+				{}
+			)
 		end
-		addon.DragFrame:Clear()
-		return
-	end
 
-	ClearCursor()
+		if cursorType == "item" and not IsModifierKeyDown() and buttonClicked == "LeftButton" then
+			widget:ClearObjective()
+			addon:CreateObjectiveFromCursor(widget)
+			return
+		elseif objectiveTitle then
+			if addon.movingButton then
+				widget:SwapButtons(addon.movingButton)
+			else
+				addon:CreateObjectiveFromDragFrame(widget, objectiveInfo)
+			end
+			addon.DragFrame:Clear()
+			return
+		end
+
+		ClearCursor()
+	end
 
 	local keybinds = addon:GetDBValue("global", "settings.keybinds.button")
 
@@ -477,18 +488,16 @@ local methods = {
 				return
 			end
 		end
-
-		if UnitAffectingCombat("player") then
-			self.frame:RegisterEvent("PLAYER_REGEN_ENABLED")
-			-- TODO: print combat error
-			return
-		end
-
 		self.frame:SetAttribute(buttonType, nil)
 		self.frame:SetAttribute("item", nil)
 		self.frame:SetAttribute("macrotext", nil)
 
 		if isEmpty then
+			return
+		end
+
+		if UnitAffectingCombat("player") then
+			addon:ReportError(L.CombatError)
 			return
 		end
 
@@ -832,6 +841,11 @@ local methods = {
 		end
 	end,
 	UpdateLayers = function(self)
+		if UnitAffectingCombat("player") then
+			addon:ReportError(L.CombatError)
+			return
+		end
+
 		self:SetHidden()
 		self:UpdateDB()
 		addon:SkinButton(self, addon:GetDBValue("profile", "style.skin"))
@@ -892,6 +906,7 @@ local function Constructor()
 	frame:SetScript("PostClick", frame_PostClick)
 
 	frame:RegisterEvent("SPELL_UPDATE_COOLDOWN")
+	frame:RegisterEvent("PLAYER_REGEN_ENABLED")
 
 	local FloatingBG = frame:CreateTexture("$parentFloatingBG", "BACKGROUND", nil, 1)
 	FloatingBG:SetAllPoints(frame)

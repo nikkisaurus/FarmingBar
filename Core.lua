@@ -197,9 +197,16 @@ end
 function addon:InitializeEvents()
 	self:RegisterEvent("BAG_UPDATE_DELAYED")
 	--@retail@
-
 	self:RegisterEvent("CURRENCY_DISPLAY_UPDATE")
 	--@end-retail@
+	self.QueuedScripts = {}
+	self:RegisterEvent("PLAYER_REGEN_ENABLED")
+end
+
+function addon:PLAYER_REGEN_ENABLED()
+	for method, args in pairs(self.QueuedScripts) do
+		self[method](self, self.unpack(method, {}))
+	end
 end
 
 function addon:InitializeTrackers()

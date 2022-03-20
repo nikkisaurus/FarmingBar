@@ -82,6 +82,8 @@ L["Tex Coords"] = true
 L["Use Skin"] = true
 L["Materials"] = true
 
+L.CombatError = "This action cannot be performed while in combat, but will resume when combat ends."
+
 -- Modules\ObjectiveBuilder.lua
 L.FilterAutoItemsHint = [[Check this option to hide automatically created item objectives (prepended by "item:").]]
 L.NewObjectiveHint = "You can drop an item on this button to quickly add it as an objective."

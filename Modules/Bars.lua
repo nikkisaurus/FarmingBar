@@ -40,6 +40,12 @@ function addon:InitializeBars()
 end
 
 function addon:CreateBar()
+	if UnitAffectingCombat("player") then
+		self.QueuedScripts["CreateBar"] = {}
+		self:ReportError(L.CombatError)
+		return
+	end
+
 	local bars = self:GetDBValue("profile", "bars")
 	local newBarID = #bars + 1
 

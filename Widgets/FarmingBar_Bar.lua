@@ -141,7 +141,6 @@ local function frame_OnEvent(self, event)
 		widget.removeButton:Disable()
 	elseif event == "PLAYER_REGEN_ENABLED" then
 		widget:SetQuickButtonStates()
-	elseif barDB then
 		widget:SetHidden()
 	end
 end
@@ -386,6 +385,10 @@ local methods = {
 		addon:SetBarDBValue(key, value, self:GetBarID(), isCharDB)
 	end,
 	SetHidden = function(self)
+		if UnitAffectingCombat("player") then
+			addon:ReportError(L.CombatError)
+			return
+		end
 		local preview, err = addon:CustomHide(self)
 		if self:GetUserData("barDB").hidden or (preview and not err) then
 			self.frame:Hide()
