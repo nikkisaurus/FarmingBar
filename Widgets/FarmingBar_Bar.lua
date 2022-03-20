@@ -193,7 +193,8 @@ local methods = {
 				progressCount = progressCount,
 				progressTotal = progressTotal,
 				barIDName = barIDName,
-				barNameLong = format("%s (%s)", barIDName, barDB.title),
+				barName = barDB.title ~= "" and barDB.title or barIDName,
+				barNameLong = barDB.title ~= "" and format("%s (%s)", barIDName, barDB.title) or barIDName,
 				progressColor = (alertType ~= "removed" and newCompletion == "lost" and red)
 					or (progressCount < progressTotal and gold)
 					or green,
@@ -218,7 +219,8 @@ local methods = {
 				-- Send alert
 				if alertSettings.chat then
 					addon:Print(parsedAlert)
-				elseif alertSettings.screen then
+				end
+				if alertSettings.screen then
 					UIErrorsFrame:AddMessage(parsedAlert, 1, 1, 1)
 				end
 			end

@@ -386,17 +386,6 @@ function addon:GetGlobalSettingsOptions()
 										addon:SetDBValue("global", "settings.alerts.bar.preview.alertType", value)
 									end,
 								},
-								toggle = {
-									order = 6,
-									type = "toggle",
-									name = L["Use Long Name"],
-									get = function()
-										return addon:GetDBValue("global", "settings.alerts.bar.preview.withTitle")
-									end,
-									set = function(_, value)
-										addon:SetDBValue("global", "settings.alerts.bar.preview.withTitle", value)
-									end,
-								},
 							},
 						},
 						sounds = {

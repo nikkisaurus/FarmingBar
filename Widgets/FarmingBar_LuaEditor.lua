@@ -36,7 +36,7 @@ local methods = {
 	LoadCode = function(self, info, widget, set)
 		self.editbox:SetUserData("info", info)
 		self.editbox:SetText(widget:GetText())
-		self.editbox:Fire("OnTextChanged")
+		--self.editBox:GetScript("OnUpdate")()
 		self.frame:Show()
 		self.editbox.button:HookScript("OnClick", function()
 			set(info, self.editbox:GetText())
@@ -82,8 +82,8 @@ local function Constructor()
 		self.obj:Release()
 	end)
 
-	editbox:SetCallback("OnTextChanged", function(self)
-		local info = self:GetUserData("info")
+	editbox.editBox:HookScript("OnUpdate", function(self)
+		local info = editbox:GetUserData("info")
 		local scope, key, func, args = unpack(info)
 		if not func or not addon[func] then
 			return
@@ -92,7 +92,7 @@ local function Constructor()
 		end
 
 		-- Update preview while typing
-		local preview, err = func(addon, addon.unpack(args, {}), self:GetText())
+		local preview, err = func(addon, addon.unpack(args, {}), editbox:GetText())
 		window:SetStatusText(preview or err)
 	end)
 

@@ -200,7 +200,6 @@ function addon:InitializeDB()
 						preview = {
 							count = 1, -- global.alertFormats.barCountPreview
 							total = 5, -- global.alertFormats.barTotalPreview
-							withTitle = true, -- global.alertFormats.barTitlePreview
 							alertType = "complete", -- "lost", "complete"
 						},
 					},

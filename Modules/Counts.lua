@@ -107,10 +107,10 @@ function addon:BAG_UPDATE_DELAYED(...)
 							local trackerType, trackerID = self:ParseTrackerKey(trackerKey)
 
 							if trackerType == "ITEM" then
-								self.CacheItem(trackerID, function(itemID, alert, alertInfo, soundID)
+								self.CacheItem(trackerID, function(bar, itemID, alert, alertInfo, soundID)
 									alertInfo.trackerTitle = (GetItemInfo(itemID))
 									addon:SendAlert(bar, "tracker", alert, alertInfo, soundID, true)
-								end, trackerID, alert, alertInfo, soundID)
+								end, bar, trackerID, alert, alertInfo, soundID)
 							else
 								alertInfo.trackerTitle = C_CurrencyInfo.GetCurrencyInfo(trackerID).name
 								self:SendAlert(bar, "tracker", alert, alertInfo, soundID, true)

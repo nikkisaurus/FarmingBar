@@ -26,6 +26,7 @@
   - -- Loading an objective onto the cursor now clears items or spells on the previously on the cursor
   - -- Using GameTooltip no longer prevents comparing gear to equipped
   - -- Fixed an error where changing the tooltip from addon to GameTooltip and back to addon caused blank tooltips
+  - -- Added barName to bar alert alertInfo
 
 ### 3.0-alpha18
 

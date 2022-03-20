@@ -46,7 +46,8 @@ function addon:PreviewAlert(alertType, input, info)
 			progressCount = progressCount,
 			progressTotal = progressTotal,
 			barIDName = barIDName,
-			barNameLong = format("%s (%s)", barIDName, L["My Bar Name"]),
+			barName = L["Materials"],
+			barNameLong = format("%s (%s)", barIDName, L["Materials"]),
 			progressColor = (progressCount == progressTotal and alertType ~= "lost") and "|cff00ff00"
 				or alertType == "complete" and "|cffffcc00"
 				or alertType == "lost" and "|cffff0000",
@@ -158,7 +159,8 @@ function addon:SendAlert(bar, alertType, alert, alertInfo, soundID, isTracker)
 		-- Send alert
 		if alertSettings.chat then
 			self:Print(parsedAlert)
-		elseif alertSettings.screen then
+		end
+		if alertSettings.screen then
 			UIErrorsFrame:AddMessage(parsedAlert, 1, 1, 1)
 		end
 	end
@@ -173,10 +175,13 @@ function addon:SendAlert(bar, alertType, alert, alertInfo, soundID, isTracker)
 	if alertSettings.sound.enabled and soundID and not (newCompletion and showBarAlert) then
 		PlaySoundFile(LSM:Fetch("sound", alertSettings.sound[soundID]))
 	else
+		if isTracker then
+			return
+		end
 		-- Get bar progress info
-		local objective = not isTracker and alertInfo.objective.count
-		local oldCount = not isTracker and alertInfo.oldCount
-		local newCount = not isTracker and alertInfo.newCount
+		local objective = alertInfo.objective.count
+		local oldCount = alertInfo.oldCount
+		local newCount = alertInfo.newCount
 		local newCompletion = oldCount < objective and newCount > objective
 		local lostCompletion = oldCount > objective and newCount < objective
 
