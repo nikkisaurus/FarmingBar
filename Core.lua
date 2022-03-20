@@ -165,6 +165,8 @@ end
 	-- Initialize database and slash commands
 	self:InitializeDB()
 	self:RegisterSlashCommands()
+
+	self.GameTooltip_OnUpdate = GameTooltip:GetScript("OnUpdate")
 end
 
 function addon:OnEnable()

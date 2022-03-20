@@ -135,6 +135,7 @@ local function frame_OnEnter(self)
 		addon.tooltipFrame:SetScript("OnUpdate", function()
 			addon.tooltipFrame:Load(self, "ANCHOR_BOTTOMRIGHT", 0, 0, addon[tooltip](addon, widget, addon.tooltipFrame))
 		end)
+
 		addon.tooltipFrame:GetScript("OnUpdate")()
 	end
 end
@@ -148,7 +149,10 @@ local function frame_OnLeave(self)
 	local tooltip = widget:GetUserData("tooltip")
 	if tooltip and not addon.DragFrame:GetObjective() then
 		addon.tooltipFrame.Clear()
-		addon.tooltipFrame:SetScript("OnUpdate", nil)
+		addon.tooltipFrame:SetScript(
+			"OnUpdate",
+			addon:GetDBValue("global", "settings.tooltips.useGameTooltip") and addon.GameTooltip_OnUpdate
+		)
 	end
 end
 

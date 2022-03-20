@@ -3,9 +3,11 @@ local addon = LibStub("AceAddon-3.0"):GetAddon("FarmingBar")
 local L = LibStub("AceLocale-3.0"):GetLocale("FarmingBar", true)
 
 function addon:InitializeTooltips()
-	self.tooltip = CreateFrame("GameTooltip", "FarmingBar_Tooltip", UIParent, "GameTooltipTemplate")
+	self.tooltip = FarmingBar_Tooltip
+		or CreateFrame("GameTooltip", "FarmingBar_Tooltip", UIParent, "GameTooltipTemplate")
 	self.tooltipFrame = self:GetDBValue("global", "settings.tooltips.useGameTooltip") and GameTooltip or self.tooltip
 	local tooltipFrame = self.tooltipFrame
+	tooltipFrame:ClearLines()
 
 	function tooltipFrame:Load(owner, anchor, x, y, lines)
 		if not lines or type(lines) ~= "table" then
