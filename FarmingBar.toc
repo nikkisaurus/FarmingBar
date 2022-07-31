@@ -1,7 +1,5 @@
-## Interface: 90100
-## Interface-Retail: 90100
-## Interface-Classic: 11306
-## Interface-BCC: 20501
+## Interface: 90205
+## Interface-Retail: 90205
 
 ## Title: FarmingBar
 ## Notes: Action bar to display and track objective goals.
@@ -9,51 +7,10 @@
 ## Author: Nikketa-Hyjal-US
 
 ## SavedVariables: FarmingBarDB
-## OptionalDeps: DataStore, DataStore_Auctions, DataStore_Characters, DataStore_Containers, DataStore_Currency, DataStore_Inventory, DataStore_Mails
 
 ## X-Curse-Project-ID: 351688
 ## X-WoWI-ID: 25440
 ## X-Wago-ID: BO67dYK3
 
-# Libraries
 Libs\libs.xml
-
-# Locales
 Locales\Locale-enUS.lua
-
-# Core
-Core.lua
-Database.lua
-StaticPopup.lua
-Modules\Tooltips\Tooltips.lua
-
-# Data
-FileDataRetail.lua
-FileDataClassic.lua
-
-# Frame
-Widgets\Widgets.xml
-
-# Modules
-Modules\Skins.lua
-Modules\Counts.lua
-Modules\Tooltips\Bars.lua
-Modules\Tooltips\Buttons.lua
-Modules\Alerts.lua
-Modules\Bars.lua
-Modules\Buttons.lua
-Modules\DragFrame.lua
-Modules\Objectives.lua
-Modules\ObjectiveTemplates.lua
-Modules\Trackers.lua
-Modules\Templates.lua
-
-# Options
-Options\Commands.lua
-Options\Options.lua
-Options\Config.lua
-Options\ObjectiveBuilder.lua
-Options\ObjectiveEditor.lua
-Options\Settings.lua
-Options\SkinEditor.lua
-Options\Help.lua
