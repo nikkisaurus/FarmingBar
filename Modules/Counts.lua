@@ -25,10 +25,9 @@ function addon:BAG_UPDATE_DELAYED(...)
 				-- Change in objective count
 				if oldCount ~= newCount then
 					if objective and objective > 0 then
-						if
-							alerts.completedObjectives
+						if alerts.completedObjectives
 							or (
-								not alerts.completedObjectives
+							not alerts.completedObjectives
 								and ((oldCount < objective) or (newCount < oldCount and newCount < objective))
 							)
 						then
@@ -52,7 +51,7 @@ function addon:BAG_UPDATE_DELAYED(...)
 						objectiveTitle = buttonDB.title,
 						objective = {
 							color = (objective and objective > 0)
-									and (newCount >= objective and "|cff00ff00" or "|cffffcc00")
+								and (newCount >= objective and "|cff00ff00" or "|cffffcc00")
 								or "",
 							count = objective,
 						},
@@ -82,14 +81,14 @@ function addon:BAG_UPDATE_DELAYED(...)
 								objectiveTitle = buttonDB.title,
 								objective = {
 									color = (objective and objective > 0)
-											and (newCount >= objective and "|cff00ff00" or "|cffffcc00")
+										and (newCount >= objective and "|cff00ff00" or "|cffffcc00")
 										or "",
 									count = objective,
 								},
 								trackerObjective = {
 									color = newTrackerCount
-												>= ((objective and objective > 0) and objective * trackerObjective or trackerObjective)
-											and "|cff00ff00"
+										>= ((objective and objective > 0) and objective * trackerObjective or trackerObjective)
+										and "|cff00ff00"
 										or "|cffffcc00",
 									count = (objective and objective > 0) and objective * trackerObjective
 										or trackerObjective,
@@ -155,9 +154,9 @@ function addon:GetDataStoreItemCount(itemID, trackerInfo)
 	local DS = DataStore
 	local count = 0
 
-	if trackerInfo.includeAllChars then
-		local characters = DS:HashValueToSortedArray(DS:GetCharacters())
-		for _, character in pairs(characters) do
+	local characters = DS:HashValueToSortedArray(DS:GetCharacters())
+	for _, character in pairs(characters) do
+		if trackerInfo.includeAllChars or character == DS:GetCharacter() then
 			local bags, bank = DS:GetContainerItemCount(character, itemID)
 			local mail = DS:GetMailItemCount(character, itemID) or 0
 			local auction = DS:GetAuctionHouseItemCount(character, itemID) or 0
@@ -171,7 +170,7 @@ function addon:GetDataStoreItemCount(itemID, trackerInfo)
 	for guildName, guild in pairs(guilds) do
 		-- From what I see, there is no function in DataStore to check the guild faction by the ID, so checking from the db instead
 		if trackerInfo.includeGuildBank[guild] and DS.db.global.Guilds[guild].faction == UnitFactionGroup("player") then
-			count = count + GetItemCount(itemID, trackerInfo.includeBank) + DS:GetGuildBankItemCount(guild, itemID)
+			count = count + DS:GetGuildBankItemCount(guild, itemID)
 		end
 	end
 
@@ -226,7 +225,7 @@ function addon:GetTrackerCount(buttonDB, trackerKey, overrideObjective)
 
 	if trackerType == "ITEM" then
 		count = (trackerInfo.includeAllChars or trackerInfo.includeGuildBank)
-				and addon:GetDataStoreItemCount(trackerID, trackerInfo)
+			and addon:GetDataStoreItemCount(trackerID, trackerInfo)
 			or GetItemCount(trackerID, trackerInfo.includeBank)
 	elseif trackerType == "CURRENCY" then
 		count = trackerInfo.includeAllChars and addon:GetDataStoreCurrencyCount(trackerID, trackerInfo)

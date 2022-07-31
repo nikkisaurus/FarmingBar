@@ -288,9 +288,6 @@ function addon:GetObjectiveEditorOptions_Tracker(trackerKey, trackerInfo, data)
 				tristate = true,
 				width = "full",
 				name = L["Include Bank"],
-				disabled = function()
-					return #addon:IsDataStoreLoaded() > 0
-				end,
 				get = function()
 					local count = 0
 					for trackerKey, trackerInfo in pairs(trackers) do
@@ -342,7 +339,7 @@ function addon:GetObjectiveEditorOptions_Tracker(trackerKey, trackerInfo, data)
 									local count = 0
 									for trackerKey, trackerInfo in pairs(trackers) do
 										count = addon:GetTrackerDBInfo(trackers, trackerKey, "includeGuildBank")[guild]
-												and (count + 1)
+											and (count + 1)
 											or count
 									end
 
