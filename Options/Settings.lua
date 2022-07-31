@@ -335,13 +335,25 @@ function addon:GetGlobalSettingsOptions()
 										{ "bar" },
 									},
 								},
-								previewSettings = {
+								resetProgress = {
 									order = 2,
+									type = "execute",
+									name = L["Reset Alert"],
+									confirm = function()
+										return L["Are you sure you want to reset this alert to its default setting?"]
+									end,
+									func = function()
+										addon:SetDBValue("global", "settings.alerts.bar.format.progress", self.barProgress)
+										addon:UpdateAlert("bar", "progress", self.barProgress)
+									end
+								},
+								previewSettings = {
+									order = 3,
 									type = "header",
 									name = L["Preview Settings"],
 								},
 								previewCount = {
-									order = 3,
+									order = 4,
 									type = "range",
 									name = L["Completed Objectives"],
 									min = 0,
@@ -355,7 +367,7 @@ function addon:GetGlobalSettingsOptions()
 									end,
 								},
 								previewTotal = {
-									order = 4,
+									order = 5,
 									type = "range",
 									name = L["Total Objectives"],
 									min = 0,
@@ -369,7 +381,7 @@ function addon:GetGlobalSettingsOptions()
 									end,
 								},
 								alertType = {
-									order = 5,
+									order = 6,
 									type = "select",
 									style = "dropdown",
 									name = L["Alert Type"],
@@ -479,13 +491,17 @@ function addon:GetGlobalSettingsOptions()
 										{ "button" },
 									},
 								},
-								withObjectivePreview = {
+								resetWithObjective = {
 									order = 2,
-									type = "description",
-									name = function(text)
-										return text
+									type = "execute",
+									name = L["Reset Alert"],
+									confirm = function()
+										return L["Are you sure you want to reset this alert to its default setting?"]
 									end,
-									width = "full",
+									func = function()
+										addon:SetDBValue("global", "settings.alerts.button.format.withObjective", self.withObjective)
+										addon:UpdateAlert("button", "withObjective", self.withObjective)
+									end
 								},
 								withoutObjective = {
 									order = 3,
@@ -515,13 +531,25 @@ function addon:GetGlobalSettingsOptions()
 										{ "button" },
 									},
 								},
-								previewSettings = {
+								resetWithoutObjective = {
 									order = 4,
+									type = "execute",
+									name = L["Reset Alert"],
+									confirm = function()
+										return L["Are you sure you want to reset this alert to its default setting?"]
+									end,
+									func = function()
+										addon:SetDBValue("global", "settings.alerts.button.format.withoutObjective", self.withoutObjective)
+										addon:UpdateAlert("button", "withoutObjective", self.withoutObjective)
+									end
+								},
+								previewSettings = {
+									order = 5,
 									type = "header",
 									name = L["Preview Settings"],
 								},
 								oldCount = {
-									order = 5,
+									order = 6,
 									type = "input",
 									name = L["Old Count"],
 									width = 0.5,
@@ -543,7 +571,7 @@ function addon:GetGlobalSettingsOptions()
 									end,
 								},
 								newCount = {
-									order = 6,
+									order = 7,
 									type = "input",
 									name = L["New Count"],
 									width = 0.5,
@@ -565,7 +593,7 @@ function addon:GetGlobalSettingsOptions()
 									end,
 								},
 								objective = {
-									order = 7,
+									order = 8,
 									type = "input",
 									name = L["Objective"],
 									width = 0.5,
@@ -689,13 +717,25 @@ function addon:GetGlobalSettingsOptions()
 										{ "tracker" },
 									},
 								},
-								previewSettings = {
+								resetProgress = {
 									order = 2,
+									type = "execute",
+									name = L["Reset Alert"],
+									confirm = function()
+										return L["Are you sure you want to reset this alert to its default setting?"]
+									end,
+									func = function()
+										addon:SetDBValue("global", "settings.alerts.tracker.format.progress", self.trackerProgress)
+										addon:UpdateAlert("tracker", "progress", self.trackerProgress)
+									end
+								},
+								previewSettings = {
+									order = 3,
 									type = "header",
 									name = L["Preview Settings - Tracker"],
 								},
 								oldCount = {
-									order = 3,
+									order = 4,
 									type = "input",
 									name = L["Old Count"],
 									width = 0.5,
@@ -717,7 +757,7 @@ function addon:GetGlobalSettingsOptions()
 									end,
 								},
 								newCount = {
-									order = 4,
+									order = 5,
 									type = "input",
 									name = L["New Count"],
 									width = 0.5,
@@ -739,7 +779,7 @@ function addon:GetGlobalSettingsOptions()
 									end,
 								},
 								objective = {
-									order = 5,
+									order = 6,
 									type = "input",
 									name = L["Objective"],
 									width = 0.5,
@@ -761,12 +801,12 @@ function addon:GetGlobalSettingsOptions()
 									end,
 								},
 								objectivePreviewSettings = {
-									order = 6,
+									order = 7,
 									type = "header",
 									name = L["Preview Settings - Objective"],
 								},
 								objectiveOldCount = {
-									order = 7,
+									order = 8,
 									type = "input",
 									name = L["Old Count"],
 									width = 0.5,
@@ -791,7 +831,7 @@ function addon:GetGlobalSettingsOptions()
 									end,
 								},
 								objectiveNewCount = {
-									order = 8,
+									order = 9,
 									type = "input",
 									name = L["New Count"],
 									width = 0.5,
@@ -816,7 +856,7 @@ function addon:GetGlobalSettingsOptions()
 									end,
 								},
 								objectiveObjective = {
-									order = 9,
+									order = 10,
 									type = "input",
 									name = L["Objective"],
 									width = 0.5,
@@ -928,8 +968,7 @@ function addon:GetGlobalSettingsOptions()
 
 						-- Check for duplicates
 						for action, actionInfo in pairs(globalKeybinds[widgetType]) do
-							if
-								action ~= keybind
+							if action ~= keybind
 								and actionInfo.modifier == modifier
 								and actionInfo.button == button
 							then

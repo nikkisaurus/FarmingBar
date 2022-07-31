@@ -81,6 +81,8 @@ L["Import"] = true
 L["Tex Coords"] = true
 L["Use Skin"] = true
 L["Materials"] = true
+L["Are you sure you want to reset this alert to its default setting?"] = true
+L["Reset Alert"] = true
 
 L.CombatError = "This action cannot be performed while in combat, but will resume when combat ends."
 L.CombatRestrictedError = "This action cannot be performed while in combat."
