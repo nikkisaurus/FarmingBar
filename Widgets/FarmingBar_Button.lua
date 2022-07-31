@@ -423,7 +423,7 @@ local methods = {
 			self:GetUserData("trackerCounts") or {}
 	end,
 	GetObjective = function(self)
-		return not self:IsEmpty() and self:GetButtonDB().objective
+		return not self:IsEmpty() and self:GetButtonDB().objective or 0
 	end,
 	GetObjectiveTitle = function(self)
 		return not self:IsEmpty() and self:GetButtonDB().title

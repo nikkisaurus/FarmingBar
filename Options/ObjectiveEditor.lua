@@ -435,6 +435,32 @@ function addon:GetObjectiveEditorOptions_Tracker(trackerKey, trackerInfo, data)
 				end
 			end
 		end
+
+		options.exclusions = {
+			order = 4,
+			type = "multiselect",
+			style = "dropdown",
+			name = L["Exclusions"],
+			desc = L.ObjectiveEditor_exclusions,
+			values = function()
+				local values = {
+					-- none = L["None"],
+				}
+
+				for objectiveTitle, _ in pairs(addon.db.global.objectives) do
+					values[objectiveTitle] = objectiveTitle
+				end
+
+				return values
+			end,
+			get = function(info, objectiveTitle)
+				return addon:GetTrackerDBInfo(trackers, trackerKey, "exclude")[objectiveTitle]
+			end,
+			set = function(_, value, checked)
+				addon:GetTrackerDBInfo(trackers, trackerKey, "exclude")[value] = checked
+				widget:SetCount()
+			end,
+		}
 	end
 
 	return options

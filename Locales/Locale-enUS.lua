@@ -83,6 +83,9 @@ L["Use Skin"] = true
 L["Materials"] = true
 L["Are you sure you want to reset this alert to its default setting?"] = true
 L["Reset Alert"] = true
+L["Exclusions"] = true
+L.ObjectiveEditor_exclusions = "Excludes counts used in objectives on the selected buttons."
+
 
 L.CombatError = "This action cannot be performed while in combat, but will resume when combat ends."
 L.CombatRestrictedError = "This action cannot be performed while in combat."

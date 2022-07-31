@@ -236,24 +236,21 @@ function addon:GetTrackerCount(buttonDB, trackerKey, overrideObjective)
 		return 0
 	end
 
-	-- if #trackerInfo.exclude > 0 then
-	--     for _, eObjectiveTitle in pairs(trackerInfo.exclude) do
-	--         local eObjectiveInfo = self:GetObjectiveInfo(eObjectiveTitle)
-	--         local eObjective, eObjectiveButton = self:GetMaxTrackerObjective(eObjectiveTitle)
-
-	--         -- Only exclude if an objective is set (otherwise, how do we know how many to exclude?)
-	--         if eObjective then
-	--             for _, eTrackerInfo in pairs(eObjectiveInfo.trackers) do
-	--                 if eTrackerInfo.trackerID == trackerInfo.trackerID then
-	--                     -- Get the max amount used for the objective: either the objective itself or the count
-	--                     local maxCount = min(self:GetObjectiveCount(eObjectiveButton, eObjectiveTitle), eObjective)
-	--                     -- The number of of this tracker required for the objective is the tracker objective x max
-	--                     count = count - maxCount
-	--                 end
-	--             end
-	--         end
-	--     end
-	-- end
+	local excluded
+	if addon.tcount(trackerInfo.exclude) > 0 then
+		for excludedObjectiveTitle, _ in pairs(trackerInfo.exclude) do
+			for _, bar in pairs(addon.bars) do
+				for _, button in pairs(bar:GetUserData("buttons")) do
+					if button:GetObjectiveTitle() == excludedObjectiveTitle and button:GetObjective() > 0 then
+						-- Get the max amount used for the objective: either the objective itself or the count
+						local maxCount = min(button:GetCount(), button:GetObjective())
+						-- The number of of this tracker required for the objective is the tracker objective x max
+						count = count - maxCount
+					end
+				end
+			end
+		end
+	end
 
 	count = floor(count / (overrideObjective or trackerInfo.objective or 1))
 
