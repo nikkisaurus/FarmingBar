@@ -32,9 +32,9 @@ L.InvalidCustomCondition = "Invalid custom condition:"
 L.InvalidCustomConditionReturn = [[Custom conditions must return a table with nested "trackerGroup" tables.]]
 L.InvalidCustomConditionTable = "Nested trackerGroups must be tables."
 L.InvalidCustomConditionID =
-	[[Nested trackerGroup keys must be in the format "t%d", where %d is the tracker ID or "%dt%d:%dt%d" expressing a ration between two tracker IDs, such that 10t1:1t2 represents the equivalency between 10 of tracker 1 and 1 of tracker 2.]]
+[[Nested trackerGroup keys must be in the format "t%d", where %d is the tracker ID or "%dt%d:%dt%d" expressing a ration between two tracker IDs, such that 10t1:1t2 represents the equivalency between 10 of tracker 1 and 1 of tracker 2.]]
 L.InvalidCustomConditionObjective =
-	"Nested trackerGroup values must be an integer >= 0 representing the tracker objective."
+"Nested trackerGroup values must be an integer >= 0 representing the tracker objective."
 L.InvalidObjectiveTitle = "Invalid objective title."
 L.InvalidTrackerExclusion = "Cannot exclude parent objective."
 L.ObjectiveIsExcluded = "Objective is already being excluded."
@@ -83,12 +83,14 @@ L["Use Skin"] = true
 L["Materials"] = true
 
 L.CombatError = "This action cannot be performed while in combat, but will resume when combat ends."
+L.CombatRestrictedError = "This action cannot be performed while in combat."
 
 -- Modules\ObjectiveBuilder.lua
 L.FilterAutoItemsHint = [[Check this option to hide automatically created item objectives (prepended by "item:").]]
 L.NewObjectiveHint = "You can drop an item on this button to quickly add it as an objective."
 L.ObjectiveContextMenuHint = format(
-	"%sRight-click|r this button to open a context menu to rename, duplicate, or delete this objective.\n%sDrag|r this button onto a bar to track it.",
+	"%sRight-click|r this button to open a context menu to rename, duplicate, or delete this objective.\n%sDrag|r this button onto a bar to track it."
+	,
 	sexteal,
 	sexteal
 )
@@ -255,7 +257,7 @@ L["Type"] = true
 L["View Code"] = true
 
 L.DisplayReferenceDescription =
-	[[Actions allow you to set which item/currency you want to use for automatic objective information. This includes the icon chosen when using "Automatic Icon" and the item associated with a button's "use" attribute. However, when set to a macrotext, the icon will be unaffected.
+[[Actions allow you to set which item/currency you want to use for automatic objective information. This includes the icon chosen when using "Automatic Icon" and the item associated with a button's "use" attribute. However, when set to a macrotext, the icon will be unaffected.
 
 Farming Bar provides a /craft command that you can use in your macrotexts. Simply use "/craft Recipe String". For example:
 
@@ -263,7 +265,7 @@ Farming Bar provides a /craft command that you can use in your macrotexts. Simpl
 /use Enchanting Vellum]]
 L.DisplayReferenceDescription_Gsub = "/currency"
 L.CustomCodeWarning =
-	"This objective may contain custom Lua code. Make sure you only import objectives from trusted sources."
+"This objective may contain custom Lua code. Make sure you only import objectives from trusted sources."
 
 ------------------------------------------------------------
 
@@ -366,38 +368,38 @@ L["USE EXISTING"] = true
 L["Use Game Tooltip"] = true
 
 L.Options_settings_profile_copyFrom =
-	"Copy profile style settings from another profile. This will not copy bars or bar settings."
+"Copy profile style settings from another profile. This will not copy bars or bar settings."
 L.ObjectiveEditor_template = "Link this button to an objective template."
 L.ObjectiveEditor_CreateTemplate = "Create an objective template from this button."
 L.Options_settings_global_general_tooltips_bar = "Enables bar tooltips."
 L.Options_settings_global_general_tooltips_button = "Enables button tooltips."
 L.Options_settings_global_general_tooltips_hideObjectiveInfo = "Hides objective information on button tooltips."
 L.Options_settings_global_general_tooltips_useGameTooltip =
-	"Use the default GameTooltip for item objectives. This can allow you to view information from other addons, but may significantly increase the size of the tooltip."
+"Use the default GameTooltip for item objectives. This can allow you to view information from other addons, but may significantly increase the size of the tooltip."
 L.Options_settings_global_general_hints_bars = "Displays keybind hints at the bottom of bar tooltips."
 L.Options_settings_global_general_hints_buttons = "Displays keybind hints at the bottom of button tooltips."
 L.Options_settings_global_general_hints_ObjectiveBuilder = "Displays tooltip hints on Objective Builder widgets."
 L.Options_settings_global_general_hints_condensedTooltip =
-	"Removes objective information and hints from tooltips unless modifier is held down."
+"Removes objective information and hints from tooltips unless modifier is held down."
 L.Options_settings_global_general_hints_modifier = "Sets the modifier key used to expand tooltips."
 L.Options_settings_global_misc_autoLootOnUse = "Temporarily enables auto loot when using an item"
 L.Options_settings_global_templates_deleteTemplate = "Permanently deletes a user-defined template."
 L.Options_settings_global_templates_deleteTemplateConfirm =
-	[[Are you sure you want to permanently delete the template "%s"?]]
+[[Are you sure you want to permanently delete the template "%s"?]]
 L.Options_settings_global_templates_preserveTemplateData =
-	"Includes objective data when loading user-defined templates."
+"Includes objective data when loading user-defined templates."
 L.Options_settings_global_templates_preserveTemplateOrder =
-	"Saves the order of objectives loaded onto a bar from user-defined templates."
+"Saves the order of objectives loaded onto a bar from user-defined templates."
 
 L.Options_settings_profile_skin = "Sets the skin for bars and buttons."
 L.Options_settings_profile_buttonLayers_AccountOverlay =
-	"Enables the four-point orange diamond border indicating account counts on buttons."
+"Enables the four-point orange diamond border indicating account counts on buttons."
 L.Options_settings_profile_buttonLayers_AutoCastable =
-	"Enables the four-point gold border indicating bank inclusion on buttons."
+"Enables the four-point gold border indicating bank inclusion on buttons."
 L.Options_settings_profile_buttonLayers_Border = "Enables the item quality border on buttons."
 L.Options_settings_profile_buttonLayers_Cooldown = "Enables the item cooldown swipe on buttons."
 L.Options_settings_profile_buttonLayers_CooldownEdge =
-	"Enables the bling on the edge of item cooldown swipes on buttons."
+"Enables the bling on the edge of item cooldown swipes on buttons."
 L.Options_settings_profile_fonts_face = "Sets the font face for bar and button fontstrings."
 L.Options_settings_profile_fonts_size = "Sets the font size for bar and button fontstrings."
 L.Options_settings_profile_fonts_outline = "Sets the font outline for bar and button fontstrings."
@@ -613,7 +615,8 @@ L.InvalidCraftSkillID = "Invalid tradeskill name."
 L.MissingCraftRecipeName = "Please specify a tradeskill recipe name"
 L.UnknownRecipe = function(recipeName)
 	return format(
-		"You do not know the recipe: %s. If you believe this is an error, please manually open your tradeskill and try again.",
+		"You do not know the recipe: %s. If you believe this is an error, please manually open your tradeskill and try again."
+		,
 		recipeName
 	)
 end

@@ -14,11 +14,16 @@ local Version = 1
 -- Keybinds
 
 local postClickMethods = {
-	clearObjective = function(self, ...)
-		self.obj:ClearObjective()
-	end,
+	clearObjective = function(self, ...) self.obj:ClearObjective() end,
 	moveObjective = function(self, ...)
 		local widget = self.obj
+
+		if UnitAffectingCombat("player") then
+			if not widget:IsEmpty() then
+				addon:ReportError(L.CombatRestrictedError)
+			end
+			return
+		end
 
 		if addon.isMoving then
 			addon.isMoving = nil
@@ -29,7 +34,9 @@ local postClickMethods = {
 		if not widget:IsEmpty() and not addon.movingButton then
 			widget.Flash:Show()
 			UIFrameFlash(widget.Flash, 0.5, 0.5, -1)
-			addon.movingButton = { widget, addon:CloneTable(widget:GetButtonDB()) }
+			addon.movingButton = {
+				widget, addon:CloneTable(widget:GetButtonDB())
+			}
 		elseif addon.movingButton then
 			widget:SwapButtons(addon.movingButton)
 		end
@@ -39,20 +46,18 @@ local postClickMethods = {
 	end,
 	showObjectiveEditBox = function(self, ...)
 		local widget = self.obj
-		if not widget:IsEmpty() then
-			widget.objectiveEditBox:Show()
-		end
+		if not widget:IsEmpty() then widget.objectiveEditBox:Show() end
 	end,
 	showQuickAddEditBox = function(self, ...)
 		self.obj:SetUserData("quickAddEditbox", "ITEM")
 		self.obj.quickAddEditBox:Show()
 	end,
-	--@retail@
+	-- @retail@
 	showQuickAddCurrencyEditBox = function(self, ...)
 		self.obj:SetUserData("quickAddEditbox", "CURRENCY")
 		self.obj.quickAddEditBox:Show()
 	end,
-	--@end-retail@
+	-- @end-retail@
 
 	showObjectiveEditor = function(self, ...)
 		local widget = self.obj
@@ -63,9 +68,7 @@ local postClickMethods = {
 	moveObjectiveToBank = function(self, ...)
 		print("Keybind in maintenenance.")
 	end,
-	moveAllToBank = function(self, ...)
-		print("Keybind in maintenenance.")
-	end,
+	moveAllToBank = function(self, ...) print("Keybind in maintenenance.") end,
 	useItem = function(self, ...)
 		if not addon:GetDBValue("global", "settings.misc.autoLootOnUse") then
 			return
@@ -74,13 +77,12 @@ local postClickMethods = {
 		C_Timer.After(0.1, function()
 			local buttonDB = self.obj:GetButtonDB()
 			local autoLoot = GetCVar("autoLootDefault")
-			if (not autoLoot or autoLoot == "0") and buttonDB.action == "ITEM" and GetNumLootItems() > 0 then
-				for i = 1, GetNumLootItems() do
-					LootSlot(i)
-				end
+			if (not autoLoot or autoLoot == "0") and buttonDB.action == "ITEM" and
+				GetNumLootItems() > 0 then
+				for i = 1, GetNumLootItems() do LootSlot(i) end
 			end
 		end)
-	end,
+	end
 }
 
 -- *------------------------------------------------------------------------
@@ -106,23 +108,27 @@ local function frame_OnDragStart(self, buttonClicked, ...)
 	local widget = self.obj
 	if widget:IsEmpty() then
 		return
+	elseif UnitAffectingCombat("player") then
+		addon:ReportError(L.CombatRestrictedError)
+		return
 	end
 
-	local keybinds = addon:GetDBValue("global", "settings.keybinds.button.dragObjective")
+	local keybinds = addon:GetDBValue("global",
+		"settings.keybinds.button.dragObjective")
 	if buttonClicked == keybinds.button then
 		local mod = addon:GetModifierString()
 
 		if mod == keybinds.modifier then
 			widget:SetUserData("isDragging", true)
-			addon.movingButton = { widget, addon:CloneTable(widget:GetButtonDB()) }
+			addon.movingButton = {
+				widget, addon:CloneTable(widget:GetButtonDB())
+			}
 			addon.DragFrame:LoadObjective(widget)
 		end
 	end
 end
 
-local function frame_OnDragStop(self)
-	self.obj:SetUserData("isDragging")
-end
+local function frame_OnDragStop(self) self.obj:SetUserData("isDragging") end
 
 local function frame_OnEnter(self)
 	local widget = self.obj
@@ -133,7 +139,9 @@ local function frame_OnEnter(self)
 	local tooltip = widget:GetUserData("tooltip")
 	if tooltip and not addon.DragFrame:GetObjective() then
 		addon.tooltipFrame:SetScript("OnUpdate", function()
-			addon.tooltipFrame:Load(self, "ANCHOR_BOTTOMRIGHT", 0, 0, addon[tooltip](addon, widget, addon.tooltipFrame))
+			addon.tooltipFrame:Load(self, "ANCHOR_BOTTOMRIGHT", 0, 0,
+				addon[tooltip](addon, widget,
+					addon.tooltipFrame))
 		end)
 
 		addon.tooltipFrame:GetScript("OnUpdate")()
@@ -149,30 +157,32 @@ local function frame_OnLeave(self)
 	local tooltip = widget:GetUserData("tooltip")
 	if tooltip and not addon.DragFrame:GetObjective() then
 		addon.tooltipFrame.Clear()
-		addon.tooltipFrame:SetScript(
-			"OnUpdate",
-			addon:GetDBValue("global", "settings.tooltips.useGameTooltip") and addon.GameTooltip_OnUpdate
-		)
+		addon.tooltipFrame:SetScript("OnUpdate",
+			addon:GetDBValue("global",
+				"settings.tooltips.useGameTooltip") and
+			addon.GameTooltip_OnUpdate)
 	end
 end
 
 local function frame_OnEvent(self, event, ...)
 	local widget = self.obj
-	if widget:IsEmpty() then
-		return
-	end
+	if widget:IsEmpty() then return end
 
 	if event == "PLAYER_REGEN_ENABLED" then
 		widget:UpdateLayers()
 	elseif event == "SPELL_UPDATE_COOLDOWN" then
 		local buttonDB = widget:GetButtonDB()
-		local validTrackerID, trackerType = addon:ValidateTrackerData(buttonDB.action, buttonDB.actionInfo)
+		local validTrackerID, trackerType =
+		addon:ValidateTrackerData(buttonDB.action, buttonDB.actionInfo)
 
-		if addon:GetDBValue("profile", "style.buttonLayers.Cooldown") and trackerType == "ITEM" and validTrackerID then
+		if addon:GetDBValue("profile", "style.buttonLayers.Cooldown") and
+			trackerType == "ITEM" and validTrackerID then
 			local fontDB = addon:GetDBValue("profile", "style.font")
-			widget.Cooldown:GetRegions():SetFont(LSM:Fetch("font", fontDB.face), fontDB.size, fontDB.outline)
+			widget.Cooldown:GetRegions():SetFont(LSM:Fetch("font", fontDB.face),
+				fontDB.size, fontDB.outline)
 
-			local startTime, duration, enable = GetItemCooldown(buttonDB.actionInfo)
+			local startTime, duration, enable = GetItemCooldown(
+				buttonDB.actionInfo)
 			widget.Cooldown:SetCooldown(startTime, duration)
 			widget.Cooldown:Show()
 		else
@@ -185,6 +195,11 @@ end
 local function frame_OnReceiveDrag(self)
 	local widget = self.obj
 	local objectiveTitle, objectiveInfo = addon.DragFrame:GetObjective()
+
+	if UnitAffectingCombat("player") then
+		addon:ReportError(L.CombatRestrictedError)
+		return
+	end
 
 	if addon.movingButton then
 		if addon.movingButton[1] == self.obj then
@@ -204,40 +219,37 @@ end
 
 local function frame_PostClick(self, buttonClicked, ...)
 	local widget = self.obj
-	if widget:GetUserData("isDragging") then
-		return
-	end
+	if widget:GetUserData("isDragging") then return end
 
 	local cursorType, cursorID = GetCursorInfo()
 	local objectiveTitle, objectiveInfo = addon.DragFrame:GetObjective()
 
-	if UnitAffectingCombat("player") then
-		widget:SetUserData("ChangeObjective", { cursorType, cursorID, objectiveTitle, objectiveInfo })
-	else
-		if widget:GetUserData("ChangeObjective") then
-			widget:SetUserData("ChangeObjective", nil)
-			cursorType, cursorID, objectiveTitle, objectiveInfo = unpack(
-				addon.widget:GetUserData("ChangeObjective"),
-				{}
-			)
-		end
 
-		if cursorType == "item" and not IsModifierKeyDown() and buttonClicked == "LeftButton" then
+
+	if cursorType == "item" and not IsModifierKeyDown() and buttonClicked ==
+		"LeftButton" then
+		if UnitAffectingCombat("player") then
+			addon:ReportError(L.CombatRestrictedError)
+		else
 			widget:ClearObjective()
 			addon:CreateObjectiveFromCursor(widget)
-			return
-		elseif objectiveTitle then
+		end
+		return
+	elseif objectiveTitle then
+		if UnitAffectingCombat("player") then
+			addon:ReportError(L.CombatRestrictedError)
+		else
 			if addon.movingButton then
 				widget:SwapButtons(addon.movingButton)
 			else
 				addon:CreateObjectiveFromDragFrame(widget, objectiveInfo)
 			end
 			addon.DragFrame:Clear()
-			return
 		end
-
-		ClearCursor()
+		return
 	end
+
+	ClearCursor()
 
 	local keybinds = addon:GetDBValue("global", "settings.keybinds.button")
 
@@ -261,12 +273,10 @@ local function objectiveEditBox_OnEnterPressed(self)
 	self.obj:SetObjective(objective)
 
 	if addon:GetDBValue("global", "settings.alerts.button.sound.enabled") then
-		PlaySoundFile(
-			LSM:Fetch(
-				"sound",
-				addon:GetDBValue("global", "settings.alerts.button.sound")[objective and "objectiveSet" or "objectiveCleared"]
-			)
-		)
+		PlaySoundFile(LSM:Fetch("sound",
+			addon:GetDBValue("global",
+				"settings.alerts.button.sound")[objective and
+				"objectiveSet" or "objectiveCleared"]))
 	end
 
 	self:ClearFocus()
@@ -275,9 +285,7 @@ end
 
 local function objectiveEditBox_OnEditFocusGained(self)
 	self:SetText(self.obj:GetObjective() or "")
-	C_Timer.After(0.001, function()
-		self:HighlightText()
-	end)
+	C_Timer.After(0.001, function() self:HighlightText() end)
 end
 
 local function quickAddEditBox_OnEnterPressed(self)
@@ -322,51 +330,39 @@ local methods = {
 
 		self:UpdateLayers()
 	end,
-	OnRelease = function(self)
-		addon:InitializeTrackers()
-	end,
+	OnRelease = function(self) addon:InitializeTrackers() end,
 	Anchor = function(self)
 		local barDB = self:GetUserData("barDB")
 		local buttons = self:GetUserData("buttons")
 		local buttonID = self:GetUserData("buttonID")
 
-		local anchor, relativeAnchor, xOffset, yOffset = addon:GetAnchorPoints(barDB.grow[1])
+		local anchor, relativeAnchor, xOffset, yOffset =
+		addon:GetAnchorPoints(barDB.grow[1])
 
 		self:ClearAllPoints()
 		if buttonID == 1 then
-			self:SetPoint(
-				anchor,
-				self:GetUserData("bar").frame,
-				relativeAnchor,
+			self:SetPoint(anchor, self:GetUserData("bar").frame, relativeAnchor,
 				xOffset * barDB.button.padding,
-				yOffset * barDB.button.padding
-			)
+				yOffset * barDB.button.padding)
 		else
-			if math.fmod(buttonID, barDB.buttonWrap) == 1 or barDB.buttonWrap == 1 then
-				local anchor, relativeAnchor, xOffset, yOffset = addon:GetRelativeAnchorPoints(barDB.grow)
-				self:SetPoint(
-					anchor,
+			if math.fmod(buttonID, barDB.buttonWrap) == 1 or barDB.buttonWrap ==
+				1 then
+				local anchor, relativeAnchor, xOffset, yOffset =
+				addon:GetRelativeAnchorPoints(barDB.grow)
+				self:SetPoint(anchor,
 					buttons[buttonID - barDB.buttonWrap].frame,
-					relativeAnchor,
-					xOffset * barDB.button.padding,
-					yOffset * barDB.button.padding
-				)
+					relativeAnchor, xOffset * barDB.button.padding,
+					yOffset * barDB.button.padding)
 			else
-				self:SetPoint(
-					anchor,
-					buttons[buttonID - 1].frame,
-					relativeAnchor,
-					xOffset * barDB.button.padding,
-					yOffset * barDB.button.padding
-				)
+				self:SetPoint(anchor, buttons[buttonID - 1].frame,
+					relativeAnchor, xOffset * barDB.button.padding,
+					yOffset * barDB.button.padding)
 			end
 		end
 
 		local bar = self:GetUserData("bar")
 		local lastButton = self:GetUserData("buttons")[barDB.numVisibleButtons]
-		if bar and lastButton then
-			bar:UpdateBackdrop(lastButton)
-		end
+		if bar and lastButton then bar:UpdateBackdrop(lastButton) end
 	end,
 	ApplySkin = function(self)
 		addon:SkinButton(self, self:GetDBValue("profile", "style.skin"))
@@ -382,7 +378,8 @@ local methods = {
 				end
 			else
 				if k == "template" and v then
-					addon:RemoveObjectiveTemplateInstance(buttonDB.template, self:GetButtonID())
+					addon:RemoveObjectiveTemplateInstance(buttonDB.template,
+						self:GetButtonID())
 				end
 				buttonDB[k] = addon:GetBarDBValue("objectives", 0, true)[0][k]
 			end
@@ -394,9 +391,7 @@ local methods = {
 		ACD:Close(addonName .. "ObjectiveEditor")
 	end,
 	ClearTrackerInfo = function(self)
-		if self:IsEmpty() then
-			return
-		end
+		if self:IsEmpty() then return end
 
 		for trackerKey, trackerInfo in pairs(self:GetButtonDB().trackers) do
 			trackerInfo.includeAllChars = false
@@ -406,23 +401,16 @@ local methods = {
 				wipe(trackerInfo.includeGuildBank)
 			end
 
-			if trackerInfo.exclude then
-				wipe(trackerInfo.exclude)
-			end
+			if trackerInfo.exclude then wipe(trackerInfo.exclude) end
 		end
 	end,
-	GetBar = function(self)
-		return self:GetUserData("bar")
-	end,
-	GetBarDB = function(self)
-		return self:GetUserData("barDB")
-	end,
-	GetBarID = function(self)
-		return self:GetUserData("barID")
-	end,
+	GetBar = function(self) return self:GetUserData("bar") end,
+	GetBarDB = function(self) return self:GetUserData("barDB") end,
+	GetBarID = function(self) return self:GetUserData("barID") end,
 	GetButtonDB = function(self)
-		return self:GetBarID()
-			and addon:GetBarDBValue("objectives", self:GetUserData("barID"), true)[self:GetUserData("buttonID")]
+		return self:GetBarID() and
+			addon:GetBarDBValue("objectives", self:GetUserData("barID"),
+				true)[self:GetUserData("buttonID")]
 	end,
 	GetButtonID = function(self)
 		local barID = self:GetUserData("barID")
@@ -431,7 +419,8 @@ local methods = {
 		return format("%d:%d", barID, buttonID)
 	end,
 	GetCount = function(self)
-		return self:GetUserData("count") or 0, self:GetUserData("trackerCounts") or {}
+		return self:GetUserData("count") or 0,
+			self:GetUserData("trackerCounts") or {}
 	end,
 	GetObjective = function(self)
 		return not self:IsEmpty() and self:GetButtonDB().objective
@@ -440,31 +429,27 @@ local methods = {
 		return not self:IsEmpty() and self:GetButtonDB().title
 	end,
 	HasObjective = function(self)
-		return not self:IsEmpty() and self:GetObjective() and self:GetObjective() > 0
+		return not self:IsEmpty() and self:GetObjective() and
+			self:GetObjective() > 0
 	end,
 	IsEmpty = function(self)
 		return not self:GetBarID() or self:GetButtonDB().title == ""
 	end,
 	IsObjectiveComplete = function(self)
-		return not self:IsEmpty()
-			and self:GetObjective()
-			and self:GetObjective() > 0
-			and self:GetCount() >= self:GetObjective()
+		return not self:IsEmpty() and self:GetObjective() and
+			self:GetObjective() > 0 and self:GetCount() >=
+			self:GetObjective()
 	end,
 	RemoveObjectiveTemplateLink = function(self)
-		if self:IsEmpty() then
-			return
-		end
-		local instances = addon:GetDBValue("global", "objectives")[self:GetObjectiveTitle()].instances
-		if not instances then
-			return
-		end
+		if self:IsEmpty() then return end
+		local instances =
+		addon:GetDBValue("global", "objectives")[self:GetObjectiveTitle()]
+			.instances
+		if not instances then return end
 
 		local buttonDB = self:GetButtonDB()
 		for k, v in pairs(instances) do
-			if k ~= "instances" then
-				buttonDB[k] = v
-			end
+			if k ~= "instances" then buttonDB[k] = v end
 		end
 		buttonDB.template = false
 	end,
@@ -472,34 +457,31 @@ local methods = {
 		self.frame:SetAlpha(alpha or self:GetBarDB().alpha)
 	end,
 	SetAttribute = function(self)
-		local info = addon:GetDBValue("global", "settings.keybinds.button.useItem")
-		local buttonType = (info.modifier ~= "" and (info.modifier .. "-") or "")
-			.. "type"
-			.. (info.button == "RightButton" and 2 or 1)
+		local info = addon:GetDBValue("global",
+			"settings.keybinds.button.useItem")
+		local buttonType =
+		(info.modifier ~= "" and (info.modifier .. "-") or "") .. "type" ..
+			(info.button == "RightButton" and 2 or 1)
 		local isEmpty = self:IsEmpty()
 		local buttonDB = self:GetButtonDB()
 
-		if not isEmpty and self.frame:GetAttribute(buttonType) == "macro" and buttonDB.action == "MACROTEXT" then
+		if not isEmpty and self.frame:GetAttribute(buttonType) == "macro" and
+			buttonDB.action == "MACROTEXT" then
 			if self.frame:GetAttribute("macrotext") == buttonDB.actionInfo then
 				return
 			end
-		elseif not isEmpty and self.frame:GetAttribute(buttonType) == "item" and buttonDB.action == "ITEM" then
-			if self.frame:GetAttribute("item") == ("item" .. buttonDB.actionInfo) then
-				return
-			end
+		elseif not isEmpty and self.frame:GetAttribute(buttonType) == "item" and
+			buttonDB.action == "ITEM" then
+			if self.frame:GetAttribute("item") ==
+				("item" .. buttonDB.actionInfo) then return end
 		end
 		self.frame:SetAttribute(buttonType, nil)
 		self.frame:SetAttribute("item", nil)
 		self.frame:SetAttribute("macrotext", nil)
 
-		if isEmpty then
-			return
-		end
+		if isEmpty then return end
 
-		if UnitAffectingCombat("player") then
-			addon:ReportError(L.CombatError)
-			return
-		end
+		if UnitAffectingCombat("player") then return end
 
 		if buttonDB.action == "ITEM" and buttonDB.actionInfo then
 			self.frame:SetAttribute(buttonType, "item")
@@ -522,7 +504,8 @@ local methods = {
 		self:UpdateLayers()
 	end,
 	SetCount = function(self)
-		local style = addon:GetDBValue("profile", "style.font.fontStrings.count")
+		local style =
+		addon:GetDBValue("profile", "style.font.fontStrings.count")
 		local isEmpty = self:IsEmpty()
 		if not isEmpty then
 			local count, trackerCounts = addon:GetObjectiveCount(self)
@@ -530,20 +513,21 @@ local methods = {
 			self:SetUserData("trackerCounts", trackerCounts)
 		end
 
-		self.Count:SetText(not isEmpty and addon.iformat(self:GetCount(), 2, true) or "")
+		self.Count:SetText(not isEmpty and
+			addon.iformat(self:GetCount(), 2, true) or "")
 		self:UpdateObjective()
 
-		if isEmpty then
-			return
-		end
+		if isEmpty then return end
 
 		if style.style == "ITEMQUALITY" then
 			local itemQuality = 0
 
 			for k, v in pairs(self:GetButtonDB().trackers) do
 				local trackerType, trackerID = addon:ParseTrackerKey(k)
-				itemQuality = trackerType == "ITEM" and max(itemQuality, C_Item.GetItemQualityByID(trackerID))
-					or itemQuality
+				itemQuality = trackerType == "ITEM" and
+					max(itemQuality,
+						C_Item.GetItemQualityByID(trackerID)) or
+					itemQuality
 			end
 
 			if itemQuality > 1 then
@@ -551,11 +535,10 @@ local methods = {
 				self.Count:SetTextColor(r, g, b, 1)
 			end
 		elseif style.style == "INCLUDEAUTOLAYERS" then
-			local total_char, included_char, notIncluded_char = addon:GetObjectiveIncludedLayers(
-				self,
-				"includeAllChars"
-			)
-			local total_bank, included_bank, notIncluded_bank = addon:GetObjectiveIncludedLayers(self, "includeBank")
+			local total_char, included_char, notIncluded_char =
+			addon:GetObjectiveIncludedLayers(self, "includeAllChars")
+			local total_bank, included_bank, notIncluded_bank =
+			addon:GetObjectiveIncludedLayers(self, "includeBank")
 
 			if notIncluded_char == total_char and notIncluded_bank == total_bank then
 				-- Neither includeAllChars or includeBank
@@ -576,7 +559,8 @@ local methods = {
 				self.Count:SetTextColor(0.5, 0.5, 0.5, 1)
 			end
 		elseif style.style == "INCLUDEALLCHARS" then
-			local total, included, notIncluded = addon:GetObjectiveIncludedLayers(self, "includeAllChars")
+			local total, included, notIncluded =
+			addon:GetObjectiveIncludedLayers(self, "includeAllChars")
 			if notIncluded == total then
 				self.Count:SetTextColor(1, 1, 1, 1)
 			elseif included == total then
@@ -585,7 +569,8 @@ local methods = {
 				self.Count:SetTextColor(0.5, 0.5, 0.5, 1)
 			end
 		elseif style.style == "INCLUDEBANK" then
-			local total, included, notIncluded = addon:GetObjectiveIncludedLayers(self, "includeBank")
+			local total, included, notIncluded =
+			addon:GetObjectiveIncludedLayers(self, "includeBank")
 			if notIncluded == total then
 				self.Count:SetTextColor(1, 1, 1, 1)
 			elseif included == total then
@@ -600,25 +585,30 @@ local methods = {
 		end
 	end,
 	SetDBValue = function(self, key, value)
-		addon:SetButtonDBValues(key, value, self:GetBarID(), self:GetUserData("buttonID"))
+		addon:SetButtonDBValues(key, value, self:GetBarID(),
+			self:GetUserData("buttonID"))
 	end,
 	SetFontStringSettings = function(self, fontString)
 		local fontDB = addon:GetDBValue("profile", "style.font")
-		self.Count:SetFont(LSM:Fetch("font", fontDB.face), fontDB.size, fontDB.outline)
-		self.Objective:SetFont(LSM:Fetch("font", fontDB.face), fontDB.size, fontDB.outline)
+		self.Count:SetFont(LSM:Fetch("font", fontDB.face), fontDB.size,
+			fontDB.outline)
+		self.Objective:SetFont(LSM:Fetch("font", fontDB.face), fontDB.size,
+			fontDB.outline)
 
 		if not self:GetUserData("barDB") or not self:GetUserData("barDB").button then
 			return
 		end
-		local db = self:GetUserData("barDB").button.fontStrings[strlower(fontString)]
+		local db = self:GetUserData("barDB").button.fontStrings[strlower(
+			fontString)]
 
 		self[fontString]:ClearAllPoints()
 		self[fontString]:SetSize(0, 0)
 
-		self[fontString]:SetPoint(db.anchor, self.frame, db.anchor, db.xOffset, db.yOffset)
-		self[fontString]:SetJustifyH(
-			(db.anchor:find("RIGHT") and "RIGHT") or (db.anchor:find("LEFT") and "LEFT") or "CENTER"
-		)
+		self[fontString]:SetPoint(db.anchor, self.frame, db.anchor, db.xOffset,
+			db.yOffset)
+		self[fontString]:SetJustifyH((db.anchor:find("RIGHT") and "RIGHT") or
+			(db.anchor:find("LEFT") and "LEFT") or
+			"CENTER")
 	end,
 	SetHidden = function(self)
 		local barDB = self:GetUserData("barDB")
@@ -635,7 +625,8 @@ local methods = {
 		end
 	end,
 	SetIcon = function(self)
-		self.Icon:SetTexture(self:IsEmpty() and "" or addon:GetObjectiveIcon(self))
+		self.Icon:SetTexture(self:IsEmpty() and "" or
+			addon:GetObjectiveIcon(self))
 	end,
 	SetObjective = function(self, objective)
 		local bar = self:GetUserData("bar")
@@ -655,7 +646,9 @@ local methods = {
 		local muted = buttonDB and buttonDB.mute
 
 		if not muteAll and not muted then
-			bar:AlertProgress((objective and objective == 0 or not objective) and "removed" or "added")
+			bar:AlertProgress(
+				(objective and objective == 0 or not objective) and "removed" or
+				"added")
 		end
 	end,
 	SetPoint = function(self, ...) -- point, anchor, relpoint, x, y
@@ -669,9 +662,7 @@ local methods = {
 		self.Objective:SetWidth(frameSize)
 	end,
 	SwapButtons = function(self, movingButton)
-		local buttonDB = {
-			trackers = {},
-		}
+		local buttonDB = { trackers = {} }
 		local currentButtonDB = self:GetButtonDB()
 		local moveButtonDB = movingButton[1]:GetButtonDB()
 
@@ -679,12 +670,16 @@ local methods = {
 		local moveTemplate = moveButtonDB.template
 		local currentTemplate = currentButtonDB.template
 		if moveTemplate then
-			addon:RemoveObjectiveTemplateInstance(moveTemplate, movingButton[1]:GetButtonID())
-			addon:CreateObjectiveTemplateInstance(moveTemplate, self:GetButtonID())
+			addon:RemoveObjectiveTemplateInstance(moveTemplate,
+				movingButton[1]:GetButtonID())
+			addon:CreateObjectiveTemplateInstance(moveTemplate,
+				self:GetButtonID())
 		end
 		if currentTemplate then
-			addon:RemoveObjectiveTemplateInstance(currentTemplate, self:GetButtonID())
-			addon:CreateObjectiveTemplateInstance(currentTemplate, movingButton[1]:GetButtonID())
+			addon:RemoveObjectiveTemplateInstance(currentTemplate,
+				self:GetButtonID())
+			addon:CreateObjectiveTemplateInstance(currentTemplate,
+				movingButton[1]:GetButtonID())
 		end
 
 		-- Swap button data
@@ -735,9 +730,9 @@ local methods = {
 		if value == "includeAllChars" then
 			local missingDependencies = addon:IsDataStoreLoaded()
 			if #missingDependencies > 0 then
-				addon:ReportError(
-					format(L.MissingIncludeAllCharsDependecies, strjoin(", ", unpack(missingDependencies)))
-				)
+				addon:ReportError(format(L.MissingIncludeAllCharsDependecies,
+					strjoin(", ",
+						unpack(missingDependencies))))
 			end
 		end
 
@@ -751,14 +746,17 @@ local methods = {
 		local newCount = addon:GetObjectiveCount(self)
 
 		-- Send custom alert
-		self.frame:GetScript("OnEvent")(self.frame, "FARMINGBAR_UPDATE_COUNT", oldCount, newCount)
+		self.frame:GetScript("OnEvent")(self.frame, "FARMINGBAR_UPDATE_COUNT",
+			oldCount, newCount)
 
 		self:UpdateLayers()
 	end,
 	UpdateAutoLayer = function(self)
 		-- AccountOverlay
-		if not self:IsEmpty() and addon:GetDBValue("profile", "style.buttonLayers.AccountOverlay") then
-			local total, included, notIncluded = addon:GetObjectiveIncludedLayers(self, "includeAllChars")
+		if not self:IsEmpty() and
+			addon:GetDBValue("profile", "style.buttonLayers.AccountOverlay") then
+			local total, included, notIncluded =
+			addon:GetObjectiveIncludedLayers(self, "includeAllChars")
 			if notIncluded == total then
 				self.AccountOverlay:Hide()
 			else
@@ -770,8 +768,10 @@ local methods = {
 		end
 
 		-- AutoCastable
-		if not self:IsEmpty() and addon:GetDBValue("profile", "style.buttonLayers.AutoCastable") then
-			local total, included, notIncluded = addon:GetObjectiveIncludedLayers(self, "includeBank")
+		if not self:IsEmpty() and
+			addon:GetDBValue("profile", "style.buttonLayers.AutoCastable") then
+			local total, included, notIncluded =
+			addon:GetObjectiveIncludedLayers(self, "includeBank")
 			if notIncluded == total then
 				self.AutoCastable:Hide()
 			else
@@ -784,13 +784,16 @@ local methods = {
 	end,
 	UpdateBorder = function(self)
 		self.Border:Hide()
-		if not self:IsEmpty() and addon:GetDBValue("profile", "style.buttonLayers.Border") then
+		if not self:IsEmpty() and
+			addon:GetDBValue("profile", "style.buttonLayers.Border") then
 			local itemQuality = 0
 
 			for k, v in pairs(self:GetButtonDB().trackers) do
 				local trackerType, trackerID = addon:ParseTrackerKey(k)
-				itemQuality = trackerType == "ITEM" and max(itemQuality, C_Item.GetItemQualityByID(trackerID) or 0)
-					or itemQuality
+				itemQuality = trackerType == "ITEM" and
+					max(itemQuality,
+						C_Item.GetItemQualityByID(trackerID) or 0) or
+					itemQuality
 			end
 
 			if itemQuality > 1 then
@@ -801,23 +804,24 @@ local methods = {
 		end
 	end,
 	UpdateCooldown = function(self)
-		self.Cooldown:SetDrawEdge(addon:GetDBValue("profile", "style.buttonLayers.CooldownEdge"))
+		self.Cooldown:SetDrawEdge(addon:GetDBValue("profile",
+			"style.buttonLayers.CooldownEdge"))
 	end,
 	UpdateDB = function(self)
 		local buttonDB = self:GetButtonDB()
-		if not buttonDB then
-			return
-		end
+		if not buttonDB then return end
 
 		local template = buttonDB.template
 		if template then
-			local template_ref = addon:GetDBValue("global", "objectives")[template]
+			local template_ref =
+			addon:GetDBValue("global", "objectives")[template]
 			-- Check for changes in template
 			for k, v in pairs(template_ref) do
 				if k ~= "instances" then
 					if k == "trackers" then
 						for key, value in pairs(v) do
-							local trackerType, trackerID = addon:ParseTrackerKey(key)
+							local trackerType, trackerID =
+							addon:ParseTrackerKey(key)
 							for K, V in pairs(value) do
 								if buttonDB.trackers[key][K] ~= V then
 									buttonDB.trackers[key][K] = V
@@ -834,7 +838,8 @@ local methods = {
 				end
 			end
 			for k, v in pairs(buttonDB.trackers) do
-				if not template_ref.trackers[k] or template_ref.trackers[k].order == 0 then
+				if not template_ref.trackers[k] or
+					template_ref.trackers[k].order == 0 then
 					buttonDB.trackers[k] = nil
 				end
 			end
@@ -843,6 +848,8 @@ local methods = {
 	UpdateLayers = function(self)
 		if UnitAffectingCombat("player") then
 			addon:ReportError(L.CombatError)
+
+			print(self:GetUserData("bar"):GetUserData("buttonID"))
 			return
 		end
 
@@ -864,7 +871,8 @@ local methods = {
 		local buttonDB = self:GetButtonDB()
 
 		if buttonDB and buttonDB.objective and buttonDB.objective > 0 then
-			local formattedObjective, objective = addon.iformat(buttonDB.objective, 2)
+			local formattedObjective, objective = addon.iformat(
+				buttonDB.objective, 2)
 			self.Objective:SetText(formattedObjective)
 
 			local count = addon:GetObjectiveCount(self)
@@ -880,19 +888,16 @@ local methods = {
 		else
 			self.Objective:SetText("")
 		end
-	end,
+	end
 }
 
 -- *------------------------------------------------------------------------
 -- Constructor
 
 local function Constructor()
-	local frame = CreateFrame(
-		"Button",
-		Type .. AceGUI:GetNextWidgetNum(Type),
+	local frame = CreateFrame("Button", Type .. AceGUI:GetNextWidgetNum(Type),
 		UIParent,
-		"SecureActionButtonTemplate, SecureHandlerDragTemplate"
-	)
+		"SecureActionButtonTemplate, SecureHandlerDragTemplate")
 	frame:SetScale(UIParent:GetEffectiveScale())
 	frame:Hide()
 	frame:RegisterForClicks("AnyUp")
@@ -908,7 +913,8 @@ local function Constructor()
 	frame:RegisterEvent("SPELL_UPDATE_COOLDOWN")
 	frame:RegisterEvent("PLAYER_REGEN_ENABLED")
 
-	local FloatingBG = frame:CreateTexture("$parentFloatingBG", "BACKGROUND", nil, 1)
+	local FloatingBG = frame:CreateTexture("$parentFloatingBG", "BACKGROUND",
+		nil, 1)
 	FloatingBG:SetAllPoints(frame)
 
 	local Icon = frame:CreateTexture("$parentIcon", "BACKGROUND", nil, 2)
@@ -922,17 +928,20 @@ local function Constructor()
 	Border:SetAllPoints(frame)
 	Border:Hide()
 
-	local AccountOverlay = frame:CreateTexture("$parentAccountOverlay", "OVERLAY", nil, 2)
+	local AccountOverlay = frame:CreateTexture("$parentAccountOverlay",
+		"OVERLAY", nil, 2)
 	AccountOverlay:SetAllPoints(frame)
 
-	local AutoCastable = frame:CreateTexture("$parentAutoCastable", "OVERLAY", nil, 3)
+	local AutoCastable = frame:CreateTexture("$parentAutoCastable", "OVERLAY",
+		nil, 3)
 	AutoCastable:SetAllPoints(frame)
 
 	local Count = frame:CreateFontString(nil, "OVERLAY", nil, 4)
 
 	local Objective = frame:CreateFontString(nil, "OVERLAY", nil, 4)
 
-	local Cooldown = CreateFrame("Cooldown", "$parentCooldown", frame, "CooldownFrameTemplate")
+	local Cooldown = CreateFrame("Cooldown", "$parentCooldown", frame,
+		"CooldownFrameTemplate")
 	Cooldown:SetAllPoints(frame)
 
 	local objectiveEditBox = CreateFrame("EditBox", nil, frame)
@@ -943,14 +952,16 @@ local function Constructor()
 	objectiveEditBox:SetMaxLetters(15)
 	objectiveEditBox:SetFont([[Fonts\FRIZQT__.TTF]], 12, "OUTLINE")
 
-	objectiveEditBox.background = objectiveEditBox:CreateTexture(nil, "BACKGROUND")
+	objectiveEditBox.background = objectiveEditBox:CreateTexture(nil,
+		"BACKGROUND")
 	objectiveEditBox.background:SetTexture([[INTERFACE\BUTTONS\WHITE8X8]])
 	objectiveEditBox.background:SetVertexColor(0, 0, 0, 0.5)
 	objectiveEditBox.background:SetAllPoints(objectiveEditBox)
 
 	objectiveEditBox:SetScript("OnEnterPressed", objectiveEditBox_OnEnterPressed)
 	objectiveEditBox:SetScript("OnEscapePressed", EditBox_OnEscapePressed)
-	objectiveEditBox:SetScript("OnEditFocusGained", objectiveEditBox_OnEditFocusGained)
+	objectiveEditBox:SetScript("OnEditFocusGained",
+		objectiveEditBox_OnEditFocusGained)
 	objectiveEditBox:SetScript("OnEditFocusLost", EditBox_OnEscapePressed)
 	objectiveEditBox:SetScript("OnShow", EditBox_OnShow)
 	objectiveEditBox:SetScript("OnTextChanged", EditBox_OnTextChanged)
@@ -963,7 +974,8 @@ local function Constructor()
 	quickAddEditBox:SetMaxLetters(15)
 	quickAddEditBox:SetFont([[Fonts\FRIZQT__.TTF]], 12, "OUTLINE")
 
-	quickAddEditBox.background = quickAddEditBox:CreateTexture(nil, "BACKGROUND")
+	quickAddEditBox.background =
+	quickAddEditBox:CreateTexture(nil, "BACKGROUND")
 	quickAddEditBox.background:SetTexture([[INTERFACE\BUTTONS\WHITE8X8]])
 	quickAddEditBox.background:SetVertexColor(0, 0, 0, 0.5)
 	quickAddEditBox.background:SetAllPoints(quickAddEditBox)
@@ -987,14 +999,13 @@ local function Constructor()
 		Objective = Objective,
 		Cooldown = Cooldown,
 		objectiveEditBox = objectiveEditBox,
-		quickAddEditBox = quickAddEditBox,
+		quickAddEditBox = quickAddEditBox
 	}
 
-	frame.obj, objectiveEditBox.obj, quickAddEditBox.obj = widget, widget, widget
+	frame.obj, objectiveEditBox.obj, quickAddEditBox.obj = widget, widget,
+		widget
 
-	for method, func in pairs(methods) do
-		widget[method] = func
-	end
+	for method, func in pairs(methods) do widget[method] = func end
 
 	return AceGUI:RegisterAsWidget(widget)
 end

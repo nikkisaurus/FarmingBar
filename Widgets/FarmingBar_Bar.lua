@@ -436,6 +436,9 @@ local methods = {
 		self:SetBackdropAnchor()
 	end,
 	SetSize = function(self)
+		if UnitAffectingCombat("player") then
+			return
+		end
 		local frameSize = self:GetUserData("barDB").button.size
 		local paddingSize = (2 / 20 * frameSize)
 		local buttonSize = ((frameSize - (paddingSize * 3)) / 2) * 0.9
