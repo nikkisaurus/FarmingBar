@@ -210,9 +210,9 @@ local methods = {
         end
 
         -- Backdrop
-        local width = (barDB.buttonSize * barDB.buttonsPerAxis) + (barDB.buttonPadding * (barDB.buttonsPerAxis + 1))
+        local width = (barDB.buttonSize * barDB.buttonsPerAxis) + (barDB.buttonPadding * (barDB.buttonsPerAxis + 2))
         local numRows = ceil(#buttons / barDB.buttonsPerAxis)
-        local height = (barDB.buttonSize * numRows) + (barDB.buttonPadding * (numRows + 1))
+        local height = (barDB.buttonSize * numRows) + (barDB.buttonPadding * (numRows + 2))
         local growRow = barDB.buttonGrowth == "ROW"
         widget:SetSize(growRow and width or height, growRow and height or width)
     end,

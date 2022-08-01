@@ -5,7 +5,13 @@ local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 function private:InitializeDatabase()
     private.defaults = {
         button = {
-
+            iconID = 1053367,
+            itemQuality = 6,
+            action = "NONE", -- "CURRENCY", "ITEM", "MACROTEXT", "NONE"
+            actionInfo = "",
+            condition = "ALL", -- "ALL", "ANY", "CUSTOM"
+            customCondition = "",
+            trackers = {},
         },
         bar = {
             backdrop = {
@@ -19,16 +25,12 @@ function private:InitializeDatabase()
                     tileSize = 2,
                     insets = { left = 2, right = 2, top = 2, bottom = 2 }
                 },
-                bgColor = { 1, 1, 1, 1 },
+                bgColor = { 0, 0, 0, 0.33 },
                 borderColor = { 0, 0, 0, 1 },
                 texCoords = { 0, 1, 0, 1 },
             },
 
             buttons = {
-                {
-                    iconID = 1053367,
-                    itemQuality = 6,
-                },
             },
 
             buttonTextures = {
