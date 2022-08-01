@@ -11,6 +11,12 @@ private.anchorPoints = {
             xCo = 1,
             yCo = -1,
         },
+        TOPRIGHT = {
+            anchor = "TOPRIGHT",
+            relAnchor = "TOPRIGHT",
+            xCo = -1,
+            yCo = -1,
+        },
         BOTTOMLEFT = {
             anchor = "BOTTOMLEFT",
             relAnchor = "BOTTOMLEFT",
@@ -22,6 +28,12 @@ private.anchorPoints = {
         TOPLEFT = {
             anchor = "TOPLEFT",
             relAnchor = "BOTTOMLEFT",
+            xCo = 0,
+            yCo = -1,
+        },
+        TOPRIGHT = {
+            anchor = "TOPRIGHT",
+            relAnchor = "BOTTOMRIGHT",
             xCo = 0,
             yCo = -1,
         },
@@ -37,6 +49,12 @@ private.anchorPoints = {
             anchor = "TOPLEFT",
             relAnchor = "TOPRIGHT",
             xCo = 1,
+            yCo = 0,
+        },
+        TOPRIGHT = {
+            anchor = "TOPRIGHT",
+            relAnchor = "TOPLEFT",
+            xCo = -1,
             yCo = 0,
         },
         BOTTOMLEFT = {
