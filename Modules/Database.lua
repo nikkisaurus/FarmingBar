@@ -7,10 +7,11 @@ function private:InitializeDatabase()
         bar = {
             buttons = {},
             numButtons = 12,
-            buttonsPerRow = 3,
+            buttonsPerAxis = 3,
             buttonSize = 120,
             buttonPadding = 8,
-            barAnchor = "BOTTOMRIGHT",
+            barAnchor = "TOPLEFT",
+            buttonGrowth = "COL", -- "ROW", "COL"
             backdrop = {
                 bgFile = {
                     bgFile = [[INTERFACE\BUTTONS\WHITE8X8]],

@@ -98,23 +98,23 @@ local methods = {
         local buttons = widget:GetUserData("buttons")
 
         for buttonID, button in pairs(buttons) do
-            local row = ceil(buttonID / barDB.buttonsPerRow)
-            local newRow = mod(buttonID, barDB.buttonsPerRow) == 1
+            local row = ceil(buttonID / barDB.buttonsPerAxis)
+            local newRow = mod(buttonID, barDB.buttonsPerAxis) == 1
 
             button:ClearAllPoints()
 
             if buttonID == 1 then
-                local anchorInfo = private.anchorPoints.button1[barDB.barAnchor]
+                local anchorInfo = private.anchorPoints[barDB.buttonGrowth].button1[barDB.barAnchor]
                 button:SetPoint(anchorInfo.anchor, widget.frame, anchorInfo.relAnchor,
                     anchorInfo.xCo * (barDB.buttonPadding + barDB.buttonBackdrop.bgFile.edgeSize),
                     anchorInfo.yCo * (barDB.buttonPadding + barDB.buttonBackdrop.bgFile.edgeSize))
             elseif newRow then
-                local anchorInfo = private.anchorPoints.newRowButton[barDB.barAnchor]
-                button:SetPoint(anchorInfo.anchor, buttons[buttonID - barDB.buttonsPerRow].frame, anchorInfo.relAnchor,
+                local anchorInfo = private.anchorPoints[barDB.buttonGrowth].newRowButton[barDB.barAnchor]
+                button:SetPoint(anchorInfo.anchor, buttons[buttonID - barDB.buttonsPerAxis].frame, anchorInfo.relAnchor,
                     anchorInfo.xCo * barDB.buttonPadding,
                     anchorInfo.yCo * barDB.buttonPadding)
             else
-                local anchorInfo = private.anchorPoints.button[barDB.barAnchor]
+                local anchorInfo = private.anchorPoints[barDB.buttonGrowth].button[barDB.barAnchor]
                 button:SetPoint(anchorInfo.anchor, buttons[buttonID - 1].frame, anchorInfo.relAnchor,
                     anchorInfo.xCo * barDB.buttonPadding,
                     anchorInfo.yCo * barDB.buttonPadding)
@@ -122,12 +122,13 @@ local methods = {
         end
 
         -- Backdrop
-        local width = (barDB.buttonSize * barDB.buttonsPerRow) + (barDB.buttonPadding * (barDB.buttonsPerRow + 1)) +
+        local width = (barDB.buttonSize * barDB.buttonsPerAxis) + (barDB.buttonPadding * (barDB.buttonsPerAxis + 1)) +
             (2 * barDB.buttonBackdrop.bgFile.edgeSize)
-        local numRows = ceil(#buttons / barDB.buttonsPerRow)
+        local numRows = ceil(#buttons / barDB.buttonsPerAxis)
         local height = (barDB.buttonSize * numRows) + (barDB.buttonPadding * (numRows + 1)) +
             (2 * barDB.buttonBackdrop.bgFile.edgeSize)
-        widget:SetSize(width, height)
+        local normalGrowth = barDB.buttonGrowth == "ROW"
+        widget:SetSize(normalGrowth and width or height, normalGrowth and height or width)
     end,
 }
 
