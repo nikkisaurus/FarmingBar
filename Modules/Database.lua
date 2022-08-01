@@ -35,8 +35,8 @@ function private:InitializeDatabase()
                 borderColor = { 1, 0, 0, 1 },
             },
 
-            buttonGrowth = "COL", -- "ROW", "COL"
-            barAnchor = "BOTTOMLEFT",
+            buttonGrowth = "ROW", -- "ROW", "COL"
+            barAnchor = "TOPLEFT", -- "TOPLEFT", "TOPRIGHT", "BOTTOMLEFT", "BOTTOMRIGHT"
             numButtons = 12,
             buttonsPerAxis = 3,
             buttonSize = 120,

@@ -104,12 +104,12 @@ private.anchorPoints = {
                 xCo = 1,
                 yCo = 1,
             },
-            -- BOTTOMRIGHT = {
-            --     anchor = "BOTTOMRIGHT",
-            --     relAnchor = "BOTTOMRIGHT",
-            --     xCo = -1,
-            --     yCo = 1,
-            -- },
+            BOTTOMRIGHT = {
+                anchor = "BOTTOMRIGHT",
+                relAnchor = "BOTTOMRIGHT",
+                xCo = -1,
+                yCo = 1,
+            },
         },
         newRowButton = {
             TOPLEFT = {
@@ -130,12 +130,12 @@ private.anchorPoints = {
                 xCo = 1,
                 yCo = 0,
             },
-            -- BOTTOMRIGHT = {
-            --     anchor = "BOTTOMRIGHT",
-            --     relAnchor = "TOPRIGHT",
-            --     xCo = 0,
-            --     yCo = 1,
-            -- },
+            BOTTOMRIGHT = {
+                anchor = "BOTTOMRIGHT",
+                relAnchor = "BOTTOMLEFT",
+                xCo = -1,
+                yCo = 0,
+            },
         },
         button = {
             TOPLEFT = {
@@ -156,12 +156,12 @@ private.anchorPoints = {
                 xCo = 0,
                 yCo = 1,
             },
-            -- BOTTOMRIGHT = {
-            --     anchor = "BOTTOMRIGHT",
-            --     relAnchor = "BOTTOMLEFT",
-            --     xCo = -1,
-            --     yCo = 0,
-            -- },
+            BOTTOMRIGHT = {
+                anchor = "BOTTOMRIGHT",
+                relAnchor = "TOPRIGHT",
+                xCo = 0,
+                yCo = 1,
+            },
         },
     },
 }
