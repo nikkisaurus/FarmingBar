@@ -11,6 +11,12 @@ private.anchorPoints = {
             xCo = 1,
             yCo = -1,
         },
+        BOTTOMLEFT = {
+            anchor = "BOTTOMLEFT",
+            relAnchor = "BOTTOMLEFT",
+            xCo = 1,
+            yCo = 1,
+        },
     },
     newRowButton = {
         TOPLEFT = {
@@ -19,11 +25,23 @@ private.anchorPoints = {
             xCo = 0,
             yCo = -1,
         },
+        BOTTOMLEFT = {
+            anchor = "BOTTOMLEFT",
+            relAnchor = "TOPLEFT",
+            xCo = 0,
+            yCo = 1,
+        },
     },
     button = {
         TOPLEFT = {
             anchor = "TOPLEFT",
             relAnchor = "TOPRIGHT",
+            xCo = 1,
+            yCo = 0,
+        },
+        BOTTOMLEFT = {
+            anchor = "BOTTOMLEFT",
+            relAnchor = "BOTTOMRIGHT",
             xCo = 1,
             yCo = 0,
         },

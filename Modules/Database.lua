@@ -9,7 +9,7 @@ function private:InitializeDatabase()
             numButtons = 12,
             buttonsPerRow = 3,
             buttonSize = 120,
-            buttonPadding = 2,
+            buttonPadding = 8,
             barAnchor = "TOPLEFT",
             backdrop = {
                 bgFile = {

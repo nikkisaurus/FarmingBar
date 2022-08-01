@@ -81,6 +81,9 @@ local methods = {
     DrawButton = function(widget)
         local barDB, buttonDB = widget:GetDB()
         widget:SetSize(barDB.buttonSize)
+
+        -- ! Temporary for layout visualization; remove when done:
+        widget.count:SetText(select(2, widget:GetID()))
     end,
 }
 
@@ -94,6 +97,9 @@ local function Constructor()
     frame:EnableMouse(true)
     frame:RegisterForDrag("LeftButton")
 
+    local count = frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    count:SetPoint("CENTER")
+
     for script, func in pairs(scripts) do
         frame:SetScript(script, func)
     end
@@ -101,6 +107,7 @@ local function Constructor()
     --[[ Widget ]]
     local widget = {
         frame = frame,
+        count = count,
         type = Type,
     }
 
