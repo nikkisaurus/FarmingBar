@@ -8,6 +8,15 @@ local Version = 1
 
 -- [[ Scripts ]]
 local scripts = {
+    OnEnter = function(frame, ...)
+        local bar = frame.obj:GetBar()
+        bar:CallScript("OnEnter", bar.frame, ...)
+    end,
+
+    OnLeave = function(frame, ...)
+        local bar = frame.obj:GetBar()
+        bar:CallScript("OnLeave", bar.frame, ...)
+    end,
 }
 
 --[[ Methods ]]
@@ -22,6 +31,10 @@ local methods = {
     --[[ Frame ]]
     Hide = function(widget)
         widget.frame:Hide()
+    end,
+
+    SetAlpha = function(widget, alpha)
+        widget.frame:SetAlpha(alpha)
     end,
 
     SetHeight = function(widget, height)
@@ -53,6 +66,10 @@ local methods = {
     end,
 
     --[[ Database ]]
+    GetBar = function(widget)
+        return private.bars[widget:GetID()]
+    end,
+
     GetDB = function(widget)
         local barID, buttonID = widget:GetID()
         local barDB = private.db.profile.bars[barID]

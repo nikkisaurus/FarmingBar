@@ -41,6 +41,12 @@ function private:InitializeDatabase()
             buttonsPerAxis = 3,
             buttonSize = 120,
             buttonPadding = 8,
+
+            hidden = [[function()
+    return
+end]]        ,
+            mouseover = false,
+            alpha = 1,
         },
     }
 

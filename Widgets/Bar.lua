@@ -8,12 +8,27 @@ local Version = 1
 
 -- [[ Scripts ]]
 local scripts = {
+    --[[ Drag ]]
     OnDragStart = function(frame)
         frame:StartMoving()
     end,
 
     OnReceiveDrag = function(frame)
         frame:StopMovingOrSizing()
+    end,
+
+    --[[ Mouseover ]]
+    OnEnter = function(frame)
+        local widget = frame.obj
+        local barDB = widget:GetDB()
+
+        if barDB.mouseover then
+            widget:SetAlpha(barDB.alpha)
+        end
+    end,
+
+    OnLeave = function(frame)
+        frame.obj:SetMouseover()
     end,
 }
 
@@ -22,14 +37,66 @@ local methods = {
     --[[ Widget ]]
     OnAcquire = function(widget)
         widget:SetUserData("buttons", {})
-        widget:SetBackdrop()
-        widget:SetPoint("CENTER")
-        widget:Show()
+    end,
+
+    CallScript = function(widget, event, ...)
+        widget.frame:GetScript(event)(...)
     end,
 
     --[[ Frame ]]
+    Hide = function(widget)
+        widget.frame:Hide()
+    end,
+
+    SetAlpha = function(widget, alpha)
+        widget.frame:SetAlpha(alpha)
+
+        for _, button in pairs(widget:GetButtons()) do
+            button:SetAlpha(alpha)
+        end
+    end,
+
     SetHeight = function(widget, height)
         widget.frame:SetHeight(height)
+    end,
+
+    SetHidden = function(widget)
+        local barDB = widget:GetDB()
+
+        local func = loadstring("return " .. barDB.hidden)
+        if type(func) == "function" then
+            local success, userFunc = pcall(func)
+            if success and type(userFunc) == "function" then
+                local hidden = userFunc()
+                if hidden then
+                    widget:Hide()
+                else
+                    widget:Show()
+                end
+
+                for _, button in pairs(widget:GetButtons()) do
+                    if hidden then
+                        button:Hide()
+                    else
+                        button:Show()
+                    end
+                end
+            else
+                error(L["barDB.hidden must return a \"function\""])
+            end
+        else
+            error(L["barDB.hidden must return a \"function\""])
+        end
+    end,
+
+    SetMouseover = function(widget)
+        local barDB = widget:GetDB()
+
+        if barDB.mouseover then
+            widget:SetAlpha(0)
+        else
+            widget:SetAlpha(barDB.alpha)
+        end
     end,
 
     SetPoint = function(widget, ...)
@@ -75,11 +142,24 @@ local methods = {
 
         widget:SetUserData("barID", barID)
         widget:DrawButtons()
+        widget:Update()
+    end,
+
+    Update = function(widget)
+        widget:SetBackdrop()
+        widget:SetPoint("CENTER")
+        widget:LayoutButtons()
+        widget:SetHidden()
+        widget:SetMouseover()
     end,
 
     --[[ Buttons ]]
+    GetButtons = function(widget)
+        return widget:GetUserData("buttons")
+    end,
+
     DrawButtons = function(widget)
-        local buttons = widget:GetUserData("buttons")
+        local buttons = widget:GetButtons()
         local barDB = widget:GetDB()
 
         if barDB.numButtons > #buttons then
@@ -88,14 +168,15 @@ local methods = {
                 button:SetID(widget:GetID(), i)
                 tinsert(buttons, button)
             end
+        elseif #buttons > barDB.numButtons then
+            -- TODO
+            print("Remove buttons")
         end
-
-        widget:LayoutButtons()
     end,
 
     LayoutButtons = function(widget)
         local barDB = widget:GetDB()
-        local buttons = widget:GetUserData("buttons")
+        local buttons = widget:GetButtons()
 
         for buttonID, button in pairs(buttons) do
             local row = ceil(buttonID / barDB.buttonsPerAxis)

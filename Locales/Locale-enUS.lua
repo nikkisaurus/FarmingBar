@@ -6,3 +6,4 @@ LibStub("LibAddonUtils-1.0"):Embed(addon)
 --[[ Errors ]]
 L["Bar is already assigned an ID: %d"] = true
 L["Button is already assigned an ID: %d:%d"] = true
+L["barDB.hidden must return a \"function\""] = true
