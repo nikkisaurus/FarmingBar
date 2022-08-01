@@ -23,6 +23,12 @@ private.anchorPoints = {
             xCo = 1,
             yCo = 1,
         },
+        BOTTOMRIGHT = {
+            anchor = "BOTTOMRIGHT",
+            relAnchor = "BOTTOMRIGHT",
+            xCo = -1,
+            yCo = 1,
+        },
     },
     newRowButton = {
         TOPLEFT = {
@@ -40,6 +46,12 @@ private.anchorPoints = {
         BOTTOMLEFT = {
             anchor = "BOTTOMLEFT",
             relAnchor = "TOPLEFT",
+            xCo = 0,
+            yCo = 1,
+        },
+        BOTTOMRIGHT = {
+            anchor = "BOTTOMRIGHT",
+            relAnchor = "TOPRIGHT",
             xCo = 0,
             yCo = 1,
         },
@@ -61,6 +73,12 @@ private.anchorPoints = {
             anchor = "BOTTOMLEFT",
             relAnchor = "BOTTOMRIGHT",
             xCo = 1,
+            yCo = 0,
+        },
+        BOTTOMRIGHT = {
+            anchor = "BOTTOMRIGHT",
+            relAnchor = "BOTTOMLEFT",
+            xCo = -1,
             yCo = 0,
         },
     },

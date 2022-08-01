@@ -10,7 +10,7 @@ function private:InitializeDatabase()
             buttonsPerRow = 3,
             buttonSize = 120,
             buttonPadding = 8,
-            barAnchor = "TOPRIGHT",
+            barAnchor = "BOTTOMRIGHT",
             backdrop = {
                 bgFile = {
                     bgFile = [[INTERFACE\BUTTONS\WHITE8X8]],
