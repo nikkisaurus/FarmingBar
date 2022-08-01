@@ -5,13 +5,6 @@ local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 function private:InitializeDatabase()
     private.defaults = {
         bar = {
-            buttons = {},
-            numButtons = 12,
-            buttonsPerAxis = 3,
-            buttonSize = 120,
-            buttonPadding = 8,
-            barAnchor = "TOPLEFT",
-            buttonGrowth = "COL", -- "ROW", "COL"
             backdrop = {
                 bgFile = {
                     bgFile = [[INTERFACE\BUTTONS\WHITE8X8]],
@@ -25,6 +18,9 @@ function private:InitializeDatabase()
                 bgColor = { 1, 1, 1, 1 },
                 borderColor = { 0, 0, 0, 1 },
             },
+
+            buttons = {},
+
             buttonBackdrop = {
                 bgFile = {
                     bgFile = [[INTERFACE\BUTTONS\WHITE8X8]],
@@ -38,6 +34,13 @@ function private:InitializeDatabase()
                 bgColor = { 0, 1, 0, 1 },
                 borderColor = { 1, 0, 0, 1 },
             },
+
+            buttonGrowth = "COL", -- "ROW", "COL"
+            barAnchor = "TOPRIGHT",
+            numButtons = 12,
+            buttonsPerAxis = 3,
+            buttonSize = 120,
+            buttonPadding = 8,
         },
     }
 

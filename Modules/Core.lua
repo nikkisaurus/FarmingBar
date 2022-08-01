@@ -92,12 +92,12 @@ private.anchorPoints = {
                 xCo = 1,
                 yCo = -1,
             },
-            -- TOPRIGHT = {
-            --     anchor = "TOPRIGHT",
-            --     relAnchor = "TOPRIGHT",
-            --     xCo = -1,
-            --     yCo = -1,
-            -- },
+            TOPRIGHT = {
+                anchor = "TOPRIGHT",
+                relAnchor = "TOPRIGHT",
+                xCo = -1,
+                yCo = -1,
+            },
             -- BOTTOMLEFT = {
             --     anchor = "BOTTOMLEFT",
             --     relAnchor = "BOTTOMLEFT",
@@ -118,12 +118,12 @@ private.anchorPoints = {
                 xCo = 1,
                 yCo = 0,
             },
-            -- TOPRIGHT = {
-            --     anchor = "TOPRIGHT",
-            --     relAnchor = "BOTTOMRIGHT",
-            --     xCo = 0,
-            --     yCo = -1,
-            -- },
+            TOPRIGHT = {
+                anchor = "TOPRIGHT",
+                relAnchor = "TOPLEFT",
+                xCo = -1,
+                yCo = 0,
+            },
             -- BOTTOMLEFT = {
             --     anchor = "BOTTOMLEFT",
             --     relAnchor = "TOPLEFT",
@@ -144,12 +144,12 @@ private.anchorPoints = {
                 xCo = 0,
                 yCo = -1,
             },
-            -- TOPRIGHT = {
-            --     anchor = "TOPRIGHT",
-            --     relAnchor = "TOPLEFT",
-            --     xCo = -1,
-            --     yCo = 0,
-            -- },
+            TOPRIGHT = {
+                anchor = "TOPRIGHT",
+                relAnchor = "BOTTOMRIGHT",
+                xCo = 0,
+                yCo = -1,
+            },
             -- BOTTOMLEFT = {
             --     anchor = "BOTTOMLEFT",
             --     relAnchor = "BOTTOMRIGHT",

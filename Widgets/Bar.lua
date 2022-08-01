@@ -127,8 +127,8 @@ local methods = {
         local numRows = ceil(#buttons / barDB.buttonsPerAxis)
         local height = (barDB.buttonSize * numRows) + (barDB.buttonPadding * (numRows + 1)) +
             (2 * barDB.buttonBackdrop.bgFile.edgeSize)
-        local normalGrowth = barDB.buttonGrowth == "ROW"
-        widget:SetSize(normalGrowth and width or height, normalGrowth and height or width)
+        local growRow = barDB.buttonGrowth == "ROW"
+        widget:SetSize(growRow and width or height, growRow and height or width)
     end,
 }
 
