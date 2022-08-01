@@ -8,6 +8,10 @@ local Version = 1
 
 -- [[ Scripts ]]
 local scripts = {
+    OnClick = function(frame)
+        print("COW")
+    end,
+
     OnEnter = function(frame, ...)
         local bar = frame.obj:GetBar()
         bar:CallScript("OnEnter", bar.frame, ...)
@@ -23,8 +27,6 @@ local scripts = {
 local methods = {
     --[[ Widget ]]
     OnAcquire = function(widget)
-        widget:SetBackdrop()
-        widget:SetSize(private.defaults.bar.buttonSize)
         widget:Show()
     end,
 
@@ -58,11 +60,38 @@ local methods = {
         widget.frame:Show()
     end,
 
-    --[[ Backdrop ]]
-    SetBackdrop = function(widget, backdropInfo, bgColor, borderColor)
-        widget.frame:SetBackdrop(backdropInfo or private.defaults.bar.buttonBackdrop.bgFile)
-        widget.frame:SetBackdropColor(addon.unpack(bgColor, private.defaults.bar.buttonBackdrop.bgColor))
-        widget.frame:SetBackdropBorderColor(addon.unpack(borderColor, private.defaults.bar.buttonBackdrop.borderColor))
+    --[[ Textures ]]
+    SetTextures = function(widget)
+        local barDB = widget:GetDB()
+
+        for layerName, textureInfo in pairs(barDB.buttonTextures) do
+            local layer = widget[layerName]
+            layer:SetTexture(textureInfo.texture)
+            layer:SetTexCoord(unpack(textureInfo.texCoords))
+            layer:SetBlendMode(textureInfo.blendMode)
+
+            if textureInfo.insets then
+                layer:SetPoint("LEFT", textureInfo.insets.left, 0)
+                layer:SetPoint("RIGHT", textureInfo.insets.right, 0)
+                layer:SetPoint("TOP", 0, textureInfo.insets.top)
+                layer:SetPoint("BOTTOM", 0, textureInfo.insets.bottom)
+            else
+                layer:SetAllPoints(widget.frame)
+            end
+        end
+    end,
+
+    SetIconTextures = function(widget)
+        local isEmpty, buttonDB = widget:IsEmpty()
+
+        if isEmpty then
+            widget.icon:SetTexture()
+            widget.iconBorder:Hide()
+        else
+            widget.icon:SetTexture(buttonDB.iconID)
+            widget.iconBorder:Show()
+            widget.iconBorder:SetVertexColor(GetItemQualityColor(buttonDB.itemQuality))
+        end
     end,
 
     --[[ Database ]]
@@ -81,6 +110,11 @@ local methods = {
         return widget:GetUserData("barID"), widget:GetUserData("buttonID")
     end,
 
+    IsEmpty = function(widget)
+        local barDB, buttonDB = widget:GetDB()
+        return not buttonDB, buttonDB
+    end,
+
     SetID = function(widget, barID, buttonID)
         if widget:GetID() then
             if private.db.global.debug.enabled then
@@ -91,31 +125,62 @@ local methods = {
 
         widget:SetUserData("barID", barID)
         widget:SetUserData("buttonID", buttonID)
+        widget:Update()
+    end,
+
+    Update = function(widget)
         widget:DrawButton()
+        widget:SetTextures()
+        widget:SetIconTextures()
     end,
 
     --[[ Button ]]
     DrawButton = function(widget)
         local barDB, buttonDB = widget:GetDB()
         widget:SetSize(barDB.buttonSize)
-
-        -- ! Temporary for layout visualization; remove when done:
-        widget.count:SetText(select(2, widget:GetID()))
     end,
 }
 
 --[[ Constructor ]]
 local function Constructor()
     --[[ Frame ]]
-    local frame = CreateFrame("Frame", Type .. AceGUI:GetNextWidgetNum(Type), UIParent, "BackdropTemplate")
+    local frame = CreateFrame("Button", Type .. AceGUI:GetNextWidgetNum(Type), UIParent,
+        "BackdropTemplate, SecureActionButtonTemplate")
     frame:SetFrameStrata("MEDIUM")
     frame:SetFrameLevel(1)
     frame:SetMovable(true)
     frame:EnableMouse(true)
     frame:RegisterForDrag("LeftButton")
 
-    local count = frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    count:SetPoint("CENTER")
+    local backdrop = frame:CreateTexture()
+    backdrop:SetDrawLayer("BACKGROUND", -1)
+
+    -- -- local Cooldown
+
+    local count = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+
+    local gloss = frame:CreateTexture()
+    gloss:SetDrawLayer("OVERLAY", 0)
+
+    local icon = frame:CreateTexture()
+    icon:SetDrawLayer("BACKGROUND", 0)
+
+    local iconBorder = frame:CreateTexture()
+    iconBorder:SetDrawLayer("OVERLAY", 1)
+
+    local mask = frame:CreateTexture()
+
+    local normal = frame:CreateTexture()
+    normal:SetDrawLayer("ARTWORK", 0)
+
+    local shadow = frame:CreateTexture()
+    shadow:SetDrawLayer("ARTWORK", -1)
+
+    local highlight = frame:CreateTexture()
+    highlight:SetDrawLayer("HIGHLIGHT", 0)
+
+    local pushed = frame:CreateTexture()
+    pushed:SetDrawLayer("ARTWORK", 0)
 
     for script, func in pairs(scripts) do
         frame:SetScript(script, func)
@@ -124,7 +189,15 @@ local function Constructor()
     --[[ Widget ]]
     local widget = {
         frame = frame,
-        count = count,
+        backdrop = backdrop,
+        gloss = gloss,
+        icon = icon,
+        iconBorder = iconBorder,
+        mask = mask,
+        normal = normal,
+        shadow = shadow,
+        highlight = highlight,
+        pushed = pushed,
         type = Type,
     }
 

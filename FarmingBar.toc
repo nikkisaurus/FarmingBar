@@ -6,7 +6,7 @@
 ## Version: @project-version@
 ## Author: Nikketa-Hyjal-US
 
-## SavedVariables: FarmingBarDB
+## SavedVariables: FarmingBarDB, FarmingBarDevDB
 
 ## X-Curse-Project-ID: 351688
 ## X-WoWI-ID: 25440

@@ -15,6 +15,7 @@ local scripts = {
 
     OnReceiveDrag = function(frame)
         frame:StopMovingOrSizing()
+        frame.obj:SetDBValue("point", { frame:GetPoint() })
     end,
 
     --[[ Mouseover ]]
@@ -118,9 +119,10 @@ local methods = {
 
     --[[ Backdrop ]]
     SetBackdrop = function(widget, backdropInfo, bgColor, borderColor)
-        widget.frame:SetBackdrop(backdropInfo or private.defaults.bar.backdrop.bgFile)
-        widget.frame:SetBackdropColor(addon.unpack(bgColor, private.defaults.bar.backdrop.bgColor))
-        widget.frame:SetBackdropBorderColor(addon.unpack(borderColor, private.defaults.bar.backdrop.borderColor))
+        local frame = widget.frame
+        frame:SetBackdrop(backdropInfo or private.defaults.bar.backdrop.bgFile)
+        frame:SetBackdropColor(addon.unpack(bgColor, private.defaults.bar.backdrop.bgColor))
+        frame:SetBackdropBorderColor(addon.unpack(borderColor, private.defaults.bar.backdrop.borderColor))
     end,
 
     --[[ Database ]]
@@ -130,6 +132,10 @@ local methods = {
 
     GetID = function(widget)
         return widget:GetUserData("barID")
+    end,
+
+    SetDBValue = function(widget, key, value)
+        private.db.profile.bars[widget:GetID()][key] = value
     end,
 
     SetID = function(widget, barID)
@@ -146,8 +152,9 @@ local methods = {
     end,
 
     Update = function(widget)
-        widget:SetBackdrop()
-        widget:SetPoint("CENTER")
+        local barDB = widget:GetDB()
+        widget:SetBackdrop(not barDB.backdrop.enabled and {})
+        widget:SetPoint(unpack(barDB.point))
         widget:LayoutButtons()
         widget:SetHidden()
         widget:SetMouseover()
@@ -187,8 +194,8 @@ local methods = {
             if buttonID == 1 then
                 local anchorInfo = private.anchorPoints[barDB.buttonGrowth].button1[barDB.barAnchor]
                 button:SetPoint(anchorInfo.anchor, widget.frame, anchorInfo.relAnchor,
-                    anchorInfo.xCo * (barDB.buttonPadding + barDB.buttonBackdrop.bgFile.edgeSize),
-                    anchorInfo.yCo * (barDB.buttonPadding + barDB.buttonBackdrop.bgFile.edgeSize))
+                    anchorInfo.xCo * barDB.buttonPadding,
+                    anchorInfo.yCo * barDB.buttonPadding)
             elseif newRow then
                 local anchorInfo = private.anchorPoints[barDB.buttonGrowth].newRowButton[barDB.barAnchor]
                 button:SetPoint(anchorInfo.anchor, buttons[buttonID - barDB.buttonsPerAxis].frame, anchorInfo.relAnchor,
@@ -203,11 +210,9 @@ local methods = {
         end
 
         -- Backdrop
-        local width = (barDB.buttonSize * barDB.buttonsPerAxis) + (barDB.buttonPadding * (barDB.buttonsPerAxis + 1)) +
-            (2 * barDB.buttonBackdrop.bgFile.edgeSize)
+        local width = (barDB.buttonSize * barDB.buttonsPerAxis) + (barDB.buttonPadding * (barDB.buttonsPerAxis + 1))
         local numRows = ceil(#buttons / barDB.buttonsPerAxis)
-        local height = (barDB.buttonSize * numRows) + (barDB.buttonPadding * (numRows + 1)) +
-            (2 * barDB.buttonBackdrop.bgFile.edgeSize)
+        local height = (barDB.buttonSize * numRows) + (barDB.buttonPadding * (numRows + 1))
         local growRow = barDB.buttonGrowth == "ROW"
         widget:SetSize(growRow and width or height, growRow and height or width)
     end,
