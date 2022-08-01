@@ -36,7 +36,7 @@ function private:InitializeDatabase()
             },
 
             buttonGrowth = "COL", -- "ROW", "COL"
-            barAnchor = "TOPRIGHT",
+            barAnchor = "BOTTOMLEFT",
             numButtons = 12,
             buttonsPerAxis = 3,
             buttonSize = 120,
