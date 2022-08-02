@@ -45,17 +45,22 @@ local anchorScripts = {
     end,
 
     --[[ Tooltip ]]
-    OnEnter = function(anchor)
+    OnEnter = function(anchor, ...)
         private:LoadTooltip(anchor, "ANCHOR_CURSOR", 0, 0, {
             {
                 line = L["Control+click to lock and hide anchor."],
                 color = private.defaults.tooltip_desc,
             },
         })
+
+        local widget = anchor.obj
+        widget:CallScript("OnEnter", widget.frame, ...)
     end,
 
-    OnLeave = function(anchor)
+    OnLeave = function(anchor, ...)
         private:ClearTooltip()
+        local widget = anchor.obj
+        widget:CallScript("OnLeave", widget.frame, ...)
     end,
 }
 
@@ -150,6 +155,15 @@ local methods = {
             anchorInfo.yCo * barDB.buttonPadding)
     end,
 
+    SetScale = function(widget)
+        local barDB = widget:GetDB()
+        widget.frame:SetScale(barDB.scale)
+
+        for _, button in pairs(widget:GetButtons()) do
+            button.frame:SetScale(barDB.scale)
+        end
+    end,
+
     SetSize = function(widget, width, height)
         widget:SetWidth(width)
         widget:SetHeight(height or width)
@@ -215,6 +229,7 @@ local methods = {
         widget:SetHidden()
         widget:SetMouseover()
         widget:SetMovable()
+        widget:SetScale()
     end,
 
     --[[ Buttons ]]
@@ -284,6 +299,7 @@ local function Constructor()
     frame:SetFrameStrata("MEDIUM")
     frame:SetFrameLevel(0)
     frame:SetMovable(true)
+    frame:SetClampedToScreen(true)
 
     for script, func in pairs(scripts) do
         frame:SetScript(script, func)
@@ -293,9 +309,10 @@ local function Constructor()
     local anchor = CreateFrame("Button", nil, frame, "BackdropTemplate")
     anchor:SetNormalTexture([[INTERFACE\ADDONS\FARMINGBAR\MEDIA\UNLOCK]])
     anchor:SetFrameStrata("MEDIUM")
-    anchor:SetFrameLevel(0)
+    anchor:SetFrameLevel(1)
     anchor:SetMovable(true)
     anchor:RegisterForDrag("LeftButton")
+    anchor:SetClampedToScreen(true)
 
     for script, func in pairs(anchorScripts) do
         anchor:SetScript(script, func)

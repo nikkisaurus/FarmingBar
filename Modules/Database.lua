@@ -17,7 +17,7 @@ function private:InitializeDatabase()
         },
         bar = {
             backdrop = {
-                enabled = true,
+                enabled = false,
                 bgFile = {
                     bgFile = [[INTERFACE\TOOLTIPS\UI-TOOLTIP-BACKGROUND]],
                     edgeFile = [[INTERFACE\TOOLTIPS\UI-TOOLTIP-BORDER]],
@@ -101,14 +101,15 @@ function private:InitializeDatabase()
             barAnchor = "TOPLEFT", -- "TOPLEFT", "TOPRIGHT", "BOTTOMLEFT", "BOTTOMRIGHT"
             numButtons = 12,
             buttonsPerAxis = 12,
-            buttonSize = 100,
-            buttonPadding = 6,
+            buttonSize = 40,
+            buttonPadding = 2,
 
             hidden = [[function()
     return
 end]]        ,
             mouseover = false,
             alpha = 1,
+            scale = 1,
         },
     }
 
