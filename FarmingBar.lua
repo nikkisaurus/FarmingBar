@@ -5,8 +5,8 @@ local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 --[[ OnInitialize ]]
 function addon:OnInitialize()
     private:InitializeDatabase()
-    self:SetEnabledState(private.db.profile.enabled)
     -- private:InitializeSlashCommands()
+    private:InitializeTooltip()
 end
 
 --[[ OnEnable ]]

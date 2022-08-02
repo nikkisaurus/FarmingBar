@@ -4,6 +4,8 @@ local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 
 function private:InitializeDatabase()
     private.defaults = {
+        tooltip_desc = { 1, 1, 1, 1, 1, 1, 1 },
+        tooltip_keyvalue = { 1, 0.82, 0, 1, 1, 1, 1 },
         button = {
             iconID = 1053367,
             itemQuality = 6,
@@ -15,18 +17,18 @@ function private:InitializeDatabase()
         },
         bar = {
             backdrop = {
-                enabled = false,
+                enabled = true,
                 bgFile = {
-                    bgFile = [[INTERFACE\BUTTONS\WHITE8X8]],
-                    edgeFile = [[INTERFACE\BUTTONS\WHITE8X8]],
-                    edgeSize = 2,
+                    bgFile = [[INTERFACE\TOOLTIPS\UI-TOOLTIP-BACKGROUND]],
+                    edgeFile = [[INTERFACE\TOOLTIPS\UI-TOOLTIP-BORDER]],
+                    edgeSize = 12,
                     tile = true,
                     tileEdge = true,
                     tileSize = 2,
                     insets = { left = 2, right = 2, top = 2, bottom = 2 }
                 },
                 bgColor = { 0, 0, 0, 0.33 },
-                borderColor = { 0, 0, 0, 1 },
+                borderColor = { 1, 1, 1, 1 },
                 texCoords = { 0, 1, 0, 1 },
             },
 
@@ -35,9 +37,11 @@ function private:InitializeDatabase()
 
             buttonTextures = {
                 backdrop = {
-                    texture = [[Interface\Buttons\UI-Quickslot]],
-                    texCoords = { 11 / 64, 51 / 64, 11 / 64, 51 / 64 },
-                    color = { 1, 1, 1, 1 },
+                    -- texture = [[INTERFACE\BUTTONS\WHITE8X8]],
+                    -- texCoords = { 0, 1, 0, 1 },
+                    texture = [[INTERFACE\BUTTONS\UI-EMPTYSLOT-WHITE]],
+                    texCoords = { 9 / 64, 53 / 64, 10 / 64, 53 / 64 },
+                    color = { 1, 1, 1, 0.33 },
                     blendMode = "BLEND",
                 },
                 gloss = {
@@ -53,9 +57,11 @@ function private:InitializeDatabase()
                     blendMode = "BLEND",
                 },
                 normal = {
-                    texture = [[Interface\Buttons\UI-Quickslot2]],
-                    texCoords = { 11 / 64, 51 / 64, 11 / 64, 51 / 64 },
-                    color = { 1, 1, 1, 1 },
+                    -- texture = [[INTERFACE\BUTTONS\WHITE8X8]],
+                    -- texCoords = { 0, 1, 0, 1 },
+                    texture = [[INTERFACE\BUTTONS\UI-EMPTYSLOT-WHITE]],
+                    texCoords = { 9 / 64, 53 / 64, 10 / 64, 53 / 64 },
+                    color = { 1, 1, 1, 0.33 },
                     blendMode = "BLEND",
                 },
                 shadow = {
@@ -65,15 +71,19 @@ function private:InitializeDatabase()
                     blendMode = "BLEND",
                 },
                 highlight = {
-                    texture = [[Interface\Buttons\UI-Quickslot2]],
-                    texCoords = { 11 / 64, 51 / 64, 11 / 64, 51 / 64 },
-                    color = { 1, 1, 1, 1 },
+                    -- texture = [[INTERFACE\BUTTONS\WHITE8X8]],
+                    -- texCoords = { 0, 1, 0, 1 },
+                    texture = [[INTERFACE\BUTTONS\UI-EMPTYSLOT-WHITE]],
+                    texCoords = { 9 / 64, 53 / 64, 10 / 64, 53 / 64 },
+                    color = { 1, 1, 1, 0.33 },
                     blendMode = "ADD",
                 },
                 pushed = {
-                    texture = [[Interface\Buttons\UI-Quickslot2]],
-                    texCoords = { 11 / 64, 51 / 64, 11 / 64, 51 / 64 },
-                    color = { 1, 1, 1, 1 },
+                    -- texture = [[INTERFACE\BUTTONS\WHITE8X8]],
+                    -- texCoords = { 0, 1, 0, 1 },
+                    texture = [[INTERFACE\BUTTONS\UI-EMPTYSLOT-WHITE]],
+                    texCoords = { 9 / 64, 53 / 64, 10 / 64, 53 / 64 },
+                    color = { 1, 1, 1, 0.33 },
                     blendMode = "BLEND",
                 },
                 iconBorder = {
@@ -84,14 +94,15 @@ function private:InitializeDatabase()
                 },
             },
 
+            movable = true,
             point = { "CENTER" },
 
             buttonGrowth = "ROW", -- "ROW", "COL"
             barAnchor = "TOPLEFT", -- "TOPLEFT", "TOPRIGHT", "BOTTOMLEFT", "BOTTOMRIGHT"
             numButtons = 12,
             buttonsPerAxis = 12,
-            buttonSize = 40,
-            buttonPadding = 2,
+            buttonSize = 100,
+            buttonPadding = 6,
 
             hidden = [[function()
     return
@@ -105,7 +116,10 @@ end]]        ,
         global = {
             debug = {
                 enabled = true,
-            }
+            },
+            settings = {
+                useGameTooltip = false,
+            },
         },
         profile = {
             enabled = true,
@@ -114,4 +128,6 @@ end]]        ,
             },
         },
     })
+
+    addon:SetEnabledState(private.db.profile.enabled)
 end

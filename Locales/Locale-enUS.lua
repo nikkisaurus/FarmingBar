@@ -7,3 +7,6 @@ LibStub("LibAddonUtils-1.0"):Embed(addon)
 L["Bar is already assigned an ID: %d"] = true
 L["Button is already assigned an ID: %d:%d"] = true
 L["barDB.hidden must return a \"function\""] = true
+
+--[[ Tooltips ]]
+L["Control+click to lock and hide anchor."] = true

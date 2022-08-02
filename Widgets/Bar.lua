@@ -8,16 +8,6 @@ local Version = 1
 
 -- [[ Scripts ]]
 local scripts = {
-    --[[ Drag ]]
-    OnDragStart = function(frame)
-        frame:StartMoving()
-    end,
-
-    OnReceiveDrag = function(frame)
-        frame:StopMovingOrSizing()
-        frame.obj:SetDBValue("point", { frame:GetPoint() })
-    end,
-
     --[[ Mouseover ]]
     OnEnter = function(frame)
         local widget = frame.obj
@@ -30,6 +20,42 @@ local scripts = {
 
     OnLeave = function(frame)
         frame.obj:SetMouseover()
+    end,
+}
+
+local anchorScripts = {
+    --[[ Click ]]
+    OnClick = function(anchor)
+        if IsControlKeyDown() then
+            local widget = anchor.obj
+            widget:SetDBValue("movable", false)
+            widget:SetMovable()
+        end
+    end,
+
+    -- [[ Drag ]]
+    OnDragStart = function(anchor)
+        anchor.obj.frame:StartMoving()
+    end,
+
+    OnDragStop = function(anchor)
+        local widget = anchor.obj
+        widget.frame:StopMovingOrSizing()
+        widget:SetDBValue("point", { widget.frame:GetPoint() })
+    end,
+
+    --[[ Tooltip ]]
+    OnEnter = function(anchor)
+        private:LoadTooltip(anchor, "ANCHOR_CURSOR", 0, 0, {
+            {
+                line = L["Control+click to lock and hide anchor."],
+                color = private.defaults.tooltip_desc,
+            },
+        })
+    end,
+
+    OnLeave = function(anchor)
+        private:ClearTooltip()
     end,
 }
 
@@ -90,6 +116,16 @@ local methods = {
         end
     end,
 
+    SetMovable = function(widget)
+        local barDB = widget:GetDB()
+
+        if barDB.movable then
+            widget.anchor:Show()
+        else
+            widget.anchor:Hide()
+        end
+    end,
+
     SetMouseover = function(widget)
         local barDB = widget:GetDB()
 
@@ -104,9 +140,23 @@ local methods = {
         widget.frame:SetPoint(...)
     end,
 
+    SetPoints = function(widget)
+        local barDB = widget:GetDB()
+        local anchorInfo = private.anchorPoints.anchor[barDB.barAnchor]
+
+        widget:SetPoint(unpack(barDB.point))
+        widget.anchor:SetPoint(anchorInfo.anchor, widget.frame, anchorInfo.relAnchor,
+            anchorInfo.xCo * barDB.buttonPadding,
+            anchorInfo.yCo * barDB.buttonPadding)
+    end,
+
     SetSize = function(widget, width, height)
         widget:SetWidth(width)
         widget:SetHeight(height or width)
+
+        local barDB = widget:GetDB()
+        local anchorSize = barDB.buttonSize * (2 / 3)
+        widget.anchor:SetSize(anchorSize, anchorSize)
     end,
 
     SetWidth = function(widget, width)
@@ -118,11 +168,18 @@ local methods = {
     end,
 
     --[[ Backdrop ]]
-    SetBackdrop = function(widget, backdropInfo, bgColor, borderColor)
+    SetBackdrop = function(widget)
+        local barDB = widget:GetDB()
+
         local frame = widget.frame
-        frame:SetBackdrop(backdropInfo or private.defaults.bar.backdrop.bgFile)
-        frame:SetBackdropColor(addon.unpack(bgColor, private.defaults.bar.backdrop.bgColor))
-        frame:SetBackdropBorderColor(addon.unpack(borderColor, private.defaults.bar.backdrop.borderColor))
+        frame:SetBackdrop(barDB.backdrop.enabled and barDB.backdrop.bgFile)
+        frame:SetBackdropColor(unpack(barDB.backdrop.bgColor))
+        frame:SetBackdropBorderColor(unpack(barDB.backdrop.borderColor))
+
+        local anchor = widget.anchor
+        anchor:SetBackdrop(barDB.backdrop.bgFile)
+        anchor:SetBackdropColor(unpack(barDB.backdrop.bgColor))
+        anchor:SetBackdropBorderColor(unpack(barDB.backdrop.borderColor))
     end,
 
     --[[ Database ]]
@@ -152,12 +209,12 @@ local methods = {
     end,
 
     Update = function(widget)
-        local barDB = widget:GetDB()
-        widget:SetBackdrop(not barDB.backdrop.enabled and {})
-        widget:SetPoint(unpack(barDB.point))
+        widget:SetBackdrop()
+        widget:SetPoints()
         widget:LayoutButtons()
         widget:SetHidden()
         widget:SetMouseover()
+        widget:SetMovable()
     end,
 
     --[[ Buttons ]]
@@ -194,8 +251,8 @@ local methods = {
             if buttonID == 1 then
                 local anchorInfo = private.anchorPoints[barDB.buttonGrowth].button1[barDB.barAnchor]
                 button:SetPoint(anchorInfo.anchor, widget.frame, anchorInfo.relAnchor,
-                    anchorInfo.xCo * barDB.buttonPadding,
-                    anchorInfo.yCo * barDB.buttonPadding)
+                    (anchorInfo.xCo * (barDB.buttonPadding + barDB.backdrop.bgFile.tileSize)),
+                    anchorInfo.yCo * (barDB.buttonPadding + barDB.backdrop.bgFile.tileSize))
             elseif newRow then
                 local anchorInfo = private.anchorPoints[barDB.buttonGrowth].newRowButton[barDB.barAnchor]
                 button:SetPoint(anchorInfo.anchor, buttons[buttonID - barDB.buttonsPerAxis].frame, anchorInfo.relAnchor,
@@ -210,9 +267,11 @@ local methods = {
         end
 
         -- Backdrop
-        local width = (barDB.buttonSize * barDB.buttonsPerAxis) + (barDB.buttonPadding * (barDB.buttonsPerAxis + 2))
+        local width = (barDB.buttonSize * barDB.buttonsPerAxis) + (barDB.buttonPadding * (barDB.buttonsPerAxis + 1)) +
+            (2 * barDB.backdrop.bgFile.tileSize)
         local numRows = ceil(#buttons / barDB.buttonsPerAxis)
-        local height = (barDB.buttonSize * numRows) + (barDB.buttonPadding * (numRows + 2))
+        local height = (barDB.buttonSize * numRows) + (barDB.buttonPadding * (numRows + 1)) +
+            (2 * barDB.backdrop.bgFile.tileSize)
         local growRow = barDB.buttonGrowth == "ROW"
         widget:SetSize(growRow and width or height, growRow and height or width)
     end,
@@ -225,20 +284,32 @@ local function Constructor()
     frame:SetFrameStrata("MEDIUM")
     frame:SetFrameLevel(0)
     frame:SetMovable(true)
-    frame:EnableMouse(true)
-    frame:RegisterForDrag("LeftButton")
 
     for script, func in pairs(scripts) do
         frame:SetScript(script, func)
     end
 
+    --[[ Anchor ]]
+    local anchor = CreateFrame("Button", nil, frame, "BackdropTemplate")
+    anchor:SetNormalTexture([[INTERFACE\ADDONS\FARMINGBAR\MEDIA\UNLOCK]])
+    anchor:SetFrameStrata("MEDIUM")
+    anchor:SetFrameLevel(0)
+    anchor:SetMovable(true)
+    anchor:RegisterForDrag("LeftButton")
+
+    for script, func in pairs(anchorScripts) do
+        anchor:SetScript(script, func)
+    end
+
     --[[ Widget ]]
     local widget = {
         frame = frame,
+        anchor = anchor,
         type = Type,
     }
 
     frame.obj = widget
+    anchor.obj = widget
 
     for method, func in pairs(methods) do
         widget[method] = func

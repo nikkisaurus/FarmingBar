@@ -2,7 +2,6 @@ local addonName, private = ...
 local addon = LibStub("AceAddon-3.0"):GetAddon(addonName)
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 
-
 private.anchorPoints = {
     ROW = {
         button1 = {
@@ -164,4 +163,30 @@ private.anchorPoints = {
             },
         },
     },
+    anchor = {
+        TOPLEFT = {
+            anchor = "TOPRIGHT",
+            relAnchor = "TOPLEFT",
+            xCo = -1,
+            yCo = 0,
+        },
+        TOPRIGHT = {
+            anchor = "TOPLEFT",
+            relAnchor = "TOPRIGHT",
+            xCo = 1,
+            yCo = 0,
+        },
+        BOTTOMLEFT = {
+            anchor = "BOTTOMRIGHT",
+            relAnchor = "BOTTOMLEFT",
+            xCo = -1,
+            yCo = 0,
+        },
+        BOTTOMRIGHT = {
+            anchor = "BOTTOMLEFT",
+            relAnchor = "BOTTOMRIGHT",
+            xCo = 1,
+            yCo = 0,
+        },
+    }
 }
