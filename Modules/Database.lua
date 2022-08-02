@@ -29,20 +29,21 @@ function private:InitializeDatabase()
             backdrop = {
                 enabled = false,
                 bgFile = {
-                    bgFile = [[INTERFACE\TOOLTIPS\UI-TOOLTIP-BACKGROUND]],
-                    edgeFile = [[INTERFACE\TOOLTIPS\UI-TOOLTIP-BORDER]],
+                    bgFile = "Blizzard Tooltip",
+                    edgeFile = "Blizzard Tooltip",
                     edgeSize = 12,
                     tile = true,
                     tileEdge = true,
                     tileSize = 2,
                     insets = { left = 2, right = 2, top = 2, bottom = 2 }
                 },
-                bgColor = { 0, 0, 0, 0.33 },
+                bgColor = { 1, 1, 1, 1 },
                 borderColor = { 1, 1, 1, 1 },
-                texCoords = { 0, 1, 0, 1 },
             },
 
             hidden = [[function()
+    -- To hide this bar, return true
+    -- To show this bar, return nil
     return
 end]]        ,
             mouseover = false,

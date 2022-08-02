@@ -2,6 +2,7 @@ local addonName, private = ...
 local addon = LibStub("AceAddon-3.0"):GetAddon(addonName)
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 local AceGUI = LibStub("AceGUI-3.0")
+local LSM = LibStub("LibSharedMedia-3.0")
 
 local Type = "FarmingBar_Bar"
 local Version = 1
@@ -14,7 +15,7 @@ local scripts = {
         local barDB = widget:GetDB()
 
         if barDB.mouseover then
-            widget:SetAlpha(barDB.alpha)
+            widget:SetAlpha(barDB.alpha, not barDB.showEmpty)
         end
     end,
 
@@ -90,11 +91,12 @@ local methods = {
         widget.frame:Hide()
     end,
 
-    SetAlpha = function(widget, alpha)
+    SetAlpha = function(widget, alpha, hideEmpty)
         widget.frame:SetAlpha(alpha)
 
         for _, button in pairs(widget:GetButtons()) do
-            button:SetAlpha(alpha)
+            local isEmpty = hideEmpty and button:IsEmpty() -- TODO: check if cursor has objective
+            button:SetAlpha(isEmpty and 0 or alpha)
         end
     end,
 
@@ -147,7 +149,7 @@ local methods = {
         if barDB.mouseover then
             widget:SetAlpha(0)
         else
-            widget:SetAlpha(barDB.alpha)
+            widget:SetAlpha(barDB.alpha, not barDB.showEmpty)
         end
     end,
 
@@ -196,12 +198,17 @@ local methods = {
         local barDB = widget:GetDB()
 
         local frame = widget.frame
-        frame:SetBackdrop(barDB.backdrop.enabled and barDB.backdrop.bgFile)
+        local texture = LSM:Fetch(LSM.MediaType.BACKGROUND, barDB.backdrop.bgFile.bgFile)
+        local edgeFile = LSM:Fetch(LSM.MediaType.BORDER, barDB.backdrop.bgFile.edgeFile)
+        local bgFile = addon.CloneTable(barDB.backdrop.bgFile)
+        bgFile.bgFile = texture
+        bgFile.edgeFile = edgeFile
+        frame:SetBackdrop(barDB.backdrop.enabled and bgFile)
         frame:SetBackdropColor(unpack(barDB.backdrop.bgColor))
         frame:SetBackdropBorderColor(unpack(barDB.backdrop.borderColor))
 
         local anchor = widget.anchor
-        anchor:SetBackdrop(barDB.backdrop.bgFile)
+        anchor:SetBackdrop(bgFile)
         anchor:SetBackdropColor(unpack(barDB.backdrop.bgColor))
         anchor:SetBackdropBorderColor(unpack(barDB.backdrop.borderColor))
     end,

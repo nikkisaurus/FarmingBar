@@ -82,6 +82,155 @@ local function tabGroup_OnGroupSelected(tabGroup, _, group)
         end)
 
         private:AddChildren(content, label, alertsGroup, limitMats)
+    elseif group == "appearance" then
+        local alpha = AceGUI:Create("Slider")
+        alpha:SetSliderValues(0, 1, 0.1)
+        alpha:SetLabel(L["Alpha"])
+
+        alpha:SetCallback("OnValueChanged", function(_, _, value)
+            private.db.profile.bars[barID].alpha = value
+            private.bars[barID]:SetMouseover()
+        end)
+        alpha:SetUserData("NotifyChange", function()
+            alpha:SetValue(barDB.alpha)
+        end)
+
+        local scale = AceGUI:Create("Slider")
+        scale:SetSliderValues(0.25, 4, .01)
+        scale:SetLabel(L["Scale"])
+
+        scale:SetCallback("OnValueChanged", function(_, _, value)
+            private.db.profile.bars[barID].scale = value
+            private.bars[barID]:SetScale()
+        end)
+        scale:SetUserData("NotifyChange", function()
+            scale:SetValue(barDB.scale)
+        end)
+
+        local mouseover = AceGUI:Create("CheckBox")
+        mouseover:SetRelativeWidth(0.9)
+        mouseover:SetLabel(L["Mouseover"])
+        private:SetOptionTooltip(mouseover, L["Show this bar only on mouseover."])
+        mouseover:SetDescription(L["Show this bar only on mouseover."])
+
+        mouseover:SetCallback("OnValueChanged", function(_, _, value)
+            private.db.profile.bars[barID].mouseover = value
+            private.bars[barID]:SetMouseover()
+        end)
+        mouseover:SetUserData("NotifyChange", function()
+            mouseover:SetValue(barDB.mouseover)
+        end)
+
+        local showEmpty = AceGUI:Create("CheckBox")
+        showEmpty:SetRelativeWidth(0.9)
+        showEmpty:SetLabel(L["Show Empty"])
+        private:SetOptionTooltip(showEmpty, L["Shows a backdrop on empty buttons."])
+        showEmpty:SetDescription(L["Shows a backdrop on empty buttons."])
+
+        showEmpty:SetCallback("OnValueChanged", function(_, _, value)
+            private.db.profile.bars[barID].showEmpty = value
+            private.bars[barID]:SetMouseover()
+        end)
+        showEmpty:SetUserData("NotifyChange", function()
+            showEmpty:SetValue(barDB.showEmpty)
+        end)
+
+        local hidden = AceGUI:Create("MultiLineEditBox")
+        hidden:SetFullWidth(true)
+        hidden:SetLabel(L["Hidden"])
+
+        -- TODO: Implement OnEnterPressed with function validation
+
+        hidden:SetUserData("NotifyChange", function()
+            hidden:SetText(barDB.hidden)
+        end)
+
+        -- TODO: Add confirmation for reset
+        local resetHidden = AceGUI:Create("Button")
+        resetHidden:SetText(L["Reset Hidden"])
+
+        resetHidden:SetCallback("OnClick", function()
+            private.db.profile.bars[barID].hidden = private.defaults.bar.hidden
+            private:NotifyChange(content)
+        end)
+
+        local backdropGroup = AceGUI:Create("InlineGroup")
+        backdropGroup:SetTitle(L["Backdrop"])
+        backdropGroup:SetFullWidth(true)
+        backdropGroup:SetLayout("Flow")
+
+        -- Backdrop >>
+        local enableBackdrop = AceGUI:Create("CheckBox")
+        enableBackdrop:SetFullWidth(true)
+        enableBackdrop:SetLabel(L["Enable"])
+
+        enableBackdrop:SetCallback("OnValueChanged", function(_, _, value)
+            private.db.profile.bars[barID].backdrop.enabled = value
+            private.bars[barID]:SetBackdrop()
+        end)
+        enableBackdrop:SetUserData("NotifyChange", function()
+            enableBackdrop:SetValue(barDB.backdrop.enabled)
+        end)
+
+        local backdrop = AceGUI:Create("LSM30_Background")
+        backdrop:SetLabel(L["Background"])
+        backdrop:SetList(AceGUIWidgetLSMlists.background)
+
+        backdrop:SetCallback("OnValueChanged", function(_, _, value)
+            private.db.profile.bars[barID].backdrop.bgFile.bgFile = value
+            private:NotifyChange(backdropGroup)
+            private.bars[barID]:SetBackdrop()
+        end)
+        backdrop:SetUserData("NotifyChange", function()
+            backdrop:SetValue(barDB.backdrop.bgFile.bgFile)
+        end)
+
+        local bgColor = AceGUI:Create("ColorPicker")
+        bgColor:SetLabel(L["Background Color"])
+        bgColor:SetHasAlpha(true)
+
+        bgColor:SetCallback("OnValueConfirmed", function(_, _, ...)
+            private.db.profile.bars[barID].backdrop.bgColor = { ... }
+            private.bars[barID]:SetBackdrop()
+        end)
+        bgColor:SetCallback("OnValueChanged", function(_, _, ...)
+            private.bars[barID].frame:SetBackdropColor(...)
+        end)
+        bgColor:SetUserData("NotifyChange", function()
+            bgColor:SetColor(unpack(barDB.backdrop.bgColor))
+        end)
+
+        local border = AceGUI:Create("LSM30_Border")
+        border:SetLabel(L["Border"])
+        border:SetList(AceGUIWidgetLSMlists.border)
+
+        border:SetCallback("OnValueChanged", function(_, _, value)
+            private.db.profile.bars[barID].backdrop.bgFile.edgeFile = value
+            private:NotifyChange(backdropGroup)
+            private.bars[barID]:SetBackdrop()
+        end)
+        border:SetUserData("NotifyChange", function()
+            border:SetValue(barDB.backdrop.bgFile.edgeFile)
+        end)
+
+        local borderColor = AceGUI:Create("ColorPicker")
+        borderColor:SetLabel(L["Border Color"])
+        borderColor:SetHasAlpha(true)
+
+        borderColor:SetCallback("OnValueChanged", function(_, _, ...)
+            private.bars[barID].frame:SetBackdropBorderColor(...)
+        end)
+        borderColor:SetCallback("OnValueConfirmed", function(_, _, ...)
+            private.db.profile.bars[barID].backdrop.borderColor = { ... }
+            private.bars[barID]:SetBackdrop()
+        end)
+        borderColor:SetUserData("NotifyChange", function()
+            borderColor:SetColor(unpack(barDB.backdrop.borderColor))
+        end)
+        -- Backdrop <<
+
+        private:AddChildren(backdropGroup, enableBackdrop, backdrop, bgColor, border, borderColor)
+        private:AddChildren(content, alpha, scale, mouseover, showEmpty, hidden, resetHidden, backdropGroup)
     end
 
     private:NotifyChange(content)
@@ -95,8 +244,8 @@ function private:GetBarsOptions(treeGroup, subgroup)
         local tabGroup = AceGUI:Create("TabGroup")
         tabGroup:SetLayout("Fill")
         tabGroup:SetTabs({
-            { value = "general", text = "General" }, -- limitMats, alerts, label
-            { value = "appearance", text = "Appearance" }, -- backdrop, hidden, mouseover, alpha, scale
+            { value = "general", text = "General" },
+            { value = "appearance", text = "Appearance" },
             { value = "layout", text = "Layout" }, -- movable, point, buttonGrowth, barAnchor
             { value = "buttons", text = "Buttons" }, --buttontexture, numButtons, buttonsPerAxis, buttonSize, buttonPadding
         })
