@@ -75,6 +75,16 @@ local methods = {
         widget.frame:GetScript(event)(...)
     end,
 
+    Update = function(widget)
+        widget:SetBackdrop()
+        widget:SetPoints()
+        widget:LayoutButtons()
+        widget:SetHidden()
+        widget:SetMouseover()
+        widget:SetMovable()
+        widget:SetScale()
+    end,
+
     --[[ Frame ]]
     Hide = function(widget)
         widget.frame:Hide()
@@ -220,16 +230,6 @@ local methods = {
         widget:SetUserData("barID", barID)
         widget:DrawButtons()
         widget:Update()
-    end,
-
-    Update = function(widget)
-        widget:SetBackdrop()
-        widget:SetPoints()
-        widget:LayoutButtons()
-        widget:SetHidden()
-        widget:SetMouseover()
-        widget:SetMovable()
-        widget:SetScale()
     end,
 
     --[[ Buttons ]]

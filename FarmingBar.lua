@@ -5,7 +5,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 --[[ OnInitialize ]]
 function addon:OnInitialize()
     private:InitializeDatabase()
-    -- private:InitializeSlashCommands()
+    private:InitializeSlashCommands()
     private:InitializeTooltip()
 end
 
@@ -20,4 +20,7 @@ end
 
 --[[ StartDebug ]]
 function private:StartDebug()
+    C_Timer.After(1, function()
+        private:LoadOptions()
+    end)
 end

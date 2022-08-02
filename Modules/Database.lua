@@ -16,6 +16,16 @@ function private:InitializeDatabase()
             trackers = {},
         },
         bar = {
+            --[[ General ]]
+            label = "",
+            alerts = {
+                barProgress = false,
+                completedObjectives = true,
+                muteAll = false,
+            },
+            limitMats = false,
+
+            --[[ Appearance ]]
             backdrop = {
                 enabled = false,
                 bgFile = {
@@ -32,6 +42,21 @@ function private:InitializeDatabase()
                 texCoords = { 0, 1, 0, 1 },
             },
 
+            hidden = [[function()
+    return
+end]]        ,
+            mouseover = false,
+            alpha = 1,
+            scale = 1,
+            showEmpty = true,
+
+            --[[ Layout ]]
+            movable = true,
+            point = { "CENTER" },
+            buttonGrowth = "ROW", -- "ROW", "COL"
+            barAnchor = "TOPLEFT", -- "TOPLEFT", "TOPRIGHT", "BOTTOMLEFT", "BOTTOMRIGHT"
+
+            --[[ Buttons ]]
             buttons = {
             },
 
@@ -93,23 +118,10 @@ function private:InitializeDatabase()
                     blendMode = "ADD",
                 },
             },
-
-            movable = true,
-            point = { "CENTER" },
-
-            buttonGrowth = "ROW", -- "ROW", "COL"
-            barAnchor = "TOPLEFT", -- "TOPLEFT", "TOPRIGHT", "BOTTOMLEFT", "BOTTOMRIGHT"
             numButtons = 12,
             buttonsPerAxis = 12,
             buttonSize = 40,
             buttonPadding = 2,
-
-            hidden = [[function()
-    return
-end]]        ,
-            mouseover = false,
-            alpha = 1,
-            scale = 1,
         },
     }
 
@@ -120,6 +132,13 @@ end]]        ,
             },
             settings = {
                 useGameTooltip = false,
+                commands = {
+                    farmingbar = true,
+                    farmbar = true,
+                    farm = true,
+                    fbar = true,
+                    fb = false,
+                },
             },
         },
         profile = {

@@ -190,3 +190,18 @@ private.anchorPoints = {
         },
     }
 }
+
+
+function private:InitializeSlashCommands()
+    for command, enabled in pairs(private.db.global.settings.commands) do
+        if enabled then
+            addon:RegisterChatCommand(command, "HandleSlashCommand")
+        else
+            addon:UnregisterChatCommand(command)
+        end
+    end
+end
+
+function addon:HandleSlashCommand(input)
+    private:LoadOptions()
+end
