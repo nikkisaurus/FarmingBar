@@ -331,7 +331,124 @@ local function GetSkinsContent(barID, barDB, content)
     -- Backdrop <<
 
     private:AddChildren(backdropGroup, enableBackdrop, backdrop, bgColor, border, borderColor)
-    private:AddChildren(content, backdropGroup)
+
+    local buttonTextureGroup = AceGUI:Create("DropdownGroup")
+    buttonTextureGroup:SetTitle(L["Button Textures"])
+    buttonTextureGroup:SetFullWidth(true)
+    buttonTextureGroup:SetLayout("Flow")
+    buttonTextureGroup:SetGroupList({
+        backdrop = "BACKDROP",
+        gloss = "GLOSS",
+        normal = "NORMAL",
+        shadow = "SHADOW",
+        highlight = "HIGHLIGHT",
+        pushed = "PUSHED",
+        iconBorder = "ICONBORDER",
+    })
+    buttonTextureGroup:SetGroup()
+
+    buttonTextureGroup:SetCallback("OnGroupSelected", function(self, _, layerName)
+        self:ReleaseChildren()
+
+        local texture = AceGUI:Create("LSM30_Background")
+        texture:SetLabel(L["Texture"])
+        texture:SetList(AceGUIWidgetLSMlists.background)
+
+        texture:SetCallback("OnValueChanged", function(_, _, value)
+            private.db.profile.bars[barID].buttonTextures[layerName].texture = value
+            private:NotifyChange(self)
+            private.bars[barID]:UpdateButtonTextures()
+        end)
+        texture:SetUserData("NotifyChange", function()
+            texture:SetValue(barDB.buttonTextures[layerName].texture)
+        end)
+
+        local blendMode = AceGUI:Create("Dropdown")
+        blendMode:SetLabel(L["Blend Mode"])
+        blendMode:SetList({
+            DISABLE = "DISABLE",
+            BLEND = "BLEND",
+            ALPHAKEY = "ALPHAKEY",
+            ADD = "ADD",
+            MOD = "MOD",
+
+        })
+
+        blendMode:SetCallback("OnValueChanged", function(_, _, value)
+            private.db.profile.bars[barID].buttonTextures[layerName].blendMode = value
+            private.bars[barID]:UpdateButtonTextures()
+        end)
+        blendMode:SetUserData("NotifyChange", function()
+            blendMode:SetValue(barDB.buttonTextures[layerName].blendMode)
+        end)
+
+        local textureColor = AceGUI:Create("ColorPicker")
+        textureColor:SetLabel(L["Color"])
+        textureColor:SetHasAlpha(true)
+
+        textureColor:SetCallback("OnValueChanged", function(_, _, ...)
+            for _, button in pairs(private.bars[barID]:GetButtons()) do
+                button[layerName]:SetVertexColor(...)
+            end
+        end)
+        textureColor:SetCallback("OnValueConfirmed", function(_, _, ...)
+            private.db.profile.bars[barID].buttonTextures[layerName].color = { ... }
+            private.bars[barID]:UpdateButtonTextures()
+        end)
+        textureColor:SetUserData("NotifyChange", function()
+            textureColor:SetColor(unpack(barDB.buttonTextures[layerName].color))
+        end)
+
+        local texCoords = AceGUI:Create("InlineGroup")
+        texCoords:SetTitle(L["TexCoords"])
+        texCoords:SetFullWidth(true)
+        texCoords:SetLayout("Flow")
+
+        for i = 1, 4 do
+            local texCoord = AceGUI:Create("Slider")
+            texCoord:SetSliderValues(0, 1, .01)
+            texCoord:SetLabel(L.GetTexCoordID(i))
+
+            texCoord:SetCallback("OnValueChanged", function(_, _, value)
+                private.db.profile.bars[barID].buttonTextures[layerName].texCoords[i] = value
+                private.bars[barID]:UpdateButtonTextures()
+            end)
+            texCoord:SetUserData("NotifyChange", function()
+                texCoord:SetValue(barDB.buttonTextures[layerName].texCoords[i])
+            end)
+
+            private:AddChildren(texCoords, texCoord)
+        end
+
+        local insets = AceGUI:Create("InlineGroup")
+        insets:SetTitle(L["Insets"])
+        insets:SetFullWidth(true)
+        insets:SetLayout("Flow")
+
+        for i = 1, 4 do
+            local insetID = L.GetTexCoordID(i)
+            local inset = AceGUI:Create("Slider")
+            inset:SetSliderValues(-10, 10, 1)
+            inset:SetLabel(insetID)
+
+            inset:SetCallback("OnValueChanged", function(_, _, value)
+                private.db.profile.bars[barID].buttonTextures[layerName].insets[strlower(insetID)] = value
+                private.bars[barID]:UpdateButtonTextures()
+            end)
+            inset:SetUserData("NotifyChange", function()
+                inset:SetValue(barDB.buttonTextures[layerName].insets[strlower(insetID)])
+            end)
+
+            private:AddChildren(insets, inset)
+        end
+
+
+        private:AddChildren(self, texture, blendMode, textureColor, texCoords, insets)
+        private:NotifyChange(self)
+        content:DoLayout()
+    end)
+
+    private:AddChildren(content, backdropGroup, buttonTextureGroup)
 end
 
 --[[ Callbacks ]]

@@ -2,6 +2,7 @@ local addonName, private = ...
 local addon = LibStub("AceAddon-3.0"):GetAddon(addonName)
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 local AceGUI = LibStub("AceGUI-3.0")
+local LSM = LibStub("LibSharedMedia-3.0")
 
 --[[ Menus ]]
 local function GetTreeMenu()
@@ -79,4 +80,10 @@ function private:InitializeOptions()
     treeGroup:SetCallback("OnGroupSelected", treeGroup_OnGroupSelected)
 
     private:AddChildren(options, treeGroup)
+end
+
+--[[ Media ]]
+function private:RegisterMedia()
+    LSM:Register(LSM.MediaType.BACKGROUND, "UI EmptySlot White", [[INTERFACE\BUTTONS\UI-EMPTYSLOT-WHITE]])
+    LSM:Register(LSM.MediaType.BACKGROUND, "UI ActionButton Border", [[Interface\Buttons\UI-ActionButton-Border]])
 end

@@ -7,6 +7,7 @@ function addon:OnInitialize()
     private:InitializeDatabase()
     private:InitializeSlashCommands()
     private:InitializeTooltip()
+    private:RegisterMedia()
 end
 
 --[[ OnEnable ]]
@@ -20,7 +21,5 @@ end
 
 --[[ StartDebug ]]
 function private:StartDebug()
-    C_Timer.After(1, function()
-        private:LoadOptions()
-    end)
+    private:LoadOptions()
 end

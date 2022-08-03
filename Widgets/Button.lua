@@ -2,6 +2,7 @@ local addonName, private = ...
 local addon = LibStub("AceAddon-3.0"):GetAddon(addonName)
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 local AceGUI = LibStub("AceGUI-3.0")
+local LSM = LibStub("LibSharedMedia-3.0")
 
 local Type = "FarmingBar_Button"
 local Version = 1
@@ -66,7 +67,9 @@ local methods = {
 
         for layerName, textureInfo in pairs(barDB.buttonTextures) do
             local layer = widget[layerName]
-            layer:SetTexture(textureInfo.texture)
+            local texture = LSM:Fetch(LSM.MediaType.BACKGROUND, textureInfo.texture)
+            layer:SetTexture(texture)
+            layer:SetVertexColor(unpack(textureInfo.color))
             layer:SetTexCoord(unpack(textureInfo.texCoords))
             layer:SetBlendMode(textureInfo.blendMode)
 

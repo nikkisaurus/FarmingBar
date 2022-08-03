@@ -304,6 +304,12 @@ local methods = {
         local growRow = barDB.buttonGrowth == "ROW"
         widget:SetSize(growRow and width or height, growRow and height or width)
     end,
+
+    UpdateButtonTextures = function(widget)
+        for _, button in pairs(widget:GetButtons()) do
+            button:SetTextures()
+        end
+    end,
 }
 
 --[[ Constructor ]]

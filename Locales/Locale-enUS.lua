@@ -48,3 +48,19 @@ L["Buttons"] = true
 L["Buttons Per Axis"] = true
 L["Button Padding"] = true
 L["Button Size"] = true
+L["Button Textures"] = true
+L["Blend Mode"] = true
+L["TexCoords"] = true
+L["Texture"] = true
+L["Color"] = true
+L["Insets"] = true
+
+L.GetTexCoordID = function(id)
+    local ids = {
+        [1] = "Left",
+        [2] = "Right",
+        [3] = "Top",
+        [4] = "Bottom",
+    }
+    return ids[id]
+end
