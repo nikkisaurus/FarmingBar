@@ -79,7 +79,6 @@ local methods = {
     Update = function(widget)
         widget:SetBackdrop()
         widget:SetPoints()
-        widget:LayoutButtons()
         widget:SetHidden()
         widget:SetMouseover()
         widget:SetMovable()
@@ -161,10 +160,15 @@ local methods = {
         local barDB = widget:GetDB()
         local anchorInfo = private.anchorPoints.anchor[barDB.barAnchor]
 
+        widget:ClearAllPoints()
         widget:SetPoint(unpack(barDB.point))
+
+        widget.anchor:ClearAllPoints()
         widget.anchor:SetPoint(anchorInfo.anchor, widget.frame, anchorInfo.relAnchor,
             anchorInfo.xCo * barDB.buttonPadding,
             anchorInfo.yCo * barDB.buttonPadding)
+
+        widget:LayoutButtons()
     end,
 
     SetScale = function(widget)
@@ -255,8 +259,10 @@ local methods = {
                 tinsert(buttons, button)
             end
         elseif #buttons > barDB.numButtons then
-            -- TODO
-            print("Remove buttons")
+            for i = #buttons, barDB.numButtons + 1, -1 do
+                buttons[i]:Release()
+                tremove(buttons, i)
+            end
         end
     end,
 
@@ -266,9 +272,10 @@ local methods = {
 
         for buttonID, button in pairs(buttons) do
             local row = ceil(buttonID / barDB.buttonsPerAxis)
-            local newRow = mod(buttonID, barDB.buttonsPerAxis) == 1
+            local newRow = mod(buttonID, barDB.buttonsPerAxis) == 1 or barDB.buttonsPerAxis == 1
 
             button:ClearAllPoints()
+            button:SetSize(barDB.buttonSize, barDB.buttonSize)
 
             if buttonID == 1 then
                 local anchorInfo = private.anchorPoints[barDB.buttonGrowth].button1[barDB.barAnchor]
@@ -316,7 +323,7 @@ local function Constructor()
     local anchor = CreateFrame("Button", nil, frame, "BackdropTemplate")
     anchor:SetNormalTexture([[INTERFACE\ADDONS\FARMINGBAR\MEDIA\UNLOCK]])
     anchor:SetFrameStrata("MEDIUM")
-    anchor:SetFrameLevel(1)
+    anchor:SetFrameLevel(2)
     anchor:SetMovable(true)
     anchor:RegisterForDrag("LeftButton")
     anchor:SetClampedToScreen(true)

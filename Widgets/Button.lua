@@ -139,6 +139,9 @@ local methods = {
         local barDB, buttonDB = widget:GetDB()
         widget:SetSize(barDB.buttonSize)
     end,
+
+    SetCount = function(widget)
+    end,
 }
 
 --[[ Constructor ]]
@@ -189,6 +192,7 @@ local function Constructor()
     --[[ Widget ]]
     local widget = {
         frame = frame,
+        count = count,
         backdrop = backdrop,
         gloss = gloss,
         icon = icon,

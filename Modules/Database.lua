@@ -4,17 +4,25 @@ local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 
 function private:InitializeDatabase()
     private.defaults = {
+        maxButtons = 72,
+        minPadding = -3,
+        maxPadding = 20,
+        minButtonSize = 25,
+        maxButtonSize = 64,
+
         tooltip_desc = { 1, 1, 1, 1, 1, 1, 1 },
         tooltip_keyvalue = { 1, 0.82, 0, 1, 1, 1, 1 },
+
         button = {
-            iconID = 1053367,
-            itemQuality = 6,
+            iconID = 134400,
+            itemQuality = 0,
             action = "NONE", -- "CURRENCY", "ITEM", "MACROTEXT", "NONE"
             actionInfo = "",
             condition = "ALL", -- "ALL", "ANY", "CUSTOM"
             customCondition = "",
             trackers = {},
         },
+
         bar = {
             --[[ General ]]
             label = "",
@@ -120,7 +128,7 @@ end]]        ,
                 },
             },
             numButtons = 12,
-            buttonsPerAxis = 12,
+            buttonsPerAxis = 6,
             buttonSize = 40,
             buttonPadding = 2,
         },
@@ -148,7 +156,7 @@ end]]        ,
                 private.defaults.bar,
             },
         },
-    })
+    }, true)
 
     addon:SetEnabledState(private.db.profile.enabled)
 end
