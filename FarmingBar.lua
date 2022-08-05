@@ -6,17 +6,18 @@ local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 function addon:OnInitialize()
     private:InitializeDatabase()
     private:InitializeSlashCommands()
-    private:InitializeTooltip()
     private:RegisterMedia()
 end
 
 --[[ OnEnable ]]
 function addon:OnEnable()
+    private:InitializeTooltip()
+    private:InitializeMasque()
+    private:InitializeBars()
+
     if private.db.global.debug.enabled then
         C_Timer.After(1, private.StartDebug)
     end
-
-    private:InitializeBars()
 end
 
 --[[ StartDebug ]]

@@ -111,3 +111,22 @@ function private:RegisterMedia()
     LSM:Register(LSM.MediaType.BACKGROUND, "UI EmptySlot White", [[INTERFACE\BUTTONS\UI-EMPTYSLOT-WHITE]])
     LSM:Register(LSM.MediaType.BACKGROUND, "UI ActionButton Border", [[Interface\Buttons\UI-ActionButton-Border]])
 end
+
+--[[ Masque Support ]]
+local function MSQ_Callback(...)
+    for _, bar in pairs(private.bars) do
+        bar:UpdateButtonTextures(select(7, ...))
+    end
+end
+
+function private:InitializeMasque()
+    local MSQ, MSQVersion = LibStub("Masque", true)
+
+    if MSQ and MSQVersion >= 90002 then
+        private.MSQ = {
+            button = MSQ:Group(L.addonName),
+        }
+
+        private.MSQ.button:SetCallback(MSQ_Callback)
+    end
+end

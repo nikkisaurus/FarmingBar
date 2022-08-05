@@ -62,25 +62,39 @@ local methods = {
     end,
 
     --[[ Textures ]]
-    SetTextures = function(widget)
+    SetTextures = function(widget, noMSQ)
         local barDB = widget:GetDB()
 
         for layerName, textureInfo in pairs(barDB.buttonTextures) do
             local layer = widget[layerName]
             local texture = LSM:Fetch(LSM.MediaType.BACKGROUND, textureInfo.texture)
-            layer:SetTexture(texture)
-            layer:SetVertexColor(addon.unpack(textureInfo.color, { 1, 1, 1, 1 }))
-            layer:SetTexCoord(addon.unpack(textureInfo.texCoords, { 0, 1, 0, 1 }))
-            layer:SetBlendMode(textureInfo.blendMode)
-            layer:SetDrawLayer(textureInfo.drawLayer, textureInfo.layer)
 
-            if textureInfo.insets then
-                layer:SetPoint("LEFT", textureInfo.insets.left, 0)
-                layer:SetPoint("RIGHT", textureInfo.insets.right, 0)
-                layer:SetPoint("TOP", 0, textureInfo.insets.top)
-                layer:SetPoint("BOTTOM", 0, textureInfo.insets.bottom)
-            else
+            layer:ClearAllPoints()
+
+            if private.MSQ and not noMSQ then
+                layer:SetTexture()
+                layer:SetVertexColor(1, 1, 1, 1)
+                layer:SetTexCoord(0, 1, 0, 1)
                 layer:SetAllPoints(widget.frame)
+
+                private.MSQ.button:AddButton(widget.frame)
+                private.MSQ.button:ReSkin(true)
+
+            else
+                layer:SetTexture(texture)
+                layer:SetVertexColor(addon.unpack(textureInfo.color, { 1, 1, 1, 1 }))
+                layer:SetTexCoord(addon.unpack(textureInfo.texCoords, { 0, 1, 0, 1 }))
+                layer:SetBlendMode(textureInfo.blendMode)
+                layer:SetDrawLayer(textureInfo.drawLayer, textureInfo.layer)
+
+                if textureInfo.insets then
+                    layer:SetPoint("LEFT", textureInfo.insets.left, 0)
+                    layer:SetPoint("RIGHT", textureInfo.insets.right, 0)
+                    layer:SetPoint("TOP", 0, textureInfo.insets.top)
+                    layer:SetPoint("BOTTOM", 0, textureInfo.insets.bottom)
+                else
+                    layer:SetAllPoints(widget.frame)
+                end
             end
         end
 
@@ -160,17 +174,17 @@ local function Constructor()
     frame:EnableMouse(true)
     frame:RegisterForDrag("LeftButton")
 
-    local backdrop = frame:CreateTexture()
+    local backdrop = frame:CreateTexture("$parentBackdrop")
     -- -- local cooldown
-    local count = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-    local gloss = frame:CreateTexture()
-    local highlight = frame:CreateTexture()
-    local icon = frame:CreateTexture()
-    local iconBorder = frame:CreateTexture()
-    local mask = frame:CreateTexture()
-    local normal = frame:CreateTexture()
-    local pushed = frame:CreateTexture()
-    local shadow = frame:CreateTexture()
+    local count = frame:CreateFontString("$parentCount", "OVERLAY", "GameFontHighlight")
+    local gloss = frame:CreateTexture("$parentGloss")
+    local highlight = frame:CreateTexture("$parentHighlight")
+    local icon = frame:CreateTexture("$parentIcon")
+    local iconBorder = frame:CreateTexture("$parentIconBorder")
+    local mask = frame:CreateTexture("$parentMask")
+    local normal = frame:CreateTexture("$parentNormal")
+    local pushed = frame:CreateTexture("$parentPushed")
+    local shadow = frame:CreateTexture("$parentShadow")
 
     for script, func in pairs(scripts) do
         frame:SetScript(script, func)
