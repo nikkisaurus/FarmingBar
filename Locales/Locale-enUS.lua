@@ -62,6 +62,7 @@ L["Display"] = true
 L["Are you sure you want to reset this texture?"] = true
 L["Confirm"] = true
 L["Are you sure you want to reset this bar's hidden function?"] = true
+L["Button textures may be controlled by Masque and must be disabled through its settings for these to be applied."] = true
 
 L.GetTexCoordID = function(id)
     local ids = {

@@ -341,6 +341,18 @@ local function GetSkinsContent(barID, barDB, content)
     end)
 
     private:AddChildren(backdropGroup, enableBackdrop, backdrop, bgColor, border, borderColor)
+    private:AddChildren(content, backdropGroup)
+
+    if private.MSQ then
+        local MSQWarning = AceGUI:Create("Label")
+        MSQWarning:SetFullWidth(true)
+        MSQWarning:SetColor(1, 0, 0)
+        MSQWarning:SetText(L[
+            "Button textures may be controlled by Masque and must be disabled through its settings for these to be applied."
+            ])
+
+        private:AddChildren(content, MSQWarning)
+    end
 
     local buttonTextureGroup = AceGUI:Create("DropdownGroup")
     buttonTextureGroup:SetTitle(L["Button Textures"])
@@ -504,7 +516,7 @@ local function GetSkinsContent(barID, barDB, content)
         content:DoLayout()
     end)
 
-    private:AddChildren(content, backdropGroup, buttonTextureGroup)
+    private:AddChildren(content, buttonTextureGroup)
 end
 
 --[[ Callbacks ]]
