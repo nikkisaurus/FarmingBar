@@ -62,7 +62,7 @@ local methods = {
     end,
 
     --[[ Textures ]]
-    SetTextures = function(widget, noMSQ)
+    SetTextures = function(widget)
         local barDB = widget:GetDB()
 
         for layerName, textureInfo in pairs(barDB.buttonTextures) do
@@ -71,11 +71,12 @@ local methods = {
 
             layer:ClearAllPoints()
 
-            if private.MSQ and not noMSQ then
+            if private.MSQ and not private.MSQ.button.db.Disabled then
                 layer:SetTexture()
                 layer:SetVertexColor(1, 1, 1, 1)
                 layer:SetTexCoord(0, 1, 0, 1)
                 layer:SetAllPoints(widget.frame)
+                layer:Show()
 
                 private.MSQ.button:AddButton(widget.frame)
                 private.MSQ.button:ReSkin(true)
@@ -86,6 +87,12 @@ local methods = {
                 layer:SetTexCoord(addon.unpack(textureInfo.texCoords, { 0, 1, 0, 1 }))
                 layer:SetBlendMode(textureInfo.blendMode)
                 layer:SetDrawLayer(textureInfo.drawLayer, textureInfo.layer)
+
+                if textureInfo.hidden then
+                    layer:Hide()
+                else
+                    layer:Show()
+                end
 
                 if textureInfo.insets then
                     layer:SetPoint("LEFT", textureInfo.insets.left, 0)
@@ -102,15 +109,23 @@ local methods = {
     end,
 
     SetIconTextures = function(widget)
-        local isEmpty, buttonDB = widget:IsEmpty()
+        local barDB, buttonDB = widget:GetDB()
+        local isEmpty = widget:IsEmpty()
 
         if isEmpty then
             widget.icon:SetTexture()
             widget.iconBorder:Hide()
         else
-            widget.icon:SetTexture(buttonDB.iconID)
-            widget.iconBorder:Show()
-            widget.iconBorder:SetVertexColor(GetItemQualityColor(buttonDB.itemQuality))
+            -- local itemID = buttonDB.icon.action
+            -- private:CacheItem(itemID)
+            -- local _, _, rarity, _, _, _, _, _, _, icon = GetItemInfo(itemID)
+
+
+            -- widget.icon:SetTexture(icon)
+            -- if not barDB.buttonTextures.iconBorder.hidden then
+            --     widget.iconBorder:Show()
+            -- end
+            -- widget.iconBorder:SetVertexColor(GetItemQualityColor(rarity))
         end
     end,
 

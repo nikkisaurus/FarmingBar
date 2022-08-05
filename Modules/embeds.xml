@@ -3,5 +3,6 @@
     <Include file="Tooltips.lua"/>
     <Include file="Core.lua"/>
     <Include file="Bars.lua"/>
+    <Include file="ObjectiveTemplates.lua"/>
     <Include file="Options\embeds.xml"/>
 </Ui>

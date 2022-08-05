@@ -205,3 +205,47 @@ end
 function addon:HandleSlashCommand(input)
     private:LoadOptions()
 end
+
+private.CacheItemCo = function(itemID)
+    C_Timer.NewTicker(0.1, function(self)
+        if GetItemInfo(itemID) then
+            self:Cancel()
+            return
+        end
+    end)
+    coroutine.yield(itemID)
+end
+
+function private:CacheItem(itemID)
+    local co = coroutine.create(private.CacheItemCo)
+    local _, cachedItemID = coroutine.resume(co, itemID)
+    while not cachedItemID do
+        _, cachedItemID = coroutine.resume(co, itemID)
+    end
+end
+
+function private:ValidateItem(itemID)
+    local _, itemLink = GetItemInfo(itemID)
+    if itemLink then
+        local itemString = select(3, strfind(itemLink, "|H(.+)|h"))
+        local _, itemId = strsplit(":", itemString)
+        return tonumber(itemId)
+    end
+end
+
+function private:IncrementString(str, obj, validateFunc)
+    local func = validateFunc and obj[validateFunc] or _G[validateFunc]
+    if func(obj, str) then
+        local i = 2
+        while true do
+            local newStr = format("%s %d", str, i)
+
+            if not func(obj, newStr) then
+                return newStr
+            else
+                i = i + 1
+            end
+        end
+
+    end
+end

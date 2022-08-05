@@ -305,9 +305,9 @@ local methods = {
         widget:SetSize(growRow and width or height, growRow and height or width)
     end,
 
-    UpdateButtonTextures = function(widget, noMSQ)
+    UpdateButtonTextures = function(widget)
         for _, button in pairs(widget:GetButtons()) do
-            button:SetTextures(noMSQ)
+            button:SetTextures()
         end
     end,
 }

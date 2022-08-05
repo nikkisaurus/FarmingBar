@@ -66,6 +66,23 @@ local function GetAppearanceContent(barID, barDB, content)
     hidden:SetFullWidth(true)
     hidden:SetLabel(L["Hidden"])
 
+    hidden:SetCallback("OnEnterPressed", function(_, _, text)
+        local err
+        local func = loadstring("return " .. text)
+        if type(func) == "function" then
+            local success, userFunc = pcall(func)
+            if success and type(userFunc) == "function" then
+                private.db.profile.bars[barID].hidden = text
+                private.bars[barID]:SetHidden()
+            else
+                err = L["Hidden must be a function returning a boolean value."]
+            end
+        else
+            err = L["Hidden must be a function returning a boolean value."]
+        end
+        private.options:SetStatusText(err)
+    end)
+
     -- TODO: Implement OnEnterPressed with function validation
 
     hidden:SetUserData("NotifyChange", function()
@@ -452,6 +469,17 @@ local function GetSkinsContent(barID, barDB, content)
             textureColor:SetColor(unpack(barDB.buttonTextures[layerName].color))
         end)
 
+        local hidden = AceGUI:Create("CheckBox")
+        hidden:SetLabel(L["Hidden"])
+
+        hidden:SetCallback("OnValueChanged", function(_, _, value)
+            private.db.profile.bars[barID].buttonTextures[layerName].hidden = value
+            private.bars[barID]:UpdateButtonTextures()
+        end)
+        hidden:SetUserData("NotifyChange", function()
+            hidden:SetValue(barDB.buttonTextures[layerName].hidden)
+        end)
+
         local texCoords = AceGUI:Create("InlineGroup")
         texCoords:SetTitle(L["TexCoords"])
         texCoords:SetFullWidth(true)
@@ -509,14 +537,21 @@ local function GetSkinsContent(barID, barDB, content)
 
         if layerName == "icon" then
             private:AddChildren(self, blendMode, drawLayer, layer, textureColor, texCoords, insets, reset)
+        elseif layerName == "iconBorder" then
+            private:AddChildren(self, texture, blendMode, drawLayer, layer, hidden, texCoords, insets, reset)
         else
-            private:AddChildren(self, texture, blendMode, drawLayer, layer, textureColor, texCoords, insets, reset)
+            private:AddChildren(self, texture, blendMode, drawLayer, layer, textureColor, hidden, texCoords, insets,
+                reset)
         end
         private:NotifyChange(self)
         content:DoLayout()
     end)
 
     private:AddChildren(content, buttonTextureGroup)
+end
+
+local function GetManageContent(barID, barDB, content)
+
 end
 
 --[[ Callbacks ]]
@@ -533,6 +568,8 @@ local function tabGroup_OnGroupSelected(tabGroup, _, group)
         GetAppearanceContent(barID, barDB, content)
     elseif group == "skins" then
         GetSkinsContent(barID, barDB, content)
+    elseif group == "manage" then
+        GetManageContent(barID, barDB, content)
     end
 
     private:NotifyChange(content)
@@ -546,9 +583,10 @@ function private:GetBarsOptions(treeGroup, subgroup)
         local tabGroup = AceGUI:Create("TabGroup")
         tabGroup:SetLayout("Fill")
         tabGroup:SetTabs({
-            { value = "general", text = "General" },
-            { value = "appearance", text = "Appearance" },
-            { value = "skins", text = "Skins" },
+            { value = "general", text = L["General"] },
+            { value = "appearance", text = L["Appearance"] },
+            { value = "skins", text = L["Skins"] },
+            { value = "manage", text = L["Manage"] },
         })
         tabGroup:SetUserData("barID", tonumber(gsub(subgroup, "bar", "") or ""))
         tabGroup:SetCallback("OnGroupSelected", tabGroup_OnGroupSelected)

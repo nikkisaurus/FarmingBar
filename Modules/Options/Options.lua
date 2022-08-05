@@ -12,6 +12,10 @@ local function GetTreeMenu()
             text = L["Bars"],
             children = {},
         },
+        {
+            value = "Objectives",
+            text = L["Objective Templates"],
+        },
     }
 
     for barID, _ in pairs(private.db.profile.bars) do
@@ -21,12 +25,23 @@ local function GetTreeMenu()
         })
     end
 
+    if addon.tcount(private.db.global.objectives) > 0 then
+        menu[2].children = {}
+    end
+    for objectiveTitle, _ in pairs(private.db.global.objectives) do
+        tinsert(menu[2].children, {
+            value = objectiveTitle,
+            text = objectiveTitle
+        })
+    end
+
     return menu
 end
 
 --[[ Callbacks ]]
 local function treeGroup_OnGroupSelected(treeGroup, _, path)
     local group, subgroup = strsplit("\001", path)
+    treeGroup:ReleaseChildren()
     private["Get" .. group .. "Options"](private, treeGroup, subgroup)
 end
 
@@ -84,12 +99,20 @@ function private:NotifyChange(parent)
     end
 end
 
+function private:UpdateMenu(widget)
+    local UpdateMenu = widget:GetUserData("UpdateMenu")
+    if UpdateMenu then
+        UpdateMenu()
+    end
+end
+
 function private:LoadOptions()
     if not private.options then
         private:InitializeOptions()
     end
 
     private.options:Show()
+    private:UpdateMenu(private.options:GetUserData("menu"))
 end
 
 function private:InitializeOptions()
@@ -100,8 +123,13 @@ function private:InitializeOptions()
     private.options = options
 
     local treeGroup = AceGUI:Create("TreeGroup")
-    treeGroup:SetTree(GetTreeMenu())
+    -- treeGroup:SetTree(GetTreeMenu())
+
     treeGroup:SetCallback("OnGroupSelected", treeGroup_OnGroupSelected)
+    treeGroup:SetUserData("UpdateMenu", function()
+        treeGroup:SetTree(GetTreeMenu())
+    end)
+    options:SetUserData("menu", treeGroup)
 
     private:AddChildren(options, treeGroup)
 end
@@ -115,7 +143,7 @@ end
 --[[ Masque Support ]]
 local function MSQ_Callback(...)
     for _, bar in pairs(private.bars) do
-        bar:UpdateButtonTextures(select(7, ...))
+        bar:UpdateButtonTextures()
     end
 end
 

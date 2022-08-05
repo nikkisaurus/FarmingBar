@@ -13,14 +13,30 @@ function private:InitializeDatabase()
         tooltip_desc = { 1, 1, 1, 1, 1, 1, 1 },
         tooltip_keyvalue = { 1, 0.82, 0, 1, 1, 1, 1 },
 
-        button = {
-            iconID = 134400,
-            itemQuality = 0,
-            action = "NONE", -- "CURRENCY", "ITEM", "MACROTEXT", "NONE"
-            actionInfo = "",
-            condition = "ALL", -- "ALL", "ANY", "CUSTOM"
-            customCondition = "",
-            trackers = {},
+        objective = {
+            icon = {
+                type = "AUTO", -- "AUTO", "FALLBACK"
+                id = 134400,
+            },
+            onUse = {
+                type = "NONE", -- "ITEM", "NONE", "MACROTEXT"
+                -- action = false,
+                action = 6948,
+            },
+            condition = {
+                type = "ALL", -- "ALL", "ANY", "CUSTOM"
+                func = [[function()
+end]]            ,
+            },
+            trackers = {
+                {
+                    type = "CURRENCY", -- "ITEM", "CURRENCY"
+                    -- id = false,
+                    id = 1979,
+                    objective = 1,
+                    altIDs = {}
+                }
+            },
         },
 
         bar = {
@@ -67,15 +83,7 @@ end]]        ,
 
             --[[ Buttons ]]
             buttons = {
-                {
-                    iconID = 134400,
-                    itemQuality = 1,
-                    action = "NONE", -- "CURRENCY", "ITEM", "MACROTEXT", "NONE"
-                    actionInfo = "",
-                    condition = "ALL", -- "ALL", "ANY", "CUSTOM"
-                    customCondition = "",
-                    trackers = {},
-                },
+
             },
 
             buttonTextures = {
@@ -87,6 +95,7 @@ end]]        ,
                     insets = { left = 0, right = 0, top = 0, bottom = 0 },
                     drawLayer = "BACKGROUND",
                     layer = -1,
+                    hidden = false,
                 },
                 gloss = {
                     texture = "None",
@@ -96,6 +105,7 @@ end]]        ,
                     insets = { left = 0, right = 0, top = 0, bottom = 0 },
                     drawLayer = "OVERLAY",
                     layer = 0,
+                    hidden = false,
                 },
                 icon = {
                     texture = "None",
@@ -105,6 +115,7 @@ end]]        ,
                     insets = { left = 0, right = 0, top = 0, bottom = 0 },
                     drawLayer = "ARTWORK",
                     layer = 1,
+                    hidden = false,
                 },
                 normal = {
                     texture = "UI EmptySlot White",
@@ -114,6 +125,7 @@ end]]        ,
                     insets = { left = 0, right = 0, top = 0, bottom = 0 },
                     drawLayer = "ARTWORK",
                     layer = 0,
+                    hidden = false,
                 },
                 shadow = {
                     texture = "None",
@@ -123,6 +135,7 @@ end]]        ,
                     insets = { left = 0, right = 0, top = 0, bottom = 0 },
                     drawLayer = "ARTWORK",
                     layer = -1,
+                    hidden = false,
                 },
                 highlight = {
                     texture = "UI EmptySlot White",
@@ -132,6 +145,7 @@ end]]        ,
                     insets = { left = 0, right = 0, top = 0, bottom = 0 },
                     drawLayer = "HIGHLIGHT",
                     layer = 0,
+                    hidden = false,
                 },
                 pushed = {
                     texture = "UI EmptySlot White",
@@ -141,6 +155,7 @@ end]]        ,
                     insets = { left = 0, right = 0, top = 0, bottom = 0 },
                     drawLayer = "ARTWORK",
                     layer = 0,
+                    hidden = false,
                 },
                 iconBorder = {
                     texture = "UI ActionButton Border",
@@ -150,6 +165,7 @@ end]]        ,
                     insets = { left = 0, right = 0, top = 0, bottom = 0 },
                     drawLayer = "OVERLAY",
                     layer = 1,
+                    hidden = false,
                 },
             },
             numButtons = 12,
@@ -163,7 +179,7 @@ end]]        ,
         global = {
             debug = {
                 enabled = false,
-                enabled = true,
+                -- enabled = true,
             },
             settings = {
                 useGameTooltip = false,
@@ -175,6 +191,9 @@ end]]        ,
                     fb = false,
                 },
             },
+            objectives = {
+                Test = private.defaults.objective
+            }
         },
         profile = {
             enabled = true,
