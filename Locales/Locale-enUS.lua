@@ -57,6 +57,11 @@ L["Insets"] = true
 L["Reset to Default"] = true
 L["Draw Layer"] = true
 L["Layer"] = true
+L["Layout"] = true
+L["Display"] = true
+L["Are you sure you want to reset this texture?"] = true
+L["Confirm"] = true
+L["Are you sure you want to reset this bar's hidden function?"] = true
 
 L.GetTexCoordID = function(id)
     local ids = {

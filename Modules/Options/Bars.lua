@@ -5,6 +5,11 @@ local AceGUI = LibStub("AceGUI-3.0")
 
 --[[ Content ]]
 local function GetAppearanceContent(barID, barDB, content)
+    local displayGroup = AceGUI:Create("InlineGroup")
+    displayGroup:SetTitle(L["Display"])
+    displayGroup:SetFullWidth(true)
+    displayGroup:SetLayout("Flow")
+
     local alpha = AceGUI:Create("Slider")
     alpha:SetSliderValues(0, 1, 0.1)
     alpha:SetLabel(L["Alpha"])
@@ -28,6 +33,61 @@ local function GetAppearanceContent(barID, barDB, content)
     scale:SetUserData("NotifyChange", function()
         scale:SetValue(barDB.scale)
     end)
+
+    local mouseover = AceGUI:Create("CheckBox")
+    mouseover:SetRelativeWidth(0.9)
+    mouseover:SetLabel(L["Mouseover"])
+    private:SetOptionTooltip(mouseover, L["Show this bar only on mouseover."])
+    mouseover:SetDescription(L["Show this bar only on mouseover."])
+
+    mouseover:SetCallback("OnValueChanged", function(_, _, value)
+        private.db.profile.bars[barID].mouseover = value
+        private.bars[barID]:SetMouseover()
+    end)
+    mouseover:SetUserData("NotifyChange", function()
+        mouseover:SetValue(barDB.mouseover)
+    end)
+
+    local showEmpty = AceGUI:Create("CheckBox")
+    showEmpty:SetRelativeWidth(0.9)
+    showEmpty:SetLabel(L["Show Empty"])
+    private:SetOptionTooltip(showEmpty, L["Shows a backdrop on empty buttons."])
+    showEmpty:SetDescription(L["Shows a backdrop on empty buttons."])
+
+    showEmpty:SetCallback("OnValueChanged", function(_, _, value)
+        private.db.profile.bars[barID].showEmpty = value
+        private.bars[barID]:SetMouseover()
+    end)
+    showEmpty:SetUserData("NotifyChange", function()
+        showEmpty:SetValue(barDB.showEmpty)
+    end)
+
+    local hidden = AceGUI:Create("MultiLineEditBox")
+    hidden:SetFullWidth(true)
+    hidden:SetLabel(L["Hidden"])
+
+    -- TODO: Implement OnEnterPressed with function validation
+
+    hidden:SetUserData("NotifyChange", function()
+        hidden:SetText(barDB.hidden)
+    end)
+
+    local resetHidden = AceGUI:Create("Button")
+    resetHidden:SetText(L["Reset Hidden"])
+
+    resetHidden:SetCallback("OnClick", function()
+        private:ShowConfirmationDialog(L["Are you sure you want to reset this bar's hidden function?"], function()
+            private.db.profile.bars[barID].hidden = private.defaults.bar.hidden
+            private:NotifyChange(content)
+        end)
+    end)
+
+    private:AddChildren(displayGroup, alpha, scale, mouseover, showEmpty, hidden, resetHidden)
+
+    local layoutGroup = AceGUI:Create("InlineGroup")
+    layoutGroup:SetTitle(L["Layout"])
+    layoutGroup:SetFullWidth(true)
+    layoutGroup:SetLayout("Flow")
 
     local barAnchor = AceGUI:Create("Dropdown")
     barAnchor:SetLabel(L["Bar Anchor"])
@@ -74,59 +134,13 @@ local function GetAppearanceContent(barID, barDB, content)
         movable:SetValue(barDB.movable)
     end)
 
-    local mouseover = AceGUI:Create("CheckBox")
-    mouseover:SetRelativeWidth(0.9)
-    mouseover:SetLabel(L["Mouseover"])
-    private:SetOptionTooltip(mouseover, L["Show this bar only on mouseover."])
-    mouseover:SetDescription(L["Show this bar only on mouseover."])
+    private:AddChildren(layoutGroup, barAnchor, buttonGrowth, movable)
 
-    mouseover:SetCallback("OnValueChanged", function(_, _, value)
-        private.db.profile.bars[barID].mouseover = value
-        private.bars[barID]:SetMouseover()
-    end)
-    mouseover:SetUserData("NotifyChange", function()
-        mouseover:SetValue(barDB.mouseover)
-    end)
+    local buttonsGroup = AceGUI:Create("InlineGroup")
+    buttonsGroup:SetTitle(L["Buttons"])
+    buttonsGroup:SetFullWidth(true)
+    buttonsGroup:SetLayout("Flow")
 
-    local showEmpty = AceGUI:Create("CheckBox")
-    showEmpty:SetRelativeWidth(0.9)
-    showEmpty:SetLabel(L["Show Empty"])
-    private:SetOptionTooltip(showEmpty, L["Shows a backdrop on empty buttons."])
-    showEmpty:SetDescription(L["Shows a backdrop on empty buttons."])
-
-    showEmpty:SetCallback("OnValueChanged", function(_, _, value)
-        private.db.profile.bars[barID].showEmpty = value
-        private.bars[barID]:SetMouseover()
-    end)
-    showEmpty:SetUserData("NotifyChange", function()
-        showEmpty:SetValue(barDB.showEmpty)
-    end)
-
-    local hidden = AceGUI:Create("MultiLineEditBox")
-    hidden:SetFullWidth(true)
-    hidden:SetLabel(L["Hidden"])
-
-    -- TODO: Implement OnEnterPressed with function validation
-
-    hidden:SetUserData("NotifyChange", function()
-        hidden:SetText(barDB.hidden)
-    end)
-
-    -- TODO: Add confirmation for reset
-    local resetHidden = AceGUI:Create("Button")
-    resetHidden:SetText(L["Reset Hidden"])
-
-    resetHidden:SetCallback("OnClick", function()
-        private.db.profile.bars[barID].hidden = private.defaults.bar.hidden
-        private:NotifyChange(content)
-    end)
-
-    private:AddChildren(content, alpha, scale, barAnchor, buttonGrowth,
-        movable, mouseover, showEmpty, hidden, resetHidden)
-end
-
-local function GetButtonsContent(barID, barDB, content)
-    --buttontexture, numButtons, buttonsPerAxis, buttonSize, buttonPadding
     local numButtons = AceGUI:Create("Slider")
     numButtons:SetSliderValues(1, private.defaults.maxButtons, 1)
     numButtons:SetLabel(L["Buttons"])
@@ -176,7 +190,8 @@ local function GetButtonsContent(barID, barDB, content)
         buttonSize:SetValue(barDB.buttonSize)
     end)
 
-    private:AddChildren(content, numButtons, buttonsPerAxis, buttonPadding, buttonSize)
+    private:AddChildren(buttonsGroup, numButtons, buttonsPerAxis, buttonPadding, buttonSize)
+    private:AddChildren(content, displayGroup, layoutGroup, buttonsGroup)
 end
 
 local function GetGeneralContent(barID, barDB, content)
@@ -187,11 +202,25 @@ local function GetGeneralContent(barID, barDB, content)
         label:SetText(barDB.label)
     end)
 
+    local limitMats = AceGUI:Create("CheckBox")
+    limitMats:SetRelativeWidth(0.9)
+    limitMats:SetLabel(L["Limit Mats"])
+    private:SetOptionTooltip(limitMats,
+        L["Objectives on this bar cannot use materials already accounted for by another objective on the same bar."])
+    limitMats:SetDescription(L[
+        "Objectives on this bar cannot use materials already accounted for by another objective on the same bar."])
+
+    limitMats:SetCallback("OnValueChanged", function(_, _, value)
+        private.db.profile.bars[barID].limitMats = value
+    end)
+    limitMats:SetUserData("NotifyChange", function()
+        limitMats:SetValue(barDB.limitMats)
+    end)
+
     local alertsGroup = AceGUI:Create("InlineGroup")
     alertsGroup:SetTitle(L["Alerts"])
     alertsGroup:SetFullWidth(true)
 
-    -- Alerts >>
     local barProgress = AceGUI:Create("CheckBox")
     barProgress:SetRelativeWidth(0.9)
     barProgress:SetLabel(L["Bar Progress"])
@@ -232,24 +261,7 @@ local function GetGeneralContent(barID, barDB, content)
     end)
 
     private:AddChildren(alertsGroup, barProgress, completedObjectives, muteAll)
-    -- Alerts <<
-
-    local limitMats = AceGUI:Create("CheckBox")
-    limitMats:SetRelativeWidth(0.9)
-    limitMats:SetLabel(L["Limit Mats"])
-    private:SetOptionTooltip(limitMats,
-        L["Objectives on this bar cannot use materials already accounted for by another objective on the same bar."])
-    limitMats:SetDescription(L[
-        "Objectives on this bar cannot use materials already accounted for by another objective on the same bar."])
-
-    limitMats:SetCallback("OnValueChanged", function(_, _, value)
-        private.db.profile.bars[barID].limitMats = value
-    end)
-    limitMats:SetUserData("NotifyChange", function()
-        limitMats:SetValue(barDB.limitMats)
-    end)
-
-    private:AddChildren(content, label, alertsGroup, limitMats)
+    private:AddChildren(content, label, limitMats, alertsGroup)
 end
 
 local function GetSkinsContent(barID, barDB, content)
@@ -258,7 +270,6 @@ local function GetSkinsContent(barID, barDB, content)
     backdropGroup:SetFullWidth(true)
     backdropGroup:SetLayout("Flow")
 
-    -- Backdrop >>
     local enableBackdrop = AceGUI:Create("CheckBox")
     enableBackdrop:SetFullWidth(true)
     enableBackdrop:SetLabel(L["Enable"])
@@ -328,7 +339,6 @@ local function GetSkinsContent(barID, barDB, content)
     borderColor:SetUserData("NotifyChange", function()
         borderColor:SetColor(unpack(barDB.backdrop.borderColor))
     end)
-    -- Backdrop <<
 
     private:AddChildren(backdropGroup, enableBackdrop, backdrop, bgColor, border, borderColor)
 
@@ -402,7 +412,7 @@ local function GetSkinsContent(barID, barDB, content)
         end)
 
         local layer = AceGUI:Create("Slider")
-        layer:SetSliderValues(-100, 100, 1)
+        layer:SetSliderValues(-8, 7, 1)
         layer:SetLabel(L["Layer"])
 
         layer:SetCallback("OnValueChanged", function(_, _, value)
@@ -477,10 +487,12 @@ local function GetSkinsContent(barID, barDB, content)
         reset:SetText(L["Reset to Default"])
 
         reset:SetCallback("OnClick", function()
-            private.db.profile.bars[barID].buttonTextures[layerName] = addon.CloneTable(private.defaults.bar.buttonTextures
-                [layerName])
-            private:NotifyChange(self)
-            private.bars[barID]:UpdateButtonTextures()
+            private:ShowConfirmationDialog(L["Are you sure you want to reset this texture?"], function()
+                private.db.profile.bars[barID].buttonTextures[layerName] = addon.CloneTable(private.defaults.bar.buttonTextures
+                    [layerName])
+                private:NotifyChange(self)
+                private.bars[barID]:UpdateButtonTextures()
+            end)
         end)
 
         if layerName == "icon" then
@@ -507,8 +519,6 @@ local function tabGroup_OnGroupSelected(tabGroup, _, group)
         GetGeneralContent(barID, barDB, content)
     elseif group == "appearance" then
         GetAppearanceContent(barID, barDB, content)
-    elseif group == "buttons" then
-        GetButtonsContent(barID, barDB, content)
     elseif group == "skins" then
         GetSkinsContent(barID, barDB, content)
     end
@@ -526,7 +536,6 @@ function private:GetBarsOptions(treeGroup, subgroup)
         tabGroup:SetTabs({
             { value = "general", text = "General" },
             { value = "appearance", text = "Appearance" },
-            { value = "buttons", text = "Buttons" },
             { value = "skins", text = "Skins" },
         })
         tabGroup:SetUserData("barID", tonumber(gsub(subgroup, "bar", "") or ""))

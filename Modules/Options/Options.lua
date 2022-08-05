@@ -31,6 +31,30 @@ local function treeGroup_OnGroupSelected(treeGroup, _, path)
 end
 
 --[[ Options ]]
+function private:ShowConfirmationDialog(msg, onAccept, onCancel, args1, args2)
+    StaticPopupDialogs["FARMINGBAR_CONFIRMATION_DIALOG"] = {
+        text = msg,
+        button1 = L["Confirm"],
+        button2 = CANCEL,
+        OnAccept = function()
+            if onAccept then
+                onAccept(addon.unpack(args1, {}))
+            end
+        end,
+        OnCancel = function()
+            if onCancel then
+                onCancel(addon.unpack(args2, {}))
+            end
+        end,
+        timeout = 0,
+        whileDead = true,
+        hideOnEscape = true,
+        preferredIndex = 3,
+    }
+
+    StaticPopup_Show("FARMINGBAR_CONFIRMATION_DIALOG")
+end
+
 function private:AddChildren(parent, ...)
     for _, child in pairs({ ... }) do
         parent:AddChild(child)
