@@ -54,6 +54,9 @@ L["TexCoords"] = true
 L["Texture"] = true
 L["Color"] = true
 L["Insets"] = true
+L["Reset to Default"] = true
+L["Draw Layer"] = true
+L["Layer"] = true
 
 L.GetTexCoordID = function(id)
     local ids = {

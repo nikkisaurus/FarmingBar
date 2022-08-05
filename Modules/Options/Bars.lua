@@ -339,11 +339,12 @@ local function GetSkinsContent(barID, barDB, content)
     buttonTextureGroup:SetGroupList({
         backdrop = "BACKDROP",
         gloss = "GLOSS",
-        normal = "NORMAL",
-        shadow = "SHADOW",
         highlight = "HIGHLIGHT",
-        pushed = "PUSHED",
+        icon = "ICON",
         iconBorder = "ICONBORDER",
+        normal = "NORMAL",
+        pushed = "PUSHED",
+        shadow = "SHADOW",
     })
     buttonTextureGroup:SetGroup()
 
@@ -380,6 +381,36 @@ local function GetSkinsContent(barID, barDB, content)
         end)
         blendMode:SetUserData("NotifyChange", function()
             blendMode:SetValue(barDB.buttonTextures[layerName].blendMode)
+        end)
+
+        local drawLayer = AceGUI:Create("Dropdown")
+        drawLayer:SetLabel(L["Draw Layer"])
+        drawLayer:SetList({
+            BACKGROUND = "BACKGROUND",
+            BORDER     = "BORDER",
+            ARTWORK    = "ARTWORK",
+            OVERLAY    = "OVERLAY",
+            HIGHLIGHT  = "HIGHLIGHT",
+        })
+
+        drawLayer:SetCallback("OnValueChanged", function(_, _, value)
+            private.db.profile.bars[barID].buttonTextures[layerName].drawLayer = value
+            private.bars[barID]:UpdateButtonTextures()
+        end)
+        drawLayer:SetUserData("NotifyChange", function()
+            drawLayer:SetValue(barDB.buttonTextures[layerName].drawLayer)
+        end)
+
+        local layer = AceGUI:Create("Slider")
+        layer:SetSliderValues(-100, 100, 1)
+        layer:SetLabel(L["Layer"])
+
+        layer:SetCallback("OnValueChanged", function(_, _, value)
+            private.db.profile.bars[barID].buttonTextures[layerName].layer = value
+            private.bars[barID]:UpdateButtonTextures()
+        end)
+        layer:SetUserData("NotifyChange", function()
+            layer:SetValue(barDB.buttonTextures[layerName].layer)
         end)
 
         local textureColor = AceGUI:Create("ColorPicker")
@@ -442,8 +473,21 @@ local function GetSkinsContent(barID, barDB, content)
             private:AddChildren(insets, inset)
         end
 
+        local reset = AceGUI:Create("Button")
+        reset:SetText(L["Reset to Default"])
 
-        private:AddChildren(self, texture, blendMode, textureColor, texCoords, insets)
+        reset:SetCallback("OnClick", function()
+            private.db.profile.bars[barID].buttonTextures[layerName] = addon.CloneTable(private.defaults.bar.buttonTextures
+                [layerName])
+            private:NotifyChange(self)
+            private.bars[barID]:UpdateButtonTextures()
+        end)
+
+        if layerName == "icon" then
+            private:AddChildren(self, blendMode, drawLayer, layer, textureColor, texCoords, insets, reset)
+        else
+            private:AddChildren(self, texture, blendMode, drawLayer, layer, textureColor, texCoords, insets, reset)
+        end
         private:NotifyChange(self)
         content:DoLayout()
     end)

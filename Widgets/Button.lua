@@ -69,9 +69,10 @@ local methods = {
             local layer = widget[layerName]
             local texture = LSM:Fetch(LSM.MediaType.BACKGROUND, textureInfo.texture)
             layer:SetTexture(texture)
-            layer:SetVertexColor(unpack(textureInfo.color))
-            layer:SetTexCoord(unpack(textureInfo.texCoords))
+            layer:SetVertexColor(addon.unpack(textureInfo.color, { 1, 1, 1, 1 }))
+            layer:SetTexCoord(addon.unpack(textureInfo.texCoords, { 0, 1, 0, 1 }))
             layer:SetBlendMode(textureInfo.blendMode)
+            layer:SetDrawLayer(textureInfo.drawLayer, textureInfo.layer)
 
             if textureInfo.insets then
                 layer:SetPoint("LEFT", textureInfo.insets.left, 0)
@@ -82,6 +83,8 @@ local methods = {
                 layer:SetAllPoints(widget.frame)
             end
         end
+
+        widget:SetIconTextures()
     end,
 
     SetIconTextures = function(widget)
@@ -134,7 +137,6 @@ local methods = {
     Update = function(widget)
         widget:DrawButton()
         widget:SetTextures()
-        widget:SetIconTextures()
     end,
 
     --[[ Button ]]
@@ -159,34 +161,16 @@ local function Constructor()
     frame:RegisterForDrag("LeftButton")
 
     local backdrop = frame:CreateTexture()
-    backdrop:SetDrawLayer("BACKGROUND", -1)
-
-    -- -- local Cooldown
-
+    -- -- local cooldown
     local count = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-
     local gloss = frame:CreateTexture()
-    gloss:SetDrawLayer("OVERLAY", 0)
-
-    local icon = frame:CreateTexture()
-    icon:SetDrawLayer("BACKGROUND", 0)
-
-    local iconBorder = frame:CreateTexture()
-    iconBorder:SetDrawLayer("OVERLAY", 1)
-
-    local mask = frame:CreateTexture()
-
-    local normal = frame:CreateTexture()
-    normal:SetDrawLayer("ARTWORK", 0)
-
-    local shadow = frame:CreateTexture()
-    shadow:SetDrawLayer("ARTWORK", -1)
-
     local highlight = frame:CreateTexture()
-    highlight:SetDrawLayer("HIGHLIGHT", 0)
-
+    local icon = frame:CreateTexture()
+    local iconBorder = frame:CreateTexture()
+    local mask = frame:CreateTexture()
+    local normal = frame:CreateTexture()
     local pushed = frame:CreateTexture()
-    pushed:SetDrawLayer("ARTWORK", 0)
+    local shadow = frame:CreateTexture()
 
     for script, func in pairs(scripts) do
         frame:SetScript(script, func)
@@ -195,16 +179,17 @@ local function Constructor()
     --[[ Widget ]]
     local widget = {
         frame = frame,
-        count = count,
         backdrop = backdrop,
+        -- cooldown = cooldown,
+        count = count,
         gloss = gloss,
+        highlight = highlight,
         icon = icon,
         iconBorder = iconBorder,
         mask = mask,
         normal = normal,
-        shadow = shadow,
-        highlight = highlight,
         pushed = pushed,
+        shadow = shadow,
         type = Type,
     }
 
