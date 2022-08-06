@@ -7,6 +7,16 @@ local LibDeflate = LibStub("LibDeflate")
 
 --[[ Lists ]]
 local lists = {
+    deleteObjective = function()
+        local objectives = {}
+
+        for objectiveTitle, _ in addon.pairs(private.db.global.objectives) do
+            objectives[objectiveTitle] = objectiveTitle
+        end
+
+        return objectives
+    end,
+
     iconType = {
         AUTO = L["Auto"],
         FALLBACK = L["Fallback"],
@@ -183,6 +193,64 @@ local function GetGeneralContent(objectiveTitle, content)
     private:NotifyChange(content)
 end
 
+local function GetObjectiveContent(content)
+    local NotifyChangeFuncs = {
+        deleteObjective = function(self)
+            local list = lists.deleteObjective()
+            if addon.tcount(list) == 0 then
+                self:SetDisabled(true)
+            else
+                self:SetDisabled(false)
+            end
+            self:SetList(list)
+        end,
+    }
+
+    -- Callbacks
+    local function deleteObjective_OnValueChanged(self, _, value)
+        local deleteFunc = function()
+            private:DeleteObjectiveTemplate(value)
+            private:UpdateMenu(private.options:GetUserData("menu"))
+            private:NotifyChange(content)
+        end
+
+        private:ShowConfirmationDialog(
+            format(L["Are you sure you want to delete the objective template \"%s\"?"], value),
+            deleteFunc
+        )
+
+        self:SetValue()
+    end
+
+    local function importObjective_OnClick()
+        private:LoadImportFrame()
+    end
+
+    local function newObjective_OnClick()
+        local newObjectiveTitle = private:IncrementString(L["New"], private, "ObjectiveTemplateExists")
+        private.db.global.objectives[newObjectiveTitle] = addon.CloneTable(private.defaults.objective)
+        private:UpdateMenu(private.options:GetUserData("menu"), "Objectives", newObjectiveTitle)
+    end
+
+    -- Widgets
+    local newObjective = AceGUI:Create("Button")
+    newObjective:SetText(L["New"])
+    newObjective:SetCallback("OnClick", newObjective_OnClick)
+
+    local importObjective = AceGUI:Create("Button")
+    importObjective:SetText(L["Import"])
+    importObjective:SetCallback("OnClick", importObjective_OnClick)
+
+    local deleteObjective = AceGUI:Create("Dropdown")
+    deleteObjective:SetLabel(L["Delete Objective Template"])
+    deleteObjective:SetCallback("OnValueChanged", deleteObjective_OnValueChanged)
+    deleteObjective:SetUserData("NotifyChange", NotifyChangeFuncs.deleteObjective)
+
+    -- Add children
+    private:AddChildren(content, newObjective, importObjective, deleteObjective)
+    private:NotifyChange(content)
+end
+
 local function GetTrackerContent() end
 
 --[[ Callbacks ]]
@@ -203,9 +271,9 @@ end
 
 --[[ Options ]]
 function private:GetObjectivesOptions(treeGroup, subgroup)
-    if subgroup then
-        treeGroup:SetLayout("Fill")
+    treeGroup:SetLayout("Fill")
 
+    if subgroup then
         local tabGroup = AceGUI:Create("TabGroup")
         tabGroup:SetLayout("Fill")
         tabGroup:SetTabs({
@@ -227,5 +295,16 @@ function private:GetObjectivesOptions(treeGroup, subgroup)
 
         private:AddChildren(treeGroup, tabGroup)
         tabGroup:SelectTab("general")
+    else
+        local scrollContainer = AceGUI:Create("SimpleGroup")
+        scrollContainer:SetFullWidth(true)
+        scrollContainer:SetLayout("Fill")
+        treeGroup:AddChild(scrollContainer)
+
+        local scrollContent = AceGUI:Create("ScrollFrame")
+        scrollContent:SetLayout("Flow")
+        scrollContainer:AddChild(scrollContent)
+
+        GetObjectiveContent(scrollContent)
     end
 end

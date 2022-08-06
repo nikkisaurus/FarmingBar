@@ -87,7 +87,18 @@ L["Delete"] = true
 L["Duplicate"] = true
 L["Export"] = true
 L["Export Frame"] = true
+L["New"] = true
+L["Import"] = true
+L["Delete Objective Template"] = true
+L["Import Frame"] = true
+L["View Code"] = true
+L["Imported Objective"] = true
+L["Code Viewer"] = true
+L["Custom Tracker Condition"] = true
+L["Button"] = true
 
+L.CustomCodeWarning =
+    "This objective may contain custom Lua code. Make sure you only import objectives from trusted sources."
 L.GetTexCoordID = function(id)
     local ids = {
         [1] = "Left",

@@ -248,6 +248,8 @@ function private:IncrementString(str, obj, validateFunc)
                 i = i + 1
             end
         end
+    else
+        return str
     end
 end
 

@@ -189,9 +189,7 @@ end]],
                     fb = false,
                 },
             },
-            objectives = {
-                Test = private.defaults.objective,
-            },
+            objectives = {},
         },
         profile = {
             enabled = true,
