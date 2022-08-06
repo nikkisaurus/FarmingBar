@@ -26,7 +26,7 @@ function private:InitializeDatabase()
             condition = {
                 type = "ALL", -- "ALL", "ANY", "CUSTOM"
                 func = [[function()
-end]]            ,
+end]],
             },
             trackers = {
                 {
@@ -34,8 +34,8 @@ end]]            ,
                     -- id = false,
                     id = 1979,
                     objective = 1,
-                    altIDs = {}
-                }
+                    altIDs = {},
+                },
             },
         },
 
@@ -59,7 +59,7 @@ end]]            ,
                     tile = true,
                     tileEdge = true,
                     tileSize = 2,
-                    insets = { left = 2, right = 2, top = 2, bottom = 2 }
+                    insets = { left = 2, right = 2, top = 2, bottom = 2 },
                 },
                 bgColor = { 1, 1, 1, 1 },
                 borderColor = { 1, 1, 1, 1 },
@@ -69,7 +69,7 @@ end]]            ,
     -- To hide this bar, return true
     -- To show this bar, return nil
     return
-end]]        ,
+end]],
             mouseover = false,
             alpha = 1,
             scale = 1,
@@ -82,9 +82,7 @@ end]]        ,
             barAnchor = "TOPLEFT", -- "TOPLEFT", "TOPRIGHT", "BOTTOMLEFT", "BOTTOMRIGHT"
 
             --[[ Buttons ]]
-            buttons = {
-
-            },
+            buttons = {},
 
             buttonTextures = {
                 backdrop = {
@@ -179,7 +177,7 @@ end]]        ,
         global = {
             debug = {
                 enabled = false,
-                -- enabled = true,
+                enabled = true,
             },
             settings = {
                 useGameTooltip = false,
@@ -192,8 +190,8 @@ end]]        ,
                 },
             },
             objectives = {
-                Test = private.defaults.objective
-            }
+                Test = private.defaults.objective,
+            },
         },
         profile = {
             enabled = true,

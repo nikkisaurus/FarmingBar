@@ -188,10 +188,10 @@ private.anchorPoints = {
             xCo = 1,
             yCo = 0,
         },
-    }
+    },
 }
 
-
+--[[ Slash Commands ]]
 function private:InitializeSlashCommands()
     for command, enabled in pairs(private.db.global.settings.commands) do
         if enabled then
@@ -206,6 +206,7 @@ function addon:HandleSlashCommand(input)
     private:LoadOptions()
 end
 
+--[[ Item Caching ]]
 private.CacheItemCo = function(itemID)
     C_Timer.NewTicker(0.1, function(self)
         if GetItemInfo(itemID) then
@@ -233,6 +234,7 @@ function private:ValidateItem(itemID)
     end
 end
 
+--[[ String Manipulation ]]
 function private:IncrementString(str, obj, validateFunc)
     local func = validateFunc and obj[validateFunc] or _G[validateFunc]
     if func(obj, str) then
@@ -246,6 +248,30 @@ function private:IncrementString(str, obj, validateFunc)
                 i = i + 1
             end
         end
-
     end
+end
+
+--[[ Static Popups ]]
+function private:ShowConfirmationDialog(msg, onAccept, onCancel, args1, args2)
+    StaticPopupDialogs["FARMINGBAR_CONFIRMATION_DIALOG"] = {
+        text = msg,
+        button1 = L["Confirm"],
+        button2 = CANCEL,
+        OnAccept = function()
+            if onAccept then
+                onAccept(addon.unpack(args1, {}))
+            end
+        end,
+        OnCancel = function()
+            if onCancel then
+                onCancel(addon.unpack(args2, {}))
+            end
+        end,
+        timeout = 0,
+        whileDead = true,
+        hideOnEscape = true,
+        preferredIndex = 3,
+    }
+
+    StaticPopup_Show("FARMINGBAR_CONFIRMATION_DIALOG")
 end

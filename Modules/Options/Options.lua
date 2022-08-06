@@ -18,20 +18,20 @@ local function GetTreeMenu()
         },
     }
 
-    for barID, _ in pairs(private.db.profile.bars) do
+    for barID, _ in addon.pairs(private.db.profile.bars) do
         tinsert(menu[1].children, {
             value = "bar" .. barID,
-            text = format("%s %d", L["Bar"], barID)
+            text = format("%s %d", L["Bar"], barID),
         })
     end
 
     if addon.tcount(private.db.global.objectives) > 0 then
         menu[2].children = {}
     end
-    for objectiveTitle, _ in pairs(private.db.global.objectives) do
+    for objectiveTitle, _ in addon.pairs(private.db.global.objectives) do
         tinsert(menu[2].children, {
             value = objectiveTitle,
-            text = objectiveTitle
+            text = objectiveTitle,
         })
     end
 
@@ -46,64 +46,28 @@ local function treeGroup_OnGroupSelected(treeGroup, _, path)
 end
 
 --[[ Options ]]
-function private:ShowConfirmationDialog(msg, onAccept, onCancel, args1, args2)
-    StaticPopupDialogs["FARMINGBAR_CONFIRMATION_DIALOG"] = {
-        text = msg,
-        button1 = L["Confirm"],
-        button2 = CANCEL,
-        OnAccept = function()
-            if onAccept then
-                onAccept(addon.unpack(args1, {}))
-            end
-        end,
-        OnCancel = function()
-            if onCancel then
-                onCancel(addon.unpack(args2, {}))
-            end
-        end,
-        timeout = 0,
-        whileDead = true,
-        hideOnEscape = true,
-        preferredIndex = 3,
-    }
-
-    StaticPopup_Show("FARMINGBAR_CONFIRMATION_DIALOG")
-end
-
 function private:AddChildren(parent, ...)
     for _, child in pairs({ ... }) do
         parent:AddChild(child)
     end
 end
 
-function private:SetOptionTooltip(widget, text)
-    widget:SetCallback("OnEnter", function()
-        private:LoadTooltip(widget.frame, "ANCHOR_RIGHT", 0, 0,
-            { { line = text, color = private.defaults.tooltip_desc } })
-    end)
-    widget:SetCallback("OnLeave", function()
-        private:ClearTooltip()
-    end)
-end
+function private:InitializeOptions()
+    -- Widgets
+    local options = AceGUI:Create("Frame")
+    options:SetTitle(L.addonName)
+    options:SetLayout("Fill")
+    options:Hide()
+    private.options = options
 
-function private:NotifyChange(parent)
-    for _, child in pairs(parent.children) do
-        if child.children then
-            private:NotifyChange(child)
-        else
-            local NotifyChange = child:GetUserData("NotifyChange")
-            if NotifyChange then
-                NotifyChange()
-            end
-        end
-    end
-end
+    local treeGroup = AceGUI:Create("TreeGroup")
+    treeGroup:SetCallback("OnGroupSelected", treeGroup_OnGroupSelected)
+    treeGroup:SetUserData("UpdateMenu", function()
+        treeGroup:SetTree(GetTreeMenu())
+    end)
+    options:SetUserData("menu", treeGroup)
 
-function private:UpdateMenu(widget)
-    local UpdateMenu = widget:GetUserData("UpdateMenu")
-    if UpdateMenu then
-        UpdateMenu()
-    end
+    private:AddChildren(options, treeGroup)
 end
 
 function private:LoadOptions()
@@ -115,23 +79,42 @@ function private:LoadOptions()
     private:UpdateMenu(private.options:GetUserData("menu"))
 end
 
-function private:InitializeOptions()
-    local options = AceGUI:Create("Frame")
-    options:SetTitle(L.addonName)
-    options:SetLayout("Fill")
-    options:Hide()
-    private.options = options
+function private:NotifyChange(parent)
+    for _, child in pairs(parent.children) do
+        if child.children then
+            private:NotifyChange(child)
+        else
+            local NotifyChange = child:GetUserData("NotifyChange")
+            if NotifyChange then
+                NotifyChange(child)
+            end
+        end
+    end
+end
 
-    local treeGroup = AceGUI:Create("TreeGroup")
-    -- treeGroup:SetTree(GetTreeMenu())
-
-    treeGroup:SetCallback("OnGroupSelected", treeGroup_OnGroupSelected)
-    treeGroup:SetUserData("UpdateMenu", function()
-        treeGroup:SetTree(GetTreeMenu())
+function private:SetOptionTooltip(widget, text)
+    widget:SetCallback("OnEnter", function()
+        private:LoadTooltip(
+            widget.frame,
+            "ANCHOR_RIGHT",
+            0,
+            0,
+            { { line = text, color = private.defaults.tooltip_desc } }
+        )
     end)
-    options:SetUserData("menu", treeGroup)
+    widget:SetCallback("OnLeave", function()
+        private:ClearTooltip()
+    end)
+end
 
-    private:AddChildren(options, treeGroup)
+function private:UpdateMenu(widget, ...)
+    local UpdateMenu = widget:GetUserData("UpdateMenu")
+    if UpdateMenu then
+        UpdateMenu()
+        if select(1, ...) then
+            widget:SelectByPath(...)
+        end
+    end
 end
 
 --[[ Media ]]
