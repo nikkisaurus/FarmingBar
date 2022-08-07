@@ -7,6 +7,12 @@ local LibDeflate = LibStub("LibDeflate")
 
 --[[ Lists ]]
 local lists = {
+    condition = {
+        ALL = L["All"],
+        ANY = L["Any"],
+        CUSTOM = L["Custom"],
+    },
+
     deleteObjective = function()
         local objectives = {}
 
@@ -47,8 +53,30 @@ local function GetGeneralContent(objectiveTitle, content)
             self:SetValue(objectiveInfo.icon.type)
         end,
 
-        onUseAction = function(self)
-            self:SetText(objectiveInfo.onUse.action)
+        onUseItemID = function(self)
+            self:SetText(objectiveInfo.onUse.itemID)
+            self:SetDisabled(objectiveInfo.onUse.type ~= "ITEM")
+        end,
+
+        onUseItemIDPreview = function(self)
+            local itemID = objectiveInfo.onUse.itemID
+
+            if objectiveInfo.onUse.type ~= "ITEM" or not itemID then
+                self:SetText()
+                self:SetImage()
+                return
+            end
+
+            private:CacheItem(itemID)
+            local itemName, _, _, _, _, _, _, _, _, icon = GetItemInfo(itemID)
+
+            self:SetText(itemName)
+            self:SetImage(icon)
+        end,
+
+        onUseMacrotext = function(self)
+            self:SetText(objectiveInfo.onUse.macrotext)
+            self:SetDisabled(objectiveInfo.onUse.type ~= "MACROTEXT")
         end,
 
         onUseType = function(self)
@@ -111,8 +139,20 @@ local function GetGeneralContent(objectiveTitle, content)
         private:NotifyChange(content)
     end
 
-    local function onUseAction_OnEnterPressed(_, _, value)
-        private.db.global.objectives[objectiveTitle].onUse.action = value
+    local function onUseitemID_OnEnterPressed(self, _, value)
+        local itemID = private:ValidateItem(value)
+        if itemID then
+            private.db.global.objectives[objectiveTitle].onUse.itemID = itemID
+            private:NotifyChange(content)
+            self:ClearFocus()
+        else
+            private.options:SetStatusText(L["Invalid itemID."])
+            self:HighlightText()
+        end
+    end
+
+    local function onUseMacrotext_OnEnterPressed(_, _, value)
+        private.db.global.objectives[objectiveTitle].onUse.macrotext = value
         private:NotifyChange(content)
     end
 
@@ -153,17 +193,35 @@ local function GetGeneralContent(objectiveTitle, content)
     iconID:SetCallback("OnEnterPressed", iconID_OnEnterPressed)
     iconID:SetUserData("NotifyChange", NotifyChangeFuncs.iconID)
 
+    local onUseGroup = AceGUI:Create("InlineGroup")
+    onUseGroup:SetTitle(L["OnUse"])
+    onUseGroup:SetFullWidth(true)
+    onUseGroup:SetLayout("Flow")
+
     local onUseType = AceGUI:Create("Dropdown")
     onUseType:SetList(lists.onUseType)
-    onUseType:SetLabel(L["OnUse Type"])
+    onUseType:SetLabel(L["Type"])
     onUseType:SetCallback("OnValueChanged", onUseType_OnValueChanged)
     onUseType:SetUserData("NotifyChange", NotifyChangeFuncs.onUseType)
 
-    local onUseAction = AceGUI:Create("MultiLineEditBox")
-    onUseAction:SetFullWidth(true)
-    onUseAction:SetLabel(L["OnUse Action"])
-    onUseAction:SetCallback("OnEnterPressed", onUseAction_OnEnterPressed)
-    onUseAction:SetUserData("NotifyChange", NotifyChangeFuncs.onUseAction)
+    local onUseItemIDPreview = AceGUI:Create("Label")
+    onUseItemIDPreview:SetFullWidth(true)
+    onUseItemIDPreview:SetImageSize(14, 14)
+    onUseItemIDPreview:SetUserData("NotifyChange", NotifyChangeFuncs.onUseItemIDPreview)
+
+    local onUseItemID = AceGUI:Create("EditBox")
+    onUseItemID:SetFullWidth(true)
+    onUseItemID:SetLabel(L["ItemID"])
+    onUseItemID:SetCallback("OnEnterPressed", onUseitemID_OnEnterPressed)
+    onUseItemID:SetUserData("NotifyChange", NotifyChangeFuncs.onUseItemID)
+
+    local onUseMacrotext = AceGUI:Create("MultiLineEditBox")
+    onUseMacrotext:SetFullWidth(true)
+    onUseMacrotext:SetLabel(L["Macrotext"])
+    onUseMacrotext:SetCallback("OnEnterPressed", onUseMacrotext_OnEnterPressed)
+    onUseMacrotext:SetUserData("NotifyChange", NotifyChangeFuncs.onUseMacrotext)
+
+    private:AddChildren(onUseGroup, onUseType, onUseItemIDPreview, onUseItemID, onUseMacrotext)
 
     local duplicateObjective = AceGUI:Create("Button")
     duplicateObjective:SetText(L["Duplicate"])
@@ -184,13 +242,11 @@ local function GetGeneralContent(objectiveTitle, content)
         title,
         iconType,
         iconID,
-        onUseType,
-        onUseAction,
+        onUseGroup,
         duplicateObjective,
         exportObjective,
         deleteObjective
     )
-    private:NotifyChange(content)
 end
 
 local function GetObjectiveContent(content)
@@ -251,7 +307,48 @@ local function GetObjectiveContent(content)
     private:NotifyChange(content)
 end
 
-local function GetTrackerContent() end
+local function GetTrackerContent(objectiveTitle, content)
+    local objectiveInfo = private.db.global.objectives[objectiveTitle]
+
+    -- NotifyChange
+    local NotifyChangeFuncs = {
+        condition = function(self)
+            self:SetValue(objectiveInfo.condition.type)
+        end,
+
+        conditionFunc = function(self)
+            self:SetText(objectiveInfo.condition.func)
+            self:SetDisabled(objectiveInfo.condition.type ~= "CUSTOM")
+        end,
+    }
+
+    -- Callback
+    local function condition_OnValueChanged(_, _, value)
+        private.db.global.objectives[objectiveTitle].condition.type = value
+        private:NotifyChange(content)
+    end
+
+    local function conditionFunc_OnEnterPressed(_, _, value)
+        private:NotifyChange(content)
+    end
+
+    -- Widgets
+    local condition = AceGUI:Create("Dropdown")
+    condition:SetLabel(L["Condition"])
+    condition:SetList(lists.condition)
+    condition:SetCallback("OnValueChanged", condition_OnValueChanged)
+    condition:SetUserData("NotifyChange", NotifyChangeFuncs.condition)
+
+    local conditionFunc = AceGUI:Create("MultiLineEditBox")
+    conditionFunc:SetFullWidth(true)
+    conditionFunc:SetLabel(L["Custom Condition"])
+    conditionFunc:SetCallback("OnEnterPressed", conditionFunc_OnEnterPressed)
+    conditionFunc:SetUserData("NotifyChange", NotifyChangeFuncs.conditionFunc)
+
+    -- Add Children
+    private:AddChildren(content, condition, conditionFunc)
+    private:NotifyChange(content)
+end
 
 --[[ Callbacks ]]
 local function tabGroup_OnGroupSelected(tabGroup, _, group)
@@ -262,11 +359,10 @@ local function tabGroup_OnGroupSelected(tabGroup, _, group)
 
     if group == "general" then
         GetGeneralContent(objectiveTitle, content)
-        private:NotifyChange(content)
     elseif group == "trackers" then
         GetTrackerContent(objectiveTitle, content)
-        private:NotifyChange(content)
     end
+    private:NotifyChange(content)
 end
 
 --[[ Options ]]

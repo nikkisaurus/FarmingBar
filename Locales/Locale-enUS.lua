@@ -75,8 +75,10 @@ L["Icon Type"] = true
 L["Item"] = true
 L["Macrotext"] = true
 L["None"] = true
-L["OnUse Type"] = true
-L["OnUse Action"] = true
+L["Type"] = true
+L["OnUse"] = true
+L["ItemID"] = true
+L["Invalid itemID."] = true
 L["Objective template exists."] = true
 L["General"] = true
 L["Appearance"] = true
@@ -95,7 +97,12 @@ L["View Code"] = true
 L["Imported Objective"] = true
 L["Code Viewer"] = true
 L["Custom Tracker Condition"] = true
+L["Custom Condition"] = true
+L["Condition"] = true
 L["Button"] = true
+L["All"] = true
+L["Any"] = true
+L["Custom"] = true
 
 L.CustomCodeWarning =
     "This objective may contain custom Lua code. Make sure you only import objectives from trusted sources."

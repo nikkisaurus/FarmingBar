@@ -87,6 +87,7 @@ function private:NotifyChange(parent)
             local NotifyChange = child:GetUserData("NotifyChange")
             if NotifyChange then
                 NotifyChange(child)
+                parent:DoLayout()
             end
         end
     end

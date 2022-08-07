@@ -21,7 +21,8 @@ function private:InitializeDatabase()
             onUse = {
                 type = "NONE", -- "ITEM", "NONE", "MACROTEXT"
                 -- action = false,
-                action = 6948,
+                itemID = 6948,
+                macrotext = "",
             },
             condition = {
                 type = "ALL", -- "ALL", "ANY", "CUSTOM"
