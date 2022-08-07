@@ -329,7 +329,19 @@ local function GetTrackerContent(objectiveTitle, content)
     end
 
     local function conditionFunc_OnEnterPressed(_, _, value)
-        private:NotifyChange(content)
+        local err
+        local func = loadstring("return " .. value)
+        if type(func) == "function" then
+            local success, userFunc = pcall(func)
+            if success and type(userFunc) == "function" then
+                private.db.global.objectives[objectiveTitle].condition.func = value
+                private:NotifyChange(content)
+            else
+                err = L["Hidden must be a function returning a boolean value."]
+            end
+        else
+            err = L["Hidden must be a function returning a boolean value."]
+        end
     end
 
     -- Widgets
@@ -339,10 +351,10 @@ local function GetTrackerContent(objectiveTitle, content)
     condition:SetCallback("OnValueChanged", condition_OnValueChanged)
     condition:SetUserData("NotifyChange", NotifyChangeFuncs.condition)
 
-    local conditionFunc = AceGUI:Create("MultiLineEditBox")
+    local conditionFunc = AceGUI:Create("FarmingBar_LuaEditBox")
     conditionFunc:SetFullWidth(true)
     conditionFunc:SetLabel(L["Custom Condition"])
-    conditionFunc:SetCallback("OnEnterPressed", conditionFunc_OnEnterPressed)
+    conditionFunc:Initialize(objectiveInfo.condition.func, conditionFunc_OnEnterPressed)
     conditionFunc:SetUserData("NotifyChange", NotifyChangeFuncs.conditionFunc)
 
     -- Add Children
