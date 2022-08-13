@@ -14,6 +14,10 @@ L["barDB.hidden must return a \"function\""] = true
 L["Control+click to lock and hide anchor."] = true
 
 --[[ Options ]]
+L["Alt IDs"] = true
+L["Quantity"] = true
+L["Are you sure you want to delete %s from objective template \"%s\"?"] = true
+L["Objective"] = true
 L["Alerts"] = true
 L["Bar"] = true
 L["Bars"] = true
@@ -66,6 +70,7 @@ L["Button textures may be controlled by Masque and must be disabled through its 
     true
 L["Hidden must be a function returning a boolean value."] = true
 L["Objectives"] = true
+L["Trackers"] = true
 L["Objective Templates"] = true
 L["Objective Title"] = true
 L["Fallback Icon"] = true
@@ -105,6 +110,11 @@ L["Button"] = true
 L["All"] = true
 L["Any"] = true
 L["Custom"] = true
+L["Currency"] = true
+L["Currency/Item ID"] = true
+L["Please select a tracker type."] = true
+L["Tracker already exists within this objective."] = true
+L["New Tracker"] = true
 
 L.CustomCodeWarning =
     "This objective may contain custom Lua code. Make sure you only import objectives from trusted sources."

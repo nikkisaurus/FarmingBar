@@ -10,7 +10,6 @@ local function GetTreeMenu()
         {
             value = "Bars",
             text = L["Bars"],
-            children = {},
         },
         {
             value = "Objectives",
@@ -18,6 +17,9 @@ local function GetTreeMenu()
         },
     }
 
+    if addon.tcount(private.db.profile.bars) > 0 then
+        menu[1].children = {}
+    end
     for barID, _ in addon.pairs(private.db.profile.bars) do
         tinsert(menu[1].children, {
             value = "bar" .. barID,
@@ -57,6 +59,8 @@ function private:InitializeOptions()
     local options = AceGUI:Create("Frame")
     options:SetTitle(L.addonName)
     options:SetLayout("Fill")
+    options:SetWidth(800)
+    options:SetHeight(600)
     options:Hide()
     private.options = options
 
@@ -81,14 +85,14 @@ end
 
 function private:NotifyChange(parent)
     for _, child in pairs(parent.children) do
+        local NotifyChange = child:GetUserData("NotifyChange")
+        if NotifyChange then
+            NotifyChange(child)
+            parent:DoLayout()
+        end
+
         if child.children then
             private:NotifyChange(child)
-        else
-            local NotifyChange = child:GetUserData("NotifyChange")
-            if NotifyChange then
-                NotifyChange(child)
-                parent:DoLayout()
-            end
         end
     end
 end
