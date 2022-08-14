@@ -452,7 +452,8 @@ local function GetTrackerContent(objectiveTitle, content)
             private:AddChildren(addTrackerGroup, trackerType, trackerID)
             private:AddChildren(scrollContent, condition, conditionFunc, addTrackerGroup)
         else
-            local trackerInfo = objectiveInfo.trackers[tonumber(subgroup)]
+            local trackerKey = tonumber(subgroup)
+            local trackerInfo = objectiveInfo.trackers[trackerKey]
             local trackerName = private:GetObjectiveTemplateTrackerName(trackerInfo.type, trackerInfo.id)
 
             -- NotifyChange
@@ -465,7 +466,7 @@ local function GetTrackerContent(objectiveTitle, content)
             -- Callbacks
             local function deleteTracker_OnClick()
                 local deleteFunc = function()
-                    private:DeleteObjectiveTemplateTracker(objectiveTitle, tonumber(subgroup))
+                    private:DeleteObjectiveTemplateTracker(objectiveTitle, trackerKey)
                     private:NotifyChange(content)
                     trackerTree:SelectByPath(group)
                 end
@@ -485,8 +486,13 @@ local function GetTrackerContent(objectiveTitle, content)
                 objective = objective < 1 and 1 or objective
 
                 self:ClearFocus()
-                private.db.global.objectives[objectiveTitle].trackers[tonumber(subgroup)].objective = objective
+                private.db.global.objectives[objectiveTitle].trackers[trackerKey].objective = objective
                 private:NotifyChange(scrollContent)
+            end
+
+            local function remove_OnClick(self)
+                private:DeleteObjectiveTemplateTrackerAltID(objectiveTitle, trackerKey, self:GetUserData("altKey"))
+                private:NotifyChange(self.parent.parent)
             end
 
             -- Widgets
@@ -517,36 +523,77 @@ local function GetTrackerContent(objectiveTitle, content)
 
                 local altID = AceGUI:Create("EditBox")
                 altID:SetLabel(L["Currency/Item ID"])
-                altID:SetCallback("OnEnterPressed", altID_OnEnterPressed)
+                altID:SetCallback(
+                    "OnEnterPressed",
+                    function(self, _, value) -- TODO: Create function for this and trackerID OnEnterPressed
+                        local pendingAltIDType = altIDType:GetValue()
+
+                        if pendingAltIDType == "ITEM" then
+                            local itemID = private:ValidateItem(value)
+                            if itemID then
+                                if
+                                    not private:ObjectiveTemplateTrackerAltIDExists(
+                                        objectiveTitle,
+                                        trackerKey,
+                                        pendingAltIDType,
+                                        itemID
+                                    )
+                                then
+                                    private:AddObjectiveTemplateTrackerAltID(
+                                        objectiveTitle,
+                                        trackerKey,
+                                        pendingAltIDType,
+                                        itemID
+                                    )
+                                    private:NotifyChange(scrollContent)
+                                else
+                                    private.options:SetStatusText(L["Alt ID already exists for this tracker."])
+                                    self:HighlightText()
+                                end
+                            else
+                                private.options:SetStatusText(L["Invalid itemID."])
+                                self:HighlightText()
+                            end
+                        elseif pendingAltIDType == "CURRENCY" then
+                        else
+                            private.options:SetStatusText(L["Please select an alt ID type."])
+                            self:ClearFocus()
+                        end
+                    end
+                )
 
                 local spacer = AceGUI:Create("Label")
                 spacer:SetFullWidth(true)
                 spacer:SetText(" ")
 
-                for _, altIDInfo in pairs(trackerInfo.altIDs) do
+                private:AddChildren(altIDsGroup, altIDType, altID, spacer)
+
+                for altKey, altInfo in pairs(trackerInfo.altIDs or {}) do -- TODO: Change so only list updates on Notify so it doesn't effect the add widgets
                     local remove = AceGUI:Create("InteractiveLabel")
                     remove:SetRelativeWidth(2 / 16)
                     remove:SetText("X")
                     remove:SetCallback("OnClick", remove_OnClick) -- TODO
+                    remove:SetUserData("altKey", altKey)
 
                     local label = AceGUI:Create("Label")
                     label:SetRelativeWidth(12 / 16)
                     label:SetImageSize(14, 14)
                     label:SetUserData("NotifyChange", function(self)
-                        self:SetText(private:GetObjectiveTemplateTrackerName(altIDInfo.type, altIDInfo.id))
-                        self:SetImage(private:GetObjectiveTemplateTrackerIcon(altIDInfo.type, altIDInfo.id))
+                        self:SetText(private:GetObjectiveTemplateTrackerName(altInfo.type, altInfo.id))
+                        self:SetImage(private:GetObjectiveTemplateTrackerIcon(altInfo.type, altInfo.id))
                     end)
 
                     local multiplier = AceGUI:Create("EditBox")
                     multiplier:SetRelativeWidth(2 / 16)
                     multiplier:SetUserData("NotifyChange", function(self)
-                        self:SetText(altIDInfo.multiplier)
+                        self:SetText(altInfo.multiplier)
                     end)
                     multiplier:SetCallback("OnEnterPressed", multiplier_OnEnterPressed) -- TODO
 
-                    private:AddChildren(altIDsGroup, altIDType, altID, spacer, remove, label, multiplier)
+                    private:AddChildren(altIDsGroup, remove, label, multiplier)
                 end
 
+                -- Add children
                 scrollContent:DoLayout()
             end)
 

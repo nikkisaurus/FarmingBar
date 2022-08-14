@@ -44,33 +44,54 @@ function private:AddObjectiveTemplateTracker(objectiveTitle, trackerType, tracke
     return #private.db.global.objectives[objectiveTitle].trackers
 end
 
-function private:DeleteObjectiveTemplateTracker(objectiveTitle, trackerID)
-    private.db.global.objectives[objectiveTitle].trackers[trackerID] = nil
+function private:DeleteObjectiveTemplateTracker(objectiveTitle, trackerKey)
+    private.db.global.objectives[objectiveTitle].trackers[trackerKey] = nil
 end
 
-function private:ObjectiveTemplateTrackerExists(objectiveTitle, trackerType, trackerID)
+function private:ObjectiveTemplateTrackerExists(objectiveTitle, trackerType, trackerKey)
     for _, trackerInfo in pairs(private.db.global.objectives[objectiveTitle].trackers) do
-        if trackerInfo.type == trackerType and trackerInfo.id == trackerID then
+        if trackerInfo.type == trackerType and trackerInfo.id == trackerKey then
             return true
         end
     end
 end
 
-function private:GetObjectiveTemplateTrackerName(trackerType, trackerID)
+function private:GetObjectiveTemplateTrackerName(trackerType, trackerKey)
     if trackerType == "ITEM" then
-        private:CacheItem(trackerID)
-        local itemName = GetItemInfo(trackerID)
+        private:CacheItem(trackerKey)
+        local itemName = GetItemInfo(trackerKey)
         return itemName
     elseif trackerType == "CURRENCY" then
-        local currency = C_CurrencyInfo.GetCurrencyInfo(trackerID)
+        local currency = C_CurrencyInfo.GetCurrencyInfo(trackerKey)
         return currency.name
     end
 end
 
-function private:GetObjectiveTemplateTrackerIcon(trackerType, trackerID)
+function private:GetObjectiveTemplateTrackerIcon(trackerType, trackerKey)
     if trackerType == "ITEM" then
-        return GetItemIcon(trackerID)
+        return GetItemIcon(trackerKey)
     elseif trackerType == "CURRENCY" then
-        return C_CurrencyInfo.GetCurrencyInfo(trackerID).iconFileID
+        return C_CurrencyInfo.GetCurrencyInfo(trackerKey).iconFileID
+    end
+end
+
+--[[ Alt ID ]]
+function private:AddObjectiveTemplateTrackerAltID(objectiveTitle, trackerKey, altType, altID)
+    tinsert(private.db.global.objectives[objectiveTitle].trackers[trackerKey].altIDs, {
+        type = altType,
+        id = altID,
+        multiplier = 1,
+    })
+end
+
+function private:DeleteObjectiveTemplateTrackerAltID(objectiveTitle, trackerKey, altKey)
+    private.db.global.objectives[objectiveTitle].trackers[trackerKey].altIDs[altKey] = nil
+end
+
+function private:ObjectiveTemplateTrackerAltIDExists(objectiveTitle, trackerKey, altType, altID)
+    for _, altInfo in pairs(private.db.global.objectives[objectiveTitle].trackers[trackerKey].altIDs) do
+        if altInfo.type == altType and altInfo.id == altID then
+            return true
+        end
     end
 end
