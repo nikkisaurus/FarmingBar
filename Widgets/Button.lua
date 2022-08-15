@@ -7,15 +7,69 @@ local LSM = LibStub("LibSharedMedia-3.0")
 local Type = "FarmingBar_Button"
 local Version = 1
 
+--[[ PostClick Methods ]]
+local postClickMethods = {
+    onUse = function(frame)
+        local widget = frame.obj
+        if widget:IsEmpty() then -- TODO: or not action item
+            return
+        end
+    end,
+    clearObjective = function(frame)
+        frame.obj:Clear()
+    end,
+}
+
 -- [[ Scripts ]]
 local scripts = {
-    OnClick = function(frame)
+    PostClick = function(frame, buttonClicked, ...)
+        local widget = frame.obj
+        local barID, buttonID = widget:GetID()
         local cursorType, itemID = GetCursorInfo()
+        local objectiveTemplate, alternateObjective = private.ObjectiveFrame:GetObjective()
 
-        if private.ObjectiveFrame:GetObjective() then
-            print("place objective template")
+        if objectiveTemplate then
+            if alternateObjective then
+                print("SWAP")
+                return
+            end
+            private.db.profile.bars[barID].buttons[buttonID] =
+                addon.CloneTable(private.db.global.objectives[objectiveTemplate])
+            widget:UpdateAttributes()
+            private.ObjectiveFrame:Clear()
         elseif cursorType == "item" and itemID then
-            print("place item")
+            if alternateObjective then
+                print("SWAP")
+                return
+            end
+
+            private.CacheItem(itemID)
+            local template = addon.CloneTable(private.defaults.objective)
+            template.icon.id = GetItemIcon(itemID)
+            template.onUse.type = "ITEM"
+            template.onUse.itemID = itemID
+            local tracker = addon.CloneTable(private.defaults.tracker)
+            tracker.type = "ITEM"
+            tracker.id = itemID
+            tinsert(template.trackers, tracker)
+            private.db.profile.bars[barID].buttons[buttonID] = template
+            ClearCursor()
+            widget:UpdateAttributes()
+        elseif not widget:IsEmpty() then
+            print("Pickup and move")
+        end
+
+        for keybind, keybindInfo in pairs(private.db.global.settings.keybinds) do
+            if buttonClicked == keybindInfo.button then
+                local mod = private:GetModifierString()
+
+                if mod == keybindInfo.modifier then
+                    local func = postClickMethods[keybind]
+                    if func then
+                        func(frame, keybindInfo, buttonClicked, ...)
+                    end
+                end
+            end
         end
     end,
 
@@ -44,6 +98,45 @@ local methods = {
 
     SetAlpha = function(widget, alpha)
         widget.frame:SetAlpha(alpha)
+    end,
+
+    SetAttributes = function(widget)
+        local info = private.db.global.settings.keybinds.onUse
+        local buttonType = (info.modifier ~= "" and (info.modifier .. "-") or "")
+            .. "type"
+            .. (info.button == "RightButton" and 2 or 1)
+        local isEmpty = widget:IsEmpty()
+        local _, buttonDB = widget:GetDB()
+
+        if not isEmpty and widget.frame:GetAttribute(buttonType) == "macro" and buttonDB.onUse.type == "MACROTEXT" then
+            if widget.frame:GetAttribute("macrotext") == buttonDB.onUse.macrotext then
+                return
+            end
+        elseif not isEmpty and widget.frame:GetAttribute(buttonType) == "item" and buttonDB.onUse.type == "ITEM" then
+            if widget.frame:GetAttribute("item") == ("item" .. buttonDB.onUse.itemID) then
+                return
+            end
+        end
+
+        widget.frame:SetAttribute(buttonType, nil)
+        widget.frame:SetAttribute("item", nil)
+        widget.frame:SetAttribute("macrotext", nil)
+
+        if isEmpty then
+            return
+        end
+
+        if UnitAffectingCombat("player") then
+            return
+        end
+
+        if buttonDB.onUse.type == "ITEM" and buttonDB.onUse.itemID then
+            widget.frame:SetAttribute(buttonType, "item")
+            widget.frame:SetAttribute("item", "item:" .. buttonDB.onUse.itemID)
+        elseif buttonDB.onUse.type == "MACROTEXT" then
+            widget.frame:SetAttribute(buttonType, "macro")
+            widget.frame:SetAttribute("macrotext", buttonDB.onUse.macrotext)
+        end
     end,
 
     SetHeight = function(widget, height)
@@ -109,8 +202,6 @@ local methods = {
                 end
             end
         end
-
-        widget:SetIconTextures()
     end,
 
     SetIconTextures = function(widget)
@@ -121,19 +212,24 @@ local methods = {
             widget.icon:SetTexture()
             widget.iconBorder:Hide()
         else
-            -- local itemID = buttonDB.icon.action
-            -- private:CacheItem(itemID)
-            -- local _, _, rarity, _, _, _, _, _, _, icon = GetItemInfo(itemID)
-
-            -- widget.icon:SetTexture(icon)
-            -- if not barDB.buttonTextures.iconBorder.hidden then
-            --     widget.iconBorder:Show()
-            -- end
-            -- widget.iconBorder:SetVertexColor(GetItemQualityColor(rarity))
+            local icon, color = private:GetObjectiveIcon(buttonDB)
+            widget.icon:SetTexture(icon)
+            if not barDB.buttonTextures.iconBorder.hidden and color then
+                widget.iconBorder:Show()
+                widget.iconBorder:SetVertexColor(unpack(color))
+            else
+                widget.iconBorder:Hide()
+            end
         end
     end,
 
     --[[ Database ]]
+    Clear = function(widget)
+        local barID, buttonID = widget:GetID()
+        private.db.profile.bars[barID].buttons[buttonID] = nil
+        widget:UpdateAttributes()
+    end,
+
     GetBar = function(widget)
         return private.bars[widget:GetID()]
     end,
@@ -170,6 +266,12 @@ local methods = {
     Update = function(widget)
         widget:DrawButton()
         widget:SetTextures()
+        widget:UpdateAttributes()
+    end,
+
+    UpdateAttributes = function(widget)
+        widget:SetIconTextures()
+        widget:SetAttributes()
     end,
 
     --[[ Button ]]
@@ -194,7 +296,8 @@ local function Constructor()
     frame:SetFrameLevel(1)
     frame:SetMovable(true)
     frame:EnableMouse(true)
-    frame:RegisterForDrag("LeftButton")
+    frame:RegisterForDrag("AnyUp")
+    frame:RegisterForClicks("AnyUp")
 
     local backdrop = frame:CreateTexture("$parentBackdrop")
     -- -- local cooldown

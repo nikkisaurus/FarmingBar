@@ -208,6 +208,10 @@ end
 
 --[[ Item Caching ]]
 private.CacheItemCo = function(itemID)
+    if not itemID then
+        return
+    end
+
     C_Timer.NewTicker(0.1, function(self)
         if GetItemInfo(itemID) then
             self:Cancel()
@@ -289,4 +293,19 @@ function private:ShowConfirmationDialog(msg, onAccept, onCancel, args1, args2)
     }
 
     StaticPopup_Show("FARMINGBAR_CONFIRMATION_DIALOG")
+end
+
+--[[ Misc ]]
+function private:GetModifierString()
+    local mod = ""
+    if IsShiftKeyDown() then
+        mod = "shift"
+    end
+    if IsControlKeyDown() then
+        mod = "ctrl" .. (mod ~= "" and "-" or "") .. mod
+    end
+    if IsAltKeyDown() then
+        mod = "alt" .. (mod ~= "" and "-" or "") .. mod
+    end
+    return mod
 end

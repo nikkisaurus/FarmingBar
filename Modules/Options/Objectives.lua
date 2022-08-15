@@ -305,7 +305,11 @@ local function GetObjectiveContent(content)
             for objectiveTitle, objectiveInfo in addon.pairs(private.db.global.objectives) do
                 -- Callbacks
                 local function objective_OnClick(self)
-                    private:PickupObjectiveTemplate(objectiveTitle)
+                    if addon.tcount(objectiveInfo.trackers) == 0 then
+                        private.options:SetStatusText(L["Objective template must contain at least one tracker."])
+                    else
+                        private:PickupObjectiveTemplate(objectiveTitle)
+                    end
                 end
 
                 local objective = AceGUI:Create("Icon")

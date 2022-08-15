@@ -19,8 +19,7 @@ private.defaults = {
         },
         onUse = {
             type = "NONE", -- "ITEM", "NONE", "MACROTEXT"
-            -- action = false,
-            itemID = 6948,
+            itemID = false,
             macrotext = "",
         },
         condition = {
@@ -28,15 +27,14 @@ private.defaults = {
             func = [[function()
 end]],
         },
-        trackers = {
-            {
-                type = "CURRENCY", -- "ITEM", "CURRENCY"
-                -- id = false,
-                id = 1979,
-                objective = 1,
-                altIDs = {},
-            },
-        },
+        trackers = {},
+    },
+
+    tracker = {
+        type = "ITEM",
+        id = false,
+        objective = 1,
+        altIDs = {},
     },
 
     bar = {
@@ -117,7 +115,7 @@ end]],
             },
             normal = {
                 texture = "UI EmptySlot White",
-                texCoords = { 9 / 64, 53 / 64, 10 / 64, 53 / 64 },
+                texCoords = { 9 / 64, 52 / 64, 10 / 64, 53 / 64 },
                 color = { 1, 1, 1, 0.66 },
                 blendMode = "BLEND",
                 insets = { left = 0, right = 0, top = 0, bottom = 0 },
@@ -157,7 +155,7 @@ end]],
             },
             iconBorder = {
                 texture = "UI ActionButton Border",
-                texCoords = { 11 / 64, 51 / 64, 12 / 64, 52 / 64 },
+                texCoords = { 12 / 64, 51 / 64, 13 / 64, 53 / 64 },
                 color = { 1, 1, 1, 0.33 },
                 blendMode = "ADD",
                 insets = { left = 0, right = 0, top = 0, bottom = 0 },
@@ -178,7 +176,7 @@ function private:InitializeDatabase()
         global = {
             debug = {
                 enabled = false,
-                enabled = true,
+                -- enabled = true,
             },
             settings = {
                 useGameTooltip = false,
@@ -188,6 +186,49 @@ function private:InitializeDatabase()
                     farm = true,
                     fbar = true,
                     fb = false,
+                },
+                keybinds = {
+                    clearObjective = {
+                        button = "RightButton",
+                        modifier = "shift",
+                    },
+                    moveObjective = {
+                        button = "LeftButton",
+                        modifier = "",
+                    },
+                    moveObjectiveToBank = {
+                        button = "RightButton",
+                        modifier = "alt-ctrl",
+                    },
+                    moveAllToBank = {
+                        button = "LeftButton",
+                        modifier = "alt-ctrl",
+                    },
+                    dragObjective = {
+                        type = "drag",
+                        button = "LeftButton",
+                        modifier = "shift",
+                    },
+                    showObjectiveEditBox = {
+                        button = "LeftButton",
+                        modifier = "ctrl",
+                    },
+                    showObjectiveEditor = {
+                        button = "RightButton",
+                        modifier = "ctrl",
+                    },
+                    showQuickAddEditBox = {
+                        button = "LeftButton",
+                        modifier = "alt",
+                    },
+                    showQuickAddCurrencyEditBox = {
+                        button = "RightButton",
+                        modifier = "alt",
+                    },
+                    onUse = {
+                        button = "RightButton",
+                        modifier = "",
+                    },
                 },
             },
             objectives = {},
