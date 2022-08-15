@@ -8,6 +8,8 @@ function private:GetObjectiveIcon(objectiveInfo)
         return objectiveInfo.icon.id
     elseif objectiveInfo.onUse.type == "ITEM" then
         return GetItemIcon(objectiveInfo.onUse.itemID)
+    elseif not objectiveInfo.trackers[1] then
+        return 134400
     elseif objectiveInfo.trackers[1].type == "ITEM" then
         return GetItemIcon(objectiveInfo.trackers[1].id)
     else

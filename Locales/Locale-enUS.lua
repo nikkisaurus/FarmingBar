@@ -16,6 +16,7 @@ L["Control+click to lock and hide anchor."] = true
 --[[ Options ]]
 L["Alt IDs"] = true
 L["Quantity"] = true
+L["Objective template must contain at least one tracker."] = true
 L["Are you sure you want to delete %s from objective template \"%s\"?"] = true
 L["Alt ID already exists for this tracker."] = true
 L["Objective"] = true

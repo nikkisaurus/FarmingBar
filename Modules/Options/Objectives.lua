@@ -5,6 +5,8 @@ local AceGUI = LibStub("AceGUI-3.0")
 local LibSerialize = LibStub("LibSerialize")
 local LibDeflate = LibStub("LibDeflate")
 
+-- TODO: Save position when changing groups
+
 --[[ Lists ]]
 local lists = {
     condition = {
@@ -167,6 +169,14 @@ local function GetGeneralContent(objectiveTitle, content)
         private:UpdateMenu(private.options:GetUserData("menu"), "Objectives", newObjectiveTitle)
     end
 
+    local function icon_OnClick(self)
+        if addon.tcount(objectiveInfo.trackers) == 0 then
+            private.options:SetStatusText(L["Objective template must contain at least one tracker."])
+        else
+            print("Pickup objective")
+        end
+    end
+
     local function iconID_OnEnterPressed(_, _, value)
         private.db.global.objectives[objectiveTitle].icon.id = tonumber(value) or 134400
         private:NotifyChange(content)
@@ -212,6 +222,7 @@ local function GetGeneralContent(objectiveTitle, content)
     local icon = AceGUI:Create("Icon")
     icon:SetWidth(45)
     icon:SetImageSize(25, 25)
+    icon:SetCallback("OnClick", icon_OnClick)
     icon:SetUserData("NotifyChange", NotifyChangeFuncs.icon)
 
     local title = AceGUI:Create("EditBox")
