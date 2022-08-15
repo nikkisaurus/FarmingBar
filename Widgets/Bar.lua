@@ -13,16 +13,17 @@ local scripts = {
     OnEnter = function(frame)
         local widget = frame.obj
         local barDB = widget:GetDB()
+        local cursorType, itemID = GetCursorInfo()
+        local hasObjective = private.ObjectiveFrame:GetObjective()
+        local show = (cursorType == "item" and itemID) or hasObjective
 
         if barDB.mouseover then
-            widget:SetAlpha(barDB.alpha, not barDB.showEmpty)
+            widget:SetAlpha(barDB.alpha, not show and not barDB.showEmpty)
         end
     end,
 
     OnLeave = function(frame)
-        if not private.ObjectiveFrame:GetObjective() then
-            frame.obj:SetMouseover()
-        end
+        frame.obj:SetMouseover()
     end,
 }
 
@@ -92,11 +93,11 @@ local methods = {
         widget.frame:Hide()
     end,
 
-    SetAlpha = function(widget, alpha, hideEmpty, hasObjective)
+    SetAlpha = function(widget, alpha, hideEmpty)
         widget.frame:SetAlpha(alpha)
 
         for _, button in pairs(widget:GetButtons()) do
-            local isEmpty = hideEmpty and button:IsEmpty() -- TODO: check if cursor has objective
+            local isEmpty = hideEmpty and button:IsEmpty()
             button:SetAlpha(not private.ObjectiveFrame:GetObjective() and isEmpty and 0 or alpha)
         end
     end,
@@ -146,11 +147,14 @@ local methods = {
 
     SetMouseover = function(widget)
         local barDB = widget:GetDB()
+        local cursorType, itemID = GetCursorInfo()
+        local hasObjective = private.ObjectiveFrame:GetObjective()
+        local show = (cursorType == "item" and itemID) or hasObjective
 
         if barDB.mouseover then
-            widget:SetAlpha(0)
+            widget:SetAlpha(show and barDB.alpha or 0)
         else
-            widget:SetAlpha(barDB.alpha, not barDB.showEmpty)
+            widget:SetAlpha(barDB.alpha, not show and not barDB.showEmpty)
         end
     end,
 
