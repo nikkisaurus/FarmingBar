@@ -5,7 +5,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 --[[ Callbacks ]]
 local function frame_OnShow()
     for _, bar in pairs(private.bars) do
-        bar:SetAlpha(bar:GetDB().alpha, true)
+        bar:SetMouseover()
     end
 end
 
@@ -39,7 +39,7 @@ local methods = {
         self:Hide()
 
         for _, bar in pairs(private.bars) do
-            bar:SetAlpha(bar:GetDB().alpha, true)
+            bar:SetMouseover()
         end
     end,
 
@@ -52,6 +52,7 @@ local methods = {
     end,
 
     LoadObjective = function(self, objectiveTitle)
+        ClearCursor()
         local objectiveInfo = private.db.global.objectives[objectiveTitle]
         self.icon:SetTexture(private:GetObjectiveIcon(objectiveInfo))
         self.text:SetText(objectiveTitle)
