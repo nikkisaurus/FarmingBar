@@ -34,13 +34,7 @@ end]],
                 -- id = false,
                 id = 1979,
                 objective = 1,
-                altIDs = {
-                    {
-                        type = "ITEM",
-                        id = 1412,
-                        multiplier = 1,
-                    },
-                },
+                altIDs = {},
             },
         },
     },
@@ -184,7 +178,7 @@ function private:InitializeDatabase()
         global = {
             debug = {
                 enabled = false,
-                -- enabled = true,
+                enabled = true,
             },
             settings = {
                 useGameTooltip = false,

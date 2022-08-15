@@ -83,16 +83,16 @@ function private:LoadOptions()
     private:UpdateMenu(private.options:GetUserData("menu"))
 end
 
-function private:NotifyChange(parent)
+function private:NotifyChange(parent, ...)
     for _, child in pairs(parent.children) do
         local NotifyChange = child:GetUserData("NotifyChange")
         if NotifyChange then
-            NotifyChange(child)
+            NotifyChange(child, ...)
             parent:DoLayout()
         end
 
         if child.children then
-            private:NotifyChange(child)
+            private:NotifyChange(child, ...)
         end
     end
 end

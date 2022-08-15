@@ -89,6 +89,14 @@ function private:DeleteObjectiveTemplateTrackerAltID(objectiveTitle, trackerKey,
 end
 
 function private:ObjectiveTemplateTrackerAltIDExists(objectiveTitle, trackerKey, altType, altID)
+    local trackerInfo = private.db.global.objectives[objectiveTitle].trackers[trackerKey]
+    local trackerType = trackerInfo.type
+    local trackerID = trackerInfo.id
+
+    if altType == trackerType and altID == trackerID then
+        return true
+    end
+
     for _, altInfo in pairs(private.db.global.objectives[objectiveTitle].trackers[trackerKey].altIDs) do
         if altInfo.type == altType and altInfo.id == altID then
             return true

@@ -387,40 +387,165 @@ local function GetTrackerContent(objectiveTitle, content)
 
     local function trackerTree_OnGroupSelected(trackerTree, _, path)
         local group, subgroup = strsplit("\001", path)
+        local trackerKey = tonumber(subgroup)
+        local trackerInfo = objectiveInfo.trackers[trackerKey]
+        local trackerName = trackerInfo and private:GetObjectiveTemplateTrackerName(trackerInfo.type, trackerInfo.id)
+            or {}
+
         local scrollContent = trackerTree:GetUserData("scrollContent")
         scrollContent:ReleaseChildren()
 
-        if not subgroup then
-            -- Callbacks
-            local function trackerID_OnEnterPressed(trackerType, self, _, value)
-                local pendingTrackerType = trackerType:GetValue()
-
-                if pendingTrackerType == "ITEM" then
-                    local itemID = private:ValidateItem(value)
-                    if itemID then
-                        if not private:ObjectiveTemplateTrackerExists(objectiveTitle, pendingTrackerType, itemID) then
-                            local subgroup =
-                                private:AddObjectiveTemplateTracker(objectiveTitle, pendingTrackerType, itemID)
-                            private:NotifyChange(content)
-
-                            local itemName = private:GetObjectiveTemplateTrackerName(pendingTrackerType, itemID)
-                            trackerTree:SelectByPath(group, subgroup)
-                        else
-                            private.options:SetStatusText(L["Tracker already exists within this objective."])
-                            self:HighlightText()
-                        end
-                    else
-                        private.options:SetStatusText(L["Invalid itemID."])
-                        self:HighlightText()
+        -- NotifyChange
+        local NotifyChangeFuncs = {
+            altIDsGroup = function(self)
+                -- ! Resizing window rapidly sometimes causes game to freeze
+                self:ReleaseChildren()
+                for i, child in pairs(self.children) do
+                    if i > 3 then
+                        child:Release()
                     end
-                elseif pendingTrackerType == "CURRENCY" then
-                else
-                    private.options:SetStatusText(L["Please select a tracker type."])
-                    self:ClearFocus()
                 end
+
+                -- Callbacks
+                local function multiplier_OnEnterPressed(self, _, value)
+                    -- TODO: turn string rationals into decimals
+                    local multiplier = tonumber(value) or 1
+                    multiplier = multiplier > 0 and multiplier or 1
+
+                    self:ClearFocus()
+
+                    private.db.global.objectives[objectiveTitle].trackers[trackerKey].altIDs[self:GetUserData("altKey")].multiplier =
+                        multiplier
+                    private:NotifyChange(content)
+                end
+
+                local function remove_OnClick(self)
+                    private:DeleteObjectiveTemplateTrackerAltID(objectiveTitle, trackerKey, self:GetUserData("altKey"))
+                    private:NotifyChange(content)
+                end
+
+                -- Widgets
+                local removeTxt = AceGUI:Create("Label")
+                removeTxt:SetColor(1, 0.82, 0)
+                removeTxt:SetRelativeWidth(1 / 16)
+                removeTxt:SetText(" ")
+
+                local labelTxt = AceGUI:Create("Label")
+                labelTxt:SetColor(1, 0.82, 0)
+                labelTxt:SetRelativeWidth(11 / 16)
+                labelTxt:SetText(L["Item/Currency Name"])
+
+                local multiplierTxt = AceGUI:Create("Label")
+                multiplierTxt:SetColor(1, 0.82, 0)
+                multiplierTxt:SetRelativeWidth(4 / 16)
+                multiplierTxt:SetText(L["Multiplier"])
+
+                for altKey, altInfo in pairs(trackerInfo.altIDs or {}) do
+                    local remove = AceGUI:Create("InteractiveLabel")
+                    remove:SetRelativeWidth(1 / 16)
+                    remove:SetText("X")
+                    remove:SetCallback("OnClick", remove_OnClick)
+                    remove:SetUserData("altKey", altKey)
+
+                    local label = AceGUI:Create("Label")
+                    label:SetRelativeWidth(11 / 16)
+                    label:SetImageSize(14, 14)
+                    label:SetUserData("NotifyChange", function(self)
+                        self:SetText(private:GetObjectiveTemplateTrackerName(altInfo.type, altInfo.id))
+                        self:SetImage(private:GetObjectiveTemplateTrackerIcon(altInfo.type, altInfo.id))
+                    end)
+
+                    local multiplier = AceGUI:Create("EditBox")
+                    multiplier:SetRelativeWidth(4 / 16)
+                    multiplier:SetCallback("OnEnterPressed", multiplier_OnEnterPressed)
+                    multiplier:SetUserData("altKey", altKey)
+                    multiplier:SetUserData("NotifyChange", function(self)
+                        self:SetText(altInfo.multiplier)
+                    end)
+
+                    -- Add children
+                    private:AddChildren(self, removeTxt, labelTxt, multiplierTxt, remove, label, multiplier)
+                end
+
+                scrollContent:DoLayout()
+            end,
+
+            objective = function(self)
+                self:SetText(trackerInfo.objective)
+            end,
+        }
+
+        -- Callbacks
+        scrollContent:SetUserData("_OnEnterPressed", function(_Type, pendingType, widget, id)
+            if pendingType then
+                local validID = pendingType == "ITEM" and private:ValidateItem(id)
+                    or pendingType == "CURRENCY" and private:ValidateCurrency(id)
+
+                if validID then
+                    local exists = _Type == "tracker"
+                            and private:ObjectiveTemplateTrackerExists(objectiveTitle, pendingType, validID)
+                        or _Type == "altID"
+                            and private:ObjectiveTemplateTrackerAltIDExists(
+                                objectiveTitle,
+                                trackerKey,
+                                pendingType,
+                                validID
+                            )
+
+                    if not exists then
+                        if _Type == "tracker" then
+                            local subgroup = private:AddObjectiveTemplateTracker(objectiveTitle, pendingType, validID)
+                            local itemName = private:GetObjectiveTemplateTrackerName(pendingType, validID)
+                            trackerTree:SelectByPath(group, subgroup)
+                        elseif _Type == "altID" then
+                            private:AddObjectiveTemplateTrackerAltID(objectiveTitle, trackerKey, pendingType, validID)
+                        end
+
+                        private:NotifyChange(content)
+                        widget:SetText()
+                    else
+                        private.options:SetStatusText(L["Invalid input: duplicate entry."])
+                        widget:HighlightText()
+                    end
+                else
+                    private.options:SetStatusText(L["Invalid item/currency ID."])
+                    widget:HighlightText()
+                end
+            else
+                private.options:SetStatusText(L["Please select type: item or currency."])
             end
 
-            -- Widgets
+            widget:ClearFocus()
+        end)
+
+        local function deleteTracker_OnClick()
+            local deleteFunc = function()
+                private:DeleteObjectiveTemplateTracker(objectiveTitle, trackerKey)
+                private:NotifyChange(content)
+                trackerTree:SelectByPath(group)
+            end
+
+            private:ShowConfirmationDialog(
+                format(
+                    L["Are you sure you want to delete %s from objective template \"%s\"?"],
+                    trackerName,
+                    objectiveTitle
+                ),
+                deleteFunc
+            )
+        end
+
+        local function objective_OnEnterPressed(self, _, value)
+            local objective = tonumber(value) or 1
+            objective = objective < 1 and 1 or objective
+
+            self:ClearFocus()
+            private.db.global.objectives[objectiveTitle].trackers[trackerKey].objective = objective
+            private:NotifyChange(scrollContent)
+        end
+
+        -- Widgets
+        if not subgroup then
             local condition = AceGUI:Create("Dropdown")
             condition:SetLabel(L["Condition"])
             condition:SetList(lists.condition)
@@ -444,58 +569,14 @@ local function GetTrackerContent(objectiveTitle, content)
 
             local trackerID = AceGUI:Create("EditBox")
             trackerID:SetLabel(L["Currency/Item ID"])
-            trackerID:SetCallback("OnEnterPressed", function(...)
-                trackerID_OnEnterPressed(trackerType, ...)
+            trackerID:SetCallback("OnEnterPressed", function(self, _, value)
+                scrollContent:GetUserData("_OnEnterPressed")("tracker", trackerType:GetValue(), self, value)
             end)
 
             -- Add children
             private:AddChildren(addTrackerGroup, trackerType, trackerID)
             private:AddChildren(scrollContent, condition, conditionFunc, addTrackerGroup)
         else
-            local trackerKey = tonumber(subgroup)
-            local trackerInfo = objectiveInfo.trackers[trackerKey]
-            local trackerName = private:GetObjectiveTemplateTrackerName(trackerInfo.type, trackerInfo.id)
-
-            -- NotifyChange
-            local NotifyChangeFuncs = {
-                objective = function(self)
-                    self:SetText(trackerInfo.objective)
-                end,
-            }
-
-            -- Callbacks
-            local function deleteTracker_OnClick()
-                local deleteFunc = function()
-                    private:DeleteObjectiveTemplateTracker(objectiveTitle, trackerKey)
-                    private:NotifyChange(content)
-                    trackerTree:SelectByPath(group)
-                end
-
-                private:ShowConfirmationDialog(
-                    format(
-                        L["Are you sure you want to delete %s from objective template \"%s\"?"],
-                        trackerName,
-                        objectiveTitle
-                    ),
-                    deleteFunc
-                )
-            end
-
-            local function objective_OnEnterPressed(self, _, value)
-                local objective = tonumber(value) or 1
-                objective = objective < 1 and 1 or objective
-
-                self:ClearFocus()
-                private.db.global.objectives[objectiveTitle].trackers[trackerKey].objective = objective
-                private:NotifyChange(scrollContent)
-            end
-
-            local function remove_OnClick(self)
-                private:DeleteObjectiveTemplateTrackerAltID(objectiveTitle, trackerKey, self:GetUserData("altKey"))
-                private:NotifyChange(self.parent.parent)
-            end
-
-            -- Widgets
             local header = AceGUI:Create("Label")
             header:SetFullWidth(true)
             header:SetFontObject(GameFontNormal)
@@ -509,100 +590,34 @@ local function GetTrackerContent(objectiveTitle, content)
             objective:SetCallback("OnEnterPressed", objective_OnEnterPressed)
             objective:SetUserData("NotifyChange", NotifyChangeFuncs.objective)
 
+            local newAltID = AceGUI:Create("InlineGroup")
+            newAltID:SetTitle(L["New Alt ID"])
+            newAltID:SetFullWidth(true)
+            newAltID:SetLayout("Flow")
+
+            local altType = AceGUI:Create("Dropdown")
+            altType:SetLabel(L["Type"])
+            altType:SetList(lists.trackerType)
+
+            local altID = AceGUI:Create("EditBox")
+            altID:SetLabel(L["Currency/Item ID"])
+            altID:SetCallback("OnEnterPressed", function(self, _, value)
+                scrollContent:GetUserData("_OnEnterPressed")("altID", altType:GetValue(), self, value)
+            end)
+
             local altIDsGroup = AceGUI:Create("InlineGroup")
             altIDsGroup:SetTitle(L["Alt IDs"])
             altIDsGroup:SetFullWidth(true)
             altIDsGroup:SetLayout("Flow")
-
-            altIDsGroup:SetUserData("NotifyChange", function()
-                altIDsGroup:ReleaseChildren()
-
-                local altIDType = AceGUI:Create("Dropdown")
-                altIDType:SetLabel(L["Type"])
-                altIDType:SetList(lists.trackerType)
-
-                local altID = AceGUI:Create("EditBox")
-                altID:SetLabel(L["Currency/Item ID"])
-                altID:SetCallback(
-                    "OnEnterPressed",
-                    function(self, _, value) -- TODO: Create function for this and trackerID OnEnterPressed
-                        local pendingAltIDType = altIDType:GetValue()
-
-                        if pendingAltIDType == "ITEM" then
-                            local itemID = private:ValidateItem(value)
-                            if itemID then
-                                if
-                                    not private:ObjectiveTemplateTrackerAltIDExists(
-                                        objectiveTitle,
-                                        trackerKey,
-                                        pendingAltIDType,
-                                        itemID
-                                    )
-                                then
-                                    private:AddObjectiveTemplateTrackerAltID(
-                                        objectiveTitle,
-                                        trackerKey,
-                                        pendingAltIDType,
-                                        itemID
-                                    )
-                                    private:NotifyChange(scrollContent)
-                                else
-                                    private.options:SetStatusText(L["Alt ID already exists for this tracker."])
-                                    self:HighlightText()
-                                end
-                            else
-                                private.options:SetStatusText(L["Invalid itemID."])
-                                self:HighlightText()
-                            end
-                        elseif pendingAltIDType == "CURRENCY" then
-                        else
-                            private.options:SetStatusText(L["Please select an alt ID type."])
-                            self:ClearFocus()
-                        end
-                    end
-                )
-
-                local spacer = AceGUI:Create("Label")
-                spacer:SetFullWidth(true)
-                spacer:SetText(" ")
-
-                private:AddChildren(altIDsGroup, altIDType, altID, spacer)
-
-                for altKey, altInfo in pairs(trackerInfo.altIDs or {}) do -- TODO: Change so only list updates on Notify so it doesn't effect the add widgets
-                    local remove = AceGUI:Create("InteractiveLabel")
-                    remove:SetRelativeWidth(2 / 16)
-                    remove:SetText("X")
-                    remove:SetCallback("OnClick", remove_OnClick) -- TODO
-                    remove:SetUserData("altKey", altKey)
-
-                    local label = AceGUI:Create("Label")
-                    label:SetRelativeWidth(12 / 16)
-                    label:SetImageSize(14, 14)
-                    label:SetUserData("NotifyChange", function(self)
-                        self:SetText(private:GetObjectiveTemplateTrackerName(altInfo.type, altInfo.id))
-                        self:SetImage(private:GetObjectiveTemplateTrackerIcon(altInfo.type, altInfo.id))
-                    end)
-
-                    local multiplier = AceGUI:Create("EditBox")
-                    multiplier:SetRelativeWidth(2 / 16)
-                    multiplier:SetUserData("NotifyChange", function(self)
-                        self:SetText(altInfo.multiplier)
-                    end)
-                    multiplier:SetCallback("OnEnterPressed", multiplier_OnEnterPressed) -- TODO
-
-                    private:AddChildren(altIDsGroup, remove, label, multiplier)
-                end
-
-                -- Add children
-                scrollContent:DoLayout()
-            end)
+            altIDsGroup:SetUserData("NotifyChange", NotifyChangeFuncs.altIDsGroup)
 
             local deleteTracker = AceGUI:Create("Button")
             deleteTracker:SetText(DELETE)
             deleteTracker:SetCallback("OnClick", deleteTracker_OnClick)
 
             -- Add children
-            private:AddChildren(scrollContent, header, objective, altIDsGroup, deleteTracker)
+            private:AddChildren(newAltID, altType, altID)
+            private:AddChildren(scrollContent, header, objective, newAltID, altIDsGroup, deleteTracker)
             private:NotifyChange(altIDsGroup)
         end
 

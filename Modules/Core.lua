@@ -225,6 +225,19 @@ function private:CacheItem(itemID)
     end
 end
 
+function private:ValidateCurrency(currencyID)
+    if tonumber(currencyID) then
+        if C_CurrencyInfo.GetCurrencyInfo(currencyID) then
+            return tonumber(currencyID)
+        end
+    else
+        local currency = C_CurrencyInfo.GetCurrencyInfoFromLink(currencyID)
+        if currency then
+            return C_CurrencyInfo.GetCurrencyIDFromLink(currencyID)
+        end
+    end
+end
+
 function private:ValidateItem(itemID)
     local _, itemLink = GetItemInfo(itemID)
     if itemLink then
