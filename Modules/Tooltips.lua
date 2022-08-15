@@ -8,8 +8,8 @@ function private:InitializeTooltip()
 end
 
 function private:GetTooltip()
-    return private.db.global.settings.useGameTooltip and GameTooltip or
-        FarmingBar_Tooltip
+    -- return private.db.global.settings.useGameTooltip and GameTooltip or FarmingBar_Tooltip
+    return GameTooltip
 end
 
 function private:ClearTooltip()
@@ -24,8 +24,8 @@ function private:LoadTooltip(owner, anchor, x, y, lines)
     end
 
     local tooltip = private:GetTooltip()
-    tooltip:ClearLines()
     tooltip:SetOwner(owner, anchor, x, y)
+    tooltip:ClearLines()
 
     for _, line in pairs(lines) do
         if line.link then
@@ -35,7 +35,8 @@ function private:LoadTooltip(owner, anchor, x, y, lines)
         elseif line.double then
             tooltip:AddDoubleLine(line.k, line.v, addon.unpack(line.color, { 1, 1, 1, 1, 1, 1 }))
         else
-            tooltip:AddLine(line.line, addon.unpack(line.color, { 1, 1, 1, 1, 1, 1 }))
+            local r, g, b = addon.unpack(line.color, private.defaults.tooltip_desc)
+            tooltip:AddLine(line.line, r, g, b, line.wrap)
         end
     end
 

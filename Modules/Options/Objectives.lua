@@ -289,6 +289,26 @@ end
 
 local function GetObjectiveContent(content)
     local NotifyChangeFuncs = {
+        objectiveTemplatesGroup = function(self)
+            -- Callbacks
+            local function objective_OnClick(self)
+                print("Pickup objective")
+            end
+
+            -- Widgets
+            for objectiveTitle, objectiveInfo in addon.pairs(private.db.global.objectives) do
+                local objective = AceGUI:Create("Icon")
+                objective:SetWidth(44, 42)
+                objective:SetImageSize(40, 40)
+                objective:SetImage(private:GetObjectiveIcon(objectiveInfo))
+                objective:SetLabel(objectiveTitle)
+                private:SetOptionTooltip(objective, objectiveTitle)
+                objective:SetCallback("OnClick", objective_OnClick)
+
+                private:AddChildren(self, objective)
+            end
+        end,
+
         deleteObjective = function(self)
             local list = lists.deleteObjective()
             if addon.tcount(list) == 0 then
@@ -340,8 +360,15 @@ local function GetObjectiveContent(content)
     deleteObjective:SetCallback("OnValueChanged", deleteObjective_OnValueChanged)
     deleteObjective:SetUserData("NotifyChange", NotifyChangeFuncs.deleteObjective)
 
+    local objectiveTemplatesGroup = AceGUI:Create("InlineGroup")
+    objectiveTemplatesGroup:SetTitle(L["Objective Templates"])
+    objectiveTemplatesGroup:SetFullWidth(true)
+    objectiveTemplatesGroup:SetLayout("Flow")
+    objectiveTemplatesGroup:SetUserData("NotifyChange", NotifyChangeFuncs.objectiveTemplatesGroup)
+
     -- Add children
-    private:AddChildren(content, newObjective, importObjective, deleteObjective)
+    private:AddChildren(content, newObjective, importObjective, deleteObjective, objectiveTemplatesGroup)
+    private:NotifyChange(content)
 end
 
 local function GetTrackerContent(objectiveTitle, content)
@@ -349,15 +376,6 @@ local function GetTrackerContent(objectiveTitle, content)
 
     -- NotifyChange
     local NotifyChangeFuncs = {
-        condition = function(self)
-            self:SetValue(objectiveInfo.condition.type)
-        end,
-
-        conditionFunc = function(self)
-            self:SetText(objectiveInfo.condition.func)
-            self:SetDisabled(objectiveInfo.condition.type ~= "CUSTOM")
-        end,
-
         trackerTree = function(self)
             self:SetTree(GetTrackerMenu(objectiveTitle))
         end,
@@ -468,6 +486,15 @@ local function GetTrackerContent(objectiveTitle, content)
                 end
 
                 scrollContent:DoLayout()
+            end,
+
+            condition = function(self)
+                self:SetValue(objectiveInfo.condition.type)
+            end,
+
+            conditionFunc = function(self)
+                self:SetText(objectiveInfo.condition.func)
+                self:SetDisabled(objectiveInfo.condition.type ~= "CUSTOM")
             end,
 
             objective = function(self)

@@ -9,7 +9,7 @@ private.defaults = {
     minButtonSize = 25,
     maxButtonSize = 64,
 
-    tooltip_desc = { 1, 1, 1, 1, 1, 1, 1 },
+    tooltip_desc = { 1, 1, 1 },
     tooltip_keyvalue = { 1, 0.82, 0, 1, 1, 1, 1 },
 
     objective = {

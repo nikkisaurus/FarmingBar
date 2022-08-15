@@ -97,15 +97,9 @@ function private:NotifyChange(parent, ...)
     end
 end
 
-function private:SetOptionTooltip(widget, text)
+function private:SetOptionTooltip(widget, text, wrap)
     widget:SetCallback("OnEnter", function()
-        private:LoadTooltip(
-            widget.frame,
-            "ANCHOR_RIGHT",
-            0,
-            0,
-            { { line = text, color = private.defaults.tooltip_desc } }
-        )
+        private:LoadTooltip(widget.frame, "ANCHOR_RIGHT", 0, 0, { { line = text, wrap = wrap } })
     end)
     widget:SetCallback("OnLeave", function()
         private:ClearTooltip()

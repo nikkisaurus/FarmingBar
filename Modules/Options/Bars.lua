@@ -37,7 +37,7 @@ local function GetAppearanceContent(barID, barDB, content)
     local mouseover = AceGUI:Create("CheckBox")
     mouseover:SetRelativeWidth(0.9)
     mouseover:SetLabel(L["Mouseover"])
-    private:SetOptionTooltip(mouseover, L["Show this bar only on mouseover."])
+    private:SetOptionTooltip(mouseover, L["Show this bar only on mouseover."], true)
     mouseover:SetDescription(L["Show this bar only on mouseover."])
 
     mouseover:SetCallback("OnValueChanged", function(_, _, value)
@@ -51,7 +51,7 @@ local function GetAppearanceContent(barID, barDB, content)
     local showEmpty = AceGUI:Create("CheckBox")
     showEmpty:SetRelativeWidth(0.9)
     showEmpty:SetLabel(L["Show Empty"])
-    private:SetOptionTooltip(showEmpty, L["Shows a backdrop on empty buttons."])
+    private:SetOptionTooltip(showEmpty, L["Shows a backdrop on empty buttons."], true)
     showEmpty:SetDescription(L["Shows a backdrop on empty buttons."])
 
     showEmpty:SetCallback("OnValueChanged", function(_, _, value)
@@ -224,7 +224,8 @@ local function GetGeneralContent(barID, barDB, content)
     limitMats:SetLabel(L["Limit Mats"])
     private:SetOptionTooltip(
         limitMats,
-        L["Objectives on this bar cannot use materials already accounted for by another objective on the same bar."]
+        L["Objectives on this bar cannot use materials already accounted for by another objective on the same bar."],
+        true
     )
     limitMats:SetDescription(
         L["Objectives on this bar cannot use materials already accounted for by another objective on the same bar."]
@@ -244,7 +245,7 @@ local function GetGeneralContent(barID, barDB, content)
     local barProgress = AceGUI:Create("CheckBox")
     barProgress:SetRelativeWidth(0.9)
     barProgress:SetLabel(L["Bar Progress"])
-    private:SetOptionTooltip(barProgress, L["Track the number of completed objectives on this bar."])
+    private:SetOptionTooltip(barProgress, L["Track the number of completed objectives on this bar."], true)
     barProgress:SetDescription(L["Track the number of completed objectives on this bar."])
 
     barProgress:SetCallback("OnValueChanged", function(_, _, value)
@@ -257,7 +258,7 @@ local function GetGeneralContent(barID, barDB, content)
     local completedObjectives = AceGUI:Create("CheckBox")
     completedObjectives:SetRelativeWidth(0.9)
     completedObjectives:SetLabel(L["Completed Objectives"])
-    private:SetOptionTooltip(completedObjectives, L["Continue tracking objectives after completed."])
+    private:SetOptionTooltip(completedObjectives, L["Continue tracking objectives after completed."], true)
     completedObjectives:SetDescription(L["Continue tracking objectives after completed."])
 
     completedObjectives:SetCallback("OnValueChanged", function(_, _, value)
@@ -270,7 +271,7 @@ local function GetGeneralContent(barID, barDB, content)
     local muteAll = AceGUI:Create("CheckBox")
     muteAll:SetRelativeWidth(0.9)
     muteAll:SetLabel(L["Mute All"])
-    private:SetOptionTooltip(muteAll, L["Mute all alerts on this bar."])
+    private:SetOptionTooltip(muteAll, L["Mute all alerts on this bar."], true)
     muteAll:SetDescription(L["Mute all alerts on this bar."])
 
     muteAll:SetCallback("OnValueChanged", function(_, _, value)
