@@ -12,6 +12,7 @@ end
 --[[ OnEnable ]]
 function addon:OnEnable()
     private:InitializeTooltip()
+    private:InitializeObjectiveFrame()
     private:InitializeMasque()
     private:InitializeBars()
 

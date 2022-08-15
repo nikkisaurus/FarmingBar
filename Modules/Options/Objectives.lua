@@ -173,7 +173,7 @@ local function GetGeneralContent(objectiveTitle, content)
         if addon.tcount(objectiveInfo.trackers) == 0 then
             private.options:SetStatusText(L["Objective template must contain at least one tracker."])
         else
-            print("Pickup objective")
+            private:PickupObjectiveTemplate(objectiveTitle)
         end
     end
 
@@ -301,13 +301,13 @@ end
 local function GetObjectiveContent(content)
     local NotifyChangeFuncs = {
         objectiveTemplatesGroup = function(self)
-            -- Callbacks
-            local function objective_OnClick(self)
-                print("Pickup objective")
-            end
-
             -- Widgets
             for objectiveTitle, objectiveInfo in addon.pairs(private.db.global.objectives) do
+                -- Callbacks
+                local function objective_OnClick(self)
+                    private:PickupObjectiveTemplate(objectiveTitle)
+                end
+
                 local objective = AceGUI:Create("Icon")
                 objective:SetWidth(44, 42)
                 objective:SetImageSize(40, 40)

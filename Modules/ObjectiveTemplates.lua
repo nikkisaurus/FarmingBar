@@ -17,6 +17,10 @@ function private:GetObjectiveIcon(objectiveInfo)
     end
 end
 
+function private:PickupObjectiveTemplate(objectiveTitle)
+    private.ObjectiveFrame:LoadObjective(objectiveTitle)
+end
+
 --[[ Database ]]
 function private:DeleteObjectiveTemplate(objectiveTitle)
     private.db.global.objectives[objectiveTitle] = nil
