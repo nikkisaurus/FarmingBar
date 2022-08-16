@@ -332,6 +332,7 @@ local methods = {
     UpdateButtonTextures = function(widget)
         for _, button in pairs(widget:GetButtons()) do
             button:SetTextures()
+            button:SetIconTextures()
         end
     end,
 }

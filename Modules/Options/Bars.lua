@@ -62,6 +62,20 @@ local function GetAppearanceContent(barID, barDB, content)
         showEmpty:SetValue(barDB.showEmpty)
     end)
 
+    local showCooldown = AceGUI:Create("CheckBox")
+    showCooldown:SetRelativeWidth(0.9)
+    showCooldown:SetLabel(L["Show Cooldown"])
+    private:SetOptionTooltip(showCooldown, L["Shows the cooldown swipe animation on buttons."], true)
+    showCooldown:SetDescription(L["Shows the cooldown swipe animation on buttons"])
+
+    showCooldown:SetCallback("OnValueChanged", function(_, _, value)
+        private.db.profile.bars[barID].showCooldown = value
+        addon:SPELL_UPDATE_COOLDOWN()
+    end)
+    showCooldown:SetUserData("NotifyChange", function()
+        showCooldown:SetValue(barDB.showCooldown)
+    end)
+
     local hidden = AceGUI:Create("FarmingBar_LuaEditBox")
     hidden:SetFullWidth(true)
     hidden:SetLabel(L["Hidden"])
@@ -100,7 +114,7 @@ local function GetAppearanceContent(barID, barDB, content)
         end)
     end)
 
-    private:AddChildren(displayGroup, alpha, scale, mouseover, showEmpty, hidden, resetHidden)
+    private:AddChildren(displayGroup, alpha, scale, mouseover, showEmpty, showCooldown, hidden, resetHidden)
 
     local layoutGroup = AceGUI:Create("InlineGroup")
     layoutGroup:SetTitle(L["Layout"])

@@ -300,7 +300,7 @@ local function Constructor()
     frame:RegisterForClicks("AnyUp")
 
     local backdrop = frame:CreateTexture("$parentBackdrop")
-    -- -- local cooldown
+    local cooldown = CreateFrame("Cooldown", "$parentCooldown", frame, "CooldownFrameTemplate")
     local count = frame:CreateFontString("$parentCount", "OVERLAY", "GameFontHighlight")
     local gloss = frame:CreateTexture("$parentGloss")
     local highlight = frame:CreateTexture("$parentHighlight")
@@ -319,7 +319,7 @@ local function Constructor()
     local widget = {
         frame = frame,
         backdrop = backdrop,
-        -- cooldown = cooldown,
+        cooldown = cooldown,
         count = count,
         gloss = gloss,
         highlight = highlight,

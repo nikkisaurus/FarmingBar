@@ -72,6 +72,7 @@ end]],
         alpha = 1,
         scale = 1,
         showEmpty = true,
+        showCooldown = true,
 
         --[[ Layout ]]
         movable = true,
@@ -237,6 +238,13 @@ function private:InitializeDatabase()
             enabled = true,
             bars = {
                 private.defaults.bar,
+            },
+            style = {
+                font = {
+                    face = "Friz Quadrata TT",
+                    outline = "OUTLINE",
+                    size = 12,
+                },
             },
         },
     }, true)
