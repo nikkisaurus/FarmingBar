@@ -625,5 +625,23 @@ function private:GetBarsOptions(treeGroup, subgroup)
 
         private:AddChildren(treeGroup, tabGroup)
         tabGroup:SelectTab("general")
+    else
+        local newBar = AceGUI:Create("Button")
+        newBar:SetText(NEW)
+        newBar:SetCallback("OnClick", function()
+            local barID = private:AddBar()
+            private.options:GetUserData("menu"):SelectByPath("Bars", "bar" .. barID)
+        end)
+
+        -- local scrollContainer = AceGUI:Create("SimpleGroup")
+        -- scrollContainer:SetFullWidth(true)
+        -- scrollContainer:SetLayout("Fill")
+
+        -- local scrollContent = AceGUI:Create("ScrollFrame")
+        -- scrollContent:SetLayout("Flow")
+        -- scrollContainer:AddChild(scrollContent)
+        -- treeGroup:SetUserData("scrollContent", scrollContent)
+
+        private:AddChildren(treeGroup, newBar)
     end
 end

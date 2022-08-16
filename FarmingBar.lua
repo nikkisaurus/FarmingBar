@@ -24,5 +24,5 @@ end
 --[[ StartDebug ]]
 function private:StartDebug()
     private:LoadOptions()
-    private:UpdateMenu(private.options:GetUserData("menu"), "Objectives")
+    private:UpdateMenu(private.options:GetUserData("menu"), "Bars")
 end

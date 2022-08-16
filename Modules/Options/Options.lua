@@ -120,6 +120,7 @@ end
 function private:RegisterMedia()
     LSM:Register(LSM.MediaType.BACKGROUND, "UI EmptySlot White", [[INTERFACE\BUTTONS\UI-EMPTYSLOT-WHITE]])
     LSM:Register(LSM.MediaType.BACKGROUND, "UI ActionButton Border", [[Interface\Buttons\UI-ActionButton-Border]])
+    -- TODO: Add pixel border
 end
 
 --[[ Masque Support ]]

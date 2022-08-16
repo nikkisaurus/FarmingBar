@@ -40,3 +40,28 @@ function private:InitializeBars()
     -- Initialize cooldowns
     addon:SPELL_UPDATE_COOLDOWN()
 end
+
+function private:AddBar()
+    local barDB = addon.CloneTable(private.defaults.bar)
+    local styleDB = private.db.profile.style
+
+    barDB.buttonSize = styleDB.buttons.size
+    barDB.buttonPadding = styleDB.buttons.padding
+
+    barDB.font.face = styleDB.font.face
+    barDB.font.outline = styleDB.font.outline
+    barDB.font.size = styleDB.font.size
+
+    local pos = tinsert(private.db.profile.bars, barDB)
+    local barID = #private.db.profile.bars
+
+    local bar = AceGUI:Create("FarmingBar_Bar")
+    bar:SetID(barID)
+    private.bars[barID] = bar
+
+    -- Update interfaces
+    addon:SPELL_UPDATE_COOLDOWN()
+    private:UpdateMenu(private.options:GetUserData("menu"))
+
+    return barID
+end

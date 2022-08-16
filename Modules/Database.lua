@@ -22,6 +22,11 @@ private.defaults = {
         buttonSize = 40,
         buttonPadding = 2,
         buttonsPerAxis = 6,
+        font = {
+            face = "Friz Quadrata TT",
+            outline = "OUTLINE",
+            size = 12,
+        },
         hidden = [[function()
             -- To hide this bar, return true
             -- To show this bar, return nil
@@ -235,7 +240,7 @@ function private:InitializeDatabase()
                     size = 12,
                 },
                 buttons = {
-                    size = 40,
+                    size = 45,
                     padding = 2,
                 },
             },
