@@ -3,51 +3,39 @@ local addon = LibStub("AceAddon-3.0"):GetAddon(addonName)
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 
 private.defaults = {
-    maxButtons = 72,
-    minPadding = -3,
-    maxPadding = 20,
-    minButtonSize = 25,
-    maxButtonSize = 64,
-
-    tooltip_desc = { 1, 1, 1 },
-    tooltip_keyvalue = { 1, 0.82, 0, 1, 1, 1, 1 },
-
-    objective = {
-        icon = {
-            type = "AUTO", -- "AUTO", "FALLBACK"
-            id = 134400,
-        },
-        onUse = {
-            type = "NONE", -- "ITEM", "NONE", "MACROTEXT"
-            itemID = false,
-            macrotext = "",
-        },
-        condition = {
-            type = "ALL", -- "ALL", "ANY", "CUSTOM"
-            func = [[function()
-end]],
-        },
-        trackers = {},
-    },
-
-    tracker = {
-        type = "ITEM",
-        id = false,
-        objective = 1,
-        altIDs = {},
-    },
-
     bar = {
+        buttons = {},
+
         --[[ General ]]
-        label = "",
         alerts = {
             barProgress = false,
             completedObjectives = true,
             muteAll = false,
         },
+        label = "",
         limitMats = false,
 
         --[[ Appearance ]]
+        alpha = 1,
+        barAnchor = "TOPLEFT", -- "TOPLEFT", "TOPRIGHT", "BOTTOMLEFT", "BOTTOMRIGHT"
+        buttonGrowth = "ROW", -- "ROW", "COL"
+        buttonSize = 40,
+        buttonPadding = 2,
+        buttonsPerAxis = 6,
+        hidden = [[function()
+            -- To hide this bar, return true
+            -- To show this bar, return nil
+            return
+        end]],
+        mouseover = false,
+        movable = true,
+        numButtons = 12,
+        point = { "CENTER" },
+        scale = 1,
+        showCooldown = true,
+        showEmpty = true,
+
+        --[[ Skins ]]
         backdrop = {
             enabled = false,
             bgFile = {
@@ -62,26 +50,6 @@ end]],
             bgColor = { 1, 1, 1, 1 },
             borderColor = { 1, 1, 1, 1 },
         },
-
-        hidden = [[function()
-    -- To hide this bar, return true
-    -- To show this bar, return nil
-    return
-end]],
-        mouseover = false,
-        alpha = 1,
-        scale = 1,
-        showEmpty = true,
-        showCooldown = true,
-
-        --[[ Layout ]]
-        movable = true,
-        point = { "CENTER" },
-        buttonGrowth = "ROW", -- "ROW", "COL"
-        barAnchor = "TOPLEFT", -- "TOPLEFT", "TOPRIGHT", "BOTTOMLEFT", "BOTTOMRIGHT"
-
-        --[[ Buttons ]]
-        buttons = {},
 
         buttonTextures = {
             backdrop = {
@@ -165,10 +133,31 @@ end]],
                 hidden = false,
             },
         },
-        numButtons = 12,
-        buttonsPerAxis = 6,
-        buttonSize = 40,
-        buttonPadding = 2,
+    },
+
+    objective = {
+        icon = {
+            type = "AUTO", -- "AUTO", "FALLBACK"
+            id = 134400,
+        },
+        onUse = {
+            type = "NONE", -- "ITEM", "NONE", "MACROTEXT"
+            itemID = false,
+            macrotext = "",
+        },
+        condition = {
+            type = "ALL", -- "ALL", "ANY", "CUSTOM"
+            func = [[function()
+end]],
+        },
+        trackers = {},
+    },
+
+    tracker = {
+        type = "ITEM",
+        id = false,
+        objective = 1,
+        altIDs = {},
     },
 }
 
@@ -177,7 +166,7 @@ function private:InitializeDatabase()
         global = {
             debug = {
                 enabled = false,
-                -- enabled = true,
+                enabled = true,
             },
             settings = {
                 useGameTooltip = false,
@@ -244,6 +233,10 @@ function private:InitializeDatabase()
                     face = "Friz Quadrata TT",
                     outline = "OUTLINE",
                     size = 12,
+                },
+                buttons = {
+                    size = 40,
+                    padding = 2,
                 },
             },
         },

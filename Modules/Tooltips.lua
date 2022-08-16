@@ -35,7 +35,7 @@ function private:LoadTooltip(owner, anchor, x, y, lines)
         elseif line.double then
             tooltip:AddDoubleLine(line.k, line.v, addon.unpack(line.color, { 1, 1, 1, 1, 1, 1 }))
         else
-            local r, g, b = addon.unpack(line.color, private.defaults.tooltip_desc)
+            local r, g, b = addon.unpack(line.color, private.CONST.TOOLTIP_DESC)
             tooltip:AddLine(line.line, r, g, b, line.wrap)
         end
     end

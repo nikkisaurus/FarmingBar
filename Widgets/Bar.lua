@@ -53,7 +53,7 @@ local anchorScripts = {
         private:LoadTooltip(anchor, "ANCHOR_CURSOR", 0, 0, {
             {
                 line = L["Control+click to lock and hide anchor."],
-                color = private.defaults.tooltip_desc,
+                color = private.CONST.TOOLTIP_DESC,
             },
         })
 

@@ -191,6 +191,17 @@ private.anchorPoints = {
     },
 }
 
+private.CONST = {
+    MAX_BUTTONS = 72,
+    MIN_PADDING = -3,
+    MAX_PADDING = 20,
+    MIN_BUTTON_SIZE = 25,
+    MAX_BUTTON_SIZE = 64,
+
+    TOOLTIP_DESC = { 1, 1, 1 },
+    TOOLTIP_KEYVALUE = { 1, 0.82, 0, 1, 1, 1 },
+}
+
 --[[ Slash Commands ]]
 function private:InitializeSlashCommands()
     for command, enabled in pairs(private.db.global.settings.commands) do
@@ -206,7 +217,7 @@ function addon:HandleSlashCommand(input)
     private:LoadOptions()
 end
 
---[[ Item Caching ]]
+--[[ Item/Currency ]]
 private.CacheItemCo = function(itemID)
     if not itemID then
         return

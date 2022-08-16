@@ -97,9 +97,6 @@ local function GetAppearanceContent(barID, barDB, content)
         private.options:SetStatusText(err)
         private:NotifyChange(content)
     end)
-
-    -- TODO: Implement OnEnterPressed with function validation
-
     hidden:SetUserData("NotifyChange", function()
         hidden:SetText(barDB.hidden)
     end)
@@ -173,7 +170,7 @@ local function GetAppearanceContent(barID, barDB, content)
     buttonsGroup:SetLayout("Flow")
 
     local numButtons = AceGUI:Create("Slider")
-    numButtons:SetSliderValues(1, private.defaults.maxButtons, 1)
+    numButtons:SetSliderValues(1, private.CONST.MAX_BUTTONS, 1)
     numButtons:SetLabel(L["Buttons"])
 
     numButtons:SetCallback("OnValueChanged", function(_, _, value)
@@ -186,7 +183,7 @@ local function GetAppearanceContent(barID, barDB, content)
     end)
 
     local buttonsPerAxis = AceGUI:Create("Slider")
-    buttonsPerAxis:SetSliderValues(1, private.defaults.maxButtons, 1)
+    buttonsPerAxis:SetSliderValues(1, private.CONST.MAX_BUTTONS, 1)
     buttonsPerAxis:SetLabel(L["Buttons Per Axis"])
 
     buttonsPerAxis:SetCallback("OnValueChanged", function(_, _, value)
@@ -198,7 +195,7 @@ local function GetAppearanceContent(barID, barDB, content)
     end)
 
     local buttonPadding = AceGUI:Create("Slider")
-    buttonPadding:SetSliderValues(private.defaults.minPadding, private.defaults.maxPadding, 1)
+    buttonPadding:SetSliderValues(private.CONST.MIN_PADDING, private.CONST.MAX_PADDING, 1)
     buttonPadding:SetLabel(L["Button Padding"])
 
     buttonPadding:SetCallback("OnValueChanged", function(_, _, value)
@@ -210,7 +207,7 @@ local function GetAppearanceContent(barID, barDB, content)
     end)
 
     local buttonSize = AceGUI:Create("Slider")
-    buttonSize:SetSliderValues(private.defaults.minButtonSize, private.defaults.maxButtonSize, 1)
+    buttonSize:SetSliderValues(private.CONST.MIN_BUTTON_SIZE, private.CONST.MAX_BUTTON_SIZE, 1)
     buttonSize:SetLabel(L["Button Size"])
 
     buttonSize:SetCallback("OnValueChanged", function(_, _, value)
