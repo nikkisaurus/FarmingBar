@@ -19,16 +19,13 @@ function addon:SPELL_UPDATE_COOLDOWN()
     end
 end
 
-local function UpdateBarAlphas()
+function addon:CURSOR_CHANGED()
     for _, bar in pairs(private.bars) do
         bar:SetMouseover()
     end
 end
 
 function private:InitializeBars()
-    addon:RegisterEvent("CURSOR_CHANGED", UpdateBarAlphas)
-    addon:RegisterEvent("SPELL_UPDATE_COOLDOWN")
-
     private.bars = {}
 
     for barID, barDB in pairs(private.db.profile.bars) do
@@ -37,7 +34,6 @@ function private:InitializeBars()
         private.bars[barID] = bar
     end
 
-    -- Initialize cooldowns
     addon:SPELL_UPDATE_COOLDOWN()
 end
 
@@ -59,9 +55,17 @@ function private:AddBar()
     bar:SetID(barID)
     private.bars[barID] = bar
 
-    -- Update interfaces
     addon:SPELL_UPDATE_COOLDOWN()
     private:UpdateMenu(private.options:GetUserData("menu"))
 
     return barID
+end
+
+function private:RemoveBar(barID)
+    for _, bar in pairs(private.bars) do
+        bar:Release()
+    end
+    tremove(private.db.profile.bars, barID)
+    private:InitializeBars()
+    private:UpdateMenu(private.options:GetUserData("menu"))
 end

@@ -14,6 +14,8 @@ function addon:OnEnable()
     private:InitializeTooltip()
     private:InitializeObjectiveFrame()
     private:InitializeMasque()
+    addon:RegisterEvent("CURSOR_CHANGED")
+    addon:RegisterEvent("SPELL_UPDATE_COOLDOWN")
     private:InitializeBars()
 
     if private.db.global.debug.enabled then

@@ -7,6 +7,8 @@ local LSM = LibStub("LibSharedMedia-3.0")
 local Type = "FarmingBar_Bar"
 local Version = 1
 
+-- TODO: Add font to cooldown, implement count
+
 -- [[ Scripts ]]
 local scripts = {
     --[[ Mouseover ]]
@@ -73,6 +75,12 @@ local methods = {
     --[[ Widget ]]
     OnAcquire = function(widget)
         widget:SetUserData("buttons", {})
+    end,
+
+    OnRelease = function(widget)
+        for _, button in pairs(widget:GetButtons()) do
+            button:Release()
+        end
     end,
 
     CallScript = function(widget, event, ...)
@@ -248,6 +256,10 @@ local methods = {
             return
         end
 
+        local fontDB = private.db.profile.style.font
+        widget.anchor.text:SetFont(LSM:Fetch("font", fontDB.face), fontDB.size, fontDB.outline)
+        widget.anchor.text:SetText(barID)
+
         widget:SetUserData("barID", barID)
         widget:DrawButtons()
         widget:Update()
@@ -358,6 +370,8 @@ local function Constructor()
     anchor:SetMovable(true)
     anchor:RegisterForDrag("LeftButton")
     anchor:SetClampedToScreen(true)
+    anchor.text = anchor:CreateFontString(nil, "OVERLAY")
+    anchor.text:SetPoint("BOTTOMRIGHT", -2, 2)
 
     for script, func in pairs(anchorScripts) do
         anchor:SetScript(script, func)

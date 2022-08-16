@@ -686,6 +686,7 @@ local function GetTrackerContent(objectiveTitle, content)
     -- Add children
     private:AddChildren(content, trackerTree)
     private:NotifyChange(trackerTree)
+    trackerTree:SelectByPath("trackers")
 end
 
 --[[ Callbacks ]]
@@ -728,7 +729,7 @@ function private:GetObjectivesOptions(treeGroup, subgroup)
         tabGroup:SetCallback("OnGroupSelected", tabGroup_OnGroupSelected)
 
         private:AddChildren(treeGroup, tabGroup)
-        tabGroup:SelectTab("trackers")
+        tabGroup:SelectTab("general")
     else
         local scrollContainer = AceGUI:Create("SimpleGroup")
         scrollContainer:SetFullWidth(true)

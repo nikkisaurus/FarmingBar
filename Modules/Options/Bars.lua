@@ -3,6 +3,8 @@ local addon = LibStub("AceAddon-3.0"):GetAddon(addonName)
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 local AceGUI = LibStub("AceGUI-3.0")
 
+-- TODO: Add font settings
+
 --[[ Content ]]
 local function GetAppearanceContent(barID, barDB, content)
     local displayGroup = AceGUI:Create("InlineGroup")
@@ -66,7 +68,7 @@ local function GetAppearanceContent(barID, barDB, content)
     showCooldown:SetRelativeWidth(0.9)
     showCooldown:SetLabel(L["Show Cooldown"])
     private:SetOptionTooltip(showCooldown, L["Shows the cooldown swipe animation on buttons."], true)
-    showCooldown:SetDescription(L["Shows the cooldown swipe animation on buttons"])
+    showCooldown:SetDescription(L["Shows the cooldown swipe animation on buttons."])
 
     showCooldown:SetCallback("OnValueChanged", function(_, _, value)
         private.db.profile.bars[barID].showCooldown = value
@@ -574,7 +576,22 @@ local function GetSkinsContent(barID, barDB, content)
     private:AddChildren(content, buttonTextureGroup)
 end
 
-local function GetManageContent(barID, barDB, content) end
+local function GetManageContent(barID, barDB, content)
+    -- TODO: Templates, Copy From
+    local removeBar = AceGUI:Create("Button")
+    removeBar:SetText(REMOVE)
+    removeBar:SetCallback("OnClick", function()
+        local deleteFunc = function()
+            private.options:GetUserData("menu"):SelectByPath("Bars")
+            private:RemoveBar(barID)
+        end
+
+        private:ShowConfirmationDialog(format(L["Are you sure you want to remove Bar \"%d\"?"], barID), deleteFunc)
+    end)
+
+    -- Add children
+    private:AddChildren(content, removeBar)
+end
 
 --[[ Callbacks ]]
 local function tabGroup_OnGroupSelected(tabGroup, _, group)
@@ -595,6 +612,7 @@ local function tabGroup_OnGroupSelected(tabGroup, _, group)
     end
 
     private:NotifyChange(content)
+    content:DoLayout()
 end
 
 --[[ Options ]]
@@ -626,6 +644,8 @@ function private:GetBarsOptions(treeGroup, subgroup)
         private:AddChildren(treeGroup, tabGroup)
         tabGroup:SelectTab("general")
     else
+        treeGroup:SetLayout("Flow")
+
         local newBar = AceGUI:Create("Button")
         newBar:SetText(NEW)
         newBar:SetCallback("OnClick", function()

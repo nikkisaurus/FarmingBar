@@ -16,6 +16,7 @@ L["Control+click to lock and hide anchor."] = true
 
 --[[ Options ]]
 L["Alt IDs"] = true
+L["Are you sure you want to remove Bar \"%d\"?"] = true
 L["Quantity"] = true
 L["Show Cooldown"] = true
 L["Shows the cooldown swipe animation on buttons."] = true
