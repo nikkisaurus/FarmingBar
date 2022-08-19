@@ -2,8 +2,36 @@ local addonName, private = ...
 local addon = LibStub("AceAddon-3.0"):GetAddon(addonName)
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 local AceGUI = LibStub("AceGUI-3.0")
+local LSM = LibStub("LibSharedMedia-3.0")
 
 -- TODO: Add font settings
+--[[ Lists ]]
+local lists = {
+    anchors = {
+        CENTER = "CENTER",
+        TOPLEFT = "TOPLEFT",
+        TOPRIGHT = "TOPRIGHT",
+        TOP = "TOP",
+        BOTTOMLEFT = "BOTTOMLEFT",
+        BOTTOMRIGHT = "BOTTOMRIGHT",
+        BOTTOM = "BOTTOM",
+        LEFT = "LEFT",
+        RIGHT = "RIGHT",
+    },
+    blendModes = {
+        DISABLE = L["DISABLE"],
+        BLEND = L["BLEND"],
+        ALPHAKEY = L["ALPHAKEY"],
+        ADD = L["ADD"],
+        MOD = L["MOD"],
+    },
+    outlines = {
+        MONOCHROME = L["MONOCHROME"],
+        OUTLINE = L["OUTLINE"],
+        THICKOUTLINE = L["THICKOUTLINE"],
+        NONE = NONE,
+    },
+}
 
 --[[ Content ]]
 local function GetAppearanceContent(barID, barDB, content)
@@ -224,6 +252,131 @@ local function GetAppearanceContent(barID, barDB, content)
     private:AddChildren(content, displayGroup, layoutGroup, buttonsGroup)
 end
 
+local function GetFontstringsContent(barID, barDB, content)
+    for fontName, fontDB in addon.pairs(barDB.fontstrings) do
+        -- NotifyChange
+        local NotifyChangeFuncs = {
+            anchor = function(self)
+                self:SetValue(fontDB.anchor)
+            end,
+
+            color = function(self)
+                self:SetColor(unpack(fontDB.color))
+            end,
+
+            enable = function(self)
+                self:SetValue(fontDB.enabled)
+            end,
+
+            face = function(self)
+                self:SetValue(fontDB.face)
+            end,
+
+            outline = function(self)
+                self:SetValue(fontDB.outline)
+            end,
+
+            size = function(self)
+                self:SetValue(fontDB.size)
+            end,
+
+            xOffset = function(self)
+                self:SetValue(fontDB.x)
+            end,
+
+            yOffset = function(self)
+                self:SetValue(fontDB.y)
+            end,
+        }
+
+        -- Callbacks
+        local _OnValueChanged = {}
+        for key, value in pairs(fontDB) do
+            _OnValueChanged[key] = function(widget, _, value)
+                private.db.profile.bars[barID].fontstrings[fontName][key] = value
+                private.bars[barID]:UpdateFontstrings()
+                private:NotifyChange(widget.parent)
+            end
+        end
+
+        local function color_OnValueChanged(_, _, ...)
+            for _, button in pairs(private.bars[barID]:GetButtons()) do
+                local fontstring = button[strlower(fontName)]
+                fontstring = fontstring.SetFont and fontstring or fontstring:GetRegions()
+
+                fontstring:SetTextColor(...)
+            end
+        end
+
+        local function color_OnValueConfirmed(_, _, ...)
+            private.db.profile.bars[barID].fontstrings[fontName].color = { ... }
+            private.bars[barID]:UpdateFontstrings()
+        end
+
+        -- Widgets
+        local group = AceGUI:Create("InlineGroup")
+        group:SetFullWidth(true)
+        group:SetTitle(fontName .. " " .. L["Text"])
+        group:SetLayout("Flow")
+
+        local enable = AceGUI:Create("CheckBox")
+        enable:SetLabel(L["Enable"])
+        enable:SetCallback("OnValueChanged", _OnValueChanged.enabled)
+        enable:SetUserData("NotifyChange", NotifyChangeFuncs.enable)
+
+        local color = AceGUI:Create("ColorPicker")
+        color:SetLabel(L["Color"])
+        color:SetHasAlpha(true)
+        color:SetCallback("OnValueChanged", color_OnValueChanged)
+        color:SetCallback("OnValueConfirmed", color_OnValueConfirmed)
+        color:SetUserData("NotifyChange", NotifyChangeFuncs.color)
+
+        local spacer = AceGUI:Create("Label")
+        spacer:SetFullWidth(true)
+        spacer:SetText(" ")
+
+        local face = AceGUI:Create("LSM30_Font")
+        face:SetLabel(L["Face"])
+        face:SetList(AceGUIWidgetLSMlists.font)
+        face:SetCallback("OnValueChanged", _OnValueChanged.face)
+        face:SetUserData("NotifyChange", NotifyChangeFuncs.face)
+
+        local outline = AceGUI:Create("Dropdown")
+        outline:SetLabel(L["Font Outline"])
+        outline:SetList(lists.outlines)
+        outline:SetCallback("OnValueChanged", _OnValueChanged.outline)
+        outline:SetUserData("NotifyChange", NotifyChangeFuncs.outline)
+
+        local size = AceGUI:Create("Slider")
+        size:SetSliderValues(8, 64, 1)
+        size:SetLabel(L["Font Size"])
+        size:SetCallback("OnValueChanged", _OnValueChanged.size)
+        size:SetUserData("NotifyChange", NotifyChangeFuncs.size)
+
+        local anchor = AceGUI:Create("Dropdown")
+        anchor:SetLabel(L["Anchor"])
+        anchor:SetList(lists.anchors)
+        anchor:SetCallback("OnValueChanged", _OnValueChanged.anchor)
+        anchor:SetUserData("NotifyChange", NotifyChangeFuncs.anchor)
+
+        local xOffset = AceGUI:Create("Slider")
+        xOffset:SetSliderValues(-private.CONST.MIN_MAX_XOFFSET, private.CONST.MIN_MAX_XOFFSET, 1)
+        xOffset:SetLabel(L["X-Offset"])
+        xOffset:SetCallback("OnValueChanged", _OnValueChanged.x)
+        xOffset:SetUserData("NotifyChange", NotifyChangeFuncs.xOffset)
+
+        local yOffset = AceGUI:Create("Slider")
+        yOffset:SetSliderValues(-private.CONST.MIN_MAX_YOFFSET, private.CONST.MIN_MAX_YOFFSET, 1)
+        yOffset:SetLabel(L["Y-Offset"])
+        yOffset:SetCallback("OnValueChanged", _OnValueChanged.y)
+        yOffset:SetUserData("NotifyChange", NotifyChangeFuncs.yOffset)
+
+        -- -- Add children
+        private:AddChildren(group, enable, color, spacer, face, outline, size, anchor, xOffset, yOffset)
+        private:AddChildren(content, group)
+    end
+end
+
 local function GetGeneralContent(barID, barDB, content)
     local label = AceGUI:Create("EditBox")
     label:SetLabel(L["Label"])
@@ -422,13 +575,7 @@ local function GetSkinsContent(barID, barDB, content)
 
         local blendMode = AceGUI:Create("Dropdown")
         blendMode:SetLabel(L["Blend Mode"])
-        blendMode:SetList({
-            DISABLE = "DISABLE",
-            BLEND = "BLEND",
-            ALPHAKEY = "ALPHAKEY",
-            ADD = "ADD",
-            MOD = "MOD",
-        })
+        blendMode:SetList(lists.blendModes)
 
         blendMode:SetCallback("OnValueChanged", function(_, _, value)
             private.db.profile.bars[barID].buttonTextures[layerName].blendMode = value
@@ -605,6 +752,8 @@ local function tabGroup_OnGroupSelected(tabGroup, _, group)
         GetGeneralContent(barID, barDB, content)
     elseif group == "appearance" then
         GetAppearanceContent(barID, barDB, content)
+    elseif group == "fontstrings" then
+        GetFontstringsContent(barID, barDB, content)
     elseif group == "skins" then
         GetSkinsContent(barID, barDB, content)
     elseif group == "manage" then
@@ -625,6 +774,7 @@ function private:GetBarsOptions(treeGroup, subgroup)
         tabGroup:SetTabs({
             { value = "general", text = L["General"] },
             { value = "appearance", text = L["Appearance"] },
+            { value = "fontstrings", text = L["Fontstrings"] },
             { value = "skins", text = L["Skins"] },
             { value = "manage", text = L["Manage"] },
         })
@@ -642,7 +792,8 @@ function private:GetBarsOptions(treeGroup, subgroup)
         tabGroup:SetUserData("scrollContent", scrollContent)
 
         private:AddChildren(treeGroup, tabGroup)
-        tabGroup:SelectTab("general")
+        -- tabGroup:SelectTab("general") -- TODO: set default
+        tabGroup:SelectTab("fontstrings")
     else
         treeGroup:SetLayout("Flow")
 

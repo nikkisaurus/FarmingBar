@@ -87,6 +87,7 @@ local methods = {
         widget.frame:GetScript(event)(...)
     end,
 
+    --[[ Updates ]]
     Update = function(widget)
         widget:SetBackdrop()
         widget:SetPoints()
@@ -94,6 +95,20 @@ local methods = {
         widget:SetMouseover()
         widget:SetMovable()
         widget:SetScale()
+        widget:UpdateFontstrings()
+    end,
+
+    UpdateButtonTextures = function(widget)
+        for _, button in pairs(widget:GetButtons()) do
+            button:SetTextures()
+            button:SetIconTextures()
+        end
+    end,
+
+    UpdateFontstrings = function(widget)
+        for _, button in pairs(widget:GetButtons()) do
+            button:SetFontstrings()
+        end
     end,
 
     --[[ Frame ]]
@@ -339,13 +354,6 @@ local methods = {
             + (2 * barDB.backdrop.bgFile.tileSize)
         local growRow = barDB.buttonGrowth == "ROW"
         widget:SetSize(growRow and width or height, growRow and height or width)
-    end,
-
-    UpdateButtonTextures = function(widget)
-        for _, button in pairs(widget:GetButtons()) do
-            button:SetTextures()
-            button:SetIconTextures()
-        end
     end,
 }
 

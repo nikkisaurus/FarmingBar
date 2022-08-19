@@ -59,8 +59,8 @@ function private:InitializeOptions()
     local options = AceGUI:Create("Frame")
     options:SetTitle(L.addonName)
     options:SetLayout("Fill")
-    options:SetWidth(875)
-    options:SetHeight(600)
+    options:SetWidth(950)
+    options:SetHeight(700)
     options:Hide()
     private.options = options
 

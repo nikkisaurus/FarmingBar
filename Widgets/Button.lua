@@ -37,6 +37,7 @@ local scripts = {
                 addon.CloneTable(private.db.global.objectives[objectiveTemplate])
             widget:UpdateAttributes()
             private.ObjectiveFrame:Clear()
+            return
         elseif cursorType == "item" and itemID then
             if alternateObjective then
                 print("SWAP")
@@ -55,8 +56,10 @@ local scripts = {
             private.db.profile.bars[barID].buttons[buttonID] = template
             ClearCursor()
             widget:UpdateAttributes()
+            return
         elseif not widget:IsEmpty() then
             print("Pickup and move")
+            return
         end
 
         for keybind, keybindInfo in pairs(private.db.global.settings.keybinds) do
@@ -158,6 +161,42 @@ local methods = {
 
     Show = function(widget)
         widget.frame:Show()
+    end,
+
+    --[[ Fontstrings ]]
+    SetCount = function(widget)
+        widget.count:SetText(20) -- TODO
+    end,
+
+    SetObjective = function(widget, objective)
+        if widget:IsEmpty() or not objective or objective == 0 then
+            widget.objective:SetText()
+            widget.objective:Hide()
+        else
+            widget.objective:SetText(objective)
+            widget.objective:Show()
+        end
+    end,
+
+    SetFontstrings = function(widget)
+        local barDB, buttonDB = widget:GetDB()
+        local isEmpty = widget:IsEmpty()
+
+        for fontName, fontDB in pairs(barDB.fontstrings) do
+            local fontstring = widget[strlower(fontName)]
+            fontstring = fontstring.SetFont and fontstring or fontstring:GetRegions()
+
+            fontstring:ClearAllPoints()
+
+            if fontDB.enabled and not isEmpty then
+                fontstring:Show()
+                fontstring:SetPoint(fontDB.anchor, fontDB.x, fontDB.y)
+                fontstring:SetFont(LSM:Fetch("font", fontDB.face), fontDB.size, fontDB.outline)
+                fontstring:SetTextColor(unpack(fontDB.color))
+            else
+                fontstring:Hide()
+            end
+        end
     end,
 
     --[[ Textures ]]
@@ -267,6 +306,8 @@ local methods = {
         widget:DrawButton()
         widget:SetTextures()
         widget:UpdateAttributes()
+        widget:SetCount()
+        widget:SetObjective()
     end,
 
     UpdateAttributes = function(widget)
@@ -279,8 +320,6 @@ local methods = {
         local barDB, buttonDB = widget:GetDB()
         widget:SetSize(barDB.buttonSize)
     end,
-
-    SetCount = function(widget) end,
 }
 
 --[[ Constructor ]]
@@ -308,6 +347,7 @@ local function Constructor()
     local iconBorder = frame:CreateTexture("$parentIconBorder")
     local mask = frame:CreateTexture("$parentMask")
     local normal = frame:CreateTexture("$parentNormal")
+    local objective = frame:CreateFontString("$parentObjective", "OVERLAY", "GameFontHighlight")
     local pushed = frame:CreateTexture("$parentPushed")
     local shadow = frame:CreateTexture("$parentShadow")
 
@@ -327,6 +367,7 @@ local function Constructor()
         iconBorder = iconBorder,
         mask = mask,
         normal = normal,
+        objective = objective,
         pushed = pushed,
         shadow = shadow,
         type = Type,

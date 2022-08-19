@@ -198,6 +198,9 @@ private.CONST = {
     MIN_BUTTON_SIZE = 25,
     MAX_BUTTON_SIZE = 64,
 
+    MIN_MAX_XOFFSET = 24,
+    MIN_MAX_YOFFSET = 24,
+
     TOOLTIP_DESC = { 1, 1, 1 },
     TOOLTIP_KEYVALUE = { 1, 0.82, 0, 1, 1, 1 },
 }

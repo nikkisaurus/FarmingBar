@@ -2,6 +2,7 @@ local addonName, private = ...
 local addon = LibStub("AceAddon-3.0"):GetAddon(addonName)
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 local AceGUI = LibStub("AceGUI-3.0")
+local LSM = LibStub("LibSharedMedia-3.0")
 
 function addon:SPELL_UPDATE_COOLDOWN()
     for _, bar in pairs(private.bars) do
@@ -9,6 +10,7 @@ function addon:SPELL_UPDATE_COOLDOWN()
             local barDB, buttonDB = button:GetDB()
             if not button:IsEmpty() and barDB.showCooldown and buttonDB.onUse.type == "ITEM" then
                 local startTime, duration, enable = GetItemCooldown(buttonDB.onUse.itemID)
+                button.cooldown:SetDrawEdge(barDB.fontstrings.Cooldown.showEdge)
                 button.cooldown:SetCooldown(startTime, duration)
                 button.cooldown:Show()
             else

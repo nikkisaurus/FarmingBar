@@ -22,10 +22,38 @@ private.defaults = {
         buttonSize = 40,
         buttonPadding = 2,
         buttonsPerAxis = 6,
-        font = {
-            face = "Friz Quadrata TT",
-            outline = "OUTLINE",
-            size = 12,
+        fontstrings = {
+            Cooldown = {
+                enabled = true,
+                color = { 1, 1, 1, 1 },
+                face = "Friz Quadrata TT",
+                outline = "OUTLINE",
+                size = 12,
+                anchor = "CENTER",
+                x = 0,
+                y = 0,
+            },
+            Count = {
+                enabled = true,
+                color = { 1, 1, 1, 1 },
+                face = "Friz Quadrata TT",
+                outline = "OUTLINE",
+                size = 12,
+                anchor = "BOTTOMRIGHT",
+                x = -1,
+                y = 2,
+                showEdge = false,
+            },
+            Objective = {
+                enabled = true,
+                color = { 1, 1, 1, 1 },
+                face = "Friz Quadrata TT",
+                outline = "OUTLINE",
+                size = 12,
+                anchor = "TOPLEFT",
+                x = 1,
+                y = -2,
+            },
         },
         hidden = [[function()
             -- To hide this bar, return true
