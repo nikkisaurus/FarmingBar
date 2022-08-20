@@ -431,13 +431,25 @@ local function GetTrackerContent(objectiveTitle, content)
         -- NotifyChange
         local NotifyChangeFuncs = {
             altIDsGroup = function(self)
-                -- ! Resizing window rapidly sometimes causes game to freeze
                 self:ReleaseChildren()
 
                 -- Callbacks
                 local function multiplier_OnEnterPressed(self, _, value)
-                    -- TODO: turn string rationals into decimals
-                    local multiplier = tonumber(value) or 1
+                    local num, den = strsplit("/", value)
+                    local multiplier
+
+                    if den then
+                        num = tonumber(num)
+                        den = tonumber(den)
+                        if num and den and den ~= 0 then
+                            multiplier = addon.round(num / den, 3)
+                        else
+                            multiplier = 1
+                        end
+                    else
+                        multiplier = tonumber(value) or 1
+                    end
+
                     multiplier = multiplier > 0 and multiplier or 1
 
                     self:ClearFocus()
