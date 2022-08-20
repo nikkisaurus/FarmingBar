@@ -7,49 +7,111 @@ local LSM = LibStub("LibSharedMedia-3.0")
 local Type = "FarmingBar_Button"
 local Version = 1
 
---[[ PostClick Methods ]]
-local postClickMethods = {
-    onUse = function(frame)
-        local widget = frame.obj
-        if widget:IsEmpty() then -- TODO: or not action item
-            return
+--[[ Helper Functions ]]
+local function PickupObjectiveInfo(widget)
+    if not widget:IsEmpty() then
+        local _, buttonDB = widget:GetDB()
+        private.ObjectiveFrame:LoadObjective(buttonDB)
+        private.ObjectiveFrame:SetAltWidget(widget)
+    end
+end
+
+local function PlaceObjectiveInfo(widget)
+    local isEmpty = widget:IsEmpty()
+    local objectiveInfo, altWidget = private.ObjectiveFrame:GetObjective()
+
+    if objectiveInfo then
+        if altWidget then
+            if not isEmpty then
+                local _, buttonDB = widget:GetDB()
+                altWidget:SetObjectiveInfo(addon.CloneTable(buttonDB))
+            else
+                altWidget:Clear()
+            end
         end
-    end,
+
+        widget:SetObjectiveInfo(addon.CloneTable(objectiveInfo))
+        private.ObjectiveFrame:Clear()
+
+        return true
+    end
+end
+
+local postClickMethods = {
     clearObjective = function(frame)
         frame.obj:Clear()
     end,
+
+    dragObjective = function(frame)
+        PickupObjectiveInfo(frame.obj)
+    end,
+
     moveObjective = function(frame)
+        PickupObjectiveInfo(frame.obj)
+    end,
+
+    onUse = function(frame)
         local widget = frame.obj
-        if not widget:IsEmpty() then
-            local _, buttonDB = widget:GetDB()
-            private.ObjectiveFrame:LoadObjective(buttonDB)
-            private.ObjectiveFrame:SetAltWidget(widget)
+        local _, buttonDB = widget:GetDB()
+        local itemID = buttonDB.onUse.itemID
+
+        if widget:IsEmpty() or buttonDB.onUse.type ~= "ITEM" or not itemID or not GetItemSpell(itemID) then
+            return
         end
     end,
 }
 
--- [[ Scripts ]]
-local scripts = {
-    PostClick = function(frame, buttonClicked, ...)
-        local widget = frame.obj
-        local barID, buttonID = widget:GetID()
-        local cursorType, itemID = GetCursorInfo()
-        local isEmpty = widget:IsEmpty()
-        local objectiveInfo, altWidget = private.ObjectiveFrame:GetObjective()
+local function ProcessKeybinds(frame, buttonClicked, ...)
+    for keybind, keybindInfo in pairs(private.db.global.settings.keybinds) do
+        if buttonClicked == keybindInfo.button then
+            local mod = private:GetModifierString()
+            local isDragging = frame.obj:GetUserData("dragging")
 
-        if objectiveInfo then
-            if altWidget then
-                if not isEmpty then
-                    local _, buttonDB = widget:GetDB()
-                    altWidget:SetObjectiveInfo(addon.CloneTable(buttonDB))
-                else
-                    altWidget:Clear()
+            if mod == keybindInfo.modifier and (keybindInfo.type == "drag" and isDragging or not isDragging) then
+                local func = postClickMethods[keybind]
+                if func then
+                    func(frame, keybindInfo, buttonClicked, ...)
                 end
             end
+        end
+    end
+end
 
-            widget:SetObjectiveInfo(addon.CloneTable(objectiveInfo))
-            private.ObjectiveFrame:Clear()
+-- [[ Scripts ]]
+local scripts = {
+    OnDragStart = function(frame, buttonClicked, ...)
+        local widget = frame.obj
+        if widget:IsEmpty() then
+            return
+        end
 
+        widget:SetUserData("dragging", true)
+        ProcessKeybinds(frame, buttonClicked, ...)
+    end,
+
+    OnDragStop = function(frame, ...)
+        frame.obj:SetUserData("dragging")
+    end,
+
+    OnEnter = function(frame, ...)
+        local bar = frame.obj:GetBar()
+        bar:CallScript("OnEnter", bar.frame, ...)
+    end,
+
+    OnLeave = function(frame, ...)
+        local bar = frame.obj:GetBar()
+        bar:CallScript("OnLeave", bar.frame, ...)
+    end,
+
+    OnReceiveDrag = function(frame, ...)
+        PlaceObjectiveInfo(frame.obj)
+    end,
+
+    PostClick = function(frame, buttonClicked, ...)
+        local widget = frame.obj
+        local cursorType, itemID = GetCursorInfo()
+
+        if PlaceObjectiveInfo(widget) then
             return
         elseif cursorType == "item" and itemID then
             private.CacheItem(itemID)
@@ -70,28 +132,7 @@ local scripts = {
             return
         end
 
-        for keybind, keybindInfo in pairs(private.db.global.settings.keybinds) do
-            if buttonClicked == keybindInfo.button then
-                local mod = private:GetModifierString()
-
-                if mod == keybindInfo.modifier then
-                    local func = postClickMethods[keybind]
-                    if func then
-                        func(frame, keybindInfo, buttonClicked, ...)
-                    end
-                end
-            end
-        end
-    end,
-
-    OnEnter = function(frame, ...)
-        local bar = frame.obj:GetBar()
-        bar:CallScript("OnEnter", bar.frame, ...)
-    end,
-
-    OnLeave = function(frame, ...)
-        local bar = frame.obj:GetBar()
-        bar:CallScript("OnLeave", bar.frame, ...)
+        ProcessKeybinds(frame, buttonClicked, ...)
     end,
 }
 
@@ -350,7 +391,7 @@ local function Constructor()
     frame:SetFrameLevel(1)
     frame:SetMovable(true)
     frame:EnableMouse(true)
-    frame:RegisterForDrag("AnyUp")
+    frame:RegisterForDrag("LeftButton", "RightButton")
     frame:RegisterForClicks("AnyUp")
 
     local backdrop = frame:CreateTexture("$parentBackdrop")

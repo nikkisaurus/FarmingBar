@@ -219,11 +219,11 @@ function private:InitializeDatabase()
                         button = "LeftButton",
                         modifier = "",
                     },
-                    moveObjectiveToBank = {
+                    moveObjectiveToBank = { -- TODO
                         button = "RightButton",
                         modifier = "alt-ctrl",
                     },
-                    moveAllToBank = {
+                    moveAllToBank = { -- TODO
                         button = "LeftButton",
                         modifier = "alt-ctrl",
                     },
@@ -232,19 +232,19 @@ function private:InitializeDatabase()
                         button = "LeftButton",
                         modifier = "shift",
                     },
-                    showObjectiveEditBox = {
+                    showObjectiveEditBox = { -- TODO
                         button = "LeftButton",
                         modifier = "ctrl",
                     },
-                    showObjectiveEditor = {
+                    showObjectiveEditor = { -- TODO
                         button = "RightButton",
                         modifier = "ctrl",
                     },
-                    showQuickAddEditBox = {
+                    showQuickAddEditBox = { -- TODO
                         button = "LeftButton",
                         modifier = "alt",
                     },
-                    showQuickAddCurrencyEditBox = {
+                    showQuickAddCurrencyEditBox = { -- TODO
                         button = "RightButton",
                         modifier = "alt",
                     },
