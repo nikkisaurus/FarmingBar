@@ -15,6 +15,9 @@ local function frame_OnEvent(self, event, buttonClicked, ...)
         -- Clear objective when right clicking or not dropping item on button
         if buttonClicked == "RightButton" or not strfind(GetMouseFocus():GetName() or "", "^FarmingBar_Button%d") then
             self:Clear()
+            if altWidget then
+                altWidget:Clear()
+            end
         end
     end
 end

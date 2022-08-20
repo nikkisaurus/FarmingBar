@@ -13,6 +13,7 @@ local function PickupObjectiveInfo(widget)
         local _, buttonDB = widget:GetDB()
         private.ObjectiveFrame:LoadObjective(buttonDB)
         private.ObjectiveFrame:SetAltWidget(widget)
+        widget.icon:SetDesaturated(true)
     end
 end
 
@@ -295,6 +296,8 @@ local methods = {
     SetIconTextures = function(widget)
         local barDB, buttonDB = widget:GetDB()
         local isEmpty = widget:IsEmpty()
+
+        widget.icon:SetDesaturated(false)
 
         if isEmpty then
             widget.icon:SetTexture()
