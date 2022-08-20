@@ -7,8 +7,6 @@ local LSM = LibStub("LibSharedMedia-3.0")
 local Type = "FarmingBar_Bar"
 local Version = 1
 
--- TODO: Add font to cooldown, implement count
-
 -- [[ Scripts ]]
 local scripts = {
     --[[ Mouseover ]]

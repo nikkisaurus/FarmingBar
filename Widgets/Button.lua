@@ -103,6 +103,10 @@ local scripts = {
         bar:CallScript("OnEnter", bar.frame, ...)
     end,
 
+    OnEvent = function(frame, ...)
+        frame.obj:SetCount()
+    end,
+
     OnLeave = function(frame, ...)
         local bar = frame.obj:GetBar()
         bar:CallScript("OnLeave", bar.frame, ...)
@@ -146,6 +150,13 @@ local methods = {
     --[[ Widget ]]
     OnAcquire = function(widget)
         widget:Show()
+        widget.frame:RegisterEvent("BAG_UPDATE_DELAYED")
+        widget.frame:RegisterEvent("CURRENCY_DISPLAY_UPDATE")
+    end,
+
+    OnRelease = function(widget)
+        widget.frame:UnregisterEvent("BAG_UPDATE_DELAYED")
+        widget.frame:UnregisterEvent("CURRENCY_DISPLAY_UPDATE")
     end,
 
     --[[ Frame ]]
@@ -219,7 +230,7 @@ local methods = {
 
     --[[ Fontstrings ]]
     SetCount = function(widget)
-        widget.count:SetText(private:GetWidgetCount(widget)) -- TODO
+        widget.count:SetText(private:GetWidgetCount(widget))
     end,
 
     SetObjective = function(widget, objective)
