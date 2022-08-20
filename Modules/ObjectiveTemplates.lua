@@ -32,7 +32,7 @@ function private:GetObjectiveIcon(objectiveInfo)
 end
 
 function private:PickupObjectiveTemplate(objectiveTitle)
-    private.ObjectiveFrame:LoadObjective(objectiveTitle)
+    private.ObjectiveFrame:LoadObjective(private.db.global.objectives[objectiveTitle], objectiveTitle)
 end
 
 --[[ Database ]]

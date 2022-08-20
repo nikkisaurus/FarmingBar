@@ -18,6 +18,14 @@ local postClickMethods = {
     clearObjective = function(frame)
         frame.obj:Clear()
     end,
+    moveObjective = function(frame)
+        local widget = frame.obj
+        if not widget:IsEmpty() then
+            local _, buttonDB = widget:GetDB()
+            private.ObjectiveFrame:LoadObjective(buttonDB)
+            private.ObjectiveFrame:SetAltWidget(widget)
+        end
+    end,
 }
 
 -- [[ Scripts ]]
@@ -26,39 +34,39 @@ local scripts = {
         local widget = frame.obj
         local barID, buttonID = widget:GetID()
         local cursorType, itemID = GetCursorInfo()
-        local objectiveTemplate, alternateObjective = private.ObjectiveFrame:GetObjective()
+        local isEmpty = widget:IsEmpty()
+        local objectiveInfo, altWidget = private.ObjectiveFrame:GetObjective()
 
-        if objectiveTemplate then
-            if alternateObjective then
-                print("SWAP")
-                return
+        if objectiveInfo then
+            if altWidget then
+                if not isEmpty then
+                    local _, buttonDB = widget:GetDB()
+                    altWidget:SetObjectiveInfo(addon.CloneTable(buttonDB))
+                else
+                    altWidget:Clear()
+                end
             end
-            private.db.profile.bars[barID].buttons[buttonID] =
-                addon.CloneTable(private.db.global.objectives[objectiveTemplate])
-            widget:UpdateAttributes()
+
+            widget:SetObjectiveInfo(addon.CloneTable(objectiveInfo))
             private.ObjectiveFrame:Clear()
+
             return
         elseif cursorType == "item" and itemID then
-            if alternateObjective then
-                print("SWAP")
-                return
-            end
-
             private.CacheItem(itemID)
+
             local template = addon.CloneTable(private.defaults.objective)
             template.icon.id = GetItemIcon(itemID)
             template.onUse.type = "ITEM"
             template.onUse.itemID = itemID
+
             local tracker = addon.CloneTable(private.defaults.tracker)
             tracker.type = "ITEM"
             tracker.id = itemID
             tinsert(template.trackers, tracker)
-            private.db.profile.bars[barID].buttons[buttonID] = template
+
+            widget:SetObjectiveInfo(template)
             ClearCursor()
-            widget:UpdateAttributes()
-            return
-        elseif not widget:IsEmpty() then
-            print("Pickup and move")
+
             return
         end
 
@@ -302,17 +310,24 @@ local methods = {
         widget:Update()
     end,
 
+    SetObjectiveInfo = function(widget, objectiveInfo)
+        local barID, buttonID = widget:GetID()
+        private.db.profile.bars[barID].buttons[buttonID] = objectiveInfo
+        widget:UpdateAttributes()
+    end,
+
     Update = function(widget)
         widget:DrawButton()
         widget:SetTextures()
         widget:UpdateAttributes()
-        widget:SetCount()
-        widget:SetObjective()
     end,
 
     UpdateAttributes = function(widget)
         widget:SetIconTextures()
         widget:SetAttributes()
+        widget:SetFontstrings()
+        widget:SetCount()
+        widget:SetObjective()
     end,
 
     --[[ Button ]]

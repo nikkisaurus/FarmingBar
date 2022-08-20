@@ -10,11 +10,11 @@ local function frame_OnShow()
 end
 
 local function frame_OnEvent(self, event, buttonClicked, ...)
-    if event == "GLOBAL_MOUSE_DOWN" and (self:GetObjective() or self:GetAlternateObjective()) then
+    local hasObjective, altWidget = self:GetObjective()
+    if event == "GLOBAL_MOUSE_DOWN" and (hasObjective or altWidget) then
         -- Clear objective when right clicking or not dropping item on button
         if buttonClicked == "RightButton" or not strfind(GetMouseFocus():GetName() or "", "^FarmingBar_Button%d") then
             self:Clear()
-            -- addon.movingButton = nil
         end
     end
 end
@@ -29,14 +29,12 @@ end
 --[[ Methods ]]
 local methods = {
     Clear = function(self)
-        -- local widget = addon.movingButton
-        -- if widget then
-        --     widget[1]:ClearObjective()
-        -- end
-
         self.icon:SetTexture("")
         self.text:SetText("")
         self:Hide()
+
+        self.objectiveInfo = nil
+        self.altWidget = nil
 
         for _, bar in pairs(private.bars) do
             bar:SetMouseover()
@@ -44,20 +42,19 @@ local methods = {
     end,
 
     GetObjective = function(self)
-        return self.text:GetText()
+        return self.objectiveInfo, self.altWidget
     end,
 
-    GetAlternateObjective = function(self)
-        -- return self.text:GetText(), self.objectiveInfo
-    end,
-
-    LoadObjective = function(self, objectiveTitle)
+    LoadObjective = function(self, objectiveInfo, objectiveTitle)
         ClearCursor()
-        local objectiveInfo = private.db.global.objectives[objectiveTitle]
         self.icon:SetTexture(private:GetObjectiveIcon(objectiveInfo))
-        self.text:SetText(objectiveTitle)
+        self.text:SetText(objectiveTitle or "")
         self.objectiveInfo = addon.CloneTable(objectiveInfo)
         self:Show()
+    end,
+
+    SetAltWidget = function(self, widget)
+        self.altWidget = widget
     end,
 }
 
