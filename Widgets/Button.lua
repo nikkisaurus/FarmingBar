@@ -60,6 +60,10 @@ local postClickMethods = {
             return
         end
     end,
+
+    showObjectiveEditor = function(frame)
+        print("Show editor") -- TODO
+    end,
 }
 
 local function ProcessKeybinds(frame, buttonClicked, ...)
@@ -215,7 +219,7 @@ local methods = {
 
     --[[ Fontstrings ]]
     SetCount = function(widget)
-        widget.count:SetText(20) -- TODO
+        widget.count:SetText(private:GetWidgetCount(widget)) -- TODO
     end,
 
     SetObjective = function(widget, objective)

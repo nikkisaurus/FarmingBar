@@ -3,6 +3,8 @@
     <Include file="Tooltips.lua"/>
     <Include file="Core.lua"/>
     <Include file="Bars.lua"/>
+    <Include file="DataStore.lua"/>
+    <Include file="Counts.lua"/>
     <Include file="ObjectiveFrame.lua"/>
     <Include file="ObjectiveTemplates.lua"/>
     <Include file="Options\embeds.xml"/>

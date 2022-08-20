@@ -16,6 +16,10 @@ L["Control+click to lock and hide anchor."] = true
 
 --[[ Options ]]
 L["BLEND"] = true
+L["Missing dependencies"] = true
+L["Include Alts"] = true
+L["Include Bank"] = true
+L["Include Guild Bank"] = true
 L["X-Offset"] = true
 L["Y-Offset"] = true
 L["Fontstrings"] = true

@@ -190,6 +190,9 @@ end]],
         type = "ITEM",
         id = false,
         objective = 1,
+        includeAlts = true,
+        includeBank = false,
+        includeGuildBank = {},
         altIDs = {},
     },
 }
@@ -199,7 +202,7 @@ function private:InitializeDatabase()
         global = {
             debug = {
                 enabled = false,
-                -- enabled = true,
+                enabled = true,
             },
             settings = {
                 useGameTooltip = false,

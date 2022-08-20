@@ -433,11 +433,6 @@ local function GetTrackerContent(objectiveTitle, content)
             altIDsGroup = function(self)
                 -- ! Resizing window rapidly sometimes causes game to freeze
                 self:ReleaseChildren()
-                for i, child in pairs(self.children) do
-                    if i > 3 then
-                        child:Release()
-                    end
-                end
 
                 -- Callbacks
                 local function multiplier_OnEnterPressed(self, _, value)
@@ -473,7 +468,12 @@ local function GetTrackerContent(objectiveTitle, content)
                 multiplierTxt:SetRelativeWidth(4 / 16)
                 multiplierTxt:SetText(L["Multiplier"])
 
-                for altKey, altInfo in pairs(trackerInfo.altIDs or {}) do
+                -- Add children
+                if #trackerInfo.altIDs > 0 then
+                    private:AddChildren(self, removeTxt, labelTxt, multiplierTxt)
+                end
+
+                for altKey, altInfo in addon.pairs(trackerInfo.altIDs) do
                     local remove = AceGUI:Create("InteractiveLabel")
                     remove:SetRelativeWidth(1 / 16)
                     remove:SetText("X")
@@ -497,7 +497,7 @@ local function GetTrackerContent(objectiveTitle, content)
                     end)
 
                     -- Add children
-                    private:AddChildren(self, removeTxt, labelTxt, multiplierTxt, remove, label, multiplier)
+                    private:AddChildren(self, remove, label, multiplier)
                 end
 
                 scrollContent:DoLayout()
@@ -510,6 +510,20 @@ local function GetTrackerContent(objectiveTitle, content)
             conditionFunc = function(self)
                 self:SetText(objectiveInfo.condition.func)
                 self:SetDisabled(objectiveInfo.condition.type ~= "CUSTOM")
+            end,
+
+            includeAlts = function(self)
+                self:SetValue(trackerInfo.includeAlts)
+            end,
+
+            includeBank = function(self)
+                self:SetValue(trackerInfo.includeBank)
+            end,
+
+            includeGuildBank = function(self)
+                for guild, enabled in pairs(trackerInfo.includeGuildBank) do
+                    self:SetItemValue(guild, enabled)
+                end
             end,
 
             objective = function(self)
@@ -558,6 +572,7 @@ local function GetTrackerContent(objectiveTitle, content)
             end
 
             widget:ClearFocus()
+            private:NotifyChange(scrollContent)
         end)
 
         local function deleteTracker_OnClick()
@@ -575,6 +590,19 @@ local function GetTrackerContent(objectiveTitle, content)
                 ),
                 deleteFunc
             )
+        end
+
+        local function includeAlts_OnValueChanged(_, _, value)
+            private.db.global.objectives[objectiveTitle].trackers[trackerKey].includeAlts = value
+        end
+
+        local function includeBank_OnValueChanged(_, _, value)
+            private.db.global.objectives[objectiveTitle].trackers[trackerKey].includeBank = value
+        end
+
+        local function includeGuildBank_OnValueChanged(_, _, value, checked)
+            private.db.global.objectives[objectiveTitle].trackers[trackerKey].includeGuildBank[value] = checked
+            private:NotifyChange(scrollContent)
         end
 
         local function objective_OnEnterPressed(self, _, value)
@@ -632,6 +660,37 @@ local function GetTrackerContent(objectiveTitle, content)
             objective:SetCallback("OnEnterPressed", objective_OnEnterPressed)
             objective:SetUserData("NotifyChange", NotifyChangeFuncs.objective)
 
+            local includeGuildBank = AceGUI:Create("Dropdown")
+            includeGuildBank:SetList(private:GetGuildsList())
+            includeGuildBank:SetLabel(L["Include Guild Bank"])
+            includeGuildBank:SetMultiselect(true)
+            includeGuildBank:SetCallback("OnValueChanged", includeGuildBank_OnValueChanged)
+            includeGuildBank:SetUserData("NotifyChange", NotifyChangeFuncs.includeGuildBank)
+
+            local includeBank = AceGUI:Create("CheckBox")
+            includeBank:SetLabel(L["Include Bank"])
+            includeBank:SetCallback("OnValueChanged", includeBank_OnValueChanged)
+            includeBank:SetUserData("NotifyChange", NotifyChangeFuncs.includeBank)
+
+            local includeAlts = AceGUI:Create("CheckBox")
+            includeAlts:SetLabel(L["Include Alts"])
+            local missing = private:GetMissingDataStoreModules()
+            if #missing > 0 then
+                local msg = L["Missing dependencies"] .. ": "
+
+                for i = 1, #missing do
+                    msg = msg .. (i > 1 and ", " or "") .. missing[i]
+                end
+
+                msg = addon.ColorFontString(msg, "RED")
+
+                private:SetOptionTooltip(includeAlts, msg, true)
+                includeAlts:SetDescription(msg)
+                includeAlts:SetRelativeWidth(0.9)
+            end
+            includeAlts:SetCallback("OnValueChanged", includeAlts_OnValueChanged)
+            includeAlts:SetUserData("NotifyChange", NotifyChangeFuncs.includeAlts)
+
             local newAltID = AceGUI:Create("InlineGroup")
             newAltID:SetTitle(L["New Alt ID"])
             newAltID:SetFullWidth(true)
@@ -659,7 +718,11 @@ local function GetTrackerContent(objectiveTitle, content)
 
             -- Add children
             private:AddChildren(newAltID, altType, altID)
-            private:AddChildren(scrollContent, header, objective, newAltID, altIDsGroup, deleteTracker)
+            private:AddChildren(scrollContent, header, objective)
+            if #missing == 0 then
+                private:AddChildren(scrollContent, includeGuildBank)
+            end
+            private:AddChildren(scrollContent, includeBank, includeAlts, newAltID, altIDsGroup, deleteTracker)
             private:NotifyChange(altIDsGroup)
         end
 

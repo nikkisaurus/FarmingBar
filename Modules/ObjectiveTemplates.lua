@@ -57,7 +57,7 @@ end
 
 --[[ Trackers ]]
 function private:AddObjectiveTemplateTracker(objectiveTitle, trackerType, trackerID)
-    local trackerInfo = addon.CloneTable(private.defaults.objective.trackers[1])
+    local trackerInfo = addon.CloneTable(private.defaults.tracker)
     trackerInfo.type = trackerType
     trackerInfo.id = trackerID
     tinsert(private.db.global.objectives[objectiveTitle].trackers, trackerInfo)
