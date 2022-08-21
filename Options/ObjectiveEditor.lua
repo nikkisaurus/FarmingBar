@@ -71,6 +71,13 @@ local function GetGeneralContent(objectiveInfo, content)
             widget:SetIconTextures()
         end,
 
+        saveTemplate = function()
+            local newObjectiveTitle = private:AddObjectiveTemplate(objectiveInfo)
+            private:LoadOptions()
+            private:UpdateMenu(private.options:GetUserData("menu"), "Objectives", newObjectiveTitle)
+            private:NotifyChange(content)
+        end,
+
         title = function(self, _, value)
             private.db.profile.bars[barID].buttons[buttonID].title = value
             self:ClearFocus()
@@ -105,10 +112,14 @@ local function GetGeneralContent(objectiveInfo, content)
 
     local applyTemplate = private:GetObjectiveWidget("applyTemplate", objectiveInfo)
     applyTemplate:SetCallback("OnValueChanged", callbacks.applyTemplate)
+    private.editor:SetUserData("applyTemplate", applyTemplate)
+
+    local saveTemplate = private:GetObjectiveWidget("saveTemplate", objectiveInfo)
+    saveTemplate:SetCallback("OnClick", callbacks.saveTemplate)
 
     -- Add children
     private:AddChildren(onUseGroup, onUseType, onUseItemIDPreview, onUseItemID, onUseMacrotext)
-    private:AddChildren(content, icon, title, iconType, iconID, onUseGroup, applyTemplate)
+    private:AddChildren(content, icon, title, iconType, iconID, onUseGroup, applyTemplate, saveTemplate)
 end
 
 local function GetTrackerContent(objectiveInfo, content)
@@ -407,6 +418,10 @@ function private:ShowObjectiveEditor(widget)
     editor:Show()
     editor:ReleaseChildren()
     private.editor = editor
+
+    if private.options then
+        private.options:Hide()
+    end
 
     local tabGroup = AceGUI:Create("TabGroup")
     tabGroup:SetLayout("Fill")

@@ -64,6 +64,10 @@ function private:InitializeOptions()
     options:Hide()
     private.options = options
 
+    if private.editor then
+        private.editor:Hide()
+    end
+
     local treeGroup = AceGUI:Create("TreeGroup")
     treeGroup:SetCallback("OnGroupSelected", treeGroup_OnGroupSelected)
     treeGroup:SetUserData("UpdateMenu", function()

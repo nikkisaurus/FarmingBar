@@ -40,6 +40,7 @@ local widgets = {
         local widget = AceGUI:Create("Dropdown")
         widget:SetLabel(L["Apply Objective Template"])
         widget:SetList(lists.templates())
+        widget:SetDisabled(addon.tcount(private.db.global.objectives) == 0)
         return widget
     end,
 
@@ -96,6 +97,12 @@ local widgets = {
         local widget = AceGUI:Create("Dropdown")
         widget:SetList(lists.onUseType)
         widget:SetLabel(L["Type"])
+        return widget
+    end,
+
+    saveTemplate = function()
+        local widget = AceGUI:Create("Button")
+        widget:SetText(L["Save Template"])
         return widget
     end,
 

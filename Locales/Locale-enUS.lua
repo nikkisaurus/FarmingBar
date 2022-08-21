@@ -23,6 +23,7 @@ L["Include Alts"] = true
 L["Include Bank"] = true
 L["Include Guild Bank"] = true
 L["Objective Editor"] = true
+L["Save Template"] = true
 L["Are you sure you want to delete %s from Bar %d Button %d?"] = true
 L["X-Offset"] = true
 L["Y-Offset"] = true
