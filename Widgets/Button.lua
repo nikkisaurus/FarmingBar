@@ -232,6 +232,7 @@ local methods = {
     --[[ Fontstrings ]]
     SetCount = function(widget)
         widget.count:SetText(private:GetObjectiveWidgetCount(widget))
+        widget:SetObjective()
     end,
 
     SetObjective = function(widget, objective)
@@ -387,7 +388,6 @@ local methods = {
         widget:SetAttributes()
         widget:SetFontstrings()
         widget:SetCount()
-        widget:SetObjective()
     end,
 
     --[[ Button ]]
