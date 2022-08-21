@@ -16,12 +16,14 @@ L["Control+click to lock and hide anchor."] = true
 
 --[[ Options ]]
 L["BLEND"] = true
+L["Apply Objective Template"] = true
 L["Missing dependencies"] = true
+L["Are you sure you want to overwrite Bar %d Button %d with objective template \"%s\"?"] = true
 L["Include Alts"] = true
 L["Include Bank"] = true
 L["Include Guild Bank"] = true
 L["Objective Editor"] = true
-L["Are you sure you want to delete %s from bar %d button %d?"] = true
+L["Are you sure you want to delete %s from Bar %d Button %d?"] = true
 L["X-Offset"] = true
 L["Y-Offset"] = true
 L["Fontstrings"] = true

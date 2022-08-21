@@ -7,5 +7,4 @@
     <Include file="Counts.lua"/>
     <Include file="ObjectiveFrame.lua"/>
     <Include file="ObjectiveTemplates.lua"/>
-    <Include file="Options\embeds.xml"/>
 </Ui>

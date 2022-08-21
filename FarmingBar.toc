@@ -17,4 +17,5 @@ Libs\libs.xml
 Locales\Locale-enUS.lua
 Widgets\embeds.xml
 Modules\embeds.xml
+Options\embeds.xml
 FarmingBar.lua

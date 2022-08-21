@@ -11,6 +11,26 @@ local function GetGeneralContent(objectiveInfo, content)
 
     -- Callbacks
     local callbacks = {
+        applyTemplate = function(self, _, value)
+            local confirmFunc = function()
+                widget:SetObjectiveInfo(addon.CloneTable(private.db.global.objectives[value]))
+                private:ShowObjectiveEditor(widget)
+            end
+
+            local barID, buttonID = widget:GetID()
+            private:ShowConfirmationDialog(
+                format(
+                    L["Are you sure you want to overwrite Bar %d Button %d with objective template \"%s\"?"],
+                    barID,
+                    buttonID,
+                    value
+                ),
+                confirmFunc
+            )
+
+            self:SetValue()
+        end,
+
         iconID = function(self, _, value)
             private.db.profile.bars[barID].buttons[buttonID].icon.id = tonumber(value) or 134400
             private:NotifyChange(content)
@@ -83,9 +103,12 @@ local function GetGeneralContent(objectiveInfo, content)
     local onUseMacrotext = private:GetObjectiveWidget("onUseMacrotext", objectiveInfo)
     onUseMacrotext:SetCallback("OnEnterPressed", callbacks.onUseMacrotext)
 
+    local applyTemplate = private:GetObjectiveWidget("applyTemplate", objectiveInfo)
+    applyTemplate:SetCallback("OnValueChanged", callbacks.applyTemplate)
+
     -- Add children
     private:AddChildren(onUseGroup, onUseType, onUseItemIDPreview, onUseItemID, onUseMacrotext)
-    private:AddChildren(content, icon, title, iconType, iconID, onUseGroup)
+    private:AddChildren(content, icon, title, iconType, iconID, onUseGroup, applyTemplate)
 end
 
 local function GetTrackerContent(objectiveInfo, content)
@@ -140,7 +163,7 @@ local function GetTrackerContent(objectiveInfo, content)
 
                 private:ShowConfirmationDialog(
                     format(
-                        L["Are you sure you want to delete %s from bar %d button %d?"],
+                        L["Are you sure you want to delete %s from Bar %d Button %d?"],
                         private:GetObjectiveTemplateTrackerName(trackerInfo.type, trackerInfo.id),
                         barID,
                         buttonID
@@ -376,6 +399,8 @@ function private:ShowObjectiveEditor(widget)
 
     local editor = private.editor or AceGUI:Create("Frame")
     editor:SetTitle(format("%s %s - %d:%d", L.addonName, L["Objective Editor"], barID, buttonID))
+    editor:SetUserData("barID", barID)
+    editor:SetUserData("buttonID", buttonID)
     editor:SetLayout("Fill")
     editor:SetWidth(700)
     editor:SetHeight(600)

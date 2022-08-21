@@ -15,19 +15,34 @@ local lists = {
         FALLBACK = L["Fallback"],
     },
 
-    trackerType = {
-        ITEM = L["Item"],
-        CURRENCY = L["Currency"],
-    },
-
     onUseType = {
         ITEM = L["Item"],
         MACROTEXT = L["Macrotext"],
         NONE = L["None"],
     },
+
+    templates = function()
+        local templates = {}
+        for templateName, _ in pairs(private.db.global.objectives) do
+            templates[templateName] = templateName
+        end
+        return templates
+    end,
+
+    trackerType = {
+        ITEM = L["Item"],
+        CURRENCY = L["Currency"],
+    },
 }
 
 local widgets = {
+    applyTemplate = function()
+        local widget = AceGUI:Create("Dropdown")
+        widget:SetLabel(L["Apply Objective Template"])
+        widget:SetList(lists.templates())
+        return widget
+    end,
+
     icon = function()
         local widget = AceGUI:Create("Icon")
         widget:SetWidth(45)

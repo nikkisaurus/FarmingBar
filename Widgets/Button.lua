@@ -62,7 +62,10 @@ local postClickMethods = {
     end,
 
     showObjectiveEditor = function(frame)
-        private:ShowObjectiveEditor(frame.obj)
+        local widget = frame.obj
+        if not widget:IsEmpty() then
+            private:ShowObjectiveEditor(widget)
+        end
     end,
 }
 
@@ -354,6 +357,14 @@ local methods = {
         local barID, buttonID = widget:GetID()
         private.db.profile.bars[barID].buttons[buttonID] = nil
         widget:UpdateAttributes()
+
+        if
+            private.editor
+            and private.editor:GetUserData("barID") == barID
+            and private.editor:GetUserData("buttonID") == buttonID
+        then
+            private.editor:Hide()
+        end
     end,
 
     GetBar = function(widget)
