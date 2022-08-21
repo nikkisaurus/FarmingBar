@@ -64,7 +64,7 @@ local postClickMethods = {
     showObjectiveEditor = function(frame)
         local widget = frame.obj
         if not widget:IsEmpty() then
-            private:ShowObjectiveEditor(widget)
+            private:LoadObjectiveEditor(widget)
         end
     end,
 }

@@ -37,6 +37,7 @@ local lists = {
 
 local widgets = {
     applyTemplate = function()
+        print("Notified")
         local widget = AceGUI:Create("Dropdown")
         widget:SetLabel(L["Apply Objective Template"])
         widget:SetList(lists.templates())

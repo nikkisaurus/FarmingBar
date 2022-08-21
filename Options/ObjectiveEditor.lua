@@ -14,7 +14,7 @@ local function GetGeneralContent(objectiveInfo, content)
         applyTemplate = function(self, _, value)
             local confirmFunc = function()
                 widget:SetObjectiveInfo(addon.CloneTable(private.db.global.objectives[value]))
-                private:ShowObjectiveEditor(widget)
+                private:LoadObjectiveEditor(widget)
             end
 
             local barID, buttonID = widget:GetID()
@@ -71,11 +71,11 @@ local function GetGeneralContent(objectiveInfo, content)
             widget:SetIconTextures()
         end,
 
-        saveTemplate = function()
+        saveTemplate = function(self)
             local newObjectiveTitle = private:AddObjectiveTemplate(objectiveInfo)
             private:LoadOptions()
             private:UpdateMenu(private.options:GetUserData("menu"), "Objectives", newObjectiveTitle)
-            private:NotifyChange(content)
+            -- ! Cannot get a notify on applyTemplate
         end,
 
         title = function(self, _, value)
@@ -404,24 +404,37 @@ local function tabGroup_OnGroupSelected(tabGroup, _, group)
 end
 
 --[[ Widgets ]]
-function private:ShowObjectiveEditor(widget)
-    local _, buttonDB = widget:GetDB()
-    local barID, buttonID = widget:GetID()
-
-    local editor = private.editor or AceGUI:Create("Frame")
-    editor:SetTitle(format("%s %s - %d:%d", L.addonName, L["Objective Editor"], barID, buttonID))
-    editor:SetUserData("barID", barID)
-    editor:SetUserData("buttonID", buttonID)
-    editor:SetLayout("Fill")
-    editor:SetWidth(700)
-    editor:SetHeight(600)
-    editor:Show()
-    editor:ReleaseChildren()
-    private.editor = editor
+function private:LoadObjectiveEditor(widget)
+    if not private.editor then
+        private:InitializeObjectiveEditor()
+    end
 
     if private.options then
         private.options:Hide()
     end
+
+    local _, buttonDB = widget:GetDB()
+    local barID, buttonID = widget:GetID()
+
+    private.editor:SetUserData("barID", barID)
+    private.editor:SetUserData("buttonID", buttonID)
+    private.editor:SetTitle(format("%s %s - %d:%d", L.addonName, L["Objective Editor"], barID, buttonID))
+
+    local tabGroup = private.editor:GetUserData("tabGroup")
+    tabGroup:SetUserData("widget", widget)
+    tabGroup:SetUserData("objectiveInfo", buttonDB)
+    tabGroup:SelectTab("general")
+
+    private.editor:Show()
+end
+
+function private:InitializeObjectiveEditor()
+    local editor = AceGUI:Create("Frame")
+    editor:SetLayout("Fill")
+    editor:SetWidth(500)
+    editor:SetHeight(600)
+    editor:Show()
+    private.editor = editor
 
     local tabGroup = AceGUI:Create("TabGroup")
     tabGroup:SetLayout("Fill")
@@ -429,10 +442,8 @@ function private:ShowObjectiveEditor(widget)
         { value = "general", text = L["General"] },
         { value = "trackers", text = L["Trackers"] },
     })
-    tabGroup:SetUserData("objectiveInfo", buttonDB)
-    tabGroup:SetUserData("widget", widget)
+    editor:SetUserData("tabGroup", tabGroup)
     tabGroup:SetCallback("OnGroupSelected", tabGroup_OnGroupSelected)
-    tabGroup:SelectTab("general")
 
     private:AddChildren(editor, tabGroup)
 end

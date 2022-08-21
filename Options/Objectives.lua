@@ -194,6 +194,7 @@ end
 local function GetObjectiveContent(content)
     local NotifyChangeFuncs = {
         objectiveTemplatesGroup = function(self)
+            self:ReleaseChildren()
             -- Widgets
             for objectiveTitle, objectiveInfo in addon.pairs(private.db.global.objectives) do
                 -- Callbacks
