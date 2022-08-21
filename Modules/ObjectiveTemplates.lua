@@ -43,6 +43,7 @@ end
 function private:DuplicateObjectiveTemplate(objectiveTitle)
     local newObjectiveTitle = private:IncrementString(objectiveTitle, private, "ObjectiveTemplateExists")
     private.db.global.objectives[newObjectiveTitle] = addon.CloneTable(private.db.global.objectives[objectiveTitle])
+    private.db.global.objectives[newObjectiveTitle].title = newObjectiveTitle
     return newObjectiveTitle
 end
 

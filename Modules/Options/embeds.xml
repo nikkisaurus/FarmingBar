@@ -3,4 +3,5 @@
     <Include file="Bars.lua"/>
     <Include file="ImportFrame.lua"/>
     <Include file="Objectives.lua"/>
+    <Include file="ObjectiveEditor.lua"/>
 </Ui>

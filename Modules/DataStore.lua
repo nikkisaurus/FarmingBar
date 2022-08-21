@@ -39,7 +39,14 @@ function private:GetMissingDataStoreModules()
     return missing
 end
 
+function private:MissingDataStore()
+    return #private:GetMissingDataStoreModules() > 0
+end
+
 function private:GetDataStoreCurrencyCount(currencyID)
+    if private:MissingDataStore() then
+        return
+    end
     local DS = DataStore
     local characters = DS:HashValueToSortedArray(DS:GetCharacters())
     local currency = C_CurrencyInfo.GetCurrencyInfo(currencyID)
@@ -53,6 +60,9 @@ function private:GetDataStoreCurrencyCount(currencyID)
 end
 
 function private:GetDataStoreItemCount(itemID, trackerInfo)
+    if private:MissingDataStore() then
+        return
+    end
     local DS = DataStore
     local count = 0
 
@@ -82,6 +92,9 @@ function private:GetDataStoreItemCount(itemID, trackerInfo)
 end
 
 function private:GetGuildsList()
+    if private:MissingDataStore() then
+        return {}
+    end
     local DS = DataStore
     local guilds = {}
 

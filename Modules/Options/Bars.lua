@@ -4,7 +4,6 @@ local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 local AceGUI = LibStub("AceGUI-3.0")
 local LSM = LibStub("LibSharedMedia-3.0")
 
--- TODO: Add font settings
 --[[ Lists ]]
 local lists = {
     anchors = {

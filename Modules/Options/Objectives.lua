@@ -8,7 +8,7 @@ local LibDeflate = LibStub("LibDeflate")
 -- TODO: Save position when changing groups
 
 --[[ Lists ]]
-local lists = {
+private.lists = {
     condition = {
         ALL = L["All"],
         ANY = L["Any"],
@@ -42,249 +42,142 @@ local lists = {
     },
 }
 
---[[ Menus ]]
-local function GetTrackerMenu(objectiveTitle)
-    local menu = {
-        {
-            value = "trackers",
-            text = L["Trackers"],
-        },
-    }
-
-    local numTrackers = addon.tcount(private.db.global.objectives[objectiveTitle].trackers)
-
-    if numTrackers > 0 then
-        menu[1].children = {}
-    end
-
-    for trackerKey, trackerInfo in addon.pairs(private.db.global.objectives[objectiveTitle].trackers) do
-        local trackerName = private:GetObjectiveTemplateTrackerName(trackerInfo.type, trackerInfo.id)
-        tinsert(menu[1].children, {
-            value = trackerKey,
-            text = trackerName,
-            icon = private:GetObjectiveTemplateTrackerIcon(trackerInfo.type, trackerInfo.id),
-        })
-    end
-
-    if numTrackers > 0 then
-        sort(menu[1].children, function(a, b)
-            return a.text < b.text
-        end)
-    end
-
-    return menu
-end
-
 --[[ Content ]]
 local function GetGeneralContent(objectiveTitle, content)
     local objectiveInfo = private.db.global.objectives[objectiveTitle]
 
-    -- NotifyChange
-    local NotifyChangeFuncs = {
-        icon = function(self)
-            self:SetImage(private:GetObjectiveIcon(objectiveInfo))
-        end,
-
-        iconID = function(self)
-            self:SetText(objectiveInfo.icon.id)
-        end,
-
-        iconType = function(self)
-            self:SetValue(objectiveInfo.icon.type)
-        end,
-
-        onUseItemID = function(self)
-            self:SetText(objectiveInfo.onUse.itemID)
-            self:SetDisabled(objectiveInfo.onUse.type ~= "ITEM")
-        end,
-
-        onUseItemIDPreview = function(self)
-            local itemID = objectiveInfo.onUse.itemID
-
-            if objectiveInfo.onUse.type ~= "ITEM" or not itemID then
-                self:SetText()
-                self:SetImage()
-                return
+    -- Callbacks
+    local callbacks = {
+        deleteObjective = function()
+            local deleteFunc = function()
+                private:DeleteObjectiveTemplate(objectiveTitle)
+                private:UpdateMenu(private.options:GetUserData("menu"), "Objectives")
             end
 
-            private:CacheItem(itemID)
-            local itemName, _, _, _, _, _, _, _, _, icon = GetItemInfo(itemID)
-
-            self:SetText(itemName)
-            self:SetImage(icon)
+            private:ShowConfirmationDialog(
+                format(L["Are you sure you want to delete the objective template \"%s\"?"], objectiveTitle),
+                deleteFunc
+            )
         end,
 
-        onUseMacrotext = function(self)
-            self:SetText(objectiveInfo.onUse.macrotext)
-            self:SetDisabled(objectiveInfo.onUse.type ~= "MACROTEXT")
+        duplicateObjective = function()
+            local newObjectiveTitle = private:DuplicateObjectiveTemplate(objectiveTitle)
+            private:UpdateMenu(private.options:GetUserData("menu"), "Objectives", newObjectiveTitle)
         end,
 
-        onUseType = function(self)
-            self:SetValue(objectiveInfo.onUse.type)
+        exportObjective = function()
+            local exportFrame = AceGUI:Create("Frame")
+            exportFrame:SetTitle(L.addonName .. " - " .. L["Export Frame"])
+            exportFrame:SetLayout("Fill")
+            exportFrame:SetCallback("OnClose", function(self)
+                self:Release()
+            end)
+
+            local editbox = AceGUI:Create("MultiLineEditBox")
+            editbox:SetLabel(objectiveTitle)
+            editbox:DisableButton(true)
+            exportFrame:AddChild(editbox)
+
+            local serialized = LibSerialize:Serialize(objectiveInfo)
+            local compressed = LibDeflate:CompressDeflate(serialized)
+            local encoded = LibDeflate:EncodeForPrint(compressed)
+
+            editbox:SetText(encoded)
+            editbox:SetFocus()
+            editbox:HighlightText()
+            exportFrame:Show()
         end,
 
-        title = function(self)
-            self:SetText(objectiveTitle)
+        icon = function(self)
+            if addon.tcount(objectiveInfo.trackers) == 0 then
+                private.options:SetStatusText(L["Objective template must contain at least one tracker."])
+            else
+                private:PickupObjectiveTemplate(objectiveTitle)
+            end
+        end,
+
+        iconID = function(_, _, value)
+            private.db.global.objectives[objectiveTitle].icon.id = tonumber(value) or 134400
+            private:NotifyChange(content)
+        end,
+
+        iconType = function(_, _, value)
+            private.db.global.objectives[objectiveTitle].icon.type = value
+            private:NotifyChange(content)
+        end,
+
+        onUseItemID = function(self, _, value)
+            local itemID = private:ValidateItem(value)
+            if itemID then
+                private.db.global.objectives[objectiveTitle].onUse.itemID = itemID
+                private:NotifyChange(content)
+                self:ClearFocus()
+            else
+                private.options:SetStatusText(L["Invalid itemID."])
+                self:HighlightText()
+            end
+        end,
+
+        onUseMacrotext = function(_, _, value)
+            private.db.global.objectives[objectiveTitle].onUse.macrotext = value
+            private:NotifyChange(content)
+        end,
+
+        onUseType = function(_, _, value)
+            private.db.global.objectives[objectiveTitle].onUse.type = value
+            private:NotifyChange(content)
+        end,
+
+        title = function(_, _, value)
+            if private:ObjectiveTemplateExists(value) then
+                private.options:SetStatusText(L["Objective template exists."])
+            else
+                private:RenameObjectiveTemplate(objectiveTitle, value)
+                private:UpdateMenu(private.options:GetUserData("menu"), "Objectives", value)
+            end
         end,
     }
 
-    -- Callbacks
-    local function deleteObjective_OnClick()
-        local deleteFunc = function()
-            private:DeleteObjectiveTemplate(objectiveTitle)
-            private:UpdateMenu(private.options:GetUserData("menu"), "Objectives")
-        end
-
-        private:ShowConfirmationDialog(
-            format(L["Are you sure you want to delete the objective template \"%s\"?"], objectiveTitle),
-            deleteFunc
-        )
-    end
-
-    local function exportObjective_OnClick()
-        local exportFrame = AceGUI:Create("Frame")
-        exportFrame:SetTitle(L.addonName .. " - " .. L["Export Frame"])
-        exportFrame:SetLayout("Fill")
-        exportFrame:SetCallback("OnClose", function(self)
-            self:Release()
-        end)
-
-        local editbox = AceGUI:Create("MultiLineEditBox")
-        editbox:SetLabel(objectiveTitle)
-        editbox:DisableButton(true)
-        exportFrame:AddChild(editbox)
-
-        local serialized = LibSerialize:Serialize(objectiveInfo)
-        local compressed = LibDeflate:CompressDeflate(serialized)
-        local encoded = LibDeflate:EncodeForPrint(compressed)
-
-        editbox:SetText(encoded)
-        editbox:SetFocus()
-        editbox:HighlightText()
-        exportFrame:Show()
-    end
-
-    local function duplicateObjective_OnClick()
-        local newObjectiveTitle = private:DuplicateObjectiveTemplate(objectiveTitle)
-        private:UpdateMenu(private.options:GetUserData("menu"), "Objectives", newObjectiveTitle)
-    end
-
-    local function icon_OnClick(self)
-        if addon.tcount(objectiveInfo.trackers) == 0 then
-            private.options:SetStatusText(L["Objective template must contain at least one tracker."])
-        else
-            private:PickupObjectiveTemplate(objectiveTitle)
-        end
-    end
-
-    local function iconID_OnEnterPressed(_, _, value)
-        private.db.global.objectives[objectiveTitle].icon.id = tonumber(value) or 134400
-        private:NotifyChange(content)
-    end
-
-    local function iconType_OnValueChanged(_, _, value)
-        private.db.global.objectives[objectiveTitle].icon.type = value
-        private:NotifyChange(content)
-    end
-
-    local function onUseitemID_OnEnterPressed(self, _, value)
-        local itemID = private:ValidateItem(value)
-        if itemID then
-            private.db.global.objectives[objectiveTitle].onUse.itemID = itemID
-            private:NotifyChange(content)
-            self:ClearFocus()
-        else
-            private.options:SetStatusText(L["Invalid itemID."])
-            self:HighlightText()
-        end
-    end
-
-    local function onUseMacrotext_OnEnterPressed(_, _, value)
-        private.db.global.objectives[objectiveTitle].onUse.macrotext = value
-        private:NotifyChange(content)
-    end
-
-    local function onUseType_OnValueChanged(_, _, value)
-        private.db.global.objectives[objectiveTitle].onUse.type = value
-        private:NotifyChange(content)
-    end
-
-    local function title_OnEnterPressed(_, _, value)
-        if private:ObjectiveTemplateExists(value) then
-            private.options:SetStatusText(L["Objective template exists."])
-        else
-            private:RenameObjectiveTemplate(objectiveTitle, value)
-            private:UpdateMenu(private.options:GetUserData("menu"), "Objectives", value)
-        end
-    end
-
     -- Widgets
-    local icon = AceGUI:Create("Icon")
-    icon:SetWidth(45)
-    icon:SetImageSize(25, 25)
-    icon:SetCallback("OnClick", icon_OnClick)
-    icon:SetUserData("NotifyChange", NotifyChangeFuncs.icon)
+    local icon = private:GetObjectiveWidget("icon", objectiveInfo)
+    icon:SetCallback("OnClick", callbacks.icon)
 
-    local title = AceGUI:Create("EditBox")
-    title:SetRelativeWidth(2 / 3)
-    title:SetLabel(L["Objective Title"])
-    title:SetCallback("OnEnterPressed", title_OnEnterPressed)
-    title:SetUserData("NotifyChange", NotifyChangeFuncs.title)
+    local title = private:GetObjectiveWidget("title", objectiveInfo)
+    title:SetCallback("OnEnterPressed", callbacks.title)
 
-    local iconType = AceGUI:Create("Dropdown")
-    iconType:SetLabel(L["Icon Type"])
-    iconType:SetList(lists.iconType)
-    iconType:SetCallback("OnValueChanged", iconType_OnValueChanged)
-    iconType:SetUserData("NotifyChange", NotifyChangeFuncs.iconType)
+    local iconType = private:GetObjectiveWidget("iconType", objectiveInfo)
+    iconType:SetCallback("OnValueChanged", callbacks.iconType)
 
-    local iconID = AceGUI:Create("EditBox")
-    iconID:SetLabel(L["Fallback Icon"])
-    iconID:SetCallback("OnEnterPressed", iconID_OnEnterPressed)
-    iconID:SetUserData("NotifyChange", NotifyChangeFuncs.iconID)
+    local iconID = private:GetObjectiveWidget("iconID", objectiveInfo)
+    iconID:SetCallback("OnEnterPressed", callbacks.iconID)
 
-    local onUseGroup = AceGUI:Create("InlineGroup")
-    onUseGroup:SetTitle(L["OnUse"])
-    onUseGroup:SetFullWidth(true)
-    onUseGroup:SetLayout("Flow")
+    local onUseGroup = private:GetObjectiveWidget("onUseGroup", objectiveInfo)
 
-    local onUseType = AceGUI:Create("Dropdown")
-    onUseType:SetList(lists.onUseType)
-    onUseType:SetLabel(L["Type"])
-    onUseType:SetCallback("OnValueChanged", onUseType_OnValueChanged)
-    onUseType:SetUserData("NotifyChange", NotifyChangeFuncs.onUseType)
+    local onUseType = private:GetObjectiveWidget("onUseType", objectiveInfo)
+    onUseType:SetCallback("OnValueChanged", callbacks.onUseType)
 
-    local onUseItemIDPreview = AceGUI:Create("Label")
-    onUseItemIDPreview:SetFullWidth(true)
-    onUseItemIDPreview:SetImageSize(14, 14)
-    onUseItemIDPreview:SetUserData("NotifyChange", NotifyChangeFuncs.onUseItemIDPreview)
+    local onUseItemIDPreview = private:GetObjectiveWidget("onUseItemIDPreview", objectiveInfo)
 
-    local onUseItemID = AceGUI:Create("EditBox")
-    onUseItemID:SetFullWidth(true)
-    onUseItemID:SetLabel(L["ItemID"])
-    onUseItemID:SetCallback("OnEnterPressed", onUseitemID_OnEnterPressed)
-    onUseItemID:SetUserData("NotifyChange", NotifyChangeFuncs.onUseItemID)
+    local onUseItemID = private:GetObjectiveWidget("onUseItemID", objectiveInfo)
+    onUseItemID:SetCallback("OnEnterPressed", callbacks.onUseItemID)
 
-    local onUseMacrotext = AceGUI:Create("MultiLineEditBox")
-    onUseMacrotext:SetFullWidth(true)
-    onUseMacrotext:SetLabel(L["Macrotext"])
-    onUseMacrotext:SetCallback("OnEnterPressed", onUseMacrotext_OnEnterPressed)
-    onUseMacrotext:SetUserData("NotifyChange", NotifyChangeFuncs.onUseMacrotext)
-
-    private:AddChildren(onUseGroup, onUseType, onUseItemIDPreview, onUseItemID, onUseMacrotext)
+    local onUseMacrotext = private:GetObjectiveWidget("onUseMacrotext", objectiveInfo)
+    onUseMacrotext:SetCallback("OnEnterPressed", callbacks.onUseMacrotext)
 
     local duplicateObjective = AceGUI:Create("Button")
     duplicateObjective:SetText(L["Duplicate"])
-    duplicateObjective:SetCallback("OnClick", duplicateObjective_OnClick)
+    duplicateObjective:SetCallback("OnClick", callbacks.duplicateObjective)
 
     local exportObjective = AceGUI:Create("Button")
     exportObjective:SetText(L["Export"])
-    exportObjective:SetCallback("OnClick", exportObjective_OnClick)
+    exportObjective:SetCallback("OnClick", callbacks.exportObjective)
 
     local deleteObjective = AceGUI:Create("Button")
     deleteObjective:SetText(L["Delete"])
-    deleteObjective:SetCallback("OnClick", deleteObjective_OnClick)
+    deleteObjective:SetCallback("OnClick", callbacks.deleteObjective)
 
     -- Add children
+    private:AddChildren(onUseGroup, onUseType, onUseItemIDPreview, onUseItemID, onUseMacrotext)
     private:AddChildren(
         content,
         icon,
@@ -325,7 +218,7 @@ local function GetObjectiveContent(content)
         end,
 
         deleteObjective = function(self)
-            local list = lists.deleteObjective()
+            local list = private.lists.deleteObjective()
             if addon.tcount(list) == 0 then
                 self:SetDisabled(true)
             else
@@ -358,6 +251,7 @@ local function GetObjectiveContent(content)
     local function newObjective_OnClick()
         local newObjectiveTitle = private:IncrementString(L["New"], private, "ObjectiveTemplateExists")
         private.db.global.objectives[newObjectiveTitle] = addon.CloneTable(private.defaults.objective)
+        private.db.global.objectives[newObjectiveTitle].title = newObjectiveTitle
         private:UpdateMenu(private.options:GetUserData("menu"), "Objectives", newObjectiveTitle)
     end
 
@@ -389,374 +283,217 @@ end
 local function GetTrackerContent(objectiveTitle, content)
     local objectiveInfo = private.db.global.objectives[objectiveTitle]
 
-    -- NotifyChange
-    local NotifyChangeFuncs = {
-        trackerTree = function(self)
-            self:SetTree(GetTrackerMenu(objectiveTitle))
-        end,
-    }
-
-    -- Callback
-    local function condition_OnValueChanged(_, _, value)
-        private.db.global.objectives[objectiveTitle].condition.type = value
-        private:NotifyChange(content)
-    end
-
-    local function conditionFunc_OnEnterPressed(_, _, value)
-        local err
-        local func = loadstring("return " .. value)
-        if type(func) == "function" then
-            local success, userFunc = pcall(func)
-            if success and type(userFunc) == "function" then
-                private.db.global.objectives[objectiveTitle].condition.func = value
-                private:NotifyChange(content)
-            else
-                err = L["Hidden must be a function returning a boolean value."]
-            end
-        else
-            err = L["Hidden must be a function returning a boolean value."]
-        end
-    end
-
-    local function trackerTree_OnGroupSelected(trackerTree, _, path)
+    -- Widgets
+    local trackerTree = private:GetTrackerWidgets("trackerTree", objectiveInfo)
+    trackerTree:SetCallback("OnGroupSelected", function(self, _, path)
         local group, subgroup = strsplit("\001", path)
         local trackerKey = tonumber(subgroup)
-        local trackerInfo = objectiveInfo.trackers[trackerKey]
-        local trackerName = trackerInfo and private:GetObjectiveTemplateTrackerName(trackerInfo.type, trackerInfo.id)
-            or {}
 
-        local scrollContent = trackerTree:GetUserData("scrollContent")
+        local scrollContent = self:GetUserData("scrollContent")
         scrollContent:ReleaseChildren()
 
-        -- NotifyChange
-        local NotifyChangeFuncs = {
-            altIDsGroup = function(self)
+        -- Callbacks
+        local callbacks = {
+            _OnEnterPressed = function() end,
+
+            condition = function(_, _, value)
+                private.db.global.objectives[objectiveTitle].condition.type = value
+                private:NotifyChange(content)
+            end,
+
+            conditionFunc = function(_, _, value)
+                local err
+                local func = loadstring("return " .. value)
+                if type(func) == "function" then
+                    local success, userFunc = pcall(func)
+                    if success and type(userFunc) == "function" then
+                        private.db.global.objectives[objectiveTitle].condition.func = value
+                        private:NotifyChange(content)
+                    else
+                        err = L["Hidden must be a function returning a boolean value."]
+                    end
+                else
+                    err = L["Hidden must be a function returning a boolean value."]
+                end
+            end,
+
+            deleteTracker = function()
+                local deleteFunc = function()
+                    trackerTree:SelectByPath(group)
+                    private:DeleteObjectiveTemplateTracker(objectiveTitle, trackerKey)
+                    private:NotifyChange(content)
+                end
+
+                local trackerInfo = objectiveInfo.trackers[trackerKey]
+
+                private:ShowConfirmationDialog(
+                    format(
+                        L["Are you sure you want to delete %s from objective template \"%s\"?"],
+                        private:GetObjectiveTemplateTrackerName(trackerInfo.type, trackerInfo.id),
+                        objectiveTitle
+                    ),
+                    deleteFunc
+                )
+            end,
+
+            includeAlts = function(_, _, value)
+                private.db.global.objectives[objectiveTitle].trackers[trackerKey].includeAlts = value
+            end,
+
+            includeBank = function(_, _, value)
+                private.db.global.objectives[objectiveTitle].trackers[trackerKey].includeBank = value
+            end,
+
+            includeGuildBank = function(_, _, value, checked)
+                private.db.global.objectives[objectiveTitle].trackers[trackerKey].includeGuildBank[value] = checked
+                private:NotifyChange(scrollContent)
+            end,
+
+            multiplier = function(self, _, value)
+                local num, den = strsplit("/", value)
+                local multiplier
+
+                if den then
+                    num = tonumber(num)
+                    den = tonumber(den)
+                    if num and den and den ~= 0 then
+                        multiplier = addon.round(num / den, 3)
+                    else
+                        multiplier = 1
+                    end
+                else
+                    multiplier = tonumber(value) or 1
+                end
+
+                multiplier = multiplier > 0 and multiplier or 1
+
+                self:ClearFocus()
+
+                private.db.global.objectives[objectiveTitle].trackers[trackerKey].altIDs[self:GetUserData("altKey")].multiplier =
+                    multiplier
+                private:NotifyChange(self.parent)
+            end,
+
+            remove = function(self)
+                private:DeleteObjectiveTemplateTrackerAltID(objectiveTitle, trackerKey, self:GetUserData("altKey"))
+                private:NotifyChange(self.parent.parent)
+            end,
+
+            objective = function(self, _, value)
+                local objective = tonumber(value) or 1
+                objective = objective < 1 and 1 or objective
+
+                self:ClearFocus()
+                private.db.global.objectives[objectiveTitle].trackers[trackerKey].objective = objective
+                private:NotifyChange(scrollContent)
+            end,
+        }
+
+        -- Widgets
+        if not subgroup then
+            local condition = private:GetTrackerWidgets("condition", objectiveInfo, trackerKey)
+            condition:SetCallback("OnValueChanged", callbacks.condition)
+
+            local conditionFunc = private:GetTrackerWidgets("conditionFunc", objectiveInfo, trackerKey)
+            conditionFunc:Initialize(objectiveInfo.condition.func, callbacks.conditionFunc)
+
+            local addTrackerGroup = private:GetTrackerWidgets("addTrackerGroup", objectiveInfo, trackerKey)
+
+            local trackerType = private:GetTrackerWidgets("trackerType", objectiveInfo, trackerKey)
+
+            local trackerID = private:GetTrackerWidgets("trackerID", objectiveInfo, trackerKey)
+            trackerID:SetCallback("OnEnterPressed", function(self, _, value)
+                local isValid = private:ValidateTracker(objectiveInfo, "tracker", self, trackerType:GetValue(), value)
+                if isValid then
+                    private:NotifyChange(content)
+                    trackerTree:SelectByPath(group, isValid)
+                end
+            end)
+
+            -- -- Add children
+            private:AddChildren(addTrackerGroup, trackerType, trackerID)
+            private:AddChildren(scrollContent, condition, conditionFunc, addTrackerGroup)
+        else
+            local header = private:GetTrackerWidgets("header", objectiveInfo, trackerKey)
+
+            local objective = private:GetTrackerWidgets("objective", objectiveInfo, trackerKey)
+            objective:SetCallback("OnEnterPressed", callbacks.objective)
+
+            local includeBank = private:GetTrackerWidgets("includeBank", objectiveInfo, trackerKey)
+            includeBank:SetCallback("OnValueChanged", callbacks.includeBank)
+
+            local includeGuildBank = private:GetTrackerWidgets("includeGuildBank", objectiveInfo, trackerKey)
+            includeGuildBank:SetCallback("OnValueChanged", callbacks.includeGuildBank)
+
+            local includeAlts = private:GetTrackerWidgets("includeAlts", objectiveInfo, trackerKey)
+            includeAlts:SetCallback("OnValueChanged", callbacks.includeAlts)
+
+            local dependencies = private:GetTrackerWidgets("dependencies", objectiveInfo, trackerKey)
+
+            local newAltID = private:GetTrackerWidgets("newAltID", objectiveInfo, trackerKey)
+
+            local altType = private:GetTrackerWidgets("altType", objectiveInfo, trackerKey)
+
+            local altID = private:GetTrackerWidgets("altID", objectiveInfo, trackerKey)
+            altID:SetCallback("OnEnterPressed", function(self, _, value)
+                private:ValidateTracker(objectiveInfo, "altID", self, altType:GetValue(), value, trackerKey)
+                private:NotifyChange(content)
+            end)
+
+            local altIDsGroup = private:GetTrackerWidgets("altIDsGroup", objectiveInfo, trackerKey)
+
+            local removeTxt = private:GetTrackerWidgets("removeTxt", objectiveInfo, trackerKey)
+
+            local labelTxt = private:GetTrackerWidgets("labelTxt", objectiveInfo, trackerKey)
+
+            local multiplierTxt = private:GetTrackerWidgets("multiplierTxt", objectiveInfo, trackerKey)
+
+            local altIDsList = private:GetTrackerWidgets("altIDsList", objectiveInfo, trackerKey)
+            altIDsList:SetUserData("NotifyChange", function(self)
                 self:ReleaseChildren()
 
-                -- Callbacks
-                local function multiplier_OnEnterPressed(self, _, value)
-                    local num, den = strsplit("/", value)
-                    local multiplier
-
-                    if den then
-                        num = tonumber(num)
-                        den = tonumber(den)
-                        if num and den and den ~= 0 then
-                            multiplier = addon.round(num / den, 3)
-                        else
-                            multiplier = 1
-                        end
-                    else
-                        multiplier = tonumber(value) or 1
-                    end
-
-                    multiplier = multiplier > 0 and multiplier or 1
-
-                    self:ClearFocus()
-
-                    private.db.global.objectives[objectiveTitle].trackers[trackerKey].altIDs[self:GetUserData("altKey")].multiplier =
-                        multiplier
-                    private:NotifyChange(content)
-                end
-
-                local function remove_OnClick(self)
-                    private:DeleteObjectiveTemplateTrackerAltID(objectiveTitle, trackerKey, self:GetUserData("altKey"))
-                    private:NotifyChange(content)
-                end
-
-                -- Widgets
-                local removeTxt = AceGUI:Create("Label")
-                removeTxt:SetColor(1, 0.82, 0)
-                removeTxt:SetRelativeWidth(1 / 16)
-                removeTxt:SetText(" ")
-
-                local labelTxt = AceGUI:Create("Label")
-                labelTxt:SetColor(1, 0.82, 0)
-                labelTxt:SetRelativeWidth(11 / 16)
-                labelTxt:SetText(L["Item/Currency Name"])
-
-                local multiplierTxt = AceGUI:Create("Label")
-                multiplierTxt:SetColor(1, 0.82, 0)
-                multiplierTxt:SetRelativeWidth(4 / 16)
-                multiplierTxt:SetText(L["Multiplier"])
-
-                -- Add children
-                if #trackerInfo.altIDs > 0 then
-                    private:AddChildren(self, removeTxt, labelTxt, multiplierTxt)
-                end
-
-                for altKey, altInfo in addon.pairs(trackerInfo.altIDs) do
-                    local remove = AceGUI:Create("InteractiveLabel")
-                    remove:SetRelativeWidth(1 / 16)
-                    remove:SetText("X")
-                    remove:SetCallback("OnClick", remove_OnClick)
+                for altKey, altInfo in addon.pairs(objectiveInfo.trackers[trackerKey].altIDs) do
+                    local remove = private:GetTrackerWidgets("remove", objectiveInfo, trackerKey)
                     remove:SetUserData("altKey", altKey)
+                    remove:SetCallback("OnClick", callbacks.remove)
 
-                    local label = AceGUI:Create("Label")
-                    label:SetRelativeWidth(11 / 16)
-                    label:SetImageSize(14, 14)
-                    label:SetUserData("NotifyChange", function(self)
-                        self:SetText(private:GetObjectiveTemplateTrackerName(altInfo.type, altInfo.id))
-                        self:SetImage(private:GetObjectiveTemplateTrackerIcon(altInfo.type, altInfo.id))
-                    end)
+                    local label = private:GetTrackerWidgets("label", objectiveInfo, trackerKey)
+                    label:SetUserData("altInfo", altInfo)
 
-                    local multiplier = AceGUI:Create("EditBox")
-                    multiplier:SetRelativeWidth(4 / 16)
-                    multiplier:SetCallback("OnEnterPressed", multiplier_OnEnterPressed)
+                    local multiplier = private:GetTrackerWidgets("multiplier", objectiveInfo, trackerKey)
                     multiplier:SetUserData("altKey", altKey)
-                    multiplier:SetUserData("NotifyChange", function(self)
-                        self:SetText(altInfo.multiplier)
-                    end)
+                    multiplier:SetUserData("altInfo", altInfo)
+                    multiplier:SetCallback("OnEnterPressed", callbacks.multiplier)
 
                     -- Add children
                     private:AddChildren(self, remove, label, multiplier)
                 end
 
-                scrollContent:DoLayout()
-            end,
-
-            condition = function(self)
-                self:SetValue(objectiveInfo.condition.type)
-            end,
-
-            conditionFunc = function(self)
-                self:SetText(objectiveInfo.condition.func)
-                self:SetDisabled(objectiveInfo.condition.type ~= "CUSTOM")
-            end,
-
-            includeAlts = function(self)
-                self:SetValue(trackerInfo.includeAlts)
-            end,
-
-            includeBank = function(self)
-                self:SetValue(trackerInfo.includeBank)
-            end,
-
-            includeGuildBank = function(self)
-                for guild, enabled in pairs(trackerInfo.includeGuildBank) do
-                    self:SetItemValue(guild, enabled)
-                end
-            end,
-
-            objective = function(self)
-                self:SetText(trackerInfo.objective)
-            end,
-        }
-
-        -- Callbacks
-        scrollContent:SetUserData("_OnEnterPressed", function(_Type, pendingType, widget, id)
-            if pendingType then
-                local validID = pendingType == "ITEM" and private:ValidateItem(id)
-                    or pendingType == "CURRENCY" and private:ValidateCurrency(id)
-
-                if validID then
-                    local exists = _Type == "tracker"
-                            and private:ObjectiveTemplateTrackerExists(objectiveTitle, pendingType, validID)
-                        or _Type == "altID"
-                            and private:ObjectiveTemplateTrackerAltIDExists(
-                                objectiveTitle,
-                                trackerKey,
-                                pendingType,
-                                validID
-                            )
-
-                    if not exists then
-                        if _Type == "tracker" then
-                            local subgroup = private:AddObjectiveTemplateTracker(objectiveTitle, pendingType, validID)
-                            local itemName = private:GetObjectiveTemplateTrackerName(pendingType, validID)
-                            trackerTree:SelectByPath(group, subgroup)
-                        elseif _Type == "altID" then
-                            private:AddObjectiveTemplateTrackerAltID(objectiveTitle, trackerKey, pendingType, validID)
-                        end
-
-                        private:NotifyChange(content)
-                        widget:SetText()
-                    else
-                        private.options:SetStatusText(L["Invalid input: duplicate entry."])
-                        widget:HighlightText()
-                    end
-                else
-                    private.options:SetStatusText(L["Invalid item/currency ID."])
-                    widget:HighlightText()
-                end
-            else
-                private.options:SetStatusText(L["Please select type: item or currency."])
-            end
-
-            widget:ClearFocus()
-            private:NotifyChange(scrollContent)
-        end)
-
-        local function deleteTracker_OnClick()
-            local deleteFunc = function()
-                private:DeleteObjectiveTemplateTracker(objectiveTitle, trackerKey)
-                private:NotifyChange(content)
-                trackerTree:SelectByPath(group)
-            end
-
-            private:ShowConfirmationDialog(
-                format(
-                    L["Are you sure you want to delete %s from objective template \"%s\"?"],
-                    trackerName,
-                    objectiveTitle
-                ),
-                deleteFunc
-            )
-        end
-
-        local function includeAlts_OnValueChanged(_, _, value)
-            private.db.global.objectives[objectiveTitle].trackers[trackerKey].includeAlts = value
-        end
-
-        local function includeBank_OnValueChanged(_, _, value)
-            private.db.global.objectives[objectiveTitle].trackers[trackerKey].includeBank = value
-        end
-
-        local function includeGuildBank_OnValueChanged(_, _, value, checked)
-            private.db.global.objectives[objectiveTitle].trackers[trackerKey].includeGuildBank[value] = checked
-            private:NotifyChange(scrollContent)
-        end
-
-        local function objective_OnEnterPressed(self, _, value)
-            local objective = tonumber(value) or 1
-            objective = objective < 1 and 1 or objective
-
-            self:ClearFocus()
-            private.db.global.objectives[objectiveTitle].trackers[trackerKey].objective = objective
-            private:NotifyChange(scrollContent)
-        end
-
-        -- Widgets
-        if not subgroup then
-            local condition = AceGUI:Create("Dropdown")
-            condition:SetLabel(L["Condition"])
-            condition:SetList(lists.condition)
-            condition:SetCallback("OnValueChanged", condition_OnValueChanged)
-            condition:SetUserData("NotifyChange", NotifyChangeFuncs.condition)
-
-            local conditionFunc = AceGUI:Create("FarmingBar_LuaEditBox")
-            conditionFunc:SetFullWidth(true)
-            conditionFunc:SetLabel(L["Custom Condition"])
-            conditionFunc:Initialize(objectiveInfo.condition.func, conditionFunc_OnEnterPressed)
-            conditionFunc:SetUserData("NotifyChange", NotifyChangeFuncs.conditionFunc)
-
-            local addTrackerGroup = AceGUI:Create("InlineGroup")
-            addTrackerGroup:SetTitle(L["New Tracker"])
-            addTrackerGroup:SetFullWidth(true)
-            addTrackerGroup:SetLayout("Flow")
-
-            local trackerType = AceGUI:Create("Dropdown")
-            trackerType:SetLabel(L["Type"])
-            trackerType:SetList(lists.trackerType)
-
-            local trackerID = AceGUI:Create("EditBox")
-            trackerID:SetLabel(L["Currency/Item ID"])
-            trackerID:SetCallback("OnEnterPressed", function(self, _, value)
-                scrollContent:GetUserData("_OnEnterPressed")("tracker", trackerType:GetValue(), self, value)
+                self.parent.parent:DoLayout()
             end)
 
-            -- Add children
-            private:AddChildren(addTrackerGroup, trackerType, trackerID)
-            private:AddChildren(scrollContent, condition, conditionFunc, addTrackerGroup)
-        else
-            local header = AceGUI:Create("Label")
-            header:SetFullWidth(true)
-            header:SetFontObject(GameFontNormal)
-            header:SetColor(1, 0.82, 0)
-            header:SetText(trackerName)
-            header:SetImage(private:GetObjectiveTemplateTrackerIcon(trackerInfo.type, trackerInfo.id))
-            header:SetImageSize(14, 14)
-
-            local objective = AceGUI:Create("EditBox")
-            objective:SetLabel(L["Objective"])
-            objective:SetCallback("OnEnterPressed", objective_OnEnterPressed)
-            objective:SetUserData("NotifyChange", NotifyChangeFuncs.objective)
-
-            local includeGuildBank = AceGUI:Create("Dropdown")
-            includeGuildBank:SetList(private:GetGuildsList())
-            includeGuildBank:SetLabel(L["Include Guild Bank"])
-            includeGuildBank:SetMultiselect(true)
-            includeGuildBank:SetCallback("OnValueChanged", includeGuildBank_OnValueChanged)
-            includeGuildBank:SetUserData("NotifyChange", NotifyChangeFuncs.includeGuildBank)
-
-            local includeBank = AceGUI:Create("CheckBox")
-            includeBank:SetLabel(L["Include Bank"])
-            includeBank:SetCallback("OnValueChanged", includeBank_OnValueChanged)
-            includeBank:SetUserData("NotifyChange", NotifyChangeFuncs.includeBank)
-
-            local includeAlts = AceGUI:Create("CheckBox")
-            includeAlts:SetLabel(L["Include Alts"])
-            local missing = private:GetMissingDataStoreModules()
-            if #missing > 0 then
-                local msg = L["Missing dependencies"] .. ": "
-
-                for i = 1, #missing do
-                    msg = msg .. (i > 1 and ", " or "") .. missing[i]
-                end
-
-                msg = addon.ColorFontString(msg, "RED")
-
-                private:SetOptionTooltip(includeAlts, msg, true)
-                includeAlts:SetDescription(msg)
-                includeAlts:SetRelativeWidth(0.9)
-            end
-            includeAlts:SetCallback("OnValueChanged", includeAlts_OnValueChanged)
-            includeAlts:SetUserData("NotifyChange", NotifyChangeFuncs.includeAlts)
-
-            local newAltID = AceGUI:Create("InlineGroup")
-            newAltID:SetTitle(L["New Alt ID"])
-            newAltID:SetFullWidth(true)
-            newAltID:SetLayout("Flow")
-
-            local altType = AceGUI:Create("Dropdown")
-            altType:SetLabel(L["Type"])
-            altType:SetList(lists.trackerType)
-
-            local altID = AceGUI:Create("EditBox")
-            altID:SetLabel(L["Currency/Item ID"])
-            altID:SetCallback("OnEnterPressed", function(self, _, value)
-                scrollContent:GetUserData("_OnEnterPressed")("altID", altType:GetValue(), self, value)
-            end)
-
-            local altIDsGroup = AceGUI:Create("InlineGroup")
-            altIDsGroup:SetTitle(L["Alt IDs"])
-            altIDsGroup:SetFullWidth(true)
-            altIDsGroup:SetLayout("Flow")
-            altIDsGroup:SetUserData("NotifyChange", NotifyChangeFuncs.altIDsGroup)
-
-            local deleteTracker = AceGUI:Create("Button")
-            deleteTracker:SetText(DELETE)
-            deleteTracker:SetCallback("OnClick", deleteTracker_OnClick)
+            local deleteTracker = private:GetTrackerWidgets("deleteTracker", objectiveInfo, trackerKey)
+            deleteTracker:SetCallback("OnClick", callbacks.deleteTracker)
 
             -- Add children
             private:AddChildren(newAltID, altType, altID)
-            private:AddChildren(scrollContent, header, objective)
-            if #missing == 0 then
-                private:AddChildren(scrollContent, includeGuildBank)
-            end
-            private:AddChildren(scrollContent, includeBank, includeAlts, newAltID, altIDsGroup, deleteTracker)
-            private:NotifyChange(altIDsGroup)
+            private:AddChildren(altIDsGroup, removeTxt, labelTxt, multiplierTxt, altIDsList)
+            private:AddChildren(
+                scrollContent,
+                header,
+                objective,
+                includeBank,
+                includeGuildBank,
+                includeAlts,
+                dependencies,
+                newAltID,
+                altIDsGroup,
+                deleteTracker
+            )
         end
 
         private:NotifyChange(scrollContent)
-    end
-
-    -- Widgets
-    local trackerTree = AceGUI:Create("TreeGroup")
-    trackerTree:SetFullWidth(true)
-    trackerTree:SetLayout("Fill")
-    trackerTree:SetCallback("OnGroupSelected", trackerTree_OnGroupSelected)
-    trackerTree:SetUserData("NotifyChange", NotifyChangeFuncs.trackerTree)
-
-    local scrollContainer = AceGUI:Create("SimpleGroup")
-    scrollContainer:SetFullWidth(true)
-    scrollContainer:SetLayout("Fill")
-    trackerTree:AddChild(scrollContainer)
-
-    local scrollContent = AceGUI:Create("ScrollFrame")
-    scrollContent:SetLayout("Flow")
-    scrollContainer:AddChild(scrollContent)
-    trackerTree:SetUserData("scrollContent", scrollContent)
+    end)
 
     -- Add children
     private:AddChildren(content, trackerTree)

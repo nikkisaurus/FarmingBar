@@ -62,7 +62,7 @@ local postClickMethods = {
     end,
 
     showObjectiveEditor = function(frame)
-        print("Show editor") -- TODO
+        private:ShowObjectiveEditor(frame.obj)
     end,
 }
 
@@ -129,6 +129,7 @@ local scripts = {
             template.icon.id = GetItemIcon(itemID)
             template.onUse.type = "ITEM"
             template.onUse.itemID = itemID
+            template.title = (GetItemInfo(itemID))
 
             local tracker = addon.CloneTable(private.defaults.tracker)
             tracker.type = "ITEM"
@@ -230,7 +231,7 @@ local methods = {
 
     --[[ Fontstrings ]]
     SetCount = function(widget)
-        widget.count:SetText(private:GetWidgetCount(widget))
+        widget.count:SetText(private:GetObjectiveWidgetCount(widget))
     end,
 
     SetObjective = function(widget, objective)

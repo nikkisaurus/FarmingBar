@@ -2,7 +2,7 @@ local addonName, private = ...
 local addon = LibStub("AceAddon-3.0"):GetAddon(addonName)
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 
-function private:GetWidgetCount(widget)
+function private:GetObjectiveWidgetCount(widget)
     if widget:IsEmpty() then
         return
     end
