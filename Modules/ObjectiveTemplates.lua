@@ -40,17 +40,20 @@ function private:AddObjectiveTemplate(objectiveInfo)
     local newObjectiveTitle = private:IncrementString(objectiveInfo.title, private, "ObjectiveTemplateExists")
     private.db.global.objectives[newObjectiveTitle] = addon.CloneTable(objectiveInfo)
     private.db.global.objectives[newObjectiveTitle].title = newObjectiveTitle
+    private:RefreshOptions()
     return newObjectiveTitle
 end
 
 function private:DeleteObjectiveTemplate(objectiveTitle)
     private.db.global.objectives[objectiveTitle] = nil
+    private:RefreshOptions()
 end
 
 function private:DuplicateObjectiveTemplate(objectiveTitle)
     local newObjectiveTitle = private:IncrementString(objectiveTitle, private, "ObjectiveTemplateExists")
     private.db.global.objectives[newObjectiveTitle] = addon.CloneTable(private.db.global.objectives[objectiveTitle])
     private.db.global.objectives[newObjectiveTitle].title = newObjectiveTitle
+    private:RefreshOptions()
     return newObjectiveTitle
 end
 
@@ -61,6 +64,7 @@ end
 function private:RenameObjectiveTemplate(objectiveTitle, newObjectiveTitle)
     private.db.global.objectives[newObjectiveTitle] = addon.CloneTable(private.db.global.objectives[objectiveTitle])
     private.db.global.objectives[objectiveTitle] = nil
+    private:RefreshOptions()
 end
 
 --[[ Trackers ]]

@@ -37,11 +37,8 @@ local lists = {
 
 local widgets = {
     applyTemplate = function()
-        print("Notified")
         local widget = AceGUI:Create("Dropdown")
         widget:SetLabel(L["Apply Objective Template"])
-        widget:SetList(lists.templates())
-        widget:SetDisabled(addon.tcount(private.db.global.objectives) == 0)
         return widget
     end,
 
@@ -117,6 +114,11 @@ local widgets = {
 
 function private:GetObjectiveWidget(widgetType, objectiveInfo)
     local NotifyChangeFuncs = {
+        applyTemplate = function(self)
+            self:SetList(lists.templates())
+            self:SetDisabled(addon.tcount(private.db.global.objectives) == 0)
+        end,
+
         icon = function(self)
             self:SetImage(private:GetObjectiveIcon(objectiveInfo))
         end,
@@ -168,5 +170,5 @@ function private:GetObjectiveWidget(widgetType, objectiveInfo)
     local widget = widgets[widgetType]()
     widget:SetUserData("NotifyChange", NotifyChangeFuncs[widgetType])
 
-    return widget
+    return widget, NotifyChangeFuncs[widgetType]
 end

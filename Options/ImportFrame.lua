@@ -60,6 +60,8 @@ function private:LoadImportFrame()
                 private:IncrementString(L["Imported Objective"], private, "ObjectiveTemplateExists")
             private.db.global.objectives[newObjectiveTitle] = addon.CloneTable(objectiveInfo)
             private:UpdateMenu(private.options:GetUserData("menu"), "Objectives", newObjectiveTitle)
+
+            private:RefreshOptions()
         end
 
         -- Widgets

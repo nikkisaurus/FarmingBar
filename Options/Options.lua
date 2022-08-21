@@ -79,10 +79,6 @@ function private:LoadOptions()
         private:InitializeOptions()
     end
 
-    if private.editor then
-        private.editor:Hide()
-    end
-
     private.options:Show()
     private:UpdateMenu(private.options:GetUserData("menu"))
 end
@@ -98,6 +94,16 @@ function private:NotifyChange(parent, ...)
         if child.children then
             private:NotifyChange(child, ...)
         end
+    end
+end
+
+function private:RefreshOptions()
+    if private.options then
+        private:NotifyChange(private.options)
+    end
+
+    if private.editor then
+        private:NotifyChange(private.editor)
     end
 end
 

@@ -3,6 +3,17 @@ local addon = LibStub("AceAddon-3.0"):GetAddon(addonName)
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 local AceGUI = LibStub("AceGUI-3.0")
 
+local lists = {
+
+    templates = function()
+        local templates = {}
+        for templateName, _ in pairs(private.db.global.objectives) do
+            templates[templateName] = templateName
+        end
+        return templates
+    end,
+}
+
 --[[ Content ]]
 local function GetGeneralContent(objectiveInfo, content)
     local widget = content.parent.parent:GetUserData("widget")
@@ -75,7 +86,7 @@ local function GetGeneralContent(objectiveInfo, content)
             local newObjectiveTitle = private:AddObjectiveTemplate(objectiveInfo)
             private:LoadOptions()
             private:UpdateMenu(private.options:GetUserData("menu"), "Objectives", newObjectiveTitle)
-            -- ! Cannot get a notify on applyTemplate
+            private:NotifyChange(content)
         end,
 
         title = function(self, _, value)
@@ -110,9 +121,8 @@ local function GetGeneralContent(objectiveInfo, content)
     local onUseMacrotext = private:GetObjectiveWidget("onUseMacrotext", objectiveInfo)
     onUseMacrotext:SetCallback("OnEnterPressed", callbacks.onUseMacrotext)
 
-    local applyTemplate = private:GetObjectiveWidget("applyTemplate", objectiveInfo)
+    local applyTemplate, notify = private:GetObjectiveWidget("applyTemplate", objectiveInfo)
     applyTemplate:SetCallback("OnValueChanged", callbacks.applyTemplate)
-    private.editor:SetUserData("applyTemplate", applyTemplate)
 
     local saveTemplate = private:GetObjectiveWidget("saveTemplate", objectiveInfo)
     saveTemplate:SetCallback("OnClick", callbacks.saveTemplate)
@@ -407,10 +417,6 @@ end
 function private:LoadObjectiveEditor(widget)
     if not private.editor then
         private:InitializeObjectiveEditor()
-    end
-
-    if private.options then
-        private.options:Hide()
     end
 
     local _, buttonDB = widget:GetDB()

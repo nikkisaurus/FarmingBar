@@ -234,7 +234,7 @@ local function GetObjectiveContent(content)
         local deleteFunc = function()
             private:DeleteObjectiveTemplate(value)
             private:UpdateMenu(private.options:GetUserData("menu"))
-            private:NotifyChange(content)
+            private:RefreshOptions()
         end
 
         private:ShowConfirmationDialog(
@@ -254,6 +254,7 @@ local function GetObjectiveContent(content)
         private.db.global.objectives[newObjectiveTitle] = addon.CloneTable(private.defaults.objective)
         private.db.global.objectives[newObjectiveTitle].title = newObjectiveTitle
         private:UpdateMenu(private.options:GetUserData("menu"), "Objectives", newObjectiveTitle)
+        private:RefreshOptions()
     end
 
     -- Widgets
