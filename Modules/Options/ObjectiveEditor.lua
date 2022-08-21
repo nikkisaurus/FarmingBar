@@ -166,33 +166,36 @@ local function GetTrackerContent(objectiveInfo, content)
             end,
 
             multiplier = function(self, _, value)
-                -- local num, den = strsplit("/", value)
-                -- local multiplier
+                local num, den = strsplit("/", value)
+                local multiplier
 
-                -- if den then
-                --     num = tonumber(num)
-                --     den = tonumber(den)
-                --     if num and den and den ~= 0 then
-                --         multiplier = addon.round(num / den, 3)
-                --     else
-                --         multiplier = 1
-                --     end
-                -- else
-                --     multiplier = tonumber(value) or 1
-                -- end
+                if den then
+                    num = tonumber(num)
+                    den = tonumber(den)
+                    if num and den and den ~= 0 then
+                        multiplier = addon.round(num / den, 3)
+                    else
+                        multiplier = 1
+                    end
+                else
+                    multiplier = tonumber(value) or 1
+                end
 
-                -- multiplier = multiplier > 0 and multiplier or 1
+                multiplier = multiplier > 0 and multiplier or 1
 
-                -- self:ClearFocus()
+                self:ClearFocus()
 
-                -- private.db.profile.bars[barID].buttons[buttonID].trackers[trackerKey].altIDs[self:GetUserData("altKey")].multiplier =
-                --     multiplier
-                -- private:NotifyChange(self.parent)
+                private.db.profile.bars[barID].buttons[buttonID].trackers[trackerKey].altIDs[self:GetUserData("altKey")].multiplier =
+                    multiplier
+                private:NotifyChange(self.parent)
+                widget:SetCount()
             end,
 
             remove = function(self)
-                -- private:DeleteObjectiveTemplateTrackerAltID(objectiveTitle, trackerKey, self:GetUserData("altKey"))
-                -- private:NotifyChange(self.parent.parent)
+                private.db.profile.bars[barID].buttons[buttonID].trackers[trackerKey].altIDs[self:GetUserData("altKey")] =
+                    nil
+                private:NotifyChange(self.parent.parent)
+                widget:SetCount()
             end,
 
             objective = function(self, _, value)
@@ -217,9 +220,20 @@ local function GetTrackerContent(objectiveInfo, content)
 
             local trackerType = private:GetTrackerWidgets("trackerType", objectiveInfo, trackerKey)
 
-            local trackerID = private:GetTrackerWidgets("trackerID", objectiveInfo, trackerKey) -- ! TODO FIX bug, has different table to save data
+            local trackerID = private:GetTrackerWidgets("trackerID", objectiveInfo, trackerKey)
+            trackerID:SetUserData("barID", barID)
+            trackerID:SetUserData("buttonID", buttonID)
             trackerID:SetCallback("OnEnterPressed", function(self, _, value)
-                local isValid = private:ValidateTracker(objectiveInfo, "tracker", self, trackerType:GetValue(), value)
+                local isValid = private:ValidateTracker({
+                    widgetType = "button",
+                    trackerType = "tracker",
+                    widget = self,
+                    frame = private.editor,
+                    objectiveInfo = objectiveInfo,
+                    trackerKey = trackerKey,
+                    pendingType = trackerType:GetValue(),
+                    id = value,
+                })
                 if isValid then
                     private:NotifyChange(content)
                     trackerTree:SelectByPath(group, isValid)
@@ -251,9 +265,22 @@ local function GetTrackerContent(objectiveInfo, content)
             local altType = private:GetTrackerWidgets("altType", objectiveInfo, trackerKey)
 
             local altID = private:GetTrackerWidgets("altID", objectiveInfo, trackerKey)
+            altID:SetUserData("barID", barID)
+            altID:SetUserData("buttonID", buttonID)
             altID:SetCallback("OnEnterPressed", function(self, _, value)
-                private:ValidateTracker(objectiveInfo, "altID", self, altType:GetValue(), value, trackerKey)
+                local isValid = private:ValidateTracker({
+                    widgetType = "button",
+                    trackerType = "altID",
+                    widget = self,
+                    frame = private.editor,
+                    objectiveInfo = objectiveInfo,
+                    trackerKey = trackerKey,
+                    pendingType = altType:GetValue(),
+                    id = value,
+                })
+
                 private:NotifyChange(content)
+                widget:SetCount()
             end)
 
             local altIDsGroup = private:GetTrackerWidgets("altIDsGroup", objectiveInfo, trackerKey)

@@ -203,7 +203,7 @@ function private:InitializeDatabase()
         global = {
             debug = {
                 enabled = false,
-                -- enabled = true,
+                enabled = true,
             },
             settings = {
                 useGameTooltip = false,

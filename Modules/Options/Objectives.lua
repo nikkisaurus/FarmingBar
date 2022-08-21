@@ -403,7 +403,16 @@ local function GetTrackerContent(objectiveTitle, content)
 
             local trackerID = private:GetTrackerWidgets("trackerID", objectiveInfo, trackerKey)
             trackerID:SetCallback("OnEnterPressed", function(self, _, value)
-                local isValid = private:ValidateTracker(objectiveInfo, "tracker", self, trackerType:GetValue(), value)
+                local isValid = private:ValidateTracker({
+                    widgetType = "template",
+                    trackerType = "tracker",
+                    widget = self,
+                    frame = private.options,
+                    objectiveInfo = objectiveInfo,
+                    trackerKey = trackerKey,
+                    pendingType = trackerType:GetValue(),
+                    id = value,
+                })
                 if isValid then
                     private:NotifyChange(content)
                     trackerTree:SelectByPath(group, isValid)
@@ -436,8 +445,18 @@ local function GetTrackerContent(objectiveTitle, content)
 
             local altID = private:GetTrackerWidgets("altID", objectiveInfo, trackerKey)
             altID:SetCallback("OnEnterPressed", function(self, _, value)
-                private:ValidateTracker(objectiveInfo, "altID", self, altType:GetValue(), value, trackerKey)
-                private:NotifyChange(content)
+                local isValid = private:ValidateTracker({
+                    widgetType = "template",
+                    trackerType = "altID",
+                    widget = self,
+                    frame = private.options,
+                    objectiveInfo = objectiveInfo,
+                    trackerKey = trackerKey,
+                    pendingType = altType:GetValue(),
+                    id = value,
+                })
+
+                private:NotifyChange(scrollContent)
             end)
 
             local altIDsGroup = private:GetTrackerWidgets("altIDsGroup", objectiveInfo, trackerKey)

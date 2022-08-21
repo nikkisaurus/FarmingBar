@@ -332,6 +332,24 @@ local methods = {
     end,
 
     --[[ Database ]]
+    AddTracker = function(widget, trackerType, trackerID)
+        local barID, buttonID = widget:GetID()
+        local trackerInfo = addon.CloneTable(private.defaults.tracker)
+        trackerInfo.type = trackerType
+        trackerInfo.id = trackerID
+        tinsert(private.db.profile.bars[barID].buttons[buttonID].trackers, trackerInfo)
+        return #private.db.profile.bars[barID].buttons[buttonID].trackers
+    end,
+
+    AddTrackerAltID = function(widget, trackerKey, altType, altID)
+        local barID, buttonID = widget:GetID()
+        tinsert(private.db.profile.bars[barID].buttons[buttonID].trackers[trackerKey].altIDs, {
+            type = altType,
+            id = altID,
+            multiplier = 1,
+        })
+    end,
+
     Clear = function(widget)
         local barID, buttonID = widget:GetID()
         private.db.profile.bars[barID].buttons[buttonID] = nil
@@ -354,7 +372,7 @@ local methods = {
     end,
 
     IsEmpty = function(widget)
-        local barDB, buttonDB = widget:GetDB()
+        local _, buttonDB = widget:GetDB()
         return not buttonDB, buttonDB
     end,
 
@@ -375,6 +393,32 @@ local methods = {
         local barID, buttonID = widget:GetID()
         private.db.profile.bars[barID].buttons[buttonID] = objectiveInfo
         widget:UpdateAttributes()
+    end,
+
+    TrackerAltIDExists = function(widget, trackerKey, altType, altID)
+        local _, buttonDB = widget:GetDB()
+        local trackerInfo = buttonDB.trackers[trackerKey]
+        local trackerType = trackerInfo.type
+        local trackerID = trackerInfo.id
+
+        if altType == trackerType and altID == trackerID then
+            return true
+        end
+
+        for _, altInfo in pairs(trackerInfo.altIDs) do
+            if altInfo.type == altType and altInfo.id == altID then
+                return true
+            end
+        end
+    end,
+
+    TrackerExists = function(widget, trackerType, trackerKey)
+        local _, buttonDB = widget:GetDB()
+        for _, trackerInfo in pairs(buttonDB.trackers) do
+            if trackerInfo.type == trackerType and trackerInfo.id == trackerKey then
+                return true
+            end
+        end
     end,
 
     Update = function(widget)

@@ -387,39 +387,76 @@ function private:GetTrackerWidgets(widgetType, objectiveInfo, trackerKey)
     return widget
 end
 
-function private:ValidateTracker(objectiveInfo, _Type, widget, pendingType, id, trackerKey)
-    local objectiveTitle = objectiveInfo.title
+function private:ValidateTracker(info)
+    local widgetType = info.widgetType -- button, template
+    local trackerType = info.trackerType -- tracker, altID
+
+    local widget = info.widget
+    local frame = info.frame
+
+    local objectiveInfo = info.objectiveInfo
+    local trackerKey = info.trackerKey
+
+    local pendingType = info.pendingType
+    local id = info.id
+
     local subgroup
     if pendingType then
         local validID = pendingType == "ITEM" and private:ValidateItem(id)
             or pendingType == "CURRENCY" and private:ValidateCurrency(id)
 
         if validID then
-            local exists = _Type == "tracker"
-                    and private:ObjectiveTemplateTrackerExists(objectiveTitle, pendingType, validID)
-                or _Type == "altID"
-                    and private:ObjectiveTemplateTrackerAltIDExists(objectiveTitle, trackerKey, pendingType, validID)
+            local exists, barID, buttonID, button
+            if widgetType == "template" then
+                exists = trackerType == "tracker"
+                        and private:ObjectiveTemplateTrackerExists(objectiveInfo.title, pendingType, validID)
+                    or trackerType == "altID"
+                        and private:ObjectiveTemplateTrackerAltIDExists(
+                            objectiveInfo.title,
+                            trackerKey,
+                            pendingType,
+                            validID
+                        )
+            elseif widgetType == "button" then
+                barID = widget:GetUserData("barID")
+                buttonID = widget:GetUserData("buttonID")
+                button = private.bars[barID]:GetButtons()[buttonID]
+                exists = trackerType == "tracker" and button:TrackerExists(pendingType, validID)
+                    or trackerType == "altID" and button:TrackerAltIDExists(trackerKey, pendingType, validID)
+            end
 
             if not exists then
-                if _Type == "tracker" then
-                    subgroup = private:AddObjectiveTemplateTracker(objectiveTitle, pendingType, validID)
-                    local itemName = private:GetObjectiveTemplateTrackerName(pendingType, validID)
-                elseif _Type == "altID" then
-                    subgroup =
-                        private:AddObjectiveTemplateTrackerAltID(objectiveTitle, trackerKey, pendingType, validID)
+                if widgetType == "template" then
+                    if trackerType == "tracker" then
+                        subgroup = private:AddObjectiveTemplateTracker(objectiveInfo.title, pendingType, validID)
+                        local itemName = private:GetObjectiveTemplateTrackerName(pendingType, validID)
+                    elseif trackerType == "altID" then
+                        subgroup = private:AddObjectiveTemplateTrackerAltID(
+                            objectiveInfo.title,
+                            trackerKey,
+                            pendingType,
+                            validID
+                        )
+                    end
+                elseif widgetType == "button" then
+                    if trackerType == "tracker" then
+                        subgroup = button:AddTracker(pendingType, validID)
+                    elseif trackerType == "altID" then
+                        button:AddTrackerAltID(trackerKey, pendingType, validID)
+                    end
                 end
 
                 widget:SetText()
             else
-                private.options:SetStatusText(L["Invalid input: duplicate entry."])
+                frame:SetStatusText(L["Invalid input: duplicate entry."])
                 widget:HighlightText()
             end
         else
-            private.options:SetStatusText(L["Invalid item/currency ID."])
+            frame:SetStatusText(L["Invalid item/currency ID."])
             widget:HighlightText()
         end
     else
-        private.options:SetStatusText(L["Please select type: item or currency."])
+        frame:SetStatusText(L["Please select type: item or currency."])
     end
 
     widget:ClearFocus()
