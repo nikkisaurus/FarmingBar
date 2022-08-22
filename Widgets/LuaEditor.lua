@@ -9,70 +9,85 @@ local Version = 1
 
 -- [[ Scripts ]]
 local scripts = {
-    editBox_OnTextChanged = function(widget)
-        local luaEditBox = widget:GetUserData("luaEditBox")
-        local dbFunc = luaEditBox:GetUserData("dbFunc")
-        widget.button:SetEnabled(widget:GetText() ~= dbFunc)
+    OnTextSet = function(editbox)
+        editbox.obj.button:Enable()
     end,
 }
 
 --[[ Methods ]]
 local methods = {
-    --[[ Widget ]]
     OnAcquire = function(widget)
-        widget.frame:Show()
-        addon.indent.enable(widget.editBox, _, 4) -- adds syntax highlighting
+        widget:Show()
+        addon.indent.enable(widget.editbox, _, 4) -- adds syntax highlighting
     end,
 
     OnRelease = function(widget)
-        addon.indent.disable(widget.editBox)
+        addon.indent.disable(widget.editbox)
+
+        for script, _ in pairs(scripts) do
+            widget.editbox:HookScript(script)
+        end
+
+        widget.window.closebutton:HookScript("OnClick")
     end,
 
-    --[[ Content ]]
-    LoadCode = function(widget, luaEditBox, OnEnterPressed)
-        widget.editbox:SetUserData("luaEditBox", luaEditBox)
-        widget.editbox:SetText(luaEditBox:GetText())
-        widget.editbox:SetCallback("OnEnterPressed", function(...)
-            OnEnterPressed(...)
-            luaEditBox:SetUserData("dbFunc", (select(3, ...)))
+    LoadCode = function(widget, sourceEditbox, OnEnterPressed, validate)
+        widget.editbox:SetText(sourceEditbox:GetText())
+        widget.editbox.obj:SetCallback("OnEnterPressed", function(...)
+            private:LoadOptions()
             widget.window:Release()
+
+            local validated = validate(select(3, ...))
+            if type(validated) == "boolean" and validated then
+                OnEnterPressed(...)
+            end
         end)
     end,
 
     SetStatusText = function(widget, text)
-        widget.window:SetStatusText(text)
+        widget.statustext:SetText(text)
     end,
 
-    SetTitle = function(widget, title)
-        widget.window:SetTitle(title)
+    Show = function(widget)
+        widget.frame:Show()
     end,
 }
 
 --[[ Constructor ]]
 local function Constructor()
-    local window = AceGUI:Create("Frame")
+    local window = AceGUI:Create("Window")
     window:SetLayout("FILL")
+    window:SetTitle(L.addonName .. " " .. L["Lua Editor"])
+
+    window.closebutton:HookScript("OnClick", function()
+        private:LoadOptions()
+    end)
 
     local frame = window.frame
     frame:SetClampedToScreen(true)
     frame:SetPoint("CENTER", 0, 0)
-    frame:Show()
+    frame:Hide()
 
     local editbox = AceGUI:Create("MultiLineEditBox")
     editbox:SetLabel("")
-    editbox:SetCallback("OnTextChanged", scripts.editBox_OnTextChanged)
-    editbox.editBox:SetScript("OnTextSet", function(_, ...)
-        scripts.editBox_OnTextChanged(editbox, ...)
-    end)
     window:AddChild(editbox)
+
+    for script, func in pairs(scripts) do
+        editbox.editBox:HookScript(script, func)
+    end
+
+    local statustext = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    statustext:SetPoint("TOPLEFT", editbox.button, "TOPRIGHT", 2, 0)
+    statustext:SetPoint("RIGHT", -10, 0)
+    statustext:SetPoint("BOTTOM", editbox.button, "BOTTOM", 0, 0)
 
     local widget = {
         type = Type,
         window = window,
+        statustext = statustext,
+        title = window.title,
         frame = frame,
-        editbox = editbox,
-        editBox = editbox.editBox,
-        statustext = window.statustext,
+        editbox = editbox.editBox,
     }
 
     window.obj, frame.obj, editbox.obj = widget, widget, widget

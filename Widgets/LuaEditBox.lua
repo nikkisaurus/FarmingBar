@@ -4,96 +4,408 @@ local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 local AceGUI = LibStub("AceGUI-3.0")
 local LSM = LibStub("LibSharedMedia-3.0")
 
+--[[-----------------------------------------------------------------------------
+"FarmingBar_LuaEditBox" - Adapted from AceGUI-3.0 "MultiLineEditBox", 29
+-------------------------------------------------------------------------------]]
 local Type = "FarmingBar_LuaEditBox"
 local Version = 1
 
--- [[ Scripts ]]
-local scripts = {
-    expandButton_OnClick = function(expandButton)
-        local widget = expandButton.obj
-        LibStub("AceConfigDialog-3.0"):Close(addonName)
+-- Lua APIs
+local pairs = pairs
 
-        local editor = AceGUI:Create("FarmingBar_LuaEditor")
-        editor:SetTitle(format("%s %s", L.addonName, L["Lua Editor"]))
-        editor:LoadCode(widget, widget:GetUserData("OnEnterPressed"))
-        editor:SetCallback("OnClose", function(self)
-            private:LoadOptions()
-        end)
-    end,
+-- WoW APIs
+local GetCursorInfo, GetSpellInfo, ClearCursor = GetCursorInfo, GetSpellInfo, ClearCursor
+local CreateFrame, UIParent = CreateFrame, UIParent
+local _G = _G
 
-    editBox_OnTextChanged = function(widget)
-        local dbFunc = widget:GetUserData("dbFunc")
-        widget.button:SetEnabled(widget:GetText() ~= dbFunc)
-    end,
-}
+-- Global vars/functions that we don't upvalue since they might get hooked, or upgraded
+-- List them here for Mikk's FindGlobals script
+-- GLOBALS: ACCEPT, ChatFontNormal
 
---[[ Methods ]]
-local methods = {
-    --[[ Widget ]]
-    OnAcquire = function(widget)
-        local editbox = widget.editBox
-        addon.indent.enable(editbox, _, 4) -- adds syntax highlighting
-    end,
+--[[-----------------------------------------------------------------------------
+Support functions
+-------------------------------------------------------------------------------]]
 
-    OnRelease = function(widget)
-        addon.indent.disable(widget.editBox)
-        widget.editBox:SetEnabled(true)
-        widget.button:SetEnabled(true)
-    end,
-
-    --[[ Frame ]]
-    Initialize = function(widget, dbFunc, OnEnterPressed)
-        widget:SetUserData("OnEnterPressed", OnEnterPressed)
-        widget:SetCallback("OnEnterPressed", function(...)
-            OnEnterPressed(...)
-            widget:SetUserData("dbFunc", (select(3, ...)))
-        end)
-        widget:SetUserData("dbFunc", dbFunc)
-    end,
-
-    SetDisabled = function(self, flag)
-        self.editBox:SetEnabled(not flag)
-        self.button:SetEnabled(not flag)
-        self.expandButton:SetEnabled(not flag)
-    end,
-}
-
---[[ Constructor ]]
-local function Constructor()
-    --[[ Frame ]]
-    local frame = AceGUI:Create("MultiLineEditBox")
-    -- Fix misaligned editbox label
-    frame.label:SetHeight(frame.label:GetStringHeight() + 6)
-    frame:SetCallback("OnTextChanged", scripts.editBox_OnTextChanged)
-    frame.editBox:SetScript("OnTextSet", function(_, ...)
-        scripts.editBox_OnTextChanged(frame, ...)
+if not AceGUIMultiLineEditBoxInsertLink then
+    -- upgradeable hook
+    hooksecurefunc("ChatEdit_InsertLink", function(...)
+        return _G.AceGUIMultiLineEditBoxInsertLink(...)
     end)
+end
 
-    local expandButton = CreateFrame("Button", nil, frame.frame, "UIPanelButtonTemplate")
-    expandButton:SetText(L["Expand"])
+function _G.AceGUIMultiLineEditBoxInsertLink(text)
+    for i = 1, AceGUI:GetWidgetCount(Type) do
+        local editbox = _G[("MultiLineEditBox%uEdit"):format(i)]
+        if editbox and editbox:IsVisible() and editbox:HasFocus() then
+            editbox:Insert(text)
+            return true
+        end
+    end
+end
+
+local function Layout(self)
+    self:SetHeight(self.numlines * 14 + (self.disablebutton and 19 or 41) + self.labelHeight)
+
+    if self.labelHeight == 0 then
+        self.scrollBar:SetPoint("TOP", self.frame, "TOP", 0, -23)
+    else
+        self.scrollBar:SetPoint("TOP", self.label, "BOTTOM", 0, -19)
+    end
+
+    if self.disablebutton then
+        self.scrollBar:SetPoint("BOTTOM", self.frame, "BOTTOM", 0, 21)
+        self.scrollBG:SetPoint("BOTTOMLEFT", 0, 4)
+    else
+        self.scrollBar:SetPoint("BOTTOM", self.button, "TOP", 0, 18)
+        self.scrollBG:SetPoint("BOTTOMLEFT", self.button, "TOPLEFT")
+    end
+end
+
+--[[-----------------------------------------------------------------------------
+Scripts
+-------------------------------------------------------------------------------]]
+local function OnClick(self) -- Button
+    self = self.obj
+    self.editBox:ClearFocus()
+    if not self:Fire("OnEnterPressed", self.editBox:GetText()) then
+        self.button:Disable()
+    end
+end
+
+local function expandButton_OnClick(self)
+    private:CloseOptions()
+
+    local widget = self.obj
+    local editor = AceGUI:Create("FarmingBar_LuaEditor")
+
+    editor:LoadCode(widget, function(_, _, value)
+        widget:Fire("OnEnterPressed", value)
+    end, widget.userdata.option.arg)
+end
+
+local function OnCursorChanged(self, _, y, _, cursorHeight) -- EditBox
+    self, y = self.obj.scrollFrame, -y
+    local offset = self:GetVerticalScroll()
+    if y < offset then
+        self:SetVerticalScroll(y)
+    else
+        y = y + cursorHeight - self:GetHeight()
+        if y > offset then
+            self:SetVerticalScroll(y)
+        end
+    end
+end
+
+local function OnEditFocusLost(self) -- EditBox
+    self:HighlightText(0, 0)
+    self.obj:Fire("OnEditFocusLost")
+end
+
+local function OnEnter(self) -- EditBox / ScrollFrame
+    self = self.obj
+    if not self.entered then
+        self.entered = true
+        self:Fire("OnEnter")
+    end
+end
+
+local function OnLeave(self) -- EditBox / ScrollFrame
+    self = self.obj
+    if self.entered then
+        self.entered = nil
+        self:Fire("OnLeave")
+    end
+end
+
+local function OnMouseUp(self) -- ScrollFrame
+    self = self.obj.editBox
+    self:SetFocus()
+    self:SetCursorPosition(self:GetNumLetters())
+end
+
+local function OnReceiveDrag(self) -- EditBox / ScrollFrame
+    local type, id, info = GetCursorInfo()
+    if type == "spell" then
+        info = GetSpellInfo(id, info)
+    elseif type ~= "item" then
+        return
+    end
+    ClearCursor()
+    self = self.obj
+    local editBox = self.editBox
+    if not editBox:HasFocus() then
+        editBox:SetFocus()
+        editBox:SetCursorPosition(editBox:GetNumLetters())
+    end
+    editBox:Insert(info)
+    self.button:Enable()
+end
+
+local function OnSizeChanged(self, width, height) -- ScrollFrame
+    self.obj.editBox:SetWidth(width)
+end
+
+local function OnTextChanged(self, userInput) -- EditBox
+    if userInput then
+        self = self.obj
+        self:Fire("OnTextChanged", self.editBox:GetText())
+        self.button:Enable()
+    end
+end
+
+local function OnTextSet(self) -- EditBox
+    self:HighlightText(0, 0)
+    self:SetCursorPosition(self:GetNumLetters())
+    self:SetCursorPosition(0)
+    -- self.obj.button:Disable()
+end
+
+local function OnVerticalScroll(self, offset) -- ScrollFrame
+    local editBox = self.obj.editBox
+    editBox:SetHitRectInsets(0, 0, offset, editBox:GetHeight() - offset - self:GetHeight())
+end
+
+local function OnShowFocus(frame)
+    frame.obj.editBox:SetFocus()
+    frame:SetScript("OnShow", nil)
+end
+
+local function OnEditFocusGained(frame)
+    AceGUI:SetFocus(frame.obj)
+    frame.obj:Fire("OnEditFocusGained")
+end
+
+--[[-----------------------------------------------------------------------------
+Methods
+-------------------------------------------------------------------------------]]
+local methods = {
+    ["OnAcquire"] = function(self)
+        self.editBox:SetText("")
+        self:SetDisabled(false)
+        self:SetWidth(200)
+        self:DisableButton(false)
+        self:SetNumLines()
+        self.entered = nil
+        self:SetMaxLetters(0)
+    end,
+
+    ["OnRelease"] = function(self)
+        self:ClearFocus()
+    end,
+
+    ["SetDisabled"] = function(self, disabled)
+        local editBox = self.editBox
+        if disabled then
+            editBox:ClearFocus()
+            editBox:EnableMouse(false)
+            editBox:SetTextColor(0.5, 0.5, 0.5)
+            self.label:SetTextColor(0.5, 0.5, 0.5)
+            self.scrollFrame:EnableMouse(false)
+            self.button:Disable()
+        else
+            editBox:EnableMouse(true)
+            editBox:SetTextColor(1, 1, 1)
+            self.label:SetTextColor(1, 0.82, 0)
+            self.scrollFrame:EnableMouse(true)
+        end
+    end,
+
+    ["SetLabel"] = function(self, text)
+        if text and text ~= "" then
+            self.label:SetText(text)
+            if self.labelHeight ~= 10 then
+                self.labelHeight = 10
+                self.label:Show()
+            end
+        elseif self.labelHeight ~= 0 then
+            self.labelHeight = 0
+            self.label:Hide()
+        end
+        Layout(self)
+    end,
+
+    ["SetNumLines"] = function(self, value)
+        if not value or value < 4 then
+            value = 4
+        end
+        self.numlines = value
+        Layout(self)
+    end,
+
+    ["SetText"] = function(self, text)
+        self.editBox:SetText(text)
+    end,
+
+    ["GetText"] = function(self)
+        return self.editBox:GetText()
+    end,
+
+    ["SetMaxLetters"] = function(self, num)
+        self.editBox:SetMaxLetters(num or 0)
+    end,
+
+    ["DisableButton"] = function(self, disabled)
+        self.disablebutton = disabled
+        if disabled then
+            self.button:Hide()
+        else
+            self.button:Show()
+        end
+        Layout(self)
+    end,
+
+    ["ClearFocus"] = function(self)
+        self.editBox:ClearFocus()
+        self.frame:SetScript("OnShow", nil)
+    end,
+
+    ["SetFocus"] = function(self)
+        self.editBox:SetFocus()
+        if not self.frame:IsShown() then
+            self.frame:SetScript("OnShow", OnShowFocus)
+        end
+    end,
+
+    ["HighlightText"] = function(self, from, to)
+        self.editBox:HighlightText(from, to)
+    end,
+
+    ["GetCursorPosition"] = function(self)
+        return self.editBox:GetCursorPosition()
+    end,
+
+    ["SetCursorPosition"] = function(self, ...)
+        return self.editBox:SetCursorPosition(...)
+    end,
+}
+
+--[[-----------------------------------------------------------------------------
+Constructor
+-------------------------------------------------------------------------------]]
+local backdrop = {
+    bgFile = [[Interface\Tooltips\UI-Tooltip-Background]],
+    edgeFile = [[Interface\Tooltips\UI-Tooltip-Border]],
+    edgeSize = 16,
+    insets = { left = 4, right = 3, top = 4, bottom = 3 },
+}
+
+local function Constructor()
+    local frame = CreateFrame("Frame", nil, UIParent)
+    frame:Hide()
+
+    local widgetNum = AceGUI:GetNextWidgetNum(Type)
+
+    local label = frame:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+    label:SetPoint("TOPLEFT", frame, "TOPLEFT", 0, -4)
+    label:SetPoint("TOPRIGHT", frame, "TOPRIGHT", 0, -4)
+    label:SetJustifyH("LEFT")
+    label:SetText(ACCEPT)
+    label:SetHeight(10)
+
+    local button = CreateFrame("Button", ("%s%dButton"):format(Type, widgetNum), frame, "UIPanelButtonTemplate")
+    button:SetPoint("BOTTOMLEFT", 0, 4)
+    button:SetHeight(22)
+    button:SetWidth(label:GetStringWidth() + 24)
+    button:SetText(ACCEPT)
+    button:SetScript("OnClick", OnClick)
+    button:Disable()
+
+    local expandButton =
+        CreateFrame("Button", ("%s%dExpandButton"):format(Type, widgetNum), frame, "UIPanelButtonTemplate")
+    expandButton:SetPoint("LEFT", button, "RIGHT", 2, 0)
     expandButton:SetHeight(22)
-    expandButton:SetWidth(expandButton.Text:GetStringWidth() + 24)
-    expandButton:SetPoint("LEFT", frame.button, "RIGHT", 4, 0)
-    expandButton:SetScript("OnClick", scripts.expandButton_OnClick)
+    expandButton:SetWidth(label:GetStringWidth() + 24)
+    expandButton:SetText(L["Expand"])
+    expandButton:SetScript("OnClick", expandButton_OnClick)
 
-    --[[ ElvUI skin ]]
+    local text = button:GetFontString()
+    text:ClearAllPoints()
+    text:SetPoint("TOPLEFT", button, "TOPLEFT", 5, -5)
+    text:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -5, 1)
+    text:SetJustifyV("MIDDLE")
+
+    local scrollBG = CreateFrame("Frame", nil, frame, BackdropTemplateMixin and "BackdropTemplate" or nil)
+    scrollBG:SetBackdrop(backdrop)
+    scrollBG:SetBackdropColor(0, 0, 0)
+    scrollBG:SetBackdropBorderColor(0.4, 0.4, 0.4)
+
+    local scrollFrame =
+        CreateFrame("ScrollFrame", ("%s%dScrollFrame"):format(Type, widgetNum), frame, "UIPanelScrollFrameTemplate")
+
+    local scrollBar = _G[scrollFrame:GetName() .. "ScrollBar"]
+    scrollBar:ClearAllPoints()
+    scrollBar:SetPoint("TOP", label, "BOTTOM", 0, -19)
+    scrollBar:SetPoint("BOTTOM", button, "TOP", 0, 18)
+    scrollBar:SetPoint("RIGHT", frame, "RIGHT")
+
+    scrollBG:SetPoint("TOPRIGHT", scrollBar, "TOPLEFT", 0, 19)
+    scrollBG:SetPoint("BOTTOMLEFT", button, "TOPLEFT")
+
+    scrollFrame:SetPoint("TOPLEFT", scrollBG, "TOPLEFT", 5, -6)
+    scrollFrame:SetPoint("BOTTOMRIGHT", scrollBG, "BOTTOMRIGHT", -4, 4)
+    scrollFrame:SetScript("OnEnter", OnEnter)
+    scrollFrame:SetScript("OnLeave", OnLeave)
+    scrollFrame:SetScript("OnMouseUp", OnMouseUp)
+    scrollFrame:SetScript("OnReceiveDrag", OnReceiveDrag)
+    scrollFrame:SetScript("OnSizeChanged", OnSizeChanged)
+    scrollFrame:HookScript("OnVerticalScroll", OnVerticalScroll)
+
+    local editBox = CreateFrame("EditBox", ("%s%dEdit"):format(Type, widgetNum), scrollFrame)
+    editBox:SetAllPoints()
+    editBox:SetFontObject(ChatFontNormal)
+    editBox:SetMultiLine(true)
+    editBox:EnableMouse(true)
+    editBox:SetAutoFocus(false)
+    editBox:SetCountInvisibleLetters(false)
+    editBox:SetScript("OnCursorChanged", OnCursorChanged)
+    editBox:SetScript("OnEditFocusLost", OnEditFocusLost)
+    editBox:SetScript("OnEnter", OnEnter)
+    editBox:SetScript("OnEscapePressed", editBox.ClearFocus)
+    editBox:SetScript("OnLeave", OnLeave)
+    editBox:SetScript("OnMouseDown", OnReceiveDrag)
+    editBox:SetScript("OnReceiveDrag", OnReceiveDrag)
+    editBox:SetScript("OnTextChanged", OnTextChanged)
+    editBox:SetScript("OnTextSet", OnTextSet)
+    editBox:SetScript("OnEditFocusGained", OnEditFocusGained)
+    -- Add syntax highlighting
+    addon.indent.enable(editBox, _, 4)
+
+    scrollFrame:SetScrollChild(editBox)
+
+    -- Skin widgets
     if IsAddOnLoaded("ElvUI") then
         local E = unpack(_G["ElvUI"])
         local S = E:GetModule("Skins")
+
+        S:HandleButton(button)
         S:HandleButton(expandButton)
+        S:HandleScrollBar(scrollBar)
+
+        scrollBG:SetTemplate()
+        scrollBG:Point("TOPRIGHT", scrollBar, "TOPLEFT", -2, 19)
+        scrollBG:Point("BOTTOMLEFT", button, "TOPLEFT")
+
+        scrollBar:Point("RIGHT", frame, "RIGHT", 0 - 4)
+        scrollFrame:Point("BOTTOMRIGHT", scrollBG, "BOTTOMRIGHT", -4, 8)
     end
 
-    --[[ Widget ]]
-    local widget = frame
-    widget.editBox = frame.editBox
-    widget.type = Type
-    widget.expandButton = expandButton
-
-    expandButton.obj = widget
-
+    local widget = {
+        button = button,
+        expandButton = expandButton,
+        editBox = editBox,
+        frame = frame,
+        label = label,
+        labelHeight = 10,
+        numlines = 4,
+        scrollBar = scrollBar,
+        scrollBG = scrollBG,
+        scrollFrame = scrollFrame,
+        type = Type,
+    }
     for method, func in pairs(methods) do
         widget[method] = func
     end
+    button.obj, expandButton.obj, editBox.obj, scrollFrame.obj = widget, widget, widget, widget
 
     return AceGUI:RegisterAsWidget(widget)
 end

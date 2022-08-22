@@ -20,11 +20,11 @@ function addon:OnEnable()
     addon:RegisterEvent("SPELL_UPDATE_COOLDOWN")
 
     if private.db.global.debug.enabled then
-        C_Timer.After(5, private.StartDebug)
+        C_Timer.After(1, private.StartDebug)
     end
 end
 
 --[[ StartDebug ]]
 function private:StartDebug()
-    private:LoadOptions()
+    private:LoadOptions("objectiveTemplates", "TEST", "trackers")
 end

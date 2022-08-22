@@ -56,6 +56,10 @@ function private:SelectOptionsPath(...)
     ACD:SelectGroup(addonName, ...)
 end
 
+function private:CloseOptions()
+    ACD:Close(addonName)
+end
+
 function private:LoadOptions(...)
     private:SelectOptionsPath(...)
     ACD:Open(addonName)

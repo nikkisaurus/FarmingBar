@@ -323,3 +323,17 @@ function private:GetModifierString()
     end
     return mod
 end
+
+function private:ValidateConditionFunc(value)
+    local func = loadstring("return " .. value)
+    if type(func) == "function" then
+        local success, userFunc = pcall(func)
+        if success and type(userFunc) == "function" then
+            return true
+        else
+            return L["Custom Condition: Invalid function"]
+        end
+    else
+        return L["Custom Condition: Syntax error"]
+    end
+end

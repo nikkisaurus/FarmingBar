@@ -22,6 +22,9 @@ L["Control+click to lock and hide anchor."] = true
 
 --[[ Options ]]
 L["BLEND"] = true
+L["Custom Condition: Syntax error"] = true
+L["Custom Condition: Invalid function"] = true
+L["Lua Editor"] = true
 L["Invalid Tracker Type"] = true
 L["Invalid Tracker ID"] = true
 L["Apply Objective Template"] = true

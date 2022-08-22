@@ -262,6 +262,7 @@ function private:GetObjectiveTemplateOptions(objectiveTemplateName)
                     order = 2,
                     type = "input",
                     multiline = true,
+                    dialogControl = "FarmingBar_LuaEditBox",
                     width = "full",
                     name = L["Custom Condition"],
                     hidden = function()
@@ -273,8 +274,12 @@ function private:GetObjectiveTemplateOptions(objectiveTemplateName)
                     set = function(info, value)
                         private.db.global.objectives[objectiveTemplateName].condition.func = value
                     end,
-                    dialogControl = "FarmingBar_LuaEditBox", -- TODO: Rewrite editbox to work with config
-                    -- validate = function() end,
+                    validate = function(_, value)
+                        return private:ValidateConditionFunc(value)
+                    end,
+                    arg = function(value)
+                        return private:ValidateConditionFunc(value)
+                    end,
                 },
 
                 trackersList = {
