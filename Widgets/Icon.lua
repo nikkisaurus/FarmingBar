@@ -9,17 +9,17 @@ local Version = 1
 
 --[[ Scripts ]]
 local scripts = {
-    OnClick = function(frame, mouseButton)
-        frame.obj:Fire("OnClick", mouseButton)
+    OnClick = function(button, mouseButton)
+        button.obj:Fire("OnClick", mouseButton)
     end,
 
-    OnEnter = function(frame)
-        local label = frame.obj:GetLabel()
+    OnEnter = function(button)
+        local label = button.obj:GetLabel()
         if label == "" or label == " " then
             return
         end
 
-        frame.obj:Fire("OnEnter")
+        button.obj:Fire("OnEnter")
     end,
 
     OnLeave = function(frame)
@@ -41,45 +41,44 @@ local methods = {
         return widget.label:GetText()
     end,
 
-    OnWidthSet = function(widget)
-        local frame = widget.frame
-        local width = frame:GetWidth()
-
-        frame:SetHeight(width + widget.label:GetHeight())
-        widget.icon:SetPoint("BOTTOM", frame, "TOP", 0, -width)
+    OnWidthSet = function(widget, width)
+        widget:SetHeight(width + widget.label:GetHeight())
+        widget.button:SetSize(width, width)
     end,
 
     SetImage = function(widget, img)
-        widget.frame:SetNormalTexture(img)
+        widget.button:SetNormalTexture(img)
     end,
 
     SetImageSize = function(widget, width, height)
         widget.frame:SetSize(width, height)
     end,
 
-    SetLabel = function(widget, txt)
-        widget.label:SetText(txt)
+    SetLabel = function(widget, label)
+        widget.label:SetText(label)
     end,
 
-    SetText = function(widget, txt)
-        widget.label:SetText(txt)
+    SetText = function(widget, label)
+        widget.label:SetText(label)
     end,
 }
 
 --[[ Constructor ]]
 local function Constructor()
     --[[ Frame ]]
-    local frame = CreateFrame("Button", Type .. AceGUI:GetNextWidgetNum(Type), UIParent)
-    frame:SetNormalTexture(134400)
-    frame:RegisterForClicks("LeftButtonUp", "RightButtonUp")
-    frame:EnableMouse()
+    local frame = CreateFrame("Frame", Type .. AceGUI:GetNextWidgetNum(Type), UIParent)
+    local button = CreateFrame("Button", "$parentIcon", frame)
+    button:SetPoint("TOP")
+    button:SetNormalTexture(134400)
+    button:RegisterForClicks("LeftButtonUp", "RightButtonUp")
+    button:EnableMouse()
 
     for script, func in pairs(scripts) do
-        frame:SetScript(script, func)
+        button:SetScript(script, func)
     end
 
     local label = frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    label:SetAllPoints(frame)
+    label:SetPoint("BOTTOM")
     label:SetJustifyH("CENTER")
     label:SetJustifyV("BOTTOM")
     label:SetWordWrap()
@@ -87,12 +86,13 @@ local function Constructor()
     --[[ Widget ]]
     local widget = {
         frame = frame,
+        button = button,
         label = label,
-        icon = frame:GetNormalTexture(),
         type = Type,
     }
 
     frame.obj = widget
+    button.obj = widget
 
     for method, func in pairs(methods) do
         widget[method] = func
