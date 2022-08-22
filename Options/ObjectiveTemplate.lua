@@ -287,8 +287,14 @@ function private:GetObjectiveTemplateOptions(objectiveTemplateName)
                     type = "group",
                     name = L["Trackers"],
                     args = {
-                        newTrackerType = {
+                        newTrackerHeader = {
                             order = 1,
+                            type = "header",
+                            name = L["Add Tracker"],
+                        },
+
+                        newTrackerType = {
+                            order = 2,
                             type = "select",
                             name = L["Tracker Type"],
                             values = lists.newTrackerType,
@@ -301,7 +307,7 @@ function private:GetObjectiveTemplateOptions(objectiveTemplateName)
                         },
 
                         newTrackerID = {
-                            order = 2,
+                            order = 3,
                             type = "input",
                             name = L["Tracker ID"],
                             get = function()
@@ -321,7 +327,7 @@ function private:GetObjectiveTemplateOptions(objectiveTemplateName)
         },
     }
 
-    local i = 1
+    local i = 4
     for trackerKey, tracker in addon.pairs(objectiveTemplate.trackers) do
         local trackerName, trackerIcon
         if tracker.type == "ITEM" then
