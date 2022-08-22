@@ -4,6 +4,5 @@
     <Include file="Button.lua"/>
     <Include file="LuaEditor.lua"/>
     <Include file="LuaEditBox.lua"/>
-    <Include file="ObjectiveWidgets.lua"/>
-    <Include file="TrackerWidgets.lua"/>
+    <Include file="Icon.lua"/>
 </Ui>

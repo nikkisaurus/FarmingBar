@@ -11,7 +11,7 @@ local Version = 1
 local scripts = {
     expandButton_OnClick = function(expandButton)
         local widget = expandButton.obj
-        private.options:Hide()
+        LibStub("AceConfigDialog-3.0"):Close(addonName)
 
         local editor = AceGUI:Create("FarmingBar_LuaEditor")
         editor:SetTitle(format("%s %s", L.addonName, L["Lua Editor"]))

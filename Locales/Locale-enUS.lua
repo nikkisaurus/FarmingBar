@@ -2,7 +2,13 @@ local addonName, private = ...
 local addon = LibStub("AceAddon-3.0"):NewAddon(addonName, "AceConsole-3.0", "AceEvent-3.0", "AceHook-3.0")
 local L = LibStub("AceLocale-3.0"):NewLocale(addonName, "enUS", true)
 LibStub("LibAddonUtils-1.0"):Embed(addon)
-private.status = {}
+private.status = {
+    options = {
+        objectiveTemplates = {
+            newTrackerType = "ITEM",
+        },
+    },
+}
 
 L.addonName = "Farming Bar"
 
@@ -16,11 +22,17 @@ L["Control+click to lock and hide anchor."] = true
 
 --[[ Options ]]
 L["BLEND"] = true
+L["Invalid Tracker Type"] = true
+L["Invalid Tracker ID"] = true
 L["Apply Objective Template"] = true
 L["Missing dependencies"] = true
 L["Are you sure you want to overwrite Bar %d Button %d with objective template \"%s\"?"] = true
 L["Include Alts"] = true
 L["Include Bank"] = true
+L["Config"] = true
+L["Settings"] = true
+L["Help"] = true
+L["Config Bars"] = true
 L["Include Guild Bank"] = true
 L["Objective Editor"] = true
 L["Save Template"] = true
@@ -45,12 +57,12 @@ L["Font Outline"] = true
 L["Font Size"] = true
 L["Show Cooldown"] = true
 L["Shows the cooldown swipe animation on buttons."] = true
-L["Objective template must contain at least one tracker."] = true
 L["Are you sure you want to delete %s from objective template \"%s\"?"] = true
 L["Alt ID already exists for this tracker."] = true
 L["Objective"] = true
 L["Multiplier"] = true
 L["Alerts"] = true
+L["Name"] = true
 L["Bar"] = true
 L["Bars"] = true
 L["Item/Currency Name"] = true
@@ -111,6 +123,7 @@ L["Fallback Icon"] = true
 L["Auto"] = true
 L["Fallback"] = true
 L["Icon Type"] = true
+L["Icon ID"] = true
 L["Item"] = true
 L["Macrotext"] = true
 L["None"] = true
@@ -130,10 +143,11 @@ L["Are you sure you want to delete the objective template \"%s\"?"] = true
 L["Delete"] = true
 L["Duplicate"] = true
 L["Export"] = true
+L["place"] = true
 L["Export Frame"] = true
 L["New"] = true
 L["Import"] = true
-L["Delete Objective Template"] = true
+L["Remove Objective Template"] = true
 L["Import Frame"] = true
 L["View Code"] = true
 L["Imported Objective"] = true
@@ -150,6 +164,8 @@ L["Currency/Item ID"] = true
 L["Please select type: item or currency."] = true
 L["Invalid input: duplicate entry."] = true
 L["New Tracker"] = true
+L["Tracker Type"] = true
+L["Tracker ID"] = true
 L["New Alt ID"] = true
 
 L.CustomCodeWarning =

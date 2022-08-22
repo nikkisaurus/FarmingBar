@@ -6,6 +6,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 function addon:OnInitialize()
     private:InitializeDatabase()
     private:InitializeSlashCommands()
+    private:InitializeOptions()
     private:RegisterMedia()
 end
 
@@ -14,9 +15,9 @@ function addon:OnEnable()
     private:InitializeTooltip()
     private:InitializeObjectiveFrame()
     private:InitializeMasque()
+    private:InitializeBars()
     addon:RegisterEvent("CURSOR_CHANGED")
     addon:RegisterEvent("SPELL_UPDATE_COOLDOWN")
-    private:InitializeBars()
 
     if private.db.global.debug.enabled then
         C_Timer.After(1, private.StartDebug)
@@ -26,5 +27,4 @@ end
 --[[ StartDebug ]]
 function private:StartDebug()
     private:LoadOptions()
-    private:UpdateMenu(private.options:GetUserData("menu"), "Objectives", "New")
 end

@@ -37,8 +37,9 @@ end
 
 --[[ Database ]]
 function private:AddObjectiveTemplate(objectiveInfo)
-    local newObjectiveTitle = private:IncrementString(objectiveInfo.title, private, "ObjectiveTemplateExists")
-    private.db.global.objectives[newObjectiveTitle] = addon.CloneTable(objectiveInfo)
+    local newObjectiveTitle =
+        private:IncrementString(objectiveInfo and objectiveInfo.title or L["New"], private, "ObjectiveTemplateExists")
+    private.db.global.objectives[newObjectiveTitle] = addon.CloneTable(objectiveInfo or private.defaults.objective)
     private.db.global.objectives[newObjectiveTitle].title = newObjectiveTitle
     private:RefreshOptions()
     return newObjectiveTitle
@@ -63,8 +64,9 @@ end
 
 function private:RenameObjectiveTemplate(objectiveTitle, newObjectiveTitle)
     private.db.global.objectives[newObjectiveTitle] = addon.CloneTable(private.db.global.objectives[objectiveTitle])
+    private.db.global.objectives[newObjectiveTitle].title = newObjectiveTitle
     private.db.global.objectives[objectiveTitle] = nil
-    private:RefreshOptions()
+    return newObjectiveTitle
 end
 
 --[[ Trackers ]]
@@ -104,6 +106,16 @@ function private:GetObjectiveTemplateTrackerIcon(trackerType, trackerKey)
         return GetItemIcon(trackerKey)
     elseif trackerType == "CURRENCY" then
         return C_CurrencyInfo.GetCurrencyInfo(trackerKey).iconFileID
+    end
+end
+
+function private:ValidateTracker(trackerType, trackerID)
+    if trackerType == "ITEM" then
+        return private:ValidateItem(trackerID) or L["Invalid Tracker ID"]
+    elseif trackerType == "CURRENCY" then
+        return private:ValidateCurrency(trackerID) or L["Invalid Tracker ID"]
+    else
+        return L["Invalid Tracker Type"]
     end
 end
 

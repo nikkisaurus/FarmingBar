@@ -217,7 +217,7 @@ function private:InitializeSlashCommands()
 end
 
 function addon:HandleSlashCommand(input)
-    private:LoadOptions()
+    private:LoadOptions("objectiveTemplates")
 end
 
 --[[ Item/Currency ]]
