@@ -343,12 +343,255 @@ function private:GetObjectiveTemplateOptions(objectiveTemplateName)
         options.trackers.args.trackersList.args["tracker" .. trackerKey] = {
             order = i,
             type = "group",
-            name = trackerName,
+            name = trackerName or L["Tracker"] .. " " .. trackerKey,
             icon = trackerIcon or 134400,
-            args = {},
+            args = {
+                trackerKey = {
+                    order = 1,
+                    type = "input",
+                    name = L["Tracker Key"],
+                    get = function(info)
+                        return tostring(trackerKey)
+                    end,
+                    set = function(info, value)
+                        local newTrackerKey =
+                            private:UpdateTrackerKeys(objectiveTemplateName, trackerKey, tonumber(value))
+                        private:RefreshOptions(
+                            "objectiveTemplates",
+                            objectiveTemplateName,
+                            "trackers",
+                            "trackersList",
+                            "tracker" .. newTrackerKey
+                        )
+                    end,
+                },
+                objective = {
+                    order = 2,
+                    type = "input",
+                    name = L["Objective"],
+                    get = function(info)
+                        return tostring(tracker[info[#info]])
+                    end,
+                    set = function(info, value)
+                        local objective = tonumber(value) or 1
+                        objective = objective < 1 and 1 or objective
+
+                        private.db.global.objectives[objectiveTemplateName].trackers[trackerKey][info[#info]] =
+                            objective
+                    end,
+                },
+                include = {
+                    order = 3,
+                    type = "group",
+                    inline = true,
+                    name = L["Include"],
+                    get = function(info)
+                        return tracker["include" .. info[#info]]
+                    end,
+                    set = function(info, value)
+                        private.db.global.objectives[objectiveTemplateName].trackers[trackerKey]["include" .. info[#info]] =
+                            value
+                    end,
+                    args = {
+                        Bank = {
+                            order = 1,
+                            type = "toggle",
+                            name = L["Bank"],
+                        },
+                        Alts = {
+                            order = 2,
+                            type = "toggle",
+                            name = L["Alts"],
+                        },
+                        GuildBank = {
+                            order = 2,
+                            type = "multiselect",
+                            name = L["Guild Bank"],
+                            values = private:GetGuildsList(),
+                            get = function(info, guildKey)
+                                return tracker["include" .. info[#info]][guildKey]
+                            end,
+                            set = function(info, guildKey, value)
+                                private.db.global.objectives[objectiveTemplateName].trackers[trackerKey].includeGuildBank[guildKey] =
+                                    value
+                            end,
+                            disabled = function()
+                                return addon.tcount(private:GetGuildsList()) == 0
+                            end,
+                            hidden = function()
+                                return private:MissingDataStore()
+                            end,
+                        },
+                    },
+                },
+                altIDs = {
+                    order = 4,
+                    type = "group",
+                    inline = true,
+                    name = L["Alt IDs"],
+                    args = {
+                        newAltIDType = {
+                            order = 1,
+                            type = "select",
+                            name = L["Type"],
+                            values = lists.newTrackerType,
+                            get = function()
+                                return private.status.options.objectiveTemplates.newAltIDType
+                            end,
+                            set = function(_, value)
+                                private.status.options.objectiveTemplates.newAltIDType = value
+                            end,
+                        },
+                        newAltID = {
+                            order = 2,
+                            type = "input",
+                            name = L["Alt ID"],
+                            set = function(_, value)
+                                local pendingAltIDType = private.status.options.objectiveTemplates.newAltIDType
+                                local validID = private:ValidateTracker(pendingAltIDType, value)
+
+                                private:AddObjectiveTemplateTrackerAltID(
+                                    objectiveTemplateName,
+                                    trackerKey,
+                                    pendingAltIDType,
+                                    validID
+                                )
+
+                                private:RefreshOptions()
+                            end,
+                            validate = function(_, value)
+                                local pendingAltIDType = private.status.options.objectiveTemplates.newAltIDType
+                                local validID = private:ValidateTracker(pendingAltIDType, value)
+
+                                if
+                                    private:ObjectiveTemplateTrackerAltIDExists(
+                                        objectiveTemplateName,
+                                        trackerKey,
+                                        pendingAltIDType,
+                                        validID
+                                    )
+                                then
+                                    return L["Alt ID already exists for this tracker."]
+                                end
+
+                                return private:ValidateTracker(
+                                    private.status.options.objectiveTemplates.newAltIDType,
+                                    value
+                                ) or L["Invalid Alt ID"]
+                            end,
+                        },
+                        removeAltID = {
+                            order = 3,
+                            type = "select",
+                            name = L["Remove Alt ID"],
+                            width = "full",
+                            values = function()
+                                local values = {}
+
+                                for AltKey, AltInfo in pairs(tracker.altIDs) do
+                                    local altIDName = private:GetTrackerInfo(AltInfo.type, AltInfo.id)
+                                    values[AltKey] = altIDName
+                                end
+
+                                return values
+                            end,
+                            set = function(_, value)
+                                private.db.global.objectives[objectiveTemplateName].trackers[trackerKey].altIDs[value] =
+                                    nil
+                                private:RefreshOptions()
+                            end,
+                            confirm = function(_, value)
+                                local AltInfo = tracker.altIDs[value]
+                                local altIDName = private:GetTrackerInfo(AltInfo.type, AltInfo.id)
+
+                                return format(
+                                    L["Are you sure you want to remove %s from the tracker \"%s\"?"],
+                                    altIDName,
+                                    trackerName or L["Tracker"] .. " " .. trackerKey
+                                )
+                            end,
+                            disabled = function()
+                                return addon.tcount(tracker.altIDs) == 0
+                            end,
+                        },
+                        altIDsList = {
+                            order = 4,
+                            type = "group",
+                            inline = true,
+                            name = "",
+                            args = {},
+                        },
+                    },
+                },
+            },
         }
+
+        local I = 3
+        for altKey, altInfo in addon.pairs(tracker.altIDs) do
+            local altIDName, altIDIcon = private:GetTrackerInfo(altInfo.type, altInfo.id)
+
+            options.trackers.args.trackersList.args["tracker" .. trackerKey].args.altIDs.args.altIDsList.args["altID" .. altKey] =
+                {
+                    order = I,
+                    type = "description",
+                    width = 3 / 2,
+                    name = altIDName or L["AltID"] .. " " .. altKey,
+                    image = altIDIcon or 134400,
+                    imageWidth = 20,
+                    imageHeight = 20,
+                }
+
+            options.trackers.args.trackersList.args["tracker" .. trackerKey].args.altIDs.args.altIDsList.args["altID" .. altKey .. "Multiplier"] =
+                {
+                    order = I,
+                    type = "input",
+                    width = 1 / 2,
+                    name = L["Multiplier"],
+                    get = function()
+                        return tostring(altInfo.multiplier)
+                    end,
+                    set = function(_, value)
+                        local num, den = strsplit("/", value)
+                        local multiplier
+
+                        if den then
+                            num = tonumber(num)
+                            den = tonumber(den)
+                            if num and den and den ~= 0 then
+                                multiplier = addon.round(num / den, 3)
+                            else
+                                multiplier = 1
+                            end
+                        else
+                            multiplier = tonumber(value) or 1
+                        end
+
+                        multiplier = multiplier > 0 and multiplier or 1
+
+                        private.db.global.objectives[objectiveTemplateName].trackers[trackerKey].altIDs[altKey].multiplier =
+                            multiplier
+                    end,
+                }
+
+            I = I + 1
+        end
         i = i + 1
     end
 
     return options
+end
+
+function private:GetTrackerInfo(Type, id)
+    local name, icon
+    if Type == "ITEM" then
+        private:CacheItem()
+        name = GetItemInfo(id)
+        icon = GetItemIcon(id)
+    elseif Type == "CURRENCY" then
+        local currency = C_CurrencyInfo.GetCurrencyInfo(id)
+        name = currency and currency.name
+        icon = currency and currency.iconFileID
+    end
+
+    return name, icon
 end

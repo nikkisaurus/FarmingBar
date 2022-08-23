@@ -90,6 +90,19 @@ function private:ObjectiveTemplateTrackerExists(objectiveTitle, trackerType, tra
     end
 end
 
+function private:UpdateTrackerKeys(objectiveTemplateName, trackerKey, newTrackerKey)
+    local trackers = private.db.global.objectives[objectiveTemplateName].trackers
+    if trackerKey > addon.tcount(trackers) then
+        return trackerKey
+    end
+
+    local trackerInfo = addon.CloneTable(trackers[trackerKey])
+    tremove(private.db.global.objectives[objectiveTemplateName].trackers, trackerKey)
+    tinsert(private.db.global.objectives[objectiveTemplateName].trackers, newTrackerKey, trackerInfo)
+
+    return newTrackerKey
+end
+
 function private:GetObjectiveTemplateTrackerName(trackerType, trackerKey)
     if trackerType == "ITEM" then
         private:CacheItem(trackerKey)
@@ -111,11 +124,11 @@ end
 
 function private:ValidateTracker(trackerType, trackerID)
     if trackerType == "ITEM" then
-        return private:ValidateItem(trackerID) or L["Invalid Tracker ID"]
+        return private:ValidateItem(trackerID) or L["Invalid Tracker/Alt ID"]
     elseif trackerType == "CURRENCY" then
-        return private:ValidateCurrency(trackerID) or L["Invalid Tracker ID"]
+        return private:ValidateCurrency(trackerID) or L["Invalid Tracker/Alt ID"]
     else
-        return L["Invalid Tracker Type"]
+        return L["Invalid Tracker/Alt Type"]
     end
 end
 

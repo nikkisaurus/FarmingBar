@@ -10,6 +10,7 @@ local Version = 1
 -- [[ Scripts ]]
 local scripts = {
     OnTextSet = function(editbox)
+        -- TODO: Disable if nothing has changed
         editbox.obj.button:Enable()
     end,
 }

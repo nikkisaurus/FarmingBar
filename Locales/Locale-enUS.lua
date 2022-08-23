@@ -6,6 +6,7 @@ private.status = {
     options = {
         objectiveTemplates = {
             newTrackerType = "ITEM",
+            newAltIDType = "ITEM",
         },
     },
 }
@@ -26,7 +27,7 @@ L["Custom Condition: Syntax error"] = true
 L["Custom Condition: Invalid function"] = true
 L["Lua Editor"] = true
 L["Invalid Tracker Type"] = true
-L["Invalid Tracker ID"] = true
+L["Invalid Tracker/Alt ID"] = true
 L["Apply Objective Template"] = true
 L["Missing dependencies"] = true
 L["Are you sure you want to overwrite Bar %d Button %d with objective template \"%s\"?"] = true
@@ -51,6 +52,9 @@ L["MOD"] = true
 L["MONOCHROME"] = true
 L["OUTLINE"] = true
 L["THICKOUTLINE"] = true
+L["Alt ID"] = true
+L["Are you sure you want to remove %s from the tracker \"%s\"?"] = true
+L["Remove Alt ID"] = true
 L["Alt IDs"] = true
 L["Are you sure you want to remove Bar \"%d\"?"] = true
 L["Quantity"] = true
@@ -167,9 +171,15 @@ L["Currency/Item ID"] = true
 L["Please select type: item or currency."] = true
 L["Invalid input: duplicate entry."] = true
 L["Add Tracker"] = true
+L["Tracker"] = true
 L["Tracker Type"] = true
 L["Tracker ID"] = true
 L["New Alt ID"] = true
+L["Bank"] = true
+L["Alts"] = true
+L["Guild Bank"] = true
+L["Include"] = true
+L["Tracker Key"] = true
 
 L.CustomCodeWarning =
     "This objective may contain custom Lua code. Make sure you only import objectives from trusted sources."
