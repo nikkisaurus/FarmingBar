@@ -63,6 +63,11 @@ function private:AddBar()
     return barID
 end
 
+function private:GetBarName(barID)
+    local barDB = private.db.profile.bars[barID]
+    return L["Bar"] .. " " .. barID, barDB.title
+end
+
 function private:RemoveBar(barID)
     for _, bar in pairs(private.bars) do
         bar:Release()

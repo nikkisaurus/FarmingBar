@@ -12,9 +12,7 @@ function private:GetOptions()
                 order = 1,
                 type = "group",
                 name = L["Config"],
-                childGroups = "tab",
-                -- args = private:GetConfigOptions(),
-                args = {},
+                args = private:GetConfigOptions(),
             },
             objectiveTemplates = {
                 order = 2,

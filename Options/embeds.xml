@@ -3,4 +3,6 @@
     <Include file="Options.lua"/>
     <Include file="ObjectiveTemplates.lua"/>
     <Include file="ObjectiveTemplate.lua"/>
+    <Include file="Bar.lua"/>
+    <Include file="Config.lua"/>
 </Ui>

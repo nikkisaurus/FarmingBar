@@ -22,6 +22,8 @@ L["barDB.hidden must return a \"function\""] = true
 L["Control+click to lock and hide anchor."] = true
 
 --[[ Options ]]
+
+L["Layout"] = true
 L["BLEND"] = true
 L["Custom Condition: Syntax error"] = true
 L["Custom Condition: Invalid function"] = true

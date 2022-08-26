@@ -231,21 +231,22 @@ local methods = {
     --[[ Backdrop ]]
     SetBackdrop = function(widget)
         local barDB = widget:GetDB()
+        local skin = private.db.global.skins[barDB.skin]
 
         local frame = widget.frame
-        local texture = LSM:Fetch(LSM.MediaType.BACKGROUND, barDB.backdrop.bgFile.bgFile)
-        local edgeFile = LSM:Fetch(LSM.MediaType.BORDER, barDB.backdrop.bgFile.edgeFile)
-        local bgFile = addon.CloneTable(barDB.backdrop.bgFile)
+        local texture = LSM:Fetch(LSM.MediaType.BACKGROUND, skin.backdrop.bgFile.bgFile)
+        local edgeFile = LSM:Fetch(LSM.MediaType.BORDER, skin.backdrop.bgFile.edgeFile)
+        local bgFile = addon.CloneTable(skin.backdrop.bgFile)
         bgFile.bgFile = texture
         bgFile.edgeFile = edgeFile
-        frame:SetBackdrop(barDB.backdrop.enabled and bgFile)
-        frame:SetBackdropColor(unpack(barDB.backdrop.bgColor))
-        frame:SetBackdropBorderColor(unpack(barDB.backdrop.borderColor))
+        frame:SetBackdrop(skin.backdrop.enabled and bgFile)
+        frame:SetBackdropColor(unpack(skin.backdrop.bgColor))
+        frame:SetBackdropBorderColor(unpack(skin.backdrop.borderColor))
 
         local anchor = widget.anchor
         anchor:SetBackdrop(bgFile)
-        anchor:SetBackdropColor(unpack(barDB.backdrop.bgColor))
-        anchor:SetBackdropBorderColor(unpack(barDB.backdrop.borderColor))
+        anchor:SetBackdropColor(unpack(skin.backdrop.bgColor))
+        anchor:SetBackdropBorderColor(unpack(skin.backdrop.borderColor))
     end,
 
     --[[ Database ]]
@@ -303,6 +304,7 @@ local methods = {
 
     LayoutButtons = function(widget)
         local barDB = widget:GetDB()
+        local skin = private.db.global.skins[barDB.skin]
         local buttons = widget:GetButtons()
 
         for buttonID, button in pairs(buttons) do
@@ -318,8 +320,8 @@ local methods = {
                     anchorInfo.anchor,
                     widget.frame,
                     anchorInfo.relAnchor,
-                    (anchorInfo.xCo * (barDB.buttonPadding + barDB.backdrop.bgFile.tileSize)),
-                    anchorInfo.yCo * (barDB.buttonPadding + barDB.backdrop.bgFile.tileSize)
+                    (anchorInfo.xCo * (barDB.buttonPadding + skin.backdrop.bgFile.tileSize)),
+                    anchorInfo.yCo * (barDB.buttonPadding + skin.backdrop.bgFile.tileSize)
                 )
             elseif newRow then
                 local anchorInfo = private.anchorPoints[barDB.buttonGrowth].newRowButton[barDB.barAnchor]
@@ -345,11 +347,11 @@ local methods = {
         -- Backdrop
         local width = (barDB.buttonSize * barDB.buttonsPerAxis)
             + (barDB.buttonPadding * (barDB.buttonsPerAxis + 1))
-            + (2 * barDB.backdrop.bgFile.tileSize)
+            + (2 * skin.backdrop.bgFile.tileSize)
         local numRows = ceil(#buttons / barDB.buttonsPerAxis)
         local height = (barDB.buttonSize * numRows)
             + (barDB.buttonPadding * (numRows + 1))
-            + (2 * barDB.backdrop.bgFile.tileSize)
+            + (2 * skin.backdrop.bgFile.tileSize)
         local growRow = barDB.buttonGrowth == "ROW"
         widget:SetSize(growRow and width or height, growRow and height or width)
     end,
