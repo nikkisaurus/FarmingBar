@@ -60,6 +60,7 @@ private.defaults = {
             -- To show this bar, return nil
             return
         end]],
+        hiddenEvents = {},
         mouseover = false,
         movable = true,
         numButtons = 12,

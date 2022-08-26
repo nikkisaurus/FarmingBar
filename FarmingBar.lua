@@ -26,5 +26,5 @@ end
 
 --[[ StartDebug ]]
 function private:StartDebug()
-    private:LoadOptions("objectiveTemplates", "TEST", "trackers")
+    private:LoadOptions("config", "bar1", "appearance")
 end

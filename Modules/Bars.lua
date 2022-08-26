@@ -46,9 +46,11 @@ function private:AddBar()
     barDB.buttonSize = styleDB.buttons.size
     barDB.buttonPadding = styleDB.buttons.padding
 
-    barDB.font.face = styleDB.font.face
-    barDB.font.outline = styleDB.font.outline
-    barDB.font.size = styleDB.font.size
+    for _, fontstring in pairs(barDB.fontstrings) do
+        fontstring.face = styleDB.font.face
+        fontstring.outline = styleDB.font.outline
+        fontstring.size = styleDB.font.size
+    end
 
     local pos = tinsert(private.db.profile.bars, barDB)
     local barID = #private.db.profile.bars
@@ -58,9 +60,23 @@ function private:AddBar()
     private.bars[barID] = bar
 
     addon:SPELL_UPDATE_COOLDOWN()
-    private:UpdateMenu(private.options:GetUserData("menu"))
 
     return barID
+end
+
+local exclude = {
+    label = true,
+    buttons = true,
+    point = true,
+}
+function private:CopyBarDB(sourceID, destID)
+    for key, value in pairs(private.db.profile.bars[sourceID]) do
+        if not exclude[key] then
+            private.db.profile.bars[destID][key] = addon.CloneTable(value)
+        end
+    end
+
+    private.bars[destID]:Update()
 end
 
 function private:GetBarName(barID)
@@ -74,5 +90,18 @@ function private:RemoveBar(barID)
     end
     tremove(private.db.profile.bars, barID)
     private:InitializeBars()
-    private:UpdateMenu(private.options:GetUserData("menu"))
+end
+
+function private:ValidateHiddenFunc(value)
+    local func = loadstring("return " .. value)
+    if type(func) == "function" then
+        local success, userFunc = pcall(func)
+        if success and type(userFunc) == "function" then
+            return true
+        else
+            return L["Hidden must be a function returning a boolean value."]
+        end
+    else
+        return L["Hidden must be a function returning a boolean value."]
+    end
 end

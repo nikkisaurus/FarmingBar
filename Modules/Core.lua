@@ -192,6 +192,9 @@ private.anchorPoints = {
 }
 
 private.CONST = {
+    MIN_SCALE = 0.25,
+    MAX_SCALE = 4,
+
     MAX_BUTTONS = 72,
     MIN_PADDING = -3,
     MAX_PADDING = 20,

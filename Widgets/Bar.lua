@@ -9,6 +9,10 @@ local Version = 1
 
 -- [[ Scripts ]]
 local scripts = {
+    OnEvent = function(frame)
+        frame.obj:SetHidden()
+    end,
+
     --[[ Mouseover ]]
     OnEnter = function(frame)
         local widget = frame.obj
@@ -86,6 +90,16 @@ local methods = {
     end,
 
     --[[ Updates ]]
+    SetEvents = function(widget)
+        local barDB = widget:GetDB()
+
+        widget.frame:UnregisterAllEvents()
+
+        for _, event in pairs(barDB.hiddenEvents) do
+            widget.frame:RegisterEvent(event)
+        end
+    end,
+
     Update = function(widget)
         widget:SetBackdrop()
         widget:SetPoints()
@@ -94,6 +108,7 @@ local methods = {
         widget:SetMovable()
         widget:SetScale()
         widget:UpdateFontstrings()
+        widget:SetEvents()
     end,
 
     UpdateButtonTextures = function(widget)

@@ -64,6 +64,9 @@ function private:LoadOptions(...)
 end
 
 function private:RefreshOptions(...)
+    if self.options.args.config then
+        self.options.args.config.args = self:GetConfigOptions()
+    end
     if self.options.args.objectiveTemplates then
         self.options.args.objectiveTemplates.args = self:GetObjectiveTemplatesOptions()
     end
