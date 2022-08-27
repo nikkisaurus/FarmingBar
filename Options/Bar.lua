@@ -2,8 +2,39 @@ local addonName, private = ...
 local addon = LibStub("AceAddon-3.0"):GetAddon(addonName)
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 
+local lists = {
+    anchors = {
+        CENTER = "CENTER",
+        TOPLEFT = "TOPLEFT",
+        TOPRIGHT = "TOPRIGHT",
+        TOP = "TOP",
+        BOTTOMLEFT = "BOTTOMLEFT",
+        BOTTOMRIGHT = "BOTTOMRIGHT",
+        BOTTOM = "BOTTOM",
+        LEFT = "LEFT",
+        RIGHT = "RIGHT",
+    },
+    barAnchor = {
+        TOPLEFT = "TOPLEFT",
+        TOPRIGHT = "TOPRIGHT",
+        BOTTOMLEFT = "BOTTOMLEFT",
+        BOTTOMRIGHT = "BOTTOMRIGHT",
+    },
+    buttonGrowth = {
+        ROW = "ROW",
+        COL = "COL",
+    },
+    outlines = {
+        MONOCHROME = L["MONOCHROME"],
+        OUTLINE = L["OUTLINE"],
+        THICKOUTLINE = L["THICKOUTLINE"],
+        NONE = NONE,
+    },
+}
+
 function private:GetBarOptions(barID)
     local barDB = private.db.profile.bars[barID]
+
     local options = {
         general = {
             order = 1,
@@ -70,7 +101,7 @@ function private:GetBarOptions(barID)
                 },
             },
         },
-        apperance = {
+        appearance = {
             order = 2,
             type = "group",
             name = L["Appearance"],
@@ -232,7 +263,83 @@ function private:GetBarOptions(barID)
             order = 3,
             type = "group",
             name = L["Layout"],
-            args = {},
+            get = function(info)
+                return barDB[info[#info]]
+            end,
+            set = function(info, value)
+                private.db.profile.bars[barID][info[#info]] = value
+                private.bars[barID]:SetPoints()
+            end,
+            args = {
+                barAnchor = {
+                    order = 1,
+                    type = "select",
+                    style = "dropdown",
+                    name = L["Bar Anchor"],
+                    values = lists.barAnchor,
+                },
+                buttonGrowth = {
+                    order = 2,
+                    type = "select",
+                    style = "dropdown",
+                    name = L["Button Growth"],
+                    values = lists.buttonGrowth,
+                },
+                movable = {
+                    order = 3,
+                    type = "toggle",
+                    name = L["Movable"],
+                    set = function(info, value)
+                        private.db.profile.bars[barID][info[#info]] = value
+                        private.bars[barID]:SetMovable()
+                    end,
+                },
+                buttons = {
+                    order = 4,
+                    type = "group",
+                    inline = true,
+                    name = L["Buttons"],
+                    args = {
+                        numButtons = {
+                            order = 1,
+                            type = "range",
+                            min = 1,
+                            max = private.CONST.MAX_BUTTONS,
+                            step = 1,
+                            name = L["Buttons"],
+                            set = function(info, value)
+                                private.db.profile.bars[barID][info[#info]] = value
+                                private.bars[barID]:DrawButtons()
+                                private.bars[barID]:LayoutButtons()
+                            end,
+                        },
+                        buttonsPerAxis = {
+                            order = 2,
+                            type = "range",
+                            min = 1,
+                            max = private.CONST.MAX_BUTTONS,
+                            step = 1,
+                            name = L["Buttons Per Axis"],
+                        },
+                        buttonPadding = {
+                            order = 3,
+                            type = "range",
+                            min = private.CONST.MIN_PADDING,
+                            max = private.CONST.MAX_PADDING,
+                            step = 1,
+                            name = L["Button Padding"],
+                        },
+                        buttonSize = {
+                            order = 4,
+                            type = "range",
+                            min = private.CONST.MIN_BUTTON_SIZE,
+                            max = private.CONST.MAX_BUTTON_SIZE,
+                            step = 1,
+                            name = L["Button Size"],
+                        },
+                    },
+                },
+            },
         },
         manage = {
             order = 4,
@@ -291,6 +398,112 @@ function private:GetBarOptions(barID)
             },
         },
     }
+
+    local i = 101
+    for fontName, fontDB in addon.pairs(barDB.fontstrings) do
+        options.appearance.args[fontName] = {
+            order = i,
+            type = "group",
+            inline = true,
+            name = format(L["%s Text"], fontName),
+            get = function(info)
+                return fontDB[info[#info]]
+            end,
+            set = function(info, value)
+                private.db.profile.bars[barID].fontstrings[fontName][info[#info]] = value
+                private.bars[barID]:UpdateFontstrings()
+            end,
+            args = {
+                enabled = {
+                    order = 1,
+                    type = "toggle",
+                    name = L["Enable"],
+                },
+                color = {
+                    order = 2,
+                    type = "color",
+                    hasAlpha = true,
+                    name = L["Color"],
+                    get = function(info)
+                        return unpack(fontDB[info[#info]])
+                    end,
+                    set = function(info, ...)
+                        private.db.profile.bars[barID].fontstrings[fontName][info[#info]] = { ... }
+                        private.bars[barID]:UpdateFontstrings()
+                    end,
+                },
+                spacer = {
+                    order = 3,
+                    type = "description",
+                    width = "full",
+                    name = " ",
+                },
+                face = {
+                    order = 4,
+                    type = "select",
+                    style = "dropdown",
+                    dialogControl = "LSM30_Font",
+                    name = L["Font Face"],
+                    values = AceGUIWidgetLSMlists.font,
+                },
+                outline = {
+                    order = 5,
+                    type = "select",
+                    style = "dropdown",
+                    name = L["Font Outline"],
+                    values = lists.outlines,
+                },
+                size = {
+                    order = 6,
+                    type = "range",
+                    min = private.CONST.MIN_FONT_SIZE,
+                    max = private.CONST.MAX_FONT_SIZE,
+                    step = 1,
+                    name = L["Font Size"],
+                },
+            },
+        }
+
+        options.layout.args[fontName] = {
+            order = i,
+            type = "group",
+            inline = true,
+            name = format(L["%s Text"], fontName),
+            get = function(info)
+                return fontDB[info[#info]]
+            end,
+            set = function(info, value)
+                private.db.profile.bars[barID].fontstrings[fontName][info[#info]] = value
+                private.bars[barID]:UpdateFontstrings()
+            end,
+            args = {
+                anchor = {
+                    order = 1,
+                    type = "select",
+                    style = "dropdown",
+                    name = L["Anchor"],
+                    values = lists.anchors,
+                },
+                x = {
+                    order = 2,
+                    type = "range",
+                    min = -private.CONST.MIN_MAX_XOFFSET,
+                    max = private.CONST.MIN_MAX_XOFFSET,
+                    step = 1,
+                    name = L["X-Offset"],
+                },
+                y = {
+                    order = 3,
+                    type = "range",
+                    min = -private.CONST.MIN_MAX_YOFFSET,
+                    max = private.CONST.MIN_MAX_YOFFSET,
+                    step = 1,
+                    name = L["Y-Offset"],
+                },
+            },
+        }
+        i = i + 1
+    end
 
     return options
 end

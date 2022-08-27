@@ -192,6 +192,9 @@ private.anchorPoints = {
 }
 
 private.CONST = {
+    MIN_FONT_SIZE = 8,
+    MAX_FONT_SIZE = 64,
+
     MIN_SCALE = 0.25,
     MAX_SCALE = 4,
 
