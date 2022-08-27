@@ -101,6 +101,7 @@ local methods = {
     end,
 
     Update = function(widget)
+        widget:DrawButtons()
         widget:SetBackdrop()
         widget:SetPoints()
         widget:SetHidden()

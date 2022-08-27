@@ -92,6 +92,12 @@ function private:RemoveBar(barID)
     private:InitializeBars()
 end
 
+function private:DuplicateBar(barID)
+    local newBarID = private:AddBar()
+    private:CopyBarDB(barID, newBarID)
+    return newBarID
+end
+
 function private:ValidateHiddenFunc(value)
     local func = loadstring("return " .. value)
     if type(func) == "function" then

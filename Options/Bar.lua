@@ -381,7 +381,10 @@ function private:GetBarOptions(barID)
                     order = 3,
                     type = "execute",
                     name = L["Duplicate"],
-                    func = function() end, -- TODO
+                    func = function()
+                        local newBarID = private:DuplicateBar(barID)
+                        private:RefreshOptions("config", "bar" .. newBarID, "general")
+                    end,
                 },
                 removeBar = {
                     order = 3,

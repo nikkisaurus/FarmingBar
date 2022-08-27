@@ -28,9 +28,16 @@ function private:GetOptions()
                 -- args = private:GetSettingsOptions(),
                 args = {},
             },
+            skins = {
+                order = 4,
+                type = "group",
+                name = L["Skins"],
+                -- args = private:GetSettingsOptions(),
+                args = {},
+            },
             profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(private.db),
             help = {
-                order = 5,
+                order = 6,
                 type = "group",
                 name = L["Help"],
                 childGroups = "tab",
@@ -40,7 +47,7 @@ function private:GetOptions()
         },
     }
 
-    private.options.args.profiles.order = 4
+    private.options.args.profiles.order = 5
 
     return private.options
 end
