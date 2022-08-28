@@ -126,7 +126,11 @@ function private:GetBarOptions(barID)
 
                         return values
                     end,
-                    set = function() end, -- TODO
+                    set = function(info, value)
+                        private.db.profile.bars[barID][info[#info]] = value
+                        private.bars[barID]:SetBackdrop()
+                        private.bars[barID]:UpdateButtonTextures()
+                    end,
                 },
                 alpha = {
                     order = 2,
