@@ -313,6 +313,15 @@ function private:InitializeDatabase()
             },
             settings = {
                 useGameTooltip = false,
+                tooltips = {
+                    buttonID = true,
+                    hyperlink = true,
+                    title = true,
+                    trackers = true,
+                    onUse = true,
+                    count = true,
+                    objective = true,
+                },
                 commands = {
                     farmingbar = true,
                     farmbar = true,

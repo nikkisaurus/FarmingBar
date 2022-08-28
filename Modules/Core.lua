@@ -209,6 +209,7 @@ private.CONST = {
 
     TOOLTIP_DESC = { 1, 1, 1 },
     TOOLTIP_KEYVALUE = { 1, 0.82, 0, 1, 1, 1 },
+    TOOLTIP_TITLE = { 1, 0.82, 0 },
 }
 
 --[[ Slash Commands ]]
@@ -288,6 +289,20 @@ function private:IncrementString(str, obj, validateFunc)
     else
         return str
     end
+end
+
+function private:GetSubstring(str, len)
+    return strsub(str, 1, len) .. (strlen(str) > len and "..." or "")
+end
+
+function private:StringToTitle(str)
+    local strs = { strsplit(" ", str) }
+
+    for key, Str in pairs(strs) do
+        strs[key] = strupper(strsub(Str, 1, 1)) .. strlower(strsub(Str, 2, strlen(Str)))
+    end
+
+    return table.concat(strs, " ")
 end
 
 --[[ Static Popups ]]

@@ -8,8 +8,7 @@ function private:InitializeTooltip()
 end
 
 function private:GetTooltip()
-    -- return private.db.global.settings.useGameTooltip and GameTooltip or FarmingBar_Tooltip
-    return GameTooltip
+    return private.db.global.settings.useGameTooltip and GameTooltip or FarmingBar_Tooltip
 end
 
 function private:ClearTooltip()
@@ -33,7 +32,7 @@ function private:LoadTooltip(owner, anchor, x, y, lines)
         elseif line.texture then
             tooltip:AddTexture(line.line, line.size)
         elseif line.double then
-            tooltip:AddDoubleLine(line.k, line.v, addon.unpack(line.color, { 1, 1, 1, 1, 1, 1 }))
+            tooltip:AddDoubleLine(line.k, line.v, addon.unpack(line.color, private.CONST.TOOLTIP_KEYVALUE))
         else
             local r, g, b = addon.unpack(line.color, private.CONST.TOOLTIP_DESC)
             tooltip:AddLine(line.line, r, g, b, line.wrap)
@@ -41,4 +40,22 @@ function private:LoadTooltip(owner, anchor, x, y, lines)
     end
 
     tooltip:Show()
+end
+
+function private:InsertTooltipDivider(lines)
+    lines = private:InsertBlankLine(lines)
+    tinsert(lines, {
+        texture = true,
+        line = 389194,
+        size = {
+            width = 200,
+            height = 10,
+        },
+    })
+    return lines
+end
+
+function private:InsertBlankLine(lines)
+    tinsert(lines, { line = " " })
+    return lines
 end

@@ -102,6 +102,8 @@ local scripts = {
     end,
 
     OnEnter = function(frame, ...)
+        private:LoadTooltip(frame, "ANCHOR_BOTTOMRIGHT", 0, 0, private:GetButtonTooltip(frame.obj))
+        -- Update mouseover
         local bar = frame.obj:GetBar()
         bar:CallScript("OnEnter", bar.frame, ...)
     end,
@@ -111,6 +113,8 @@ local scripts = {
     end,
 
     OnLeave = function(frame, ...)
+        private:ClearTooltip()
+        -- Update mouseover
         local bar = frame.obj:GetBar()
         bar:CallScript("OnLeave", bar.frame, ...)
     end,
@@ -369,6 +373,16 @@ local methods = {
 
     GetBar = function(widget)
         return private.bars[widget:GetID()]
+    end,
+
+    GetHyperlink = function(widget)
+        if widget:IsEmpty() then
+            return
+        end
+        local _, buttonDB = widget:GetDB()
+        if buttonDB.onUse.type == "ITEM" and buttonDB.onUse.itemID then
+            return strjoin(":", strlower(buttonDB.onUse.type), buttonDB.onUse.itemID)
+        end
     end,
 
     GetDB = function(widget)
