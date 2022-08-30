@@ -382,7 +382,21 @@ function private:GetBarOptions(barID)
                             type = "select",
                             style = "dropdown",
                             name = L["Templates"],
-                            values = {},
+                            disabled = function()
+                                return addon.tcount(private.templates) == 0
+                            end,
+                            values = function()
+                                local values = {}
+
+                                for templateName, _ in pairs(private.templates) do
+                                    values[templateName] = templateName
+                                end
+
+                                return values
+                            end,
+                            set = function(_, value)
+                                private:LoadTemplate(barID, value)
+                            end,
                         },
                         userTemplates = {
                             order = 2,

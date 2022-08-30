@@ -122,11 +122,17 @@ local methods = {
         widget:SetEvents()
     end,
 
+    Clear = function(widget)
+        wipe(private.db.profile.bars[widget:GetID()].buttons)
+        widget:UpdateButtons()
+    end,
+
     UpdateButtons = function(widget)
         widget:UpdateButtonTextures()
         for _, button in pairs(widget:GetButtons()) do
             button:SetCount()
         end
+        widget:UpdateFontstrings()
     end,
 
     UpdateButtonTextures = function(widget)
