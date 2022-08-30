@@ -177,16 +177,16 @@ private.defaults = {
             backdrop = {
                 enabled = false,
                 bgFile = {
-                    bgFile = "Blizzard Tooltip",
-                    edgeFile = "Blizzard Tooltip",
-                    edgeSize = 12,
+                    bgFile = "Solid",
+                    edgeFile = "Solid Border",
+                    edgeSize = 2,
                     tile = true,
                     tileEdge = true,
                     tileSize = 2,
-                    insets = { left = 2, right = 2, top = 2, bottom = 2 },
+                    insets = { left = 0, right = 0, top = 0, bottom = 0 },
                 },
-                bgColor = { 1, 1, 1, 1 },
-                borderColor = { 1, 1, 1, 1 },
+                bgColor = { 0, 0, 0, 0.66 },
+                borderColor = { 0, 0, 0, 1 },
             },
 
             buttonTextures = {

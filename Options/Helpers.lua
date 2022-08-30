@@ -28,6 +28,7 @@ function private:RegisterMedia()
     LSM:Register(LSM.MediaType.BACKGROUND, "UI ActionButton Border", [[Interface\Buttons\UI-ActionButton-Border]])
     LSM:Register(LSM.MediaType.BACKGROUND, "Icon Border Thick", [[Interface\AddOns\FarmingBar\Media\IconBorderThick]])
     LSM:Register(LSM.MediaType.BACKGROUND, "Icon Border", [[Interface\AddOns\FarmingBar\Media\IconBorder]])
+    LSM:Register(LSM.MediaType.BORDER, "Solid Border", [[Interface\AddOns\FarmingBar\Media\SolidBorder]])
 end
 
 --[[ Widgets ]]

@@ -33,11 +33,13 @@ local scripts = {
 
 local anchorScripts = {
     --[[ Click ]]
-    OnClick = function(anchor)
+    OnClick = function(anchor, mouseButton)
+        local widget = anchor.obj
         if IsControlKeyDown() then
-            local widget = anchor.obj
             widget:SetDBValue("movable", false)
             widget:SetMovable()
+        elseif mouseButton == "RightButton" then
+            private:LoadOptions("config", "bar" .. widget:GetID())
         end
     end,
 
@@ -56,7 +58,15 @@ local anchorScripts = {
     OnEnter = function(anchor, ...)
         private:LoadTooltip(anchor, "ANCHOR_CURSOR", 0, 0, {
             {
+                line = L["Bar"] .. " " .. anchor.obj:GetID(),
+                color = private.CONST.TOOLTIP_TITLE,
+            },
+            {
                 line = L["Control+click to lock and hide anchor."],
+                color = private.CONST.TOOLTIP_DESC,
+            },
+            {
+                line = L["Right-click to configure this bar."],
                 color = private.CONST.TOOLTIP_DESC,
             },
         })
@@ -123,6 +133,9 @@ local methods = {
         for _, button in pairs(widget:GetButtons()) do
             button:SetFontstrings()
         end
+
+        local fontDB = private.db.profile.style.font
+        widget.anchor.text:SetFont(LSM:Fetch("font", fontDB.face), fontDB.size, fontDB.outline)
     end,
 
     --[[ Frame ]]
@@ -286,8 +299,6 @@ local methods = {
             return
         end
 
-        local fontDB = private.db.profile.style.font
-        widget.anchor.text:SetFont(LSM:Fetch("font", fontDB.face), fontDB.size, fontDB.outline)
         widget.anchor.text:SetText(barID)
 
         widget:SetUserData("barID", barID)
@@ -388,14 +399,14 @@ local function Constructor()
 
     --[[ Anchor ]]
     local anchor = CreateFrame("Button", nil, frame, "BackdropTemplate")
-    anchor:SetNormalTexture([[INTERFACE\ADDONS\FARMINGBAR\MEDIA\UNLOCK]])
     anchor:SetFrameStrata("MEDIUM")
     anchor:SetFrameLevel(2)
     anchor:SetMovable(true)
     anchor:RegisterForDrag("LeftButton")
+    anchor:RegisterForClicks("AnyUp")
     anchor:SetClampedToScreen(true)
-    anchor.text = anchor:CreateFontString(nil, "OVERLAY")
-    anchor.text:SetPoint("BOTTOMRIGHT", -2, 2)
+    anchor.text = anchor:CreateFontString(nil, "OVERLAY", "NumberFontNormal")
+    anchor.text:SetPoint("CENTER", 0, 0)
 
     for script, func in pairs(anchorScripts) do
         anchor:SetScript(script, func)

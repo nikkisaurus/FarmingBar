@@ -100,6 +100,7 @@ L["Skin"] = true
 L["Mouseover"] = true
 L["Show this bar only on mouseover."] = true
 L["Backdrop"] = true
+L["Right-click to configure this bar."] = true
 L["Background"] = true
 L["Enable"] = true
 L["Border"] = true
