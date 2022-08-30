@@ -82,9 +82,9 @@ function private:DeleteObjectiveTemplateTracker(objectiveTitle, trackerKey)
     private.db.global.objectives[objectiveTitle].trackers[trackerKey] = nil
 end
 
-function private:ObjectiveTemplateTrackerExists(objectiveTitle, trackerType, trackerKey)
+function private:ObjectiveTemplateTrackerExists(objectiveTitle, trackerType, trackerID)
     for _, trackerInfo in pairs(private.db.global.objectives[objectiveTitle].trackers) do
-        if trackerInfo.type == trackerType and trackerInfo.id == trackerKey then
+        if trackerInfo.type == trackerType and trackerInfo.id == trackerID then
             return true
         end
     end
@@ -101,6 +101,10 @@ function private:UpdateTrackerKeys(objectiveTemplateName, trackerKey, newTracker
     tinsert(private.db.global.objectives[objectiveTemplateName].trackers, newTrackerKey, trackerInfo)
 
     return newTrackerKey
+end
+
+function private:RemoveObjectiveTemplateTracker(objectiveTemplateName, trackerKey)
+    tremove(private.db.global.objectives[objectiveTemplateName].trackers, trackerKey)
 end
 
 function private:GetObjectiveTemplateTrackerName(trackerType, trackerKey)
@@ -122,14 +126,24 @@ function private:GetObjectiveTemplateTrackerIcon(trackerType, trackerKey)
     end
 end
 
-function private:ValidateTracker(trackerType, trackerID)
+function private:ValidateTracker(objectiveTemplateName, trackerType, trackerID)
+    local isValid
     if trackerType == "ITEM" then
-        return private:ValidateItem(trackerID) or L["Invalid Tracker/Alt ID"]
+        isValid = private:ValidateItem(trackerID)
+        if not isValid then
+            return L["Invalid Tracker/Alt ID"]
+        end
     elseif trackerType == "CURRENCY" then
-        return private:ValidateCurrency(trackerID) or L["Invalid Tracker/Alt ID"]
+        isValid = private:ValidateCurrency(trackerID)
+        if not isValid then
+            return L["Invalid Tracker/Alt ID"]
+        end
     else
         return L["Invalid Tracker/Alt Type"]
     end
+
+    return not private:ObjectiveTemplateTrackerExists(objectiveTemplateName, trackerType, isValid) and isValid
+        or L["Tracker already exists for this objective."]
 end
 
 --[[ Alt ID ]]

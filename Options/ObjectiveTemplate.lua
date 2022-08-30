@@ -56,7 +56,7 @@ function private:GetObjectiveTemplateOptions(objectiveTemplateName)
 
         newTrackerID = function(_, value)
             local pendingTrackerType = private.status.options.objectiveTemplates.newTrackerType
-            local validID = private:ValidateTracker(pendingTrackerType, value)
+            local validID = private:ValidateTracker(objectiveTemplateName, pendingTrackerType, value)
             local trackerKey = private:AddObjectiveTemplateTracker(objectiveTemplateName, pendingTrackerType, validID)
 
             private:RefreshOptions(
@@ -316,6 +316,7 @@ function private:GetObjectiveTemplateOptions(objectiveTemplateName)
                             set = funcs.newTrackerID,
                             validate = function(_, value)
                                 return private:ValidateTracker(
+                                    objectiveTemplateName,
                                     private.status.options.objectiveTemplates.newTrackerType,
                                     value
                                 )
@@ -448,7 +449,7 @@ function private:GetObjectiveTemplateOptions(objectiveTemplateName)
                             name = L["Alt ID"],
                             set = function(_, value)
                                 local pendingAltIDType = private.status.options.objectiveTemplates.newAltIDType
-                                local validID = private:ValidateTracker(pendingAltIDType, value)
+                                local validID = private:ValidateTracker(objectiveTemplateName, pendingAltIDType, value)
 
                                 private:AddObjectiveTemplateTrackerAltID(
                                     objectiveTemplateName,
@@ -461,7 +462,7 @@ function private:GetObjectiveTemplateOptions(objectiveTemplateName)
                             end,
                             validate = function(_, value)
                                 local pendingAltIDType = private.status.options.objectiveTemplates.newAltIDType
-                                local validID = private:ValidateTracker(pendingAltIDType, value)
+                                local validID = private:ValidateTracker(objectiveTemplateName, pendingAltIDType, value)
 
                                 if
                                     private:ObjectiveTemplateTrackerAltIDExists(
@@ -475,6 +476,7 @@ function private:GetObjectiveTemplateOptions(objectiveTemplateName)
                                 end
 
                                 return private:ValidateTracker(
+                                    objectiveTemplateName,
                                     private.status.options.objectiveTemplates.newAltIDType,
                                     value
                                 ) or L["Invalid Alt ID"]
@@ -520,6 +522,22 @@ function private:GetObjectiveTemplateOptions(objectiveTemplateName)
                             inline = true,
                             name = "",
                             args = {},
+                        },
+                        removeTracker = {
+                            order = 5,
+                            type = "execute",
+                            name = REMOVE,
+                            func = function()
+                                private:RemoveObjectiveTemplateTracker(objectiveTemplateName, trackerKey)
+                                private:RefreshOptions()
+                            end,
+                            confirm = function(_)
+                                return format(
+                                    L["Are you sure you want to remove %s from %s?"],
+                                    private:GetTrackerInfo(tracker.type, tracker.id),
+                                    objectiveTemplateName
+                                )
+                            end,
                         },
                     },
                 },

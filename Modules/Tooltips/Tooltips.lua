@@ -8,7 +8,7 @@ function private:InitializeTooltip()
 end
 
 function private:GetTooltip()
-    return private.db.global.settings.useGameTooltip and GameTooltip or FarmingBar_Tooltip
+    return private.db.global.settings.tooltips.useGameTooltip and GameTooltip or FarmingBar_Tooltip
 end
 
 function private:ClearTooltip()
@@ -27,35 +27,45 @@ function private:LoadTooltip(owner, anchor, x, y, lines)
     tooltip:ClearLines()
 
     for _, line in pairs(lines) do
-        if line.link then
-            tooltip:SetHyperlink(line.line)
-        elseif line.texture then
-            tooltip:AddTexture(line.line, line.size)
-        elseif line.double then
-            tooltip:AddDoubleLine(line.k, line.v, addon.unpack(line.color, private.CONST.TOOLTIP_KEYVALUE))
-        else
-            local r, g, b = addon.unpack(line.color, private.CONST.TOOLTIP_DESC)
-            tooltip:AddLine(line.line, r, g, b, line.wrap)
+        if not line.hidden then
+            if line.link then
+                tooltip:SetHyperlink(line.line)
+            elseif line.texture then
+                tooltip:AddTexture(line.line, line.size)
+            elseif line.double then
+                tooltip:AddDoubleLine(line.k, line.v, addon.unpack(line.color, private.CONST.TOOLTIP_KEYVALUE))
+            else
+                local r, g, b = addon.unpack(line.color, private.CONST.TOOLTIP_DESC)
+                tooltip:AddLine(line.line, r, g, b, line.wrap)
+            end
         end
     end
 
     tooltip:Show()
 end
 
-function private:InsertTooltipDivider(lines)
-    lines = private:InsertBlankLine(lines)
-    tinsert(lines, {
-        texture = true,
+function private:GetTooltipBlankLine(hidden)
+    return {
+        line = " ",
+        hidden = hidden,
+    }
+end
+
+function private:GetTooltipTextureLine(hidden)
+    return {
         line = 389194,
+        hidden = hidden,
+        texture = true,
         size = {
             width = 200,
             height = 10,
         },
-    })
-    return lines
+    }
 end
 
-function private:InsertBlankLine(lines)
-    tinsert(lines, { line = " " })
-    return lines
+function private:InsertPendingTooltipLines(lines, pendingLines)
+    for _, line in pairs(pendingLines) do
+        tinsert(lines, line)
+    end
+    wipe(pendingLines)
 end

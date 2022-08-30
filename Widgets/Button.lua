@@ -102,7 +102,12 @@ local scripts = {
     end,
 
     OnEnter = function(frame, ...)
-        private:LoadTooltip(frame, "ANCHOR_BOTTOMRIGHT", 0, 0, private:GetButtonTooltip(frame.obj))
+        if not addon:IsHooked(frame, "OnUpdate") then
+            addon:HookScript(frame, "OnUpdate", function()
+                private:LoadTooltip(frame, "ANCHOR_BOTTOMRIGHT", 0, 0, private:GetButtonTooltip(frame.obj))
+            end)
+        end
+
         -- Update mouseover
         local bar = frame.obj:GetBar()
         bar:CallScript("OnEnter", bar.frame, ...)
@@ -114,6 +119,10 @@ local scripts = {
 
     OnLeave = function(frame, ...)
         private:ClearTooltip()
+        if addon:IsHooked(frame, "OnUpdate") then
+            addon:Unhook(frame, "OnUpdate")
+        end
+
         -- Update mouseover
         local bar = frame.obj:GetBar()
         bar:CallScript("OnLeave", bar.frame, ...)

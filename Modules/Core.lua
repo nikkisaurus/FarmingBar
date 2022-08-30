@@ -209,6 +209,7 @@ private.CONST = {
 
     TOOLTIP_DESC = { 1, 1, 1 },
     TOOLTIP_KEYVALUE = { 1, 0.82, 0, 1, 1, 1 },
+    TOOLTIP_KEYVALUE2 = { 1, 1, 1, 1, 1, 1 },
     TOOLTIP_TITLE = { 1, 0.82, 0 },
 }
 

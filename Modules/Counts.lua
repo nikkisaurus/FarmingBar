@@ -66,5 +66,21 @@ function private:GetTrackerCount(trackerInfo)
         count = count + altCount
     end
 
-    return count
+    return count, trackerInfo.objective
+end
+
+function private:GetObjectiveWidgetObjective(widget)
+    if widget:IsEmpty() then
+        return
+    end
+
+    local _, buttonDB = widget:GetDB()
+    return buttonDB.objective
+end
+
+function private:GetTrackerObjectiveCount(widget, trackerKey)
+    local _, buttonDB = widget:GetDB()
+    local tracker = buttonDB.trackers[trackerKey]
+
+    return buttonDB.objective * tracker.objective
 end

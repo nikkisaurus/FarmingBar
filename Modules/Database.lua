@@ -276,6 +276,7 @@ private.defaults = {
 
     objective = {
         title = "",
+        objective = 0,
         icon = {
             type = "AUTO", -- "AUTO", "FALLBACK"
             id = 134400,
@@ -312,15 +313,11 @@ function private:InitializeDatabase()
                 -- enabled = true,
             },
             settings = {
-                useGameTooltip = false,
                 tooltips = {
-                    buttonID = true,
-                    hyperlink = true,
-                    title = true,
-                    trackers = true,
-                    onUse = true,
-                    count = true,
-                    objective = true,
+                    useGameTooltip = false,
+                    modifier = "Alt",
+                    showDetails = false,
+                    showLink = true,
                 },
                 commands = {
                     farmingbar = true,
