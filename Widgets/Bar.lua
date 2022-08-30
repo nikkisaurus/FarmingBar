@@ -122,6 +122,13 @@ local methods = {
         widget:SetEvents()
     end,
 
+    UpdateButtons = function(widget)
+        widget:UpdateButtonTextures()
+        for _, button in pairs(widget:GetButtons()) do
+            button:SetCount()
+        end
+    end,
+
     UpdateButtonTextures = function(widget)
         for _, button in pairs(widget:GetButtons()) do
             button:SetTextures()

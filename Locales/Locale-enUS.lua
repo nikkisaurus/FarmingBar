@@ -8,6 +8,7 @@ private.status = {
             newTrackerType = "ITEM",
             newAltIDType = "ITEM",
         },
+        bar = {},
     },
 }
 
@@ -31,6 +32,8 @@ L["Lua Editor"] = true
 L["Invalid Tracker Type"] = true
 L["Invalid Tracker/Alt ID"] = true
 L["Apply Objective Template"] = true
+L["Invalid template name."] = true
+L["Template exists."] = true
 L["Missing dependencies"] = true
 L["Are you sure you want to overwrite Bar %d Button %d with objective template \"%s\"?"] = true
 L["Include Alts"] = true
@@ -103,6 +106,8 @@ L["Backdrop"] = true
 L["Right-click to configure this bar."] = true
 L["Background"] = true
 L["Enable"] = true
+L["Save as Template"] = true
+L["User Templates"] = true
 L["Border"] = true
 L["Background Color"] = true
 L["Border Color"] = true

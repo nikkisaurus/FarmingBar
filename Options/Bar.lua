@@ -355,7 +355,59 @@ function private:GetBarOptions(barID)
                     type = "group",
                     inline = true,
                     name = L["Templates"],
-                    args = {}, -- TODO
+                    args = {
+                        saveAsTemplate = {
+                            order = 1,
+                            type = "input",
+                            name = L["Save as Template"],
+                            set = function(_, value)
+                                if value and value ~= "" and not private:TemplateExists(value) then
+                                    private:SaveTemplate(barID, value)
+                                    private:RefreshOptions()
+                                end
+                            end,
+                            validate = function(_, value)
+                                if not value or value == "" then
+                                    return L["Invalid template name."]
+                                elseif private:TemplateExists(value) then
+                                    return L["Template exists."]
+                                else
+                                    return true
+                                end
+                            end,
+                        },
+                        builtInTemplates = {
+                            order = 2,
+                            disabled = true,
+                            type = "select",
+                            style = "dropdown",
+                            name = L["Templates"],
+                            values = {},
+                        },
+                        userTemplates = {
+                            order = 2,
+                            type = "select",
+                            style = "dropdown",
+                            name = L["User Templates"],
+                            disabled = function()
+                                return addon.tcount(private.db.global.templates) == 0
+                            end,
+                            values = function()
+                                local values = {}
+
+                                for templateName, _ in pairs(private.db.global.templates) do
+                                    values[templateName] = templateName
+                                end
+
+                                return values
+                            end,
+                            set = function(_, value)
+                                private.db.profile.bars[barID].buttons =
+                                    addon.CloneTable(private.db.global.templates[value])
+                                private.bars[barID]:UpdateButtons()
+                            end,
+                        },
+                    },
                 },
                 copyFrom = {
                     order = 2,

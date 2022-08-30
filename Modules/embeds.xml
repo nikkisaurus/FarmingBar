@@ -8,4 +8,5 @@
     <Include file="Counts.lua"/>
     <Include file="ObjectiveFrame.lua"/>
     <Include file="ObjectiveTemplates.lua"/>
+    <Include file="Templates.lua"/>
 </Ui>

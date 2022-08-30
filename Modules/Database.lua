@@ -371,6 +371,7 @@ function private:InitializeDatabase()
                 },
             },
             objectives = {},
+            templates = {},
             skins = private.defaults.skins,
         },
         profile = {
