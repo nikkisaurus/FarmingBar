@@ -348,19 +348,19 @@ function private:InitializeDatabase()
                         button = "LeftButton",
                         modifier = "shift",
                     },
-                    showObjectiveEditBox = { -- TODO
+                    showObjectiveEditBox = {
                         button = "LeftButton",
                         modifier = "ctrl",
                     },
-                    showObjectiveEditor = { -- TODO
+                    showObjectiveEditor = {
                         button = "RightButton",
                         modifier = "ctrl",
                     },
-                    showQuickAddEditBox = { -- TODO
+                    showQuickAddEditBox = {
                         button = "LeftButton",
                         modifier = "alt",
                     },
-                    showQuickAddCurrencyEditBox = { -- TODO
+                    showQuickAddCurrencyEditBox = {
                         button = "RightButton",
                         modifier = "alt",
                     },

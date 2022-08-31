@@ -262,14 +262,6 @@ local methods = {
         local barID, buttonID = widget:GetID()
         private.db.profile.bars[barID].buttons[buttonID] = nil
         widget:UpdateAttributes()
-
-        if
-            private.editor
-            and private.editor:GetUserData("barID") == barID
-            and private.editor:GetUserData("buttonID") == buttonID
-        then
-            private.editor:Hide()
-        end
     end,
 
     CreateObjectiveInfo = function(widget, Type, id)
@@ -378,6 +370,15 @@ local methods = {
     SetCount = function(widget)
         widget.count:SetText(addon.iformat(private:GetObjectiveWidgetCount(widget), 2, true))
         widget:SetObjective()
+    end,
+
+    SetDBValue = function(widget, key, value, nested)
+        local barID, buttonID = widget:GetID()
+        if nested ~= nil then
+            private.db.profile.bars[barID].buttons[buttonID][key][value] = nested
+        else
+            private.db.profile.bars[barID].buttons[buttonID][key] = value
+        end
     end,
 
     SetFontstrings = function(widget)
@@ -518,6 +519,15 @@ local methods = {
         end
     end,
 
+    SetTrackerDBValue = function(widget, trackerKey, key, value, nested)
+        local barID, buttonID = widget:GetID()
+        if nested ~= nil then
+            private.db.profile.bars[barID].buttons[buttonID].trackers[trackerKey][key][value] = nested
+        else
+            private.db.profile.bars[barID].buttons[buttonID].trackers[trackerKey][key] = value
+        end
+    end,
+
     SetWidth = function(widget, width)
         widget.frame:SetWidth(width)
     end,
@@ -543,10 +553,10 @@ local methods = {
         end
     end,
 
-    TrackerExists = function(widget, trackerType, trackerKey)
+    TrackerExists = function(widget, trackerType, trackerID)
         local _, buttonDB = widget:GetDB()
         for _, trackerInfo in pairs(buttonDB.trackers) do
-            if trackerInfo.type == trackerType and trackerInfo.id == trackerKey then
+            if trackerInfo.type == trackerType and trackerInfo.id == trackerID then
                 return true
             end
         end
@@ -563,6 +573,21 @@ local methods = {
         widget:SetAttributes()
         widget:SetFontstrings()
         widget:SetCount()
+    end,
+
+    UpdateTrackerKeys = function(widget, trackerKey, newTrackerKey)
+        local _, buttonDB = widget:GetDB()
+        local barID, buttonID = widget:GetID()
+
+        if trackerKey > addon.tcount(buttonDB.trackers) then
+            return trackerKey
+        end
+
+        local trackerInfo = addon.CloneTable(buttonDB.trackers[trackerKey])
+        tremove(private.db.profile.bars[barID].buttons[buttonID].trackers, trackerKey)
+        tinsert(private.db.profile.bars[barID].buttons[buttonID].trackers, newTrackerKey, trackerInfo)
+
+        return newTrackerKey
     end,
 }
 

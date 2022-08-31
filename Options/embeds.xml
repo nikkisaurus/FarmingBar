@@ -1,8 +1,9 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/..\FrameXML\UI.xsd">
     <Include file="Helpers.lua"/>
     <Include file="Options.lua"/>
-    <Include file="ObjectiveTemplates.lua"/>
-    <Include file="ObjectiveTemplate.lua"/>
-    <Include file="Bar.lua"/>
-    <Include file="Config.lua"/>
+    <Include file="ObjectiveTemplates/ObjectiveTemplates.lua"/>
+    <Include file="ObjectiveTemplates/ObjectiveTemplate.lua"/>
+    <Include file="Bars/Bar.lua"/>
+    <Include file="Bars/Config.lua"/>
+    <Include file="ObjectiveEditor.lua"/>
 </Ui>

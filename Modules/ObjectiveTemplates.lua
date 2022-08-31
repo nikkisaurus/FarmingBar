@@ -142,8 +142,13 @@ function private:ValidateTracker(objectiveTemplateName, trackerType, trackerID)
         return L["Invalid Tracker/Alt Type"]
     end
 
-    return not private:ObjectiveTemplateTrackerExists(objectiveTemplateName, trackerType, isValid) and isValid
-        or L["Tracker already exists for this objective."]
+    if type(objectiveTemplateName) == "string" then
+        return not private:ObjectiveTemplateTrackerExists(objectiveTemplateName, trackerType, isValid) and isValid
+            or L["Tracker already exists for this objective."]
+    else
+        return not objectiveTemplateName:TrackerExists(trackerType, isValid) and isValid
+            or L["Tracker already exists for this objective."]
+    end
 end
 
 --[[ Alt ID ]]

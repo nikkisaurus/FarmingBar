@@ -10,6 +10,10 @@ private.status = {
         },
         bar = {},
     },
+    objectiveEditor = {
+        newTrackerType = "ITEM",
+        newAltIDType = "ITEM",
+    },
 }
 
 L.addonName = "Farming Bar"
@@ -25,6 +29,8 @@ L["Control+click to lock and hide anchor."] = true
 --[[ Options ]]
 
 L["Layout"] = true
+L["Are you sure you want to remove %s from this objective?"] = true
+L["Are you sure you want to clear this button?"] = true
 L["BLEND"] = true
 L["Custom Condition: Syntax error"] = true
 L["Custom Condition: Invalid function"] = true
@@ -35,6 +41,7 @@ L["Apply Objective Template"] = true
 L["Invalid template name."] = true
 L["Template exists."] = true
 L["Missing dependencies"] = true
+L["Clear"] = true
 L["Are you sure you want to overwrite Bar %d Button %d with objective template \"%s\"?"] = true
 L["Include Alts"] = true
 L["Include Bank"] = true
@@ -97,6 +104,7 @@ L["Limit Mats"] = true
 L["Objectives on this bar cannot use materials already accounted for by another objective on the same bar."] = true
 L["Alpha"] = true
 L["Count"] = true
+L["Counts"] = true
 L["%d more..."] = true
 L["Scale"] = true
 L["Skin"] = true
@@ -158,6 +166,7 @@ L["OnUse"] = true
 L["ItemID"] = true
 L["Invalid item/currency ID."] = true
 L["Invalid itemID."] = true
+L["Objective Editor"] = true
 L["Invalid item ID."] = true
 L["Invalid currency ID."] = true
 L["Expand"] = true

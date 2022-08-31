@@ -3,6 +3,10 @@ local addon = LibStub("AceAddon-3.0"):GetAddon(addonName)
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 local ACD = LibStub("AceConfigDialog-3.0")
 
+function private:CloseOptions()
+    ACD:Close(addonName)
+end
+
 function private:GetOptions()
     private.options = {
         type = "group",
@@ -55,19 +59,19 @@ end
 function private:InitializeOptions()
     LibStub("AceConfig-3.0"):RegisterOptionsTable(addonName, private:GetOptions())
     ACD:SetDefaultSize(addonName, 850, 600)
-end
 
-function private:SelectOptionsPath(...)
-    ACD:SelectGroup(addonName, ...)
-end
-
-function private:CloseOptions()
-    ACD:Close(addonName)
+    LibStub("AceConfig-3.0"):RegisterOptionsTable(addonName .. "ObjectiveEditor", private:GetObjectiveEditor())
+    ACD:SetDefaultSize(addonName .. "ObjectiveEditor", 650, 600)
 end
 
 function private:LoadOptions(...)
     private:SelectOptionsPath(...)
     ACD:Open(addonName)
+end
+
+function private:NotifyChange()
+    LibStub("AceConfigRegistry-3.0"):NotifyChange(addonName)
+    LibStub("AceConfigRegistry-3.0"):NotifyChange(addonName .. "ObjectiveEditor")
 end
 
 function private:RefreshOptions(...)
@@ -85,6 +89,6 @@ function private:RefreshOptions(...)
     private:NotifyChange()
 end
 
-function private:NotifyChange()
-    LibStub("AceConfigRegistry-3.0"):NotifyChange(addonName)
+function private:SelectOptionsPath(...)
+    ACD:SelectGroup(addonName, ...)
 end

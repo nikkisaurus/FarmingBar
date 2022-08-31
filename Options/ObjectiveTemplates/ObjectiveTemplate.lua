@@ -2,7 +2,7 @@ local addonName, private = ...
 local addon = LibStub("AceAddon-3.0"):GetAddon(addonName)
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 
-local lists = {
+private.lists = {
     conditionType = {
         ALL = L["All"],
         ANY = L["Any"],
@@ -105,7 +105,7 @@ function private:GetObjectiveTemplateOptions(objectiveTemplateName)
                     order = 3,
                     type = "select",
                     name = L["Fallback Icon"],
-                    values = lists.iconType,
+                    values = private.lists.iconType,
                     get = function(info)
                         return objectiveTemplate.icon.type
                     end,
@@ -135,7 +135,7 @@ function private:GetObjectiveTemplateOptions(objectiveTemplateName)
                     order = 4,
                     type = "group",
                     inline = true,
-                    name = "OnUse",
+                    name = L["OnUse"],
                     get = function(info)
                         return objectiveTemplate.onUse[info[#info]]
                     end,
@@ -176,7 +176,7 @@ function private:GetObjectiveTemplateOptions(objectiveTemplateName)
                             order = 2,
                             type = "select",
                             name = L["Type"],
-                            values = lists.onUseType,
+                            values = private.lists.onUseType,
                             set = function(info, value)
                                 private.db.global.objectives[objectiveTemplateName].onUse[info[#info]] = value
                                 private:RefreshOptions()
@@ -249,7 +249,7 @@ function private:GetObjectiveTemplateOptions(objectiveTemplateName)
                     order = 1,
                     type = "select",
                     name = L["Condition"],
-                    values = lists.conditionType,
+                    values = private.lists.conditionType,
                     get = function(info)
                         return objectiveTemplate.condition.type
                     end,
@@ -297,7 +297,7 @@ function private:GetObjectiveTemplateOptions(objectiveTemplateName)
                             order = 2,
                             type = "select",
                             name = L["Tracker Type"],
-                            values = lists.newTrackerType,
+                            values = private.lists.newTrackerType,
                             get = function()
                                 return private.status.options.objectiveTemplates.newTrackerType
                             end,
@@ -435,7 +435,7 @@ function private:GetObjectiveTemplateOptions(objectiveTemplateName)
                             order = 1,
                             type = "select",
                             name = L["Type"],
-                            values = lists.newTrackerType,
+                            values = private.lists.newTrackerType,
                             get = function()
                                 return private.status.options.objectiveTemplates.newAltIDType
                             end,
@@ -523,28 +523,29 @@ function private:GetObjectiveTemplateOptions(objectiveTemplateName)
                             name = "",
                             args = {},
                         },
-                        removeTracker = {
-                            order = 5,
-                            type = "execute",
-                            name = REMOVE,
-                            func = function()
-                                private:RemoveObjectiveTemplateTracker(objectiveTemplateName, trackerKey)
-                                private:RefreshOptions()
-                            end,
-                            confirm = function(_)
-                                return format(
-                                    L["Are you sure you want to remove %s from %s?"],
-                                    private:GetTrackerInfo(tracker.type, tracker.id),
-                                    objectiveTemplateName
-                                )
-                            end,
-                        },
                     },
+                },
+
+                removeTracker = {
+                    order = 5,
+                    type = "execute",
+                    name = REMOVE,
+                    func = function()
+                        private:RemoveObjectiveTemplateTracker(objectiveTemplateName, trackerKey)
+                        private:RefreshOptions()
+                    end,
+                    confirm = function(_)
+                        return format(
+                            L["Are you sure you want to remove %s from %s?"],
+                            private:GetTrackerInfo(tracker.type, tracker.id),
+                            objectiveTemplateName
+                        )
+                    end,
                 },
             },
         }
 
-        local I = 3
+        local I = 1
         for altKey, altInfo in addon.pairs(tracker.altIDs) do
             local altIDName, altIDIcon = private:GetTrackerInfo(altInfo.type, altInfo.id)
 
@@ -561,7 +562,7 @@ function private:GetObjectiveTemplateOptions(objectiveTemplateName)
 
             options.trackers.args.trackersList.args["tracker" .. trackerKey].args.altIDs.args.altIDsList.args["altID" .. altKey .. "Multiplier"] =
                 {
-                    order = I,
+                    order = I + 1,
                     type = "input",
                     width = 1 / 2,
                     name = L["Multiplier"],
@@ -591,7 +592,7 @@ function private:GetObjectiveTemplateOptions(objectiveTemplateName)
                     end,
                 }
 
-            I = I + 1
+            I = I + 2
         end
         i = i + 1
     end
