@@ -44,6 +44,7 @@ local methods = {
     OnWidthSet = function(widget, width)
         widget:SetHeight(width + widget.label:GetHeight())
         widget.button:SetSize(width, width)
+        widget.label:SetWidth(width)
     end,
 
     SetImage = function(widget, img)

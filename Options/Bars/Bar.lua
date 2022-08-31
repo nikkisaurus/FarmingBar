@@ -445,6 +445,7 @@ function private:GetBarOptions(barID)
                     set = function(_, value)
                         private:CopyBarDB(value, barID)
                         private:RefreshOptions()
+                        private.bars[barID]:UpdateButtonTextures()
                     end,
                 },
                 duplicateBar = {

@@ -35,7 +35,7 @@ local anchorScripts = {
     --[[ Click ]]
     OnClick = function(anchor, mouseButton)
         local widget = anchor.obj
-        if IsControlKeyDown() then
+        if IsControlKeyDown() and mouseButton == "LeftButton" then
             widget:SetDBValue("movable", false)
             widget:SetMovable()
         elseif mouseButton == "RightButton" then
