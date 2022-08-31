@@ -21,6 +21,7 @@ function private:LoadTemplate(barID, templateName)
     bar:DrawButtons()
     bar:LayoutButtons()
     for key, item in addon.pairs(template) do
+        private:CacheItem(item.itemID)
         local itemName, itemIcon = private:GetTrackerInfo("ITEM", item.itemID)
 
         local objectiveTemplate = addon.CloneTable(private.defaults.objective)

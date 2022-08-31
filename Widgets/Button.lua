@@ -61,11 +61,31 @@ local postClickMethods = {
         end
     end,
 
+    showObjectiveEditBox = function(frame)
+        local widget = frame.obj
+        if not widget:IsEmpty() then
+            widget:SetUserData("editType", "objective")
+            widget.editbox:Show()
+        end
+    end,
+
     showObjectiveEditor = function(frame)
         local widget = frame.obj
         if not widget:IsEmpty() then
             private:LoadObjectiveEditor(widget)
         end
+    end,
+
+    showQuickAddCurrencyEditBox = function(frame)
+        local widget = frame.obj
+        widget:SetUserData("editType", "currency")
+        widget.editbox:Show()
+    end,
+
+    showQuickAddEditBox = function(frame)
+        local widget = frame.obj
+        widget:SetUserData("editType", "item")
+        widget.editbox:Show()
     end,
 }
 
@@ -86,6 +106,64 @@ local function ProcessKeybinds(frame, buttonClicked, ...)
 end
 
 -- [[ Scripts ]]
+local editboxScripts = {
+    OnEditFocusGained = function(editbox)
+        editbox:HighlightText()
+    end,
+
+    OnEnterPressed = function(editbox)
+        local widget = editbox.obj
+        local barID, buttonID = widget:GetID()
+        local editType = widget:GetUserData("editType")
+        local input = tonumber(editbox:GetText())
+
+        if editType == "objective" then
+            local objective = input or 0
+            private.db.profile.bars[barID].buttons[buttonID].objective = objective
+            widget:SetObjective()
+        elseif editType == "item" then
+            local itemID = private:ValidateItem(input)
+            if itemID then
+                widget:CreateObjectiveInfo("ITEM", itemID)
+            else
+                addon:Print(L["Invalid item ID."])
+            end
+        elseif editType == "currency" then
+            local currencyID = private:ValidateCurrency(input or 0)
+            if currencyID then
+                widget:CreateObjectiveInfo("CURRENCY", currencyID)
+            else
+                addon:Print(L["Invalid currency ID."])
+            end
+        end
+
+        editbox:ClearFocus()
+        editbox:Hide()
+    end,
+
+    OnEscapePressed = function(editbox)
+        editbox:ClearFocus()
+        editbox:Hide()
+    end,
+
+    OnHide = function(editbox)
+        editbox.obj:SetUserData("editType")
+    end,
+
+    OnShow = function(editbox)
+        local widget = editbox.obj
+        local editType = widget:GetUserData("editType")
+
+        if editType == "objective" then
+            editbox:SetText(private:GetObjectiveWidgetObjective(widget))
+        else
+            editbox:SetText("")
+        end
+
+        editbox:SetFocus()
+    end,
+}
+
 local scripts = {
     OnDragStart = function(frame, buttonClicked, ...)
         local widget = frame.obj
@@ -139,20 +217,7 @@ local scripts = {
         if PlaceObjectiveInfo(widget) then
             return
         elseif cursorType == "item" and itemID then
-            private.CacheItem(itemID)
-
-            local template = addon.CloneTable(private.defaults.objective)
-            template.icon.id = GetItemIcon(itemID)
-            template.onUse.type = "ITEM"
-            template.onUse.itemID = itemID
-            template.title = (GetItemInfo(itemID))
-
-            local tracker = addon.CloneTable(private.defaults.tracker)
-            tracker.type = "ITEM"
-            tracker.id = itemID
-            tinsert(template.trackers, tracker)
-
-            widget:SetObjectiveInfo(template)
+            widget:CreateObjectiveInfo("ITEM", itemID)
             ClearCursor()
 
             return
@@ -164,7 +229,6 @@ local scripts = {
 
 --[[ Methods ]]
 local methods = {
-    --[[ Widget ]]
     OnAcquire = function(widget)
         widget:Show()
         widget.frame:RegisterEvent("BAG_UPDATE_DELAYED")
@@ -176,9 +240,96 @@ local methods = {
         widget.frame:UnregisterEvent("CURRENCY_DISPLAY_UPDATE")
     end,
 
-    --[[ Frame ]]
+    AddTracker = function(widget, trackerType, trackerID)
+        local barID, buttonID = widget:GetID()
+        local trackerInfo = addon.CloneTable(private.defaults.tracker)
+        trackerInfo.type = trackerType
+        trackerInfo.id = trackerID
+        tinsert(private.db.profile.bars[barID].buttons[buttonID].trackers, trackerInfo)
+        return #private.db.profile.bars[barID].buttons[buttonID].trackers
+    end,
+
+    AddTrackerAltID = function(widget, trackerKey, altType, altID)
+        local barID, buttonID = widget:GetID()
+        tinsert(private.db.profile.bars[barID].buttons[buttonID].trackers[trackerKey].altIDs, {
+            type = altType,
+            id = altID,
+            multiplier = 1,
+        })
+    end,
+
+    Clear = function(widget)
+        local barID, buttonID = widget:GetID()
+        private.db.profile.bars[barID].buttons[buttonID] = nil
+        widget:UpdateAttributes()
+
+        if
+            private.editor
+            and private.editor:GetUserData("barID") == barID
+            and private.editor:GetUserData("buttonID") == buttonID
+        then
+            private.editor:Hide()
+        end
+    end,
+
+    CreateObjectiveInfo = function(widget, Type, id)
+        if Type == "ITEM" then
+            private.CacheItem(id)
+        end
+
+        local name, icon = private:GetTrackerInfo(Type, id)
+
+        local template = addon.CloneTable(private.defaults.objective)
+        template.title = name
+        template.icon.id = icon
+        template.onUse.type = Type == "ITEM" and Type or "NONE"
+        template.onUse.itemID = Type == "ITEM" and id or "NONE"
+
+        local tracker = addon.CloneTable(private.defaults.tracker)
+        tracker.type = Type
+        tracker.id = id
+        tinsert(template.trackers, tracker)
+
+        widget:SetObjectiveInfo(template)
+    end,
+
+    DrawButton = function(widget)
+        local barDB, buttonDB = widget:GetDB()
+        widget:SetSize(barDB.buttonSize)
+    end,
+
+    GetBar = function(widget)
+        return private.bars[widget:GetID()]
+    end,
+
+    GetDB = function(widget)
+        local barID, buttonID = widget:GetID()
+        local barDB = private.db.profile.bars[barID]
+
+        return barDB, barDB.buttons[buttonID]
+    end,
+
+    GetHyperlink = function(widget)
+        if widget:IsEmpty() then
+            return
+        end
+        local _, buttonDB = widget:GetDB()
+        if buttonDB.onUse.type == "ITEM" and buttonDB.onUse.itemID then
+            return strjoin(":", strlower(buttonDB.onUse.type), buttonDB.onUse.itemID)
+        end
+    end,
+
+    GetID = function(widget)
+        return widget:GetUserData("barID"), widget:GetUserData("buttonID")
+    end,
+
     Hide = function(widget)
         widget.frame:Hide()
+    end,
+
+    IsEmpty = function(widget)
+        local _, buttonDB = widget:GetDB()
+        return not buttonDB, buttonDB
     end,
 
     SetAlpha = function(widget, alpha)
@@ -224,41 +375,9 @@ local methods = {
         end
     end,
 
-    SetHeight = function(widget, height)
-        widget.frame:SetHeight(height)
-    end,
-
-    SetPoint = function(widget, ...)
-        widget.frame:SetPoint(...)
-    end,
-
-    SetSize = function(widget, width, height)
-        widget:SetWidth(width)
-        widget:SetHeight(height or width)
-    end,
-
-    SetWidth = function(widget, width)
-        widget.frame:SetWidth(width)
-    end,
-
-    Show = function(widget)
-        widget.frame:Show()
-    end,
-
-    --[[ Fontstrings ]]
     SetCount = function(widget)
-        widget.count:SetText(private:GetObjectiveWidgetCount(widget))
+        widget.count:SetText(addon.iformat(private:GetObjectiveWidgetCount(widget), 2, true))
         widget:SetObjective()
-    end,
-
-    SetObjective = function(widget, objective)
-        if widget:IsEmpty() or not objective or objective == 0 then
-            widget.objective:SetText()
-            widget.objective:Hide()
-        else
-            widget.objective:SetText(objective)
-            widget.objective:Show()
-        end
     end,
 
     SetFontstrings = function(widget)
@@ -280,9 +399,82 @@ local methods = {
                 fontstring:Hide()
             end
         end
+
+        local fontDB = private.db.profile.style.font
+        widget.editbox:SetFont(LSM:Fetch("font", fontDB.face), fontDB.size, fontDB.outline)
     end,
 
-    --[[ Textures ]]
+    SetHeight = function(widget, height)
+        widget.frame:SetHeight(height)
+    end,
+
+    SetIconTextures = function(widget)
+        local barDB, buttonDB = widget:GetDB()
+        local isEmpty = widget:IsEmpty()
+
+        widget.icon:SetDesaturated(false)
+
+        if isEmpty then
+            widget.icon:SetTexture()
+            widget.iconBorder:Hide()
+        else
+            local icon, color = private:GetObjectiveIcon(buttonDB)
+            widget.icon:SetTexture(icon)
+            if not private.db.global.skins[barDB.skin].buttonTextures.iconBorder.hidden and color then
+                widget.iconBorder:Show()
+                widget.iconBorder:SetVertexColor(unpack(color))
+            else
+                widget.iconBorder:Hide()
+            end
+        end
+    end,
+
+    SetID = function(widget, barID, buttonID)
+        if widget:GetID() then
+            if private.db.global.debug.enabled then
+                error(format(L["Button is already assigned an ID: %d:%d"], widget:GetID()))
+            end
+            return
+        end
+
+        widget:SetUserData("barID", barID)
+        widget:SetUserData("buttonID", buttonID)
+        widget:Update()
+    end,
+
+    SetObjective = function(widget)
+        local _, buttonDB = widget:GetDB()
+        local objective = buttonDB and buttonDB.objective or 0
+
+        if widget:IsEmpty() or not objective or objective == 0 then
+            widget.objective:SetText()
+            widget.objective:Hide()
+        else
+            local count = private:GetObjectiveWidgetCount(widget)
+            local color = count >= objective and { 0, 1, 0, 1 } or { 1, 0.82, 0, 1 }
+
+            widget.objective:SetTextColor(unpack(color))
+            widget.objective:SetText(addon.iformat(objective, 2))
+            widget.objective:Show()
+        end
+    end,
+
+    SetObjectiveInfo = function(widget, objectiveInfo)
+        local barID, buttonID = widget:GetID()
+        private.db.profile.bars[barID].buttons[buttonID] = objectiveInfo
+        widget:UpdateAttributes()
+    end,
+
+    SetPoint = function(widget, ...)
+        widget.frame:SetPoint(...)
+    end,
+
+    SetSize = function(widget, width, height)
+        widget:SetWidth(width)
+        widget:SetHeight(height or width)
+        widget.editbox:SetSize(width, width / 2)
+    end,
+
     SetTextures = function(widget)
         local barDB = widget:GetDB()
 
@@ -326,107 +518,12 @@ local methods = {
         end
     end,
 
-    SetIconTextures = function(widget)
-        local barDB, buttonDB = widget:GetDB()
-        local isEmpty = widget:IsEmpty()
-
-        widget.icon:SetDesaturated(false)
-
-        if isEmpty then
-            widget.icon:SetTexture()
-            widget.iconBorder:Hide()
-        else
-            local icon, color = private:GetObjectiveIcon(buttonDB)
-            widget.icon:SetTexture(icon)
-            if not private.db.global.skins[barDB.skin].buttonTextures.iconBorder.hidden and color then
-                widget.iconBorder:Show()
-                widget.iconBorder:SetVertexColor(unpack(color))
-            else
-                widget.iconBorder:Hide()
-            end
-        end
+    SetWidth = function(widget, width)
+        widget.frame:SetWidth(width)
     end,
 
-    --[[ Database ]]
-    AddTracker = function(widget, trackerType, trackerID)
-        local barID, buttonID = widget:GetID()
-        local trackerInfo = addon.CloneTable(private.defaults.tracker)
-        trackerInfo.type = trackerType
-        trackerInfo.id = trackerID
-        tinsert(private.db.profile.bars[barID].buttons[buttonID].trackers, trackerInfo)
-        return #private.db.profile.bars[barID].buttons[buttonID].trackers
-    end,
-
-    AddTrackerAltID = function(widget, trackerKey, altType, altID)
-        local barID, buttonID = widget:GetID()
-        tinsert(private.db.profile.bars[barID].buttons[buttonID].trackers[trackerKey].altIDs, {
-            type = altType,
-            id = altID,
-            multiplier = 1,
-        })
-    end,
-
-    Clear = function(widget)
-        local barID, buttonID = widget:GetID()
-        private.db.profile.bars[barID].buttons[buttonID] = nil
-        widget:UpdateAttributes()
-
-        if
-            private.editor
-            and private.editor:GetUserData("barID") == barID
-            and private.editor:GetUserData("buttonID") == buttonID
-        then
-            private.editor:Hide()
-        end
-    end,
-
-    GetBar = function(widget)
-        return private.bars[widget:GetID()]
-    end,
-
-    GetHyperlink = function(widget)
-        if widget:IsEmpty() then
-            return
-        end
-        local _, buttonDB = widget:GetDB()
-        if buttonDB.onUse.type == "ITEM" and buttonDB.onUse.itemID then
-            return strjoin(":", strlower(buttonDB.onUse.type), buttonDB.onUse.itemID)
-        end
-    end,
-
-    GetDB = function(widget)
-        local barID, buttonID = widget:GetID()
-        local barDB = private.db.profile.bars[barID]
-
-        return barDB, barDB.buttons[buttonID]
-    end,
-
-    GetID = function(widget)
-        return widget:GetUserData("barID"), widget:GetUserData("buttonID")
-    end,
-
-    IsEmpty = function(widget)
-        local _, buttonDB = widget:GetDB()
-        return not buttonDB, buttonDB
-    end,
-
-    SetID = function(widget, barID, buttonID)
-        if widget:GetID() then
-            if private.db.global.debug.enabled then
-                error(format(L["Button is already assigned an ID: %d:%d"], widget:GetID()))
-            end
-            return
-        end
-
-        widget:SetUserData("barID", barID)
-        widget:SetUserData("buttonID", buttonID)
-        widget:Update()
-    end,
-
-    SetObjectiveInfo = function(widget, objectiveInfo)
-        local barID, buttonID = widget:GetID()
-        private.db.profile.bars[barID].buttons[buttonID] = objectiveInfo
-        widget:UpdateAttributes()
+    Show = function(widget)
+        widget.frame:Show()
     end,
 
     TrackerAltIDExists = function(widget, trackerKey, altType, altID)
@@ -467,12 +564,6 @@ local methods = {
         widget:SetFontstrings()
         widget:SetCount()
     end,
-
-    --[[ Button ]]
-    DrawButton = function(widget)
-        local barDB, buttonDB = widget:GetDB()
-        widget:SetSize(barDB.buttonSize)
-    end,
 }
 
 --[[ Constructor ]]
@@ -491,6 +582,24 @@ local function Constructor()
     frame:RegisterForDrag("LeftButton", "RightButton")
     frame:RegisterForClicks("AnyUp")
 
+    for script, func in pairs(scripts) do
+        frame:SetScript(script, func)
+    end
+
+    local editbox = CreateFrame("EditBox", "$parentEditbox", frame)
+    editbox:SetPoint("TOPLEFT")
+    editbox:SetAutoFocus(false)
+    editbox:Hide()
+
+    for script, func in pairs(editboxScripts) do
+        editbox:SetScript(script, func)
+    end
+
+    local editboxBG = editbox:CreateTexture()
+    editboxBG:SetAllPoints(editbox)
+    editboxBG:SetTexture([[INTERFACE\BUTTONS\WHITE8X8]])
+    editboxBG:SetVertexColor(0, 0, 0, 0.33)
+
     local backdrop = frame:CreateTexture("$parentBackdrop")
     local cooldown = CreateFrame("Cooldown", "$parentCooldown", frame, "CooldownFrameTemplate")
     local count = frame:CreateFontString("$parentCount", "OVERLAY", "GameFontHighlight")
@@ -503,10 +612,6 @@ local function Constructor()
     local objective = frame:CreateFontString("$parentObjective", "OVERLAY", "GameFontHighlight")
     local pushed = frame:CreateTexture("$parentPushed")
     local shadow = frame:CreateTexture("$parentShadow")
-
-    for script, func in pairs(scripts) do
-        frame:SetScript(script, func)
-    end
 
     --[[ Widget ]]
     local widget = {
@@ -521,12 +626,14 @@ local function Constructor()
         mask = mask,
         normal = normal,
         objective = objective,
+        editbox = editbox,
         pushed = pushed,
         shadow = shadow,
         type = Type,
     }
 
     frame.obj = widget
+    editbox.obj = widget
 
     for method, func in pairs(methods) do
         widget[method] = func

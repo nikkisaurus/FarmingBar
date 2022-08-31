@@ -293,6 +293,7 @@ function private:IncrementString(str, obj, validateFunc)
 end
 
 function private:GetSubstring(str, len)
+    str = str or ""
     return strsub(str, 1, len) .. (strlen(str) > len and "..." or "")
 end
 

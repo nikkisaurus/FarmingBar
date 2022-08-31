@@ -553,7 +553,7 @@ function private:GetObjectiveTemplateOptions(objectiveTemplateName)
                     order = I,
                     type = "description",
                     width = 3 / 2,
-                    name = altIDName or L["AltID"] .. " " .. altKey,
+                    name = altIDName or L["Alt ID"] .. " " .. altKey,
                     image = altIDIcon or 134400,
                     imageWidth = 20,
                     imageHeight = 20,

@@ -36,12 +36,12 @@ function private:GetButtonTooltip(widget)
             {
                 double = true,
                 k = L["Count"],
-                v = private:GetObjectiveWidgetCount(widget),
+                v = addon.iformat(private:GetObjectiveWidgetCount(widget), 1, true),
             },
             {
                 double = true,
                 k = L["Objective"],
-                v = objective > 0 and objective or "-",
+                v = objective > 0 and addon.iformat(objective, 1) or "-",
             },
             {
                 double = true,
@@ -55,7 +55,7 @@ function private:GetButtonTooltip(widget)
         -- Trackers
         for trackerKey, tracker in pairs(trackers) do
             if trackerKey <= 5 or showDetails then
-                local count = private:GetTrackerCount(tracker)
+                local count = addon.iformat(private:GetTrackerCount(tracker), 1, true)
                 local trackerObjective = private:GetTrackerObjectiveCount(widget, trackerKey)
                 local trackerName, trackerIcon
                 if tracker.type == "ITEM" then
@@ -72,7 +72,7 @@ function private:GetButtonTooltip(widget)
                     double = true,
                     color = private.CONST.TOOLTIP_KEYVALUE2,
                     k = private:GetSubstring(trackerName, 30) or L["Tracker"] .. " " .. trackerKey,
-                    v = trackerObjective > 0 and format("%d/%d", count, objective) or count,
+                    v = trackerObjective > 0 and format("%s/%s", count, addon.iformat(objective, 1)) or count,
                 })
 
                 tinsert(pendingLines, {
@@ -99,7 +99,6 @@ function private:GetButtonTooltip(widget)
         end
 
         -- Details
-        -- includebank, includealts, includeguildbank
         pendingLines = {
             private:GetTooltipBlankLine(not showDetails),
             {
@@ -134,7 +133,7 @@ function private:GetButtonTooltip(widget)
                 hidden = not showDetails,
             },
             {
-                line = private:GetSubstring(onUsePreview or "", 30),
+                line = private:GetSubstring(onUsePreview, 30),
                 hidden = not showDetails or onUseType == "NONE",
             },
             {
@@ -150,7 +149,7 @@ function private:GetButtonTooltip(widget)
                 hidden = not showDetails,
             },
             {
-                line = private:GetSubstring(buttonDB.condition.func or "", 30),
+                line = private:GetSubstring(buttonDB.condition.func, 30),
                 hidden = not showDetails or buttonDB.condition.type ~= "CUSTOM",
             },
         }
