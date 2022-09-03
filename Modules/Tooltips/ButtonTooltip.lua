@@ -2,6 +2,25 @@ local addonName, private = ...
 local addon = LibStub("AceAddon-3.0"):GetAddon(addonName)
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 
+local function GetIncludeCount(trackers, include)
+    local count = 0
+
+    for _, tracker in pairs(trackers) do
+        if type(tracker[include]) ~= "table" then
+            count = count + 1
+        else
+            for _, included in pairs(tracker[include]) do
+                if included then
+                    count = count + 1
+                    break
+                end
+            end
+        end
+    end
+
+    return count
+end
+
 function private:GetButtonTooltip(widget)
     local barDB, buttonDB = widget:GetDB()
     local barID, buttonID = widget:GetID()
@@ -110,19 +129,19 @@ function private:GetButtonTooltip(widget)
             {
                 double = true,
                 k = L["Include Bank"],
-                v = buttonDB.includeBank and L["true"] or L["false"],
+                v = format("%d/%d", GetIncludeCount(trackers, "includeBank"), addon.tcount(trackers)),
                 hidden = not showDetails,
             },
             {
                 double = true,
                 k = L["Include Alts"],
-                v = buttonDB.includeAlts and L["true"] or L["false"],
+                v = format("%d/%d", GetIncludeCount(trackers, "includeAlts"), addon.tcount(trackers)),
                 hidden = not showDetails or private:MissingDataStore(),
             },
             {
                 double = true,
                 k = L["Include Guild Bank"],
-                v = buttonDB.includeGuildBank and L["true"] or L["false"],
+                v = format("%d/%d", GetIncludeCount(trackers, "includeGuildBank"), addon.tcount(trackers)),
                 hidden = not showDetails or private:MissingDataStore(),
             },
             private:GetTooltipBlankLine(not showDetails),
