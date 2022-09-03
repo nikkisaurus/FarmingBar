@@ -6,4 +6,5 @@
     <Include file="Bars/Bar.lua"/>
     <Include file="Bars/Config.lua"/>
     <Include file="ObjectiveEditor.lua"/>
+    <Include file="Settings.lua"/>
 </Ui>

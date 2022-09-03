@@ -24,6 +24,17 @@ private.lists = {
         ITEM = L["Item"],
         CURRENCY = L["Currency"],
     },
+
+    modifiers = {
+        alt = L["Alt"],
+        ctrl = L["Control"],
+        shift = L["Shift"],
+    },
+
+    mouseButtons = {
+        LeftButton = L["Left Button"],
+        RightButton = L["Right Button"],
+    },
 }
 
 function private:GetObjectiveTemplateOptions(objectiveTemplateName)

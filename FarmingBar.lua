@@ -26,7 +26,7 @@ end
 
 --[[ StartDebug ]]
 function private:StartDebug()
-    private:LoadOptions("config", "bar1", "appearance")
+    private:LoadOptions("settings", "keybinds")
 end
 
 private.anchorPoints = {
@@ -361,17 +361,17 @@ end
 
 --[[ Misc ]]
 function private:GetModifierString()
-    local mod = ""
+    local modifier = ""
     if IsShiftKeyDown() then
-        mod = "shift"
+        modifier = "shift"
     end
     if IsControlKeyDown() then
-        mod = "ctrl" .. (mod ~= "" and "-" or "") .. mod
+        modifier = "ctrl" .. (modifier ~= "" and "-" or "") .. modifier
     end
     if IsAltKeyDown() then
-        mod = "alt" .. (mod ~= "" and "-" or "") .. mod
+        modifier = "alt" .. (modifier ~= "" and "-" or "") .. modifier
     end
-    return mod
+    return modifier
 end
 
 function private:ValidateConditionFunc(value)
