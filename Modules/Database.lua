@@ -288,7 +288,33 @@ private.defaults = {
         },
         condition = {
             type = "ALL", -- "ALL", "ANY", "CUSTOM"
-            func = [[function()
+            func = [[function(trackers, GetTrackerCount)
+    -- This is the structure of the tracker table:
+    --trackers = {
+    --    [1] = {
+    --        type = "ITEM", -- "CURRENCY"
+    --        id = 0000,
+    --        objective = 1,
+    --        includeAlts = false,
+    --        includeBank = false,
+    --        includeGuildBank = {
+    --             ["GuildKey"] = true
+    --        },
+    --        altIDs = {
+    --            {
+    --                type = "ITEM", -- "CURRENCY"
+    --                id = 0000,
+    --                multiplier = 1,
+    --            }
+    --        },
+    --    },
+    --}
+    
+    -- NOTE: make sure the first argument of GetTrackerCount is nil
+    -- This function is not necessary, but available if your custom function is simple and doesn't change the way each tracker is calculated.
+    --local count =  GetTrackerCount(_, trackers[1])
+    
+    return GetTrackerCount(_, trackers[1])
 end]],
         },
         trackers = {},

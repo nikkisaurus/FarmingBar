@@ -23,6 +23,13 @@ function private:GetObjectiveWidgetCount(widget)
             count = count + private:GetTrackerCount(trackerInfo)
         end
     elseif condition.type == "CUSTOM" then
+        local func = loadstring("return " .. buttonDB.condition.func)
+        if type(func) == "function" then
+            local success, userFunc = pcall(func)
+            if success and type(userFunc) == "function" then
+                count = count + (userFunc(buttonDB.trackers, private.GetTrackerCount) or 0)
+            end
+        end
     end
 
     return count
