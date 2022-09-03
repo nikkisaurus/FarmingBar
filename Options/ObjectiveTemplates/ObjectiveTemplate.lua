@@ -31,6 +31,12 @@ private.lists = {
         shift = L["Shift"],
     },
 
+    Modifiers = {
+        Alt = L["Alt"],
+        Control = L["Control"],
+        Shift = L["Shift"],
+    },
+
     mouseButtons = {
         LeftButton = L["Left Button"],
         RightButton = L["Right Button"],

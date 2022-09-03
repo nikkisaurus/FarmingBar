@@ -26,7 +26,7 @@ end
 
 --[[ StartDebug ]]
 function private:StartDebug()
-    private:LoadOptions("settings", "keybinds")
+    private:LoadOptions("settings", "general")
 end
 
 private.anchorPoints = {

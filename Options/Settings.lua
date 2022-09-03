@@ -8,16 +8,69 @@ function private:GetSettingsOptions()
             order = 1,
             type = "group",
             name = L["General"],
+            args = {
+                tooltips = {
+                    order = 1,
+                    type = "group",
+                    inline = true,
+                    name = L["Tooltips"],
+                    get = function(info)
+                        return private.db.global.settings.tooltips[info[#info]]
+                    end,
+                    set = function(info, value)
+                        private.db.global.settings.tooltips[info[#info]] = value
+                    end,
+                    args = {
+                        useGameTooltip = {
+                            order = 1,
+                            type = "toggle",
+                            name = L["Use GameTooltip"],
+                        },
+                        showLink = {
+                            order = 2,
+                            type = "toggle",
+                            name = L["Show Hyperlink"],
+                            desc = L["Show item hyperlink on button tooltips."],
+                        },
+                        showDetails = {
+                            order = 3,
+                            type = "toggle",
+                            name = L["Show Details"],
+                            desc = L["Show all details on tooltips without holding the modifier key."],
+                        },
+                        modifier = {
+                            order = 4,
+                            type = "select",
+                            style = "dropdown",
+                            name = L["Modifier"],
+                            desc = L["Hold this key down while hovering over a button to view additional tooltip details."],
+                            values = private.lists.Modifiers,
+                        },
+                    },
+                },
+                commands = {
+                    order = 2,
+                    type = "group",
+                    inline = true,
+                    name = L["Slash Commands"],
+                    args = {},
+                },
+            },
+        },
+        alerts = {
+            order = 2,
+            type = "group",
+            name = L["Alerts"],
             args = {},
         },
         keybinds = {
-            order = 2,
+            order = 3,
             type = "group",
             name = L["Keybinds"],
             args = {},
         },
         profile = {
-            order = 3,
+            order = 4,
             type = "group",
             name = L["Profile"],
             args = {},
@@ -25,6 +78,23 @@ function private:GetSettingsOptions()
     }
 
     local i = 1
+    for command, enabled in addon.pairs(private.db.global.settings.commands) do
+        options.general.args.commands.args[command] = {
+            order = i,
+            type = "toggle",
+            name = command,
+            get = function()
+                return private.db.global.settings.commands[command]
+            end,
+            set = function(_, value)
+                private.db.global.settings.commands[command] = value
+                private:InitializeSlashCommands()
+            end,
+        }
+        i = i + 1
+    end
+
+    i = 1
     for action, keybind in addon.pairs(private.db.global.settings.keybinds) do
         options.keybinds.args[action] = {
             order = i,
