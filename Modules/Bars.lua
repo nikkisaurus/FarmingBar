@@ -85,11 +85,15 @@ function private:GetBarName(barID)
 end
 
 function private:RemoveBar(barID)
+    private:ReleaseAllBars()
+    tremove(private.db.profile.bars, barID)
+    private:InitializeBars()
+end
+
+function private:ReleaseAllBars()
     for _, bar in pairs(private.bars) do
         bar:Release()
     end
-    tremove(private.db.profile.bars, barID)
-    private:InitializeBars()
 end
 
 function private:DuplicateBar(barID)

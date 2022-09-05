@@ -544,4 +544,8 @@ function private:InitializeDatabase()
     }, true)
 
     addon:SetEnabledState(private.db.profile.enabled)
+
+    private.db.RegisterCallback(addon, "OnProfileChanged", "OnProfile_")
+    private.db.RegisterCallback(addon, "OnProfileCopied", "OnProfile_")
+    private.db.RegisterCallback(addon, "OnProfileReset", "OnProfile_")
 end

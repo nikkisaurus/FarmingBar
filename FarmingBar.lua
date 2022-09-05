@@ -29,6 +29,11 @@ function private:StartDebug()
     private:LoadOptions("objectiveTemplates", "New")
 end
 
+function addon:OnProfile_(...)
+    private:ReleaseAllBars()
+    private:InitializeBars()
+end
+
 private.anchorPoints = {
     ROW = {
         button1 = {
