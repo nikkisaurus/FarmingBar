@@ -26,7 +26,7 @@ end
 
 --[[ StartDebug ]]
 function private:StartDebug()
-    private:LoadOptions("settings", "alerts")
+    private:LoadOptions("objectiveTemplates", "New")
 end
 
 private.anchorPoints = {
@@ -234,6 +234,8 @@ private.CONST = {
 
     MIN_MAX_XOFFSET = 24,
     MIN_MAX_YOFFSET = 24,
+
+    MAX_ICONS = 500,
 
     TOOLTIP_DESC = { 1, 1, 1 },
     TOOLTIP_KEYVALUE = { 1, 0.82, 0, 1, 1, 1 },

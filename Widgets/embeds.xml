@@ -5,4 +5,5 @@
     <Include file="LuaEditor.lua"/>
     <Include file="LuaEditBox.lua"/>
     <Include file="Icon.lua"/>
+    <Include file="IconSelector.lua"/>
 </Ui>

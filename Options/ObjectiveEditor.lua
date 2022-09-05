@@ -2,6 +2,7 @@ local addonName, private = ...
 local addon = LibStub("AceAddon-3.0"):GetAddon(addonName)
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 local ACD = LibStub("AceConfigDialog-3.0")
+local AceGUI = LibStub("AceGUI-3.0")
 
 function private:CloseObjectiveEditor()
     ACD:Close(addonName .. "ObjectiveEditor")
@@ -106,8 +107,34 @@ function private:GetObjectiveEditorGeneralContent(widget)
             end,
         },
 
-        mute = {
+        iconSelector = {
             order = 4,
+            type = "execute",
+            name = L["Choose"],
+            hidden = function()
+                return buttonDB.icon.type == "AUTO"
+            end,
+            func = function()
+                private:CloseObjectiveEditor()
+                local selectorFrame = AceGUI:Create("FarmingBar_IconSelector")
+                selectorFrame:LoadObjective(widget)
+                selectorFrame:SetCallback("OnClose", function(self, _, iconID)
+                    if iconID then
+                        widget:SetDBValue("icon", "id", iconID)
+                        private:RefreshObjectiveEditor(widget)
+                        widget:SetIconTextures()
+                    end
+                    self:Release()
+                    private:LoadObjectiveEditor(widget)
+                end)
+                selectorFrame:SetCallback("OnHide", function()
+                    private:LoadObjectiveEditor(widget)
+                end)
+            end,
+        },
+
+        mute = {
+            order = 5,
             type = "toggle",
             name = L["Mute"],
             desc = L["Mute alerts for this button."],
@@ -120,7 +147,7 @@ function private:GetObjectiveEditorGeneralContent(widget)
         },
 
         onUse = {
-            order = 5,
+            order = 6,
             type = "group",
             inline = true,
             name = L["OnUse"],
@@ -207,7 +234,7 @@ function private:GetObjectiveEditorGeneralContent(widget)
         },
 
         clear = {
-            order = 6,
+            order = 7,
             type = "execute",
             name = L["Clear"],
             func = function()
@@ -220,7 +247,7 @@ function private:GetObjectiveEditorGeneralContent(widget)
         },
 
         saveTemplate = {
-            order = 7,
+            order = 8,
             type = "execute",
             name = L["Save as Template"],
             func = function()
@@ -231,7 +258,7 @@ function private:GetObjectiveEditorGeneralContent(widget)
         },
 
         applyTemplate = {
-            order = 8,
+            order = 9,
             type = "select",
             style = "dropdown",
             name = L["Apply Objective Template"],

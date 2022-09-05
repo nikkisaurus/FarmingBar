@@ -134,8 +134,30 @@ function private:GetObjectiveTemplateOptions(objectiveTemplateName)
                     end,
                 },
 
-                mute = {
+                iconSelector = {
                     order = 4,
+                    type = "execute",
+                    name = L["Choose"],
+                    hidden = function()
+                        return objectiveTemplate.icon.type == "AUTO"
+                    end,
+                    func = function()
+                        private:CloseOptions()
+                        local selectorFrame = AceGUI:Create("FarmingBar_IconSelector")
+                        selectorFrame:LoadObjective(objectiveTemplateName)
+                        selectorFrame:SetCallback("OnClose", function(self, _, iconID)
+                            if iconID then
+                                private.db.global.objectives[objectiveTemplateName].icon.id = iconID
+                                private:RefreshOptions()
+                            end
+                            self:Release()
+                            private:LoadOptions()
+                        end)
+                    end,
+                },
+
+                mute = {
+                    order = 5,
                     type = "toggle",
                     name = L["Mute"],
                     desc = L["Mute alerts for this objective."],
@@ -148,7 +170,7 @@ function private:GetObjectiveTemplateOptions(objectiveTemplateName)
                 },
 
                 onUse = {
-                    order = 5,
+                    order = 6,
                     type = "group",
                     inline = true,
                     name = L["OnUse"],
@@ -233,21 +255,21 @@ function private:GetObjectiveTemplateOptions(objectiveTemplateName)
                 },
 
                 duplicateObjectiveTemplate = {
-                    order = 6,
+                    order = 7,
                     type = "execute",
                     name = L["Duplicate"],
                     func = funcs.duplicateObjectiveTemplate,
                 },
 
                 exportObjectiveTemplate = {
-                    order = 7,
+                    order = 8,
                     type = "execute",
                     name = L["Export"],
                     func = funcs.exportObjectiveTemplate,
                 },
 
                 deleteObjectiveTemplate = {
-                    order = 8,
+                    order = 9,
                     type = "execute",
                     name = DELETE,
                     func = funcs.deleteObjectiveTemplate,
