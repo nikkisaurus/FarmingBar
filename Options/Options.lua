@@ -138,7 +138,7 @@ function private:RegisterDataObject()
             elseif button == "LeftButton" and IsControlKeyDown() then
                 private:LoadOptions("help")
             elseif button == "LeftButton" then
-                private:LoadOptions("config")
+                private:LoadOptions(addon:IsEnabled() and "config" or "settings")
             elseif button == "RightButton" then
                 private:LoadOptions("settings")
             end

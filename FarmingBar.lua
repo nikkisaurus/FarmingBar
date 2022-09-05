@@ -28,7 +28,7 @@ end
 
 function addon:OnDisable()
     private:ReleaseAllBars()
-    private:RefreshOptions()
+    private:RefreshOptions("settings")
     addon:UnregisterEvent("CURSOR_CHANGED")
     addon:UnregisterEvent("SPELL_UPDATE_COOLDOWN")
 end
