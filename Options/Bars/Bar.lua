@@ -69,6 +69,148 @@ function private:GetBarOptions(barID)
                     desc = L["Objectives on this bar cannot use materials already accounted for by another objective on the same bar."],
                     descStyle = "inline",
                 },
+                manage = {
+                    order = 3,
+                    type = "group",
+                    inline = true,
+                    name = L["Manage"],
+                    args = {
+                        templates = {
+                            order = 1,
+                            type = "group",
+                            inline = true,
+                            name = L["Templates"],
+                            args = {
+                                saveAsTemplate = {
+                                    order = 1,
+                                    type = "input",
+                                    name = L["Save as Template"],
+                                    set = function(_, value)
+                                        if value and value ~= "" and not private:TemplateExists(value) then
+                                            private:SaveTemplate(barID, value)
+                                            private:RefreshOptions()
+                                        end
+                                    end,
+                                    validate = function(_, value)
+                                        if not value or value == "" then
+                                            return L["Invalid template name."]
+                                        elseif private:TemplateExists(value) then
+                                            return L["Template exists."]
+                                        else
+                                            return true
+                                        end
+                                    end,
+                                },
+                                builtInTemplates = {
+                                    order = 2,
+                                    disabled = true,
+                                    type = "select",
+                                    style = "dropdown",
+                                    name = L["Templates"],
+                                    disabled = function()
+                                        return addon.tcount(private.templates) == 0
+                                    end,
+                                    values = function()
+                                        local values = {}
+
+                                        for templateName, _ in pairs(private.templates) do
+                                            values[templateName] = templateName
+                                        end
+
+                                        return values
+                                    end,
+                                    set = function(_, value)
+                                        private:LoadTemplate(barID, value)
+                                    end,
+                                },
+                                userTemplates = {
+                                    order = 2,
+                                    type = "select",
+                                    style = "dropdown",
+                                    name = L["User Templates"],
+                                    disabled = function()
+                                        return addon.tcount(private.db.global.templates) == 0
+                                    end,
+                                    values = function()
+                                        local values = {}
+
+                                        for templateName, _ in pairs(private.db.global.templates) do
+                                            values[templateName] = templateName
+                                        end
+
+                                        return values
+                                    end,
+                                    set = function(_, value)
+                                        private.db.profile.bars[barID].buttons =
+                                            addon.CloneTable(private.db.global.templates[value])
+                                        private.bars[barID]:UpdateButtons()
+                                    end,
+                                },
+                                clear = {
+                                    order = 3,
+                                    type = "execute",
+                                    name = L["Clear Bar"],
+                                    func = function()
+                                        for _, button in pairs(private.bars[barID]:GetButtons()) do
+                                            if not button:IsEmpty() then
+                                                button:Clear()
+                                            end
+                                        end
+                                    end,
+                                    confirm = function()
+                                        return format(L["Are you sure you want to clear Bar %d?"], barID)
+                                    end,
+                                },
+                            },
+                        },
+                        copyFrom = {
+                            order = 2,
+                            type = "select",
+                            style = "dropdown",
+                            name = L["Copy From"],
+                            values = function()
+                                local values = {}
+
+                                for BarID, _ in addon.pairs(private.db.profile.bars) do
+                                    if BarID ~= barID then
+                                        values[BarID] = private:GetBarName(BarID)
+                                    end
+                                end
+
+                                return values
+                            end,
+                            disabled = function()
+                                return addon.tcount(private.db.profile.bars) == 1
+                            end,
+                            set = function(_, value)
+                                private:CopyBarDB(value, barID)
+                                private:RefreshOptions()
+                                private.bars[barID]:UpdateButtonTextures()
+                            end,
+                        },
+                        duplicateBar = {
+                            order = 3,
+                            type = "execute",
+                            name = L["Duplicate"],
+                            func = function()
+                                local newBarID = private:DuplicateBar(barID)
+                                private:RefreshOptions("config", "bar" .. newBarID, "general")
+                            end,
+                        },
+                        removeBar = {
+                            order = 3,
+                            type = "execute",
+                            name = REMOVE,
+                            confirm = function()
+                                return format(L["Are you sure you want to remove Bar %d?"], barID)
+                            end,
+                            func = function()
+                                private:RemoveBar(barID)
+                                private:RefreshOptions("config")
+                            end,
+                        },
+                    },
+                },
             },
         },
         appearance = {
@@ -312,132 +454,6 @@ function private:GetBarOptions(barID)
                             name = L["Button Size"],
                         },
                     },
-                },
-            },
-        },
-        manage = {
-            order = 4,
-            type = "group",
-            name = L["Manage"],
-            args = {
-                templates = {
-                    order = 1,
-                    type = "group",
-                    inline = true,
-                    name = L["Templates"],
-                    args = {
-                        saveAsTemplate = {
-                            order = 1,
-                            type = "input",
-                            name = L["Save as Template"],
-                            set = function(_, value)
-                                if value and value ~= "" and not private:TemplateExists(value) then
-                                    private:SaveTemplate(barID, value)
-                                    private:RefreshOptions()
-                                end
-                            end,
-                            validate = function(_, value)
-                                if not value or value == "" then
-                                    return L["Invalid template name."]
-                                elseif private:TemplateExists(value) then
-                                    return L["Template exists."]
-                                else
-                                    return true
-                                end
-                            end,
-                        },
-                        builtInTemplates = {
-                            order = 2,
-                            disabled = true,
-                            type = "select",
-                            style = "dropdown",
-                            name = L["Templates"],
-                            disabled = function()
-                                return addon.tcount(private.templates) == 0
-                            end,
-                            values = function()
-                                local values = {}
-
-                                for templateName, _ in pairs(private.templates) do
-                                    values[templateName] = templateName
-                                end
-
-                                return values
-                            end,
-                            set = function(_, value)
-                                private:LoadTemplate(barID, value)
-                            end,
-                        },
-                        userTemplates = {
-                            order = 2,
-                            type = "select",
-                            style = "dropdown",
-                            name = L["User Templates"],
-                            disabled = function()
-                                return addon.tcount(private.db.global.templates) == 0
-                            end,
-                            values = function()
-                                local values = {}
-
-                                for templateName, _ in pairs(private.db.global.templates) do
-                                    values[templateName] = templateName
-                                end
-
-                                return values
-                            end,
-                            set = function(_, value)
-                                private.db.profile.bars[barID].buttons =
-                                    addon.CloneTable(private.db.global.templates[value])
-                                private.bars[barID]:UpdateButtons()
-                            end,
-                        },
-                    },
-                },
-                copyFrom = {
-                    order = 2,
-                    type = "select",
-                    style = "dropdown",
-                    name = L["Copy From"],
-                    values = function()
-                        local values = {}
-
-                        for BarID, _ in addon.pairs(private.db.profile.bars) do
-                            if BarID ~= barID then
-                                values[BarID] = private:GetBarName(BarID)
-                            end
-                        end
-
-                        return values
-                    end,
-                    disabled = function()
-                        return addon.tcount(private.db.profile.bars) == 1
-                    end,
-                    set = function(_, value)
-                        private:CopyBarDB(value, barID)
-                        private:RefreshOptions()
-                        private.bars[barID]:UpdateButtonTextures()
-                    end,
-                },
-                duplicateBar = {
-                    order = 3,
-                    type = "execute",
-                    name = L["Duplicate"],
-                    func = function()
-                        local newBarID = private:DuplicateBar(barID)
-                        private:RefreshOptions("config", "bar" .. newBarID, "general")
-                    end,
-                },
-                removeBar = {
-                    order = 3,
-                    type = "execute",
-                    name = REMOVE,
-                    confirm = function()
-                        return format(L["Are you sure you want to remove Bar \"%d\"?"], barID)
-                    end,
-                    func = function()
-                        private:RemoveBar(barID)
-                        private:RefreshOptions("config")
-                    end,
                 },
             },
         },
