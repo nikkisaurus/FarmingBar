@@ -11,6 +11,7 @@ private.defaults = {
             barProgress = false,
             completedObjectives = true,
             muteAll = false,
+            chatFrame = "ChatFrame1",
         },
         label = "",
         limitMats = false,
@@ -526,6 +527,7 @@ function private:InitializeDatabase()
         },
         profile = {
             enabled = true,
+            chatFrame = "ChatFrame1",
             bars = {
                 private.defaults.bar,
             },

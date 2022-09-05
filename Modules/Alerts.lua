@@ -46,7 +46,7 @@ function private:Alert(widget, ...)
             end
 
             if alertSettings.chat then
-                addon:Print(alert)
+                addon:Print(_G[barDB.alerts.chatFrame], alert)
             end
 
             if alertSettings.screen then
@@ -100,7 +100,7 @@ function private:AlertBar(widget, progress, total, newProgress, newTotal)
             end
 
             if alertSettings.chat then
-                addon:Print(alert)
+                addon:Print(_G[barDB.alerts.chatFrame], alert)
             end
 
             if alertSettings.screen then

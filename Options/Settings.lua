@@ -267,6 +267,7 @@ function private:GetSettingsOptions()
                         },
                     },
                 },
+
                 button = {
                     order = 2,
                     type = "group",
@@ -386,6 +387,7 @@ function private:GetSettingsOptions()
                         },
                     },
                 },
+
                 sounds = {
                     order = 3,
                     type = "group",
@@ -447,6 +449,52 @@ function private:GetSettingsOptions()
                             values = AceGUIWidgetLSMlists.sound,
                         },
                     },
+                },
+
+                note = {
+                    order = 4,
+                    type = "description",
+                    name = L["* The following settings are profile specific."],
+                },
+
+                chatFrame = {
+                    order = 5,
+                    type = "select",
+                    name = "* " .. L["Chat Frame"],
+                    desc = L["Default chat frame for chat alerts."],
+                    get = function()
+                        return private.db.profile.chatFrame
+                    end,
+                    set = function(_, value)
+                        private.db.profile.chatFrame = value
+                    end,
+                    values = function()
+                        local values = {}
+                        for i = 1, NUM_CHAT_WINDOWS do
+                            local name = GetChatWindowInfo(i)
+                            if name ~= "" then
+                                values["ChatFrame" .. i] = name
+                            end
+                        end
+                        return values
+                    end,
+                    sorting = function()
+                        local values = {}
+                        local sorting = {}
+
+                        for i = 1, NUM_CHAT_WINDOWS do
+                            local name = GetChatWindowInfo(i)
+                            if name ~= "" then
+                                values[name] = "ChatFrame" .. i
+                            end
+                        end
+
+                        for name, frame in addon.pairs(values) do
+                            tinsert(sorting, frame)
+                        end
+
+                        return sorting
+                    end,
                 },
             },
         },

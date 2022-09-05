@@ -49,6 +49,7 @@ function private:AddBar()
 
     barDB.buttonSize = styleDB.buttons.size
     barDB.buttonPadding = styleDB.buttons.padding
+    barDB.alerts.chatFrame = private.db.profile.chatFrame
 
     for _, fontstring in pairs(barDB.fontstrings) do
         fontstring.face = styleDB.font.face

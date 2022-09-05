@@ -325,6 +325,9 @@ L[" to enable/disable the active profile."] = true
 L[" for help."] = true
 L[" to configure settings."] = true
 L[" to configure bars."] = true
+L["Chat Frame"] = true
+L["Default chat frame for chat alerts."] = true
+L["Chat frame for chat alerts from this bar."] = true
 
 L.CustomCodeWarning =
     "This objective may contain custom Lua code. Make sure you only import objectives from trusted sources."

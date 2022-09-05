@@ -59,6 +59,39 @@ function private:GetBarOptions(barID)
                             desc = L["Mute all alerts on this bar."],
                             descStyle = "inline",
                         },
+                        chatFrame = {
+                            order = 4,
+                            type = "select",
+                            name = L["Chat Frame"],
+                            desc = L["Chat frame for chat alerts from this bar."],
+                            values = function()
+                                local values = {}
+                                for i = 1, NUM_CHAT_WINDOWS do
+                                    local name = GetChatWindowInfo(i)
+                                    if name ~= "" then
+                                        values["ChatFrame" .. i] = name
+                                    end
+                                end
+                                return values
+                            end,
+                            sorting = function()
+                                local values = {}
+                                local sorting = {}
+
+                                for i = 1, NUM_CHAT_WINDOWS do
+                                    local name = GetChatWindowInfo(i)
+                                    if name ~= "" then
+                                        values[name] = "ChatFrame" .. i
+                                    end
+                                end
+
+                                for name, frame in addon.pairs(values) do
+                                    tinsert(sorting, frame)
+                                end
+
+                                return sorting
+                            end,
+                        },
                     },
                 },
                 limitMats = {
