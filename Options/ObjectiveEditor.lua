@@ -106,8 +106,21 @@ function private:GetObjectiveEditorGeneralContent(widget)
             end,
         },
 
-        onUse = {
+        mute = {
             order = 4,
+            type = "toggle",
+            name = L["Mute"],
+            desc = L["Mute alerts for this button."],
+            get = function(info)
+                return buttonDB.mute
+            end,
+            set = function(info, value)
+                widget:SetDBValue("mute", value)
+            end,
+        },
+
+        onUse = {
+            order = 5,
             type = "group",
             inline = true,
             name = L["OnUse"],
@@ -192,8 +205,9 @@ function private:GetObjectiveEditorGeneralContent(widget)
                 },
             },
         },
+
         clear = {
-            order = 5,
+            order = 6,
             type = "execute",
             name = L["Clear"],
             func = function()
@@ -204,8 +218,9 @@ function private:GetObjectiveEditorGeneralContent(widget)
                 return L["Are you sure you want to clear this button?"]
             end,
         },
+
         saveTemplate = {
-            order = 6,
+            order = 7,
             type = "execute",
             name = L["Save as Template"],
             func = function()
@@ -214,8 +229,9 @@ function private:GetObjectiveEditorGeneralContent(widget)
                 private:LoadOptions("objectiveTemplates", newObjectiveTitle)
             end,
         },
+
         applyTemplate = {
-            order = 7,
+            order = 8,
             type = "select",
             style = "dropdown",
             name = L["Apply Objective Template"],

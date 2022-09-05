@@ -312,6 +312,9 @@ L["Bar Complete"] = true
 L["Objective Set"] = true
 L["Objective Cleared"] = true
 L["Objective Complete"] = true
+L["Mute"] = true
+L["Mute alerts for this objective."] = true
+L["Mute alerts for this button."] = true
 
 L.CustomCodeWarning =
     "This objective may contain custom Lua code. Make sure you only import objectives from trusted sources."

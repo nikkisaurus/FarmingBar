@@ -134,8 +134,21 @@ function private:GetObjectiveTemplateOptions(objectiveTemplateName)
                     end,
                 },
 
-                onUse = {
+                mute = {
                     order = 4,
+                    type = "toggle",
+                    name = L["Mute"],
+                    desc = L["Mute alerts for this objective."],
+                    get = function(info)
+                        return objectiveTemplate.mute
+                    end,
+                    set = function(info, value)
+                        private.db.global.objectives[objectiveTemplateName].mute = value
+                    end,
+                },
+
+                onUse = {
+                    order = 5,
                     type = "group",
                     inline = true,
                     name = L["OnUse"],
@@ -220,21 +233,21 @@ function private:GetObjectiveTemplateOptions(objectiveTemplateName)
                 },
 
                 duplicateObjectiveTemplate = {
-                    order = 5,
+                    order = 6,
                     type = "execute",
                     name = L["Duplicate"],
                     func = funcs.duplicateObjectiveTemplate,
                 },
 
                 exportObjectiveTemplate = {
-                    order = 6,
+                    order = 7,
                     type = "execute",
                     name = L["Export"],
                     func = funcs.exportObjectiveTemplate,
                 },
 
                 deleteObjectiveTemplate = {
-                    order = 7,
+                    order = 8,
                     type = "execute",
                     name = DELETE,
                     func = funcs.deleteObjectiveTemplate,

@@ -6,7 +6,7 @@ local LSM = LibStub("LibSharedMedia-3.0")
 function private:Alert(widget, ...)
     local barDB, buttonDB = widget:GetDB()
 
-    if not widget.frame:IsVisible() or barDB.alerts.muteAll then
+    if not widget.frame:IsVisible() or barDB.alerts.muteAll or buttonDB.mute then
         return
     end
 

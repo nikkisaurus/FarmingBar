@@ -277,6 +277,7 @@ private.defaults = {
     objective = {
         title = "",
         objective = 0,
+        mute = false,
         icon = {
             type = "AUTO", -- "AUTO", "FALLBACK"
             id = 134400,
