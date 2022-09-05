@@ -26,7 +26,7 @@ end
 
 --[[ StartDebug ]]
 function private:StartDebug()
-    private:LoadOptions("settings", "general")
+    private:LoadOptions("objectiveTemplates")
 end
 
 private.anchorPoints = {

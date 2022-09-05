@@ -79,6 +79,7 @@ L.showObjectiveEditor = "Show Objective Editor"
 L.showQuickAddEditBox = "Show Quick-Add EditBox"
 L.showQuickAddCurrencyEditBox = "Show Quick-Add Currency EditBox"
 L.onUse = "On Use"
+L["On Use Macrotext"] = true
 L["Hints"] = true
 L["Layout"] = true
 L["Tooltips"] = true

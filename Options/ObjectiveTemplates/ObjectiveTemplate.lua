@@ -1,6 +1,8 @@
 local addonName, private = ...
 local addon = LibStub("AceAddon-3.0"):GetAddon(addonName)
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
+local AceGUI = LibStub("AceGUI-3.0")
+local LibDeflate = LibStub("LibDeflate")
 
 function private:GetObjectiveTemplateOptions(objectiveTemplateName)
     local objectiveTemplate = private.db.global.objectives[objectiveTemplateName]
@@ -21,7 +23,32 @@ function private:GetObjectiveTemplateOptions(objectiveTemplateName)
         end,
 
         exportObjectiveTemplate = function()
-            print("Export")
+            -- Create frame
+            local exportFrame = AceGUI:Create("Frame")
+            exportFrame:SetTitle(L.addonName .. " - " .. L["Export Frame"])
+            exportFrame:SetLayout("Fill")
+            exportFrame:SetCallback("OnClose", function(self)
+                self:Release()
+                private:LoadOptions()
+            end)
+
+            local editbox = AceGUI:Create("MultiLineEditBox")
+            editbox:SetLabel(objectiveTitle)
+            editbox:DisableButton(true)
+            exportFrame:AddChild(editbox)
+
+            -- Hide options
+            private:CloseOptions()
+            exportFrame:Show()
+
+            -- Populate editbox
+            local serialized = LibStub("LibSerialize"):Serialize(objectiveTemplate)
+            local compressed = LibDeflate:CompressDeflate(serialized)
+            local encoded = LibDeflate:EncodeForPrint(compressed)
+
+            editbox:SetText(encoded)
+            editbox:SetFocus()
+            editbox:HighlightText()
         end,
 
         icon = function(_, mouseButton)
