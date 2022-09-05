@@ -348,6 +348,9 @@ function private:GetBarOptions(barID)
                             dialogControl = "FarmingBar_LuaEditBox",
                             multiline = true,
                             name = L["Hidden"],
+                            get = function(info)
+                                return barDB[info[#info]]
+                            end,
                             set = function(info, value)
                                 private.db.profile.bars[barID][info[#info]] = value
                                 private.bars[barID]:SetHidden()

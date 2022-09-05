@@ -1,44 +1,37 @@
 local addonName, private = ...
 local addon = LibStub("AceAddon-3.0"):GetAddon(addonName)
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
+local LSM = LibStub("LibSharedMedia-3.0")
 
-function private:Alert(Type, widget, oldCount)
+function private:Alert(widget, ...)
     local barDB, buttonDB = widget:GetDB()
-    local barID, buttonID = widget:GetID()
-    local bar = private.bars[barID]
 
-    if not widget.frame:IsVisible() or barDB.alerts.muteAll or (Type == "bar" and not barDB.alerts.barProgress) then
+    if not widget.frame:IsVisible() or barDB.alerts.muteAll then
         return
     end
 
-    local alertSettings = private.db.global.settings.alerts[Type]
+    local alertSettings = private.db.global.settings.alerts.button
     local alert = alertSettings.format
-    local alertInfo = {}
 
-    if buttonID then
-        if widget:IsEmpty() then
-            return
-        end
+    local oldCount = ...
+    local newCount = private:GetObjectiveWidgetCount(widget)
 
-        local newCount = private:GetObjectiveWidgetCount(widget)
-
-        alertInfo = {
-            title = buttonDB.title,
-            oldCount = oldCount,
-            newCount = newCount,
-            difference = newCount - oldCount,
-            lost = oldCount > newCount,
-            gained = oldCount < newCount,
-            objective = buttonDB.objective,
-            objectiveMet = newCount >= buttonDB.objective,
-            newObjectiveMet = oldCount < buttonDB.objective,
-            reps = newCount >= buttonDB.objective and floor(newCount / buttonDB.objective) or 0,
-        }
-
-        if oldCount == newCount then
-            return
-        end
+    if oldCount == newCount then
+        return
     end
+
+    local alertInfo = {
+        title = buttonDB.title,
+        oldCount = oldCount,
+        newCount = newCount,
+        difference = newCount - oldCount,
+        lost = oldCount > newCount,
+        gained = oldCount < newCount,
+        objective = buttonDB.objective,
+        objectiveMet = newCount >= buttonDB.objective,
+        newObjectiveMet = newCount >= buttonDB.objective and oldCount < buttonDB.objective,
+        reps = newCount >= buttonDB.objective and floor(newCount / buttonDB.objective) or 0,
+    }
 
     local func = loadstring("return " .. alert)
     if type(func) == "function" then
@@ -61,7 +54,65 @@ function private:Alert(Type, widget, oldCount)
             end
 
             if alertSettings.sound then
-                -- play sound
+                if alertInfo.newObjectiveMet then
+                    PlaySoundFile(LSM:Fetch(LSM.MediaType.SOUND, private.db.global.settings.alerts.sounds.objectiveMet))
+                elseif alertInfo.gained then
+                    PlaySoundFile(LSM:Fetch(LSM.MediaType.SOUND, private.db.global.settings.alerts.sounds.progress))
+                end
+            end
+
+            if barDB.alerts.barProgress then
+                widget:GetBar():SetProgress()
+            end
+        end
+    end
+end
+
+function private:AlertBar(widget, progress, total, newProgress, newTotal)
+    local alertSettings = private.db.global.settings.alerts.bar
+    local alert = alertSettings.format
+    local barDB = widget:GetDB()
+    local barID = widget:GetID()
+
+    local alertInfo = {
+        barID = barID,
+        label = barDB.label,
+        lost = progress > newProgress,
+        gained = progress < newProgress,
+        difference = newProgress - progress,
+        oldProgress = progress,
+        oldTotal = total,
+        newProgress = newProgress,
+        newTotal = newTotal,
+        newComplete = progress < newTotal and newProgress == newTotal,
+    }
+
+    local func = loadstring("return " .. alert)
+    if type(func) == "function" then
+        local success, userFunc = pcall(func)
+        if success and type(userFunc) == "function" then
+            alert = userFunc(alertInfo, private.lists.alertColors)
+            if
+                not barDB.alerts.completedObjectives and alertInfo.objectiveMet and not alertInfo.newObjectiveMet
+                or not alert
+            then
+                return
+            end
+
+            if alertSettings.chat then
+                addon:Print(alert)
+            end
+
+            if alertSettings.screen then
+                UIErrorsFrame:AddMessage(alert, 1, 1, 1)
+            end
+
+            if alertSettings.sound then
+                if alertInfo.newComplete then
+                    PlaySoundFile(LSM:Fetch(LSM.MediaType.SOUND, private.db.global.settings.alerts.sounds.barComplete))
+                elseif alertInfo.gained then
+                    PlaySoundFile(LSM:Fetch(LSM.MediaType.SOUND, private.db.global.settings.alerts.sounds.barProgress))
+                end
             end
         end
     end

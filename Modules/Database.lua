@@ -374,7 +374,35 @@ end]],
     
 end]],
 
-    barAlert = [[function(alertInfo)
+    barAlert = [[function(info, colors)
+    -- info.barID
+    -- info.label
+    -- info.lost
+    -- info.gained
+    -- info.difference
+    -- info.oldProgress
+    -- info.oldTotal
+    -- info.newProgress
+    -- info.newTotal
+    -- info.newComplete
+    -- colors.red = "|cffff0000"
+    -- colors.green = "|cff00ff00"
+    -- colors.gold = "|cffffcc00"
+    
+    
+    if info.newComplete then -- Bar complete
+        
+        return format("%sBar complete!|r Bar %d %s%d/%d|r", colors.green, info.barID, colors.green, info.newProgress, info.newTotal)
+        
+    else     -- Bar progress   
+        
+        local diffColor = info.gained and colors.green or colors.red -- Color the sign green if gained or red if lost
+        local sign = info.gained and "+" or "" -- no need to use "-" because it's included in info.difference
+        
+        return format("%sBar progress:|r Bar %d %s%d/%d|r (%s%s%d|r)", colors.gold, info.barID, colors.gold, info.newProgress, info.newTotal, diffColor, sign, info.difference)
+        
+    end
+    
     
 end]],
 }
@@ -411,6 +439,26 @@ function private:InitializeDatabase()
                         chat = true,
                         screen = true,
                         format = private.defaults.barAlert,
+                        alertInfo = {
+                            barID = 1,
+                            label = "Test Bar",
+                            lost = false,
+                            gained = true,
+                            difference = 1,
+                            oldProgress = 0,
+                            oldTotal = 1,
+                            newProgress = 1,
+                            newTotal = 1,
+                            newComplete = true,
+                        },
+                    },
+                    sounds = {
+                        objectiveSet = L["Quest Activate"],
+                        objectiveCleared = L["Quest Failed"],
+                        barProgress = L["Auction Open"],
+                        barComplete = L["Auction Close"],
+                        progress = L["Loot Coin"],
+                        objectiveMet = L["Quest Complete"],
                     },
                 },
                 tooltips = {

@@ -367,6 +367,7 @@ local function Constructor()
     editBox:SetScript("OnTextChanged", OnTextChanged)
     editBox:SetScript("OnTextSet", OnTextSet)
     editBox:SetScript("OnEditFocusGained", OnEditFocusGained)
+
     -- Add syntax highlighting
     addon.indent.enable(editBox, _, 4)
 

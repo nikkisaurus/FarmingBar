@@ -291,6 +291,27 @@ L["Are you sure you want to reset button alerts format?"] = true
 L["Alert formats must be a function returning a string value."] = true
 L["Format"] = true
 L["Preview"] = true
+L["Auction Open"] = true
+L["Auction Close"] = true
+L["Loot Coin"] = true
+L["Quest Activate"] = true
+L["Quest Complete"] = true
+L["Quest Failed"] = true
+L["UI EmptySlot White"] = true
+L["UI ActionButton Border"] = true
+L["Icon Border Thick"] = true
+L["Icon Border"] = true
+L["Solid Border"] = true
+L["Chat"] = true
+L["Screen"] = true
+L["Sound"] = true
+L["Sounds"] = true
+L["Farming Progress"] = true
+L["Bar Progress"] = true
+L["Bar Complete"] = true
+L["Objective Set"] = true
+L["Objective Cleared"] = true
+L["Objective Complete"] = true
 
 L.CustomCodeWarning =
     "This objective may contain custom Lua code. Make sure you only import objectives from trusted sources."

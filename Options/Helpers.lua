@@ -24,11 +24,21 @@ end
 
 --[[ Media ]]
 function private:RegisterMedia()
-    LSM:Register(LSM.MediaType.BACKGROUND, "UI EmptySlot White", [[INTERFACE\BUTTONS\UI-EMPTYSLOT-WHITE]])
-    LSM:Register(LSM.MediaType.BACKGROUND, "UI ActionButton Border", [[Interface\Buttons\UI-ActionButton-Border]])
-    LSM:Register(LSM.MediaType.BACKGROUND, "Icon Border Thick", [[Interface\AddOns\FarmingBar\Media\IconBorderThick]])
-    LSM:Register(LSM.MediaType.BACKGROUND, "Icon Border", [[Interface\AddOns\FarmingBar\Media\IconBorder]])
-    LSM:Register(LSM.MediaType.BORDER, "Solid Border", [[Interface\AddOns\FarmingBar\Media\SolidBorder]])
+    LSM:Register(LSM.MediaType.BACKGROUND, L["UI EmptySlot White"], [[INTERFACE\BUTTONS\UI-EMPTYSLOT-WHITE]])
+    LSM:Register(LSM.MediaType.BACKGROUND, L["UI ActionButton Border"], [[Interface\Buttons\UI-ActionButton-Border]])
+    LSM:Register(
+        LSM.MediaType.BACKGROUND,
+        L["Icon Border Thick"],
+        [[Interface\AddOns\FarmingBar\Media\IconBorderThick]]
+    )
+    LSM:Register(LSM.MediaType.BACKGROUND, L["Icon Border"], [[Interface\AddOns\FarmingBar\Media\IconBorder]])
+    LSM:Register(LSM.MediaType.BORDER, L["Solid Border"], [[Interface\AddOns\FarmingBar\Media\SolidBorder]])
+    LSM:Register(LSM.MediaType.SOUND, L["Auction Open"], 567482) -- id:5274
+    LSM:Register(LSM.MediaType.SOUND, L["Auction Close"], 567499) -- id:5275
+    LSM:Register(LSM.MediaType.SOUND, L["Loot Coin"], 567428) -- id:120
+    LSM:Register(LSM.MediaType.SOUND, L["Quest Activate"], 567400) -- id:618
+    LSM:Register(LSM.MediaType.SOUND, L["Quest Complete"], 567439) -- id:878
+    LSM:Register(LSM.MediaType.SOUND, L["Quest Failed"], 567459) -- id:846
 end
 
 --[[ Widgets ]]

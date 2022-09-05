@@ -122,6 +122,18 @@ local methods = {
         widget.frame:GetScript(event)(...)
     end,
 
+    GetProgress = function(widget)
+        local complete, total = 0, 0
+        for _, button in pairs(widget:GetButtons()) do
+            local _, buttonDB = button:GetDB()
+            if not button:IsEmpty() and buttonDB.objective > 0 then
+                complete = complete + (button:IsObjectiveComplete() and 1 or 0)
+                total = total + 1
+            end
+        end
+        return complete, total
+    end,
+
     --[[ Updates ]]
     SetEvents = function(widget)
         local barDB = widget:GetDB()
@@ -143,6 +155,21 @@ local methods = {
         widget:SetScale()
         widget:UpdateFontstrings()
         widget:SetEvents()
+    end,
+
+    SetProgress = function(widget)
+        local progress = widget:GetUserData("progress")
+        local total = widget:GetUserData("total")
+
+        local newProgress, newTotal = widget:GetProgress()
+
+        if total == newTotal and progress ~= newProgress and newProgress <= newTotal then
+            -- An objective has been lost or met
+            private:AlertBar(widget, progress, total, newProgress, newTotal)
+        end
+
+        widget:SetUserData("progress", newProgress)
+        widget:SetUserData("total", newTotal)
     end,
 
     Clear = function(widget)

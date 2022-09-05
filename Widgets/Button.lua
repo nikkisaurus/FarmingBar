@@ -121,6 +121,16 @@ local editboxScripts = {
             local objective = input or 0
             private.db.profile.bars[barID].buttons[buttonID].objective = objective
             widget:SetObjective()
+
+            if private.db.global.settings.alerts.button.sound then
+                if objective == 0 then
+                    PlaySoundFile(
+                        LSM:Fetch(LSM.MediaType.SOUND, private.db.global.settings.alerts.sounds.objectiveCleared)
+                    )
+                else
+                    PlaySoundFile(LSM:Fetch(LSM.MediaType.SOUND, private.db.global.settings.alerts.sounds.objectiveSet))
+                end
+            end
         elseif editType == "item" then
             local itemID = private:ValidateItem(input)
             if itemID then
@@ -193,7 +203,11 @@ local scripts = {
 
     OnEvent = function(frame, ...)
         local widget = frame.obj
-        private:Alert("button", widget, tonumber(widget.count:GetText()))
+        local barDB = widget:GetDB()
+        if not widget:IsEmpty() then
+            local oldCount = tonumber(widget.count:GetText())
+            private:Alert(widget, oldCount)
+        end
         widget:SetCount()
     end,
 
@@ -324,6 +338,16 @@ local methods = {
     IsEmpty = function(widget)
         local _, buttonDB = widget:GetDB()
         return not buttonDB, buttonDB
+    end,
+
+    IsObjectiveComplete = function(widget)
+        if widget:IsEmpty() then
+            return
+        end
+
+        local barDB, buttonDB = widget:GetDB()
+
+        return private:GetObjectiveWidgetCount(widget) >= buttonDB.objective
     end,
 
     SetAlpha = function(widget, alpha)

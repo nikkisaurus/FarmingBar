@@ -147,29 +147,115 @@ function private:GetSettingsOptions()
             order = 2,
             type = "group",
             name = L["Alerts"],
-            get = function(info)
-                return private.db.global.settings.alerts[info[#info]].format
-            end,
-            set = function(info, value)
-                private.db.global.settings.alerts[info[#info]].format = value
-            end,
             args = {
                 bar = {
                     order = 1,
                     type = "group",
                     inline = true,
                     name = L["Bar"],
+                    get = function(info)
+                        return private.db.global.settings.alerts.bar[info[#info]]
+                    end,
+                    set = function(info, value)
+                        private.db.global.settings.alerts.bar[info[#info]] = value
+                    end,
                     args = {
-                        bar = {
+                        chat = {
+                            order = 1,
+                            type = "toggle",
+                            name = L["Chat"],
+                        },
+                        screen = {
                             order = 2,
+                            type = "toggle",
+                            name = L["Screen"],
+                        },
+                        sound = {
+                            order = 3,
+                            type = "toggle",
+                            name = L["Sound"],
+                        },
+                        preview = {
+                            order = 4,
+                            type = "group",
+                            inline = true,
+                            name = L["Preview"],
+                            get = function(info)
+                                return tostring(private.db.global.settings.alerts.bar.alertInfo[info[#info]])
+                            end,
+                            set = function(info, value)
+                                value = tonumber(value) or 0
+                                value = value >= 0 and value or 0
+
+                                local alertInfo = private.db.global.settings.alerts.bar.alertInfo
+                                private.db.global.settings.alerts.bar.alertInfo[info[#info]] = value
+                                private.db.global.settings.alerts.bar.alertInfo.lost = alertInfo.oldProgress
+                                    > alertInfo.newProgress
+                                private.db.global.settings.alerts.bar.alertInfo.gained = alertInfo.oldProgress
+                                    < alertInfo.newProgress
+                                private.db.global.settings.alerts.bar.alertInfo.difference = alertInfo.newProgress
+                                    - alertInfo.oldProgress
+                                private.db.global.settings.alerts.bar.alertInfo.oldTotal = alertInfo.newTotal
+                                private.db.global.settings.alerts.bar.alertInfo.newComplete = alertInfo.oldProgress
+                                        < alertInfo.newTotal
+                                    and alertInfo.newProgress == alertInfo.newTotal
+                            end,
+                            args = {
+                                preview = {
+                                    order = 1,
+                                    type = "description",
+                                    name = function()
+                                        local alert = private:PreviewAlert("bar")
+                                        local alertInfo = private.db.global.settings.alerts.bar.alertInfo
+                                        return alertInfo.oldProgress ~= alertInfo.newProgress
+                                                and alertInfo.newTotal > 0
+                                                and alertInfo.newProgress <= alertInfo.newTotal
+                                                and alert
+                                            or ""
+                                    end,
+                                },
+                                oldProgress = {
+                                    order = 2,
+                                    type = "input",
+                                    name = "info.oldProgress",
+                                },
+                                newProgress = {
+                                    order = 3,
+                                    type = "input",
+                                    name = "info.newProgress",
+                                },
+                                newTotal = {
+                                    order = 4,
+                                    type = "input",
+                                    name = "info.newTotal",
+                                },
+                            },
+                        },
+                        bar = {
+                            order = 5,
                             type = "input",
                             multiline = true,
                             dialogControl = "FarmingBar_LuaEditBox",
                             width = "full",
                             name = L["Format"],
+                            get = function(info)
+                                return private.status.luaeditbox
+                                    or private.db.global.settings.alerts[info[#info]].format
+                            end,
+                            set = function(info, value)
+                                private.db.global.settings.alerts[info[#info]].format = value
+                            end,
+                            validate = function(_, value)
+                                return private:ValidateAlert("bar", value)
+                                    or L["Alert formats must be a function returning a string value."]
+                            end,
+                            arg = function(value)
+                                return private:ValidateAlert("bar", value)
+                                    or L["Alert formats must be a function returning a string value."]
+                            end,
                         },
                         resetBar = {
-                            order = 3,
+                            order = 6,
                             type = "execute",
                             name = L["Reset Bar Alert"],
                             func = function()
@@ -186,9 +272,30 @@ function private:GetSettingsOptions()
                     type = "group",
                     inline = true,
                     name = L["Button"],
+                    get = function(info)
+                        return private.db.global.settings.alerts.button[info[#info]]
+                    end,
+                    set = function(info, value)
+                        private.db.global.settings.alerts.button[info[#info]] = value
+                    end,
                     args = {
-                        alertInfo = {
+                        chat = {
                             order = 1,
+                            type = "toggle",
+                            name = L["Chat"],
+                        },
+                        screen = {
+                            order = 2,
+                            type = "toggle",
+                            name = L["Screen"],
+                        },
+                        sound = {
+                            order = 3,
+                            type = "toggle",
+                            name = L["Sound"],
+                        },
+                        preview = {
+                            order = 4,
                             type = "group",
                             inline = true,
                             name = L["Preview"],
@@ -196,8 +303,11 @@ function private:GetSettingsOptions()
                                 return tostring(private.db.global.settings.alerts.button.alertInfo[info[#info]])
                             end,
                             set = function(info, value)
+                                value = tonumber(value) or 0
+                                value = value >= 0 and value or 0
+
                                 local alertInfo = private.db.global.settings.alerts.button.alertInfo
-                                private.db.global.settings.alerts.button.alertInfo[info[#info]] = tonumber(value)
+                                private.db.global.settings.alerts.button.alertInfo[info[#info]] = value
                                 private.db.global.settings.alerts.button.alertInfo.difference = alertInfo.newCount
                                     - alertInfo.oldCount
                                 private.db.global.settings.alerts.button.alertInfo.lost = alertInfo.oldCount
@@ -212,10 +322,6 @@ function private:GetSettingsOptions()
                                             >= alertInfo.objective
                                         and floor(alertInfo.newCount / alertInfo.objective)
                                     or 0
-                            end,
-                            validate = function(_, value)
-                                value = tonumber(value)
-                                return value and value >= 0
                             end,
                             args = {
                                 preview = {
@@ -245,12 +351,19 @@ function private:GetSettingsOptions()
                             },
                         },
                         button = {
-                            order = 2,
+                            order = 5,
                             type = "input",
                             multiline = true,
                             dialogControl = "FarmingBar_LuaEditBox",
                             width = "full",
                             name = L["Format"],
+                            get = function(info)
+                                return private.status.luaeditbox
+                                    or private.db.global.settings.alerts[info[#info]].format
+                            end,
+                            set = function(info, value)
+                                private.db.global.settings.alerts[info[#info]].format = value
+                            end,
                             validate = function(_, value)
                                 return private:ValidateAlert("button", value)
                                     or L["Alert formats must be a function returning a string value."]
@@ -261,7 +374,7 @@ function private:GetSettingsOptions()
                             end,
                         },
                         resetButton = {
-                            order = 3,
+                            order = 6,
                             type = "execute",
                             name = L["Reset Button Alert"],
                             func = function()
@@ -270,6 +383,68 @@ function private:GetSettingsOptions()
                             confirm = function()
                                 return L["Are you sure you want to reset button alerts format?"]
                             end,
+                        },
+                    },
+                },
+                sounds = {
+                    order = 3,
+                    type = "group",
+                    inline = true,
+                    name = L["Sounds"],
+                    get = function(info)
+                        return private.db.global.settings.alerts.sounds[info[#info]]
+                    end,
+                    set = function(info, value)
+                        private.db.global.settings.alerts.sounds[info[#info]] = value
+                    end,
+                    args = {
+                        progress = {
+                            order = 1,
+                            type = "select",
+                            style = "dropdown",
+                            name = L["Farming Progress"],
+                            control = "LSM30_Sound",
+                            values = AceGUIWidgetLSMlists.sound,
+                        },
+                        objectiveSet = {
+                            order = 2,
+                            type = "select",
+                            style = "dropdown",
+                            name = L["Objective Set"],
+                            control = "LSM30_Sound",
+                            values = AceGUIWidgetLSMlists.sound,
+                        },
+                        objectiveMet = {
+                            order = 3,
+                            type = "select",
+                            style = "dropdown",
+                            name = L["Objective Complete"],
+                            control = "LSM30_Sound",
+                            values = AceGUIWidgetLSMlists.sound,
+                        },
+                        objectiveCleared = {
+                            order = 4,
+                            type = "select",
+                            style = "dropdown",
+                            name = L["Objective Cleared"],
+                            control = "LSM30_Sound",
+                            values = AceGUIWidgetLSMlists.sound,
+                        },
+                        barProgress = {
+                            order = 5,
+                            type = "select",
+                            style = "dropdown",
+                            name = L["Bar Progress"],
+                            control = "LSM30_Sound",
+                            values = AceGUIWidgetLSMlists.sound,
+                        },
+                        barComplete = {
+                            order = 6,
+                            type = "select",
+                            style = "dropdown",
+                            name = L["Bar Complete"],
+                            control = "LSM30_Sound",
+                            values = AceGUIWidgetLSMlists.sound,
                         },
                     },
                 },
