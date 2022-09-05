@@ -56,27 +56,50 @@ local anchorScripts = {
 
     --[[ Tooltip ]]
     OnEnter = function(anchor, ...)
-        private:LoadTooltip(anchor, "ANCHOR_CURSOR", 0, 0, {
-            {
-                line = L["Bar"] .. " " .. anchor.obj:GetID(),
-                color = private.CONST.TOOLTIP_TITLE,
-            },
-            {
-                line = L["Control+click to lock and hide anchor."],
-                color = private.CONST.TOOLTIP_DESC,
-            },
-            {
-                line = L["Right-click to configure this bar."],
-                color = private.CONST.TOOLTIP_DESC,
-            },
-        })
+        if not addon:IsHooked(anchor, "OnUpdate") then
+            addon:HookScript(anchor, "OnUpdate", function()
+                local showHints = private.db.global.settings.tooltips.showHints
+                local showDetails = private.db.global.settings.tooltips.showDetails
+                    or _G["Is" .. private.db.global.settings.tooltips.modifier .. "KeyDown"]()
+                private:LoadTooltip(anchor, "ANCHOR_CURSOR", 0, 0, {
+                    {
+                        line = L["Bar"] .. " " .. anchor.obj:GetID(),
+                        color = private.CONST.TOOLTIP_TITLE,
+                    },
+                    {
+                        double = true,
+                        k = L["Expand Tooltip"],
+                        v = L[private.db.global.settings.tooltips.modifier],
+                        hidden = showDetails,
+                    },
+                    {
+                        color = private.CONST.TOOLTIP_TITLE,
+                        line = L["Hints"],
+                        hidden = not showDetails and not showHints,
+                    },
+                    {
+                        line = addon.ColorFontString("Control+click", "TORQUISEBLUE") .. L[" to lock and hide anchor."],
+                        color = private.CONST.TOOLTIP_DESC,
+                        hidden = not showDetails and not showHints,
+                    },
+                    {
+                        line = addon.ColorFontString("Right-click", "TORQUISEBLUE") .. L[" to configure this bar."],
+                        color = private.CONST.TOOLTIP_DESC,
+                        hidden = not showDetails and not showHints,
+                    },
+                })
+            end)
+        end
 
         local widget = anchor.obj
         widget:CallScript("OnEnter", widget.frame, ...)
     end,
 
     OnLeave = function(anchor, ...)
-        private:ClearTooltip()
+        if addon:IsHooked(anchor, "OnUpdate") then
+            addon:Unhook(anchor, "OnUpdate")
+        end
+
         local widget = anchor.obj
         widget:CallScript("OnLeave", widget.frame, ...)
     end,

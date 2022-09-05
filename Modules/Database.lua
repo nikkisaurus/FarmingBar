@@ -80,7 +80,7 @@ private.defaults = {
                 bgFile = {
                     bgFile = "Blizzard Tooltip",
                     edgeFile = "Blizzard Tooltip",
-                    edgeSize = 12,
+                    edgeSize = 10,
                     tile = true,
                     tileEdge = true,
                     tileSize = 2,
@@ -93,7 +93,7 @@ private.defaults = {
             buttonTextures = {
                 backdrop = {
                     texture = "UI EmptySlot White",
-                    texCoords = { 9 / 64, 53 / 64, 10 / 64, 53 / 64 },
+                    texCoords = { 9 / 64, 54 / 64, 10 / 64, 53 / 64 },
                     color = { 1, 1, 1, 0.66 },
                     blendMode = "BLEND",
                     insets = { left = 0, right = 0, top = 0, bottom = 0 },
@@ -123,7 +123,7 @@ private.defaults = {
                 },
                 normal = {
                     texture = "UI EmptySlot White",
-                    texCoords = { 9 / 64, 52 / 64, 10 / 64, 53 / 64 },
+                    texCoords = { 9 / 64, 54 / 64, 10 / 64, 53 / 64 },
                     color = { 1, 1, 1, 0.66 },
                     blendMode = "BLEND",
                     insets = { left = 0, right = 0, top = 0, bottom = 0 },
@@ -143,7 +143,7 @@ private.defaults = {
                 },
                 highlight = {
                     texture = "UI EmptySlot White",
-                    texCoords = { 9 / 64, 53 / 64, 10 / 64, 53 / 64 },
+                    texCoords = { 9 / 64, 54 / 64, 10 / 64, 53 / 64 },
                     color = { 1, 1, 1, 1 },
                     blendMode = "ADD",
                     insets = { left = 0, right = 0, top = 0, bottom = 0 },
@@ -153,7 +153,7 @@ private.defaults = {
                 },
                 pushed = {
                     texture = "UI EmptySlot White",
-                    texCoords = { 9 / 64, 53 / 64, 10 / 64, 53 / 64 },
+                    texCoords = { 9 / 64, 54 / 64, 10 / 64, 53 / 64 },
                     color = { 1, 1, 1, 0.66 },
                     blendMode = "BLEND",
                     insets = { left = 0, right = 0, top = 0, bottom = 0 },

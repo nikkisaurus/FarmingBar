@@ -24,7 +24,7 @@ L["Button is already assigned an ID: %d:%d"] = true
 L["barDB.hidden must return a \"function\""] = true
 
 --[[ Tooltips ]]
-L["Control+click to lock and hide anchor."] = true
+L[" to lock and hide anchor."] = true
 
 local function GetCommandString(actionInfo)
     -- Ctrl+right-click
@@ -177,7 +177,7 @@ L["Skin"] = true
 L["Mouseover"] = true
 L["Show this bar only on mouseover."] = true
 L["Backdrop"] = true
-L["Right-click to configure this bar."] = true
+L[" to configure this bar."] = true
 L["Background"] = true
 L["Enable"] = true
 L["Save as Template"] = true
