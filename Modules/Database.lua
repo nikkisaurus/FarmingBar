@@ -329,6 +329,54 @@ end]],
         includeGuildBank = {},
         altIDs = {},
     },
+
+    buttonAlert = [[function(info, colors)
+    -- info.title
+    -- info.oldCount
+    -- info.newCount
+    -- info.difference
+    -- info.lost
+    -- info.gained
+    -- info.objective
+    -- info.objectiveMet
+    -- info.newObjectiveMet
+    -- info.reps
+    -- colors.red = "|cffff0000"
+    -- colors.green = "|cff00ff00"
+    -- colors.gold = "|cffffcc00"
+    
+    
+    -- Button progress helpers
+    local diffColor = info.gained and colors.green or colors.red -- Color the sign green if gained or red if lost
+    local sign = info.gained and "+" or "" -- no need to use "-" because it's included in info.difference
+    
+    
+    if info.objective > 0  then -- Button progress, with objective
+        
+        if  info.newObjectiveMet and info.objectiveMet then -- Button progress, objective met
+            
+            return format("%sObjective complete!|r %s %s%d/%d|r x%d", colors.green,  info.title, colors.green, info.newCount, info.objective, info.reps)
+            
+        else -- Button progress, objective not met or already met
+            
+            local countColor = info.objectiveMet and colors.green or colors.gold
+            
+            return format("%sFarming update:|r %s %s%d/%d|r (%s%s%d|r)", colors.gold,  info.title, countColor,  info.newCount, info.objective, diffColor, sign, info.difference) 
+            
+        end
+        
+    else -- Button progress, without objective
+        
+        return format("%sFarming update:|r %s %sx%d|r (%s%s%d|r)", colors.gold, info.title, colors.gold,  info.newCount, diffColor, sign, info.difference)
+        
+    end
+    
+    
+end]],
+
+    barAlert = [[function(alertInfo)
+    
+end]],
 }
 
 function private:InitializeDatabase()
@@ -339,6 +387,32 @@ function private:InitializeDatabase()
                 enabled = true,
             },
             settings = {
+                alerts = {
+                    button = {
+                        sound = true,
+                        chat = true,
+                        screen = true,
+                        format = private.defaults.buttonAlert,
+                        alertInfo = {
+                            title = "Test Alert",
+                            oldCount = 0,
+                            newCount = 3,
+                            difference = 0,
+                            lost = false,
+                            gained = true,
+                            objective = 20,
+                            objectiveMet = false,
+                            newObjectiveMet = true,
+                            reps = 0,
+                        },
+                    },
+                    bar = {
+                        sound = true,
+                        chat = true,
+                        screen = true,
+                        format = private.defaults.barAlert,
+                    },
+                },
                 tooltips = {
                     useGameTooltip = false,
                     modifier = "Alt",

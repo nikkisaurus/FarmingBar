@@ -192,7 +192,9 @@ local scripts = {
     end,
 
     OnEvent = function(frame, ...)
-        frame.obj:SetCount()
+        local widget = frame.obj
+        private:Alert("button", widget, tonumber(widget.count:GetText()))
+        widget:SetCount()
     end,
 
     OnLeave = function(frame, ...)

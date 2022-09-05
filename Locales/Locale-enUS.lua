@@ -282,6 +282,15 @@ L["Alts"] = true
 L["Guild Bank"] = true
 L["Include"] = true
 L["Tracker Key"] = true
+L["Button Alert"] = true
+L["Reset Button Alert"] = true
+L["Bar Alert"] = true
+L["Reset Bar Alert"] = true
+L["Are you sure you want to reset bar alerts format?"] = true
+L["Are you sure you want to reset button alerts format?"] = true
+L["Alert formats must be a function returning a string value."] = true
+L["Format"] = true
+L["Preview"] = true
 
 L.CustomCodeWarning =
     "This objective may contain custom Lua code. Make sure you only import objectives from trusted sources."

@@ -147,7 +147,133 @@ function private:GetSettingsOptions()
             order = 2,
             type = "group",
             name = L["Alerts"],
-            args = {},
+            get = function(info)
+                return private.db.global.settings.alerts[info[#info]].format
+            end,
+            set = function(info, value)
+                private.db.global.settings.alerts[info[#info]].format = value
+            end,
+            args = {
+                bar = {
+                    order = 1,
+                    type = "group",
+                    inline = true,
+                    name = L["Bar"],
+                    args = {
+                        bar = {
+                            order = 2,
+                            type = "input",
+                            multiline = true,
+                            dialogControl = "FarmingBar_LuaEditBox",
+                            width = "full",
+                            name = L["Format"],
+                        },
+                        resetBar = {
+                            order = 3,
+                            type = "execute",
+                            name = L["Reset Bar Alert"],
+                            func = function()
+                                private.db.global.settings.alerts.bar.format = private.defaults.barAlert
+                            end,
+                            confirm = function()
+                                return L["Are you sure you want to reset bar alerts format?"]
+                            end,
+                        },
+                    },
+                },
+                button = {
+                    order = 2,
+                    type = "group",
+                    inline = true,
+                    name = L["Button"],
+                    args = {
+                        alertInfo = {
+                            order = 1,
+                            type = "group",
+                            inline = true,
+                            name = L["Preview"],
+                            get = function(info)
+                                return tostring(private.db.global.settings.alerts.button.alertInfo[info[#info]])
+                            end,
+                            set = function(info, value)
+                                local alertInfo = private.db.global.settings.alerts.button.alertInfo
+                                private.db.global.settings.alerts.button.alertInfo[info[#info]] = tonumber(value)
+                                private.db.global.settings.alerts.button.alertInfo.difference = alertInfo.newCount
+                                    - alertInfo.oldCount
+                                private.db.global.settings.alerts.button.alertInfo.lost = alertInfo.oldCount
+                                    > alertInfo.newCount
+                                private.db.global.settings.alerts.button.alertInfo.gained = alertInfo.oldCount
+                                    < alertInfo.newCount
+                                private.db.global.settings.alerts.button.alertInfo.objectiveMet = alertInfo.newCount
+                                    >= alertInfo.objective
+                                private.db.global.settings.alerts.button.alertInfo.newObjectiveMet = alertInfo.oldCount
+                                    < alertInfo.objective
+                                private.db.global.settings.alerts.button.alertInfo.reps = alertInfo.newCount
+                                            >= alertInfo.objective
+                                        and floor(alertInfo.newCount / alertInfo.objective)
+                                    or 0
+                            end,
+                            validate = function(_, value)
+                                value = tonumber(value)
+                                return value and value >= 0
+                            end,
+                            args = {
+                                preview = {
+                                    order = 1,
+                                    type = "description",
+                                    name = function()
+                                        local alert = private:PreviewAlert("button")
+                                        local alertInfo = private.db.global.settings.alerts.button.alertInfo
+                                        return alertInfo.oldCount ~= alertInfo.newCount and alert or ""
+                                    end,
+                                },
+                                oldCount = {
+                                    order = 2,
+                                    type = "input",
+                                    name = "info.oldCount",
+                                },
+                                newCount = {
+                                    order = 3,
+                                    type = "input",
+                                    name = "info.newCount",
+                                },
+                                objective = {
+                                    order = 4,
+                                    type = "input",
+                                    name = "info.objective",
+                                },
+                            },
+                        },
+                        button = {
+                            order = 2,
+                            type = "input",
+                            multiline = true,
+                            dialogControl = "FarmingBar_LuaEditBox",
+                            width = "full",
+                            name = L["Format"],
+                            validate = function(_, value)
+                                return private:ValidateAlert("button", value)
+                                    or L["Alert formats must be a function returning a string value."]
+                            end,
+                            arg = function(value)
+                                return private:ValidateAlert("button", value)
+                                    or L["Alert formats must be a function returning a string value."]
+                            end,
+                        },
+                        resetButton = {
+                            order = 3,
+                            type = "execute",
+                            name = L["Reset Button Alert"],
+                            func = function()
+                                private.db.global.settings.alerts.button.format = private.defaults.buttonAlert
+                            end,
+                            confirm = function()
+                                return L["Are you sure you want to reset button alerts format?"]
+                            end,
+                        },
+                    },
+                },
+            },
         },
         keybinds = {
             order = 3,

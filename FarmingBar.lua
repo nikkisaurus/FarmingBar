@@ -26,7 +26,7 @@ end
 
 --[[ StartDebug ]]
 function private:StartDebug()
-    private:LoadOptions("objectiveTemplates")
+    private:LoadOptions("settings", "alerts")
 end
 
 private.anchorPoints = {
@@ -310,6 +310,12 @@ private.lists = {
         OUTLINE = L["Outline"],
         THICKOUTLINE = L["Thick Outline"],
         NONE = NONE,
+    },
+
+    alertColors = {
+        red = LibStub("LibAddonUtils-1.0").ChatColors["RED"],
+        green = LibStub("LibAddonUtils-1.0").ChatColors["GREEN"],
+        gold = LibStub("LibAddonUtils-1.0").ChatColors["GOLD"],
     },
 }
 

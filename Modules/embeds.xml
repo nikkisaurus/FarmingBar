@@ -4,6 +4,7 @@
     <Include file="Tooltips/ButtonTooltip.lua"/>
     <Include file="Bars.lua"/>
     <Include file="DataStore.lua"/>
+    <Include file="Alerts.lua"/>
     <Include file="Counts.lua"/>
     <Include file="ObjectiveFrame.lua"/>
     <Include file="ObjectiveTemplates.lua"/>
