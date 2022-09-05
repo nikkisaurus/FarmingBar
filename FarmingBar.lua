@@ -8,13 +8,15 @@ function addon:OnInitialize()
     private:InitializeSlashCommands()
     private:InitializeOptions()
     private:RegisterMedia()
+    private:RegisterDataObject()
+    private:InitializeTooltip()
+    private:InitializeObjectiveFrame()
+    private:InitializeMasque()
+    private.bars = {}
 end
 
 --[[ OnEnable ]]
 function addon:OnEnable()
-    private:InitializeTooltip()
-    private:InitializeObjectiveFrame()
-    private:InitializeMasque()
     private:InitializeBars()
     addon:RegisterEvent("CURSOR_CHANGED")
     addon:RegisterEvent("SPELL_UPDATE_COOLDOWN")
@@ -24,14 +26,24 @@ function addon:OnEnable()
     end
 end
 
+function addon:OnDisable()
+    private:ReleaseAllBars()
+    private:RefreshOptions()
+    addon:UnregisterEvent("CURSOR_CHANGED")
+    addon:UnregisterEvent("SPELL_UPDATE_COOLDOWN")
+end
+
 --[[ StartDebug ]]
 function private:StartDebug()
     private:LoadOptions("objectiveTemplates", "New")
 end
 
 function addon:OnProfile_(...)
-    private:ReleaseAllBars()
-    private:InitializeBars()
+    addon:Disable()
+    addon:SetEnabledState(private.db.profile.enabled)
+    if addon:IsEnabled() then
+        addon:Enable()
+    end
 end
 
 private.anchorPoints = {

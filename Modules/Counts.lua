@@ -38,6 +38,10 @@ end
 function private:GetTrackerCount(trackerInfo)
     local DS = #private:GetMissingDataStoreModules() == 0
 
+    if not trackerInfo then
+        return 0
+    end
+
     local count = 0
     if trackerInfo.type == "ITEM" then
         if DS then

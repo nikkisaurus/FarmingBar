@@ -16,6 +16,9 @@ function private:GetOptions()
                 order = 1,
                 type = "group",
                 name = L["Config"],
+                disabled = function()
+                    return not addon:IsEnabled()
+                end,
                 args = private:GetConfigOptions(),
             },
             objectiveTemplates = {
@@ -90,4 +93,56 @@ end
 
 function private:SelectOptionsPath(...)
     ACD:SelectGroup(addonName, ...)
+end
+
+function private:RegisterDataObject()
+    local dataObject = LibStub("LibDataBroker-1.1"):NewDataObject(addonName, {
+        type = "launcher",
+        icon = [[INTERFACE/ADDONS/FARMINGBAR/MEDIA/FARMINGBAR-ICON]],
+        label = addonName,
+        OnTooltipShow = function(self)
+            self:AddLine(addonName)
+            self:AddLine(
+                addon:IsEnabled() and "Enabled" or "Disabled",
+                addon:IsEnabled() and 0 or 1,
+                addon:IsEnabled() and 1 or 0,
+                0,
+                1
+            )
+            self:AddLine(addon.ColorFontString("Left-click", "TORQUISEBLUE") .. L[" to configure bars."], 1, 1, 1, 1)
+            self:AddLine(
+                addon.ColorFontString("Right-click", "TORQUISEBLUE") .. L[" to configure settings."],
+                1,
+                1,
+                1,
+                1
+            )
+            self:AddLine(addon.ColorFontString("Control+left-click", "TORQUISEBLUE") .. L[" for help."], 1, 1, 1, 1)
+            self:AddLine(
+                addon.ColorFontString("Alt+right-click", "TORQUISEBLUE") .. L[" to enable/disable the active profile."],
+                1,
+                1,
+                1,
+                1
+            )
+        end,
+        OnClick = function(_, button)
+            if IsAltKeyDown() and button == "RightButton" then
+                if addon:IsEnabled() then
+                    private.db.profile.enabled = false
+                    addon:Disable()
+                else
+                    private.db.profile.enabled = true
+                    addon:Enable()
+                end
+            elseif button == "LeftButton" and IsControlKeyDown() then
+                private:LoadOptions("help")
+            elseif button == "LeftButton" then
+                private:LoadOptions("config")
+            elseif button == "RightButton" then
+                private:LoadOptions("settings")
+            end
+        end,
+    })
+    print(dataObject)
 end

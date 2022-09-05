@@ -6,16 +6,19 @@ local LSM = LibStub("LibSharedMedia-3.0")
 
 function addon:SPELL_UPDATE_COOLDOWN()
     for _, bar in pairs(private.bars) do
-        for _, button in pairs(bar:GetButtons()) do
-            local barDB, buttonDB = button:GetDB()
-            if not button:IsEmpty() and barDB.showCooldown and buttonDB.onUse.type == "ITEM" then
-                local startTime, duration, enable = GetItemCooldown(buttonDB.onUse.itemID)
-                button.cooldown:SetDrawEdge(barDB.fontstrings.Cooldown.showEdge)
-                button.cooldown:SetCooldown(startTime, duration)
-                button.cooldown:Show()
-            else
-                button.cooldown:SetCooldown(0, 0)
-                button.cooldown:Hide()
+        local buttons = bar:GetButtons()
+        if buttons then
+            for _, button in pairs(buttons) do
+                local barDB, buttonDB = button:GetDB()
+                if not button:IsEmpty() and barDB.showCooldown and buttonDB.onUse.type == "ITEM" then
+                    local startTime, duration, enable = GetItemCooldown(buttonDB.onUse.itemID)
+                    button.cooldown:SetDrawEdge(barDB.fontstrings.Cooldown.showEdge)
+                    button.cooldown:SetCooldown(startTime, duration)
+                    button.cooldown:Show()
+                else
+                    button.cooldown:SetCooldown(0, 0)
+                    button.cooldown:Hide()
+                end
             end
         end
     end
@@ -28,12 +31,13 @@ function addon:CURSOR_CHANGED()
 end
 
 function private:InitializeBars()
-    private.bars = {}
-
     for barID, barDB in pairs(private.db.profile.bars) do
         local bar = AceGUI:Create("FarmingBar_Bar")
         bar:SetID(barID)
         private.bars[barID] = bar
+        bar:SetCallback("OnRelease", function()
+            tremove(private.bars, barID)
+        end)
     end
 
     addon:SPELL_UPDATE_COOLDOWN()

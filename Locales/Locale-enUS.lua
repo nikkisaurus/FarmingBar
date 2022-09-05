@@ -321,6 +321,10 @@ L["Icon Selector"] = true
 L["Last"] = true
 L["Page"] = true
 L["Shift+left-click to choose this icon."] = true
+L[" to enable/disable the active profile."] = true
+L[" for help."] = true
+L[" to configure settings."] = true
+L[" to configure bars."] = true
 
 L.CustomCodeWarning =
     "This objective may contain custom Lua code. Make sure you only import objectives from trusted sources."

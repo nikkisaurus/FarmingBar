@@ -113,7 +113,11 @@ local methods = {
     end,
 
     OnRelease = function(widget)
-        for _, button in pairs(widget:GetButtons()) do
+        local buttons = widget:GetButtons()
+        if not buttons then
+            return
+        end
+        for _, button in pairs(buttons) do
             button:Release()
         end
     end,
