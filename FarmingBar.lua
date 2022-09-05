@@ -153,6 +153,7 @@ private.anchorPoints = {
             BOTTOMLEFT = {
                 anchor = "BOTTOMLEFT",
                 relAnchor = "BOTTOMRIGHT",
+                relAnchor = "BOTTOMRIGHT",
                 xCo = 1,
                 yCo = 0,
             },
@@ -238,6 +239,78 @@ private.CONST = {
     TOOLTIP_KEYVALUE = { 1, 0.82, 0, 1, 1, 1 },
     TOOLTIP_KEYVALUE2 = { 1, 1, 1, 1, 1, 1 },
     TOOLTIP_TITLE = { 1, 0.82, 0 },
+}
+
+private.lists = {
+    conditionType = {
+        ALL = L["All"],
+        ANY = L["Any"],
+        CUSTOM = L["Custom"],
+    },
+
+    iconType = {
+        AUTO = L["Auto"],
+        FALLBACK = L["Fallback"],
+    },
+
+    onUseType = {
+        ITEM = L["Item"],
+        NONE = L["None"],
+        MACROTEXT = L["Macrotext"],
+    },
+
+    newTrackerType = {
+        ITEM = L["Item"],
+        CURRENCY = L["Currency"],
+    },
+
+    modifiers = {
+        alt = L["Alt"],
+        ctrl = L["Control"],
+        shift = L["Shift"],
+    },
+
+    Modifiers = {
+        Alt = L["Alt"],
+        Control = L["Control"],
+        Shift = L["Shift"],
+    },
+
+    mouseButtons = {
+        LeftButton = L["Left Button"],
+        RightButton = L["Right Button"],
+    },
+
+    anchors = {
+        CENTER = "CENTER",
+        TOPLEFT = "TOPLEFT",
+        TOPRIGHT = "TOPRIGHT",
+        TOP = "TOP",
+        BOTTOMLEFT = "BOTTOMLEFT",
+        BOTTOMRIGHT = "BOTTOMRIGHT",
+        BOTTOM = "BOTTOM",
+        LEFT = "LEFT",
+        RIGHT = "RIGHT",
+    },
+
+    barAnchor = {
+        TOPLEFT = "TOPLEFT",
+        TOPRIGHT = "TOPRIGHT",
+        BOTTOMLEFT = "BOTTOMLEFT",
+        BOTTOMRIGHT = "BOTTOMRIGHT",
+    },
+
+    buttonGrowth = {
+        ROW = "ROW",
+        COL = "COL",
+    },
+
+    outlines = {
+        MONOCHROME = L["Monochrome"],
+        OUTLINE = L["Outline"],
+        THICKOUTLINE = L["Thick Outline"],
+        NONE = NONE,
+    },
 }
 
 --[[ Slash Commands ]]

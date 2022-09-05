@@ -2,47 +2,6 @@ local addonName, private = ...
 local addon = LibStub("AceAddon-3.0"):GetAddon(addonName)
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 
-private.lists = {
-    conditionType = {
-        ALL = L["All"],
-        ANY = L["Any"],
-        CUSTOM = L["Custom"],
-    },
-
-    iconType = {
-        AUTO = L["Auto"],
-        FALLBACK = L["Fallback"],
-    },
-
-    onUseType = {
-        ITEM = L["Item"],
-        NONE = L["None"],
-        MACROTEXT = L["Macrotext"],
-    },
-
-    newTrackerType = {
-        ITEM = L["Item"],
-        CURRENCY = L["Currency"],
-    },
-
-    modifiers = {
-        alt = L["Alt"],
-        ctrl = L["Control"],
-        shift = L["Shift"],
-    },
-
-    Modifiers = {
-        Alt = L["Alt"],
-        Control = L["Control"],
-        Shift = L["Shift"],
-    },
-
-    mouseButtons = {
-        LeftButton = L["Left Button"],
-        RightButton = L["Right Button"],
-    },
-}
-
 function private:GetObjectiveTemplateOptions(objectiveTemplateName)
     local objectiveTemplate = private.db.global.objectives[objectiveTemplateName]
 

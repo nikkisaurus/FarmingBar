@@ -25,6 +25,7 @@ function private:GetButtonTooltip(widget)
     local barDB, buttonDB = widget:GetDB()
     local barID, buttonID = widget:GetID()
     local showDetails = private.db.global.settings.tooltips.showDetails
+    local showHints = private.db.global.settings.tooltips.showHints
         or _G["Is" .. private.db.global.settings.tooltips.modifier .. "KeyDown"]()
     local lines = {}
 
@@ -184,7 +185,30 @@ function private:GetButtonTooltip(widget)
                 k = L["Button"],
                 v = strjoin(":", barID, buttonID),
             },
+            {
+                double = true,
+                k = L["Expand Tooltip"],
+                v = L[private.db.global.settings.tooltips.modifier],
+                hidden = showDetails,
+            },
         }
+
+        private:InsertPendingTooltipLines(lines, pendingLines)
+
+        pendingLines = {
+            {
+                color = private.CONST.TOOLTIP_TITLE,
+                line = L["Hints"],
+                hidden = not showDetails and not showHints,
+            },
+        }
+
+        for action, actionInfo in pairs(private.db.global.settings.keybinds) do
+            tinsert(pendingLines, {
+                line = L.ButtonHints(action, actionInfo),
+                hidden = not showDetails and not showHints,
+            })
+        end
 
         private:InsertPendingTooltipLines(lines, pendingLines)
     end

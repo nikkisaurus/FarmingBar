@@ -2,36 +2,6 @@ local addonName, private = ...
 local addon = LibStub("AceAddon-3.0"):GetAddon(addonName)
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 
-local lists = {
-    anchors = {
-        CENTER = "CENTER",
-        TOPLEFT = "TOPLEFT",
-        TOPRIGHT = "TOPRIGHT",
-        TOP = "TOP",
-        BOTTOMLEFT = "BOTTOMLEFT",
-        BOTTOMRIGHT = "BOTTOMRIGHT",
-        BOTTOM = "BOTTOM",
-        LEFT = "LEFT",
-        RIGHT = "RIGHT",
-    },
-    barAnchor = {
-        TOPLEFT = "TOPLEFT",
-        TOPRIGHT = "TOPRIGHT",
-        BOTTOMLEFT = "BOTTOMLEFT",
-        BOTTOMRIGHT = "BOTTOMRIGHT",
-    },
-    buttonGrowth = {
-        ROW = "ROW",
-        COL = "COL",
-    },
-    outlines = {
-        MONOCHROME = L["MONOCHROME"],
-        OUTLINE = L["OUTLINE"],
-        THICKOUTLINE = L["THICKOUTLINE"],
-        NONE = NONE,
-    },
-}
-
 function private:GetBarOptions(barID)
     local barDB = private.db.profile.bars[barID]
 
@@ -280,14 +250,14 @@ function private:GetBarOptions(barID)
                     type = "select",
                     style = "dropdown",
                     name = L["Bar Anchor"],
-                    values = lists.barAnchor,
+                    values = private.lists.barAnchor,
                 },
                 buttonGrowth = {
                     order = 2,
                     type = "select",
                     style = "dropdown",
                     name = L["Button Growth"],
-                    values = lists.buttonGrowth,
+                    values = private.lists.buttonGrowth,
                 },
                 movable = {
                     order = 3,
@@ -525,7 +495,7 @@ function private:GetBarOptions(barID)
                     type = "select",
                     style = "dropdown",
                     name = L["Font Outline"],
-                    values = lists.outlines,
+                    values = private.lists.outlines,
                 },
                 size = {
                     order = 6,
@@ -556,7 +526,7 @@ function private:GetBarOptions(barID)
                     type = "select",
                     style = "dropdown",
                     name = L["Anchor"],
-                    values = lists.anchors,
+                    values = private.lists.anchors,
                 },
                 x = {
                     order = 2,

@@ -38,8 +38,14 @@ function private:GetSettingsOptions()
                             name = L["Show Details"],
                             desc = L["Show all details on tooltips without holding the modifier key."],
                         },
-                        modifier = {
+                        showHints = {
                             order = 4,
+                            type = "toggle",
+                            name = L["Show Hints"],
+                            desc = L["Show hints on tooltips without holding the modifier key."],
+                        },
+                        modifier = {
+                            order = 5,
                             type = "select",
                             style = "dropdown",
                             name = L["Modifier"],
@@ -55,6 +61,86 @@ function private:GetSettingsOptions()
                     name = L["Slash Commands"],
                     args = {},
                 },
+                style = {
+                    order = 3,
+                    type = "group",
+                    inline = true,
+                    name = L["Style"],
+                    args = {
+                        note = {
+                            order = 1,
+                            type = "description",
+                            name = L["* The following settings are profile specific."],
+                        },
+                        font = {
+                            order = 1,
+                            type = "group",
+                            inline = true,
+                            name = L["Fonts"],
+                            get = function(info)
+                                return private.db.profile.style.font[info[#info]]
+                            end,
+                            set = function(info, value)
+                                private.db.profile.style.font[info[#info]] = value
+                            end,
+                            args = {
+                                face = {
+                                    order = 1,
+                                    type = "select",
+                                    style = "dropdown",
+                                    dialogControl = "LSM30_Font",
+                                    name = L["Font Face"],
+                                    values = AceGUIWidgetLSMlists.font,
+                                },
+                                outline = {
+                                    order = 2,
+                                    type = "select",
+                                    style = "dropdown",
+                                    name = L["Font Outline"],
+                                    values = private.lists.outlines,
+                                },
+                                size = {
+                                    order = 3,
+                                    type = "range",
+                                    min = private.CONST.MIN_FONT_SIZE,
+                                    max = private.CONST.MAX_FONT_SIZE,
+                                    step = 1,
+                                    name = L["Font Size"],
+                                },
+                            },
+                        },
+                        buttons = {
+                            order = 2,
+                            type = "group",
+                            inline = true,
+                            name = L["Buttons"],
+                            get = function(info)
+                                return private.db.profile.style.buttons[info[#info]]
+                            end,
+                            set = function(info, value)
+                                private.db.profile.style.buttons[info[#info]] = value
+                            end,
+                            args = {
+                                padding = {
+                                    order = 1,
+                                    type = "range",
+                                    min = private.CONST.MIN_PADDING,
+                                    max = private.CONST.MAX_PADDING,
+                                    step = 1,
+                                    name = L["Button Padding"],
+                                },
+                                size = {
+                                    order = 2,
+                                    type = "range",
+                                    min = private.CONST.MIN_BUTTON_SIZE,
+                                    max = private.CONST.MAX_BUTTON_SIZE,
+                                    step = 1,
+                                    name = L["Button Size"],
+                                },
+                            },
+                        },
+                    },
+                },
             },
         },
         alerts = {
@@ -67,12 +153,6 @@ function private:GetSettingsOptions()
             order = 3,
             type = "group",
             name = L["Keybinds"],
-            args = {},
-        },
-        profile = {
-            order = 4,
-            type = "group",
-            name = L["Profile"],
             args = {},
         },
     }

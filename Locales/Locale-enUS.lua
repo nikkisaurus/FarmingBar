@@ -26,8 +26,45 @@ L["barDB.hidden must return a \"function\""] = true
 --[[ Tooltips ]]
 L["Control+click to lock and hide anchor."] = true
 
+local function GetCommandString(actionInfo)
+    -- Ctrl+right-click
+    local mods = private:StringToTitle(gsub(actionInfo.modifier, "-", "+")) -- Put in title case and replace - with +
+    local button = gsub(actionInfo.button, "Button", "")
+    button = mods == "" and button or format("+%s", strlower(button))
+    local clickType = actionInfo.type and "drag" or "click"
+
+    return addon.ColorFontString(format("%s%s-%s", mods, button, clickType), "TORQUISEBLUE")
+end
+
+L.ButtonHints = function(action, actionInfo)
+    local actions = {
+        useItem = format("%s to use the display item or run the display macrotext.", GetCommandString(actionInfo)),
+        moveObjective = format("%s to move this objective.", GetCommandString(actionInfo)),
+        dragObjective = format("%s to move this objective.", GetCommandString(actionInfo)),
+        clearObjective = format("%s to clear this objective.", GetCommandString(actionInfo)),
+        showObjectiveEditBox = format("%s to show the objective editbox.", GetCommandString(actionInfo)),
+        showQuickAddEditBox = format("%s to show the quick add editbox.", GetCommandString(actionInfo)),
+        showQuickAddCurrencyEditBox = format(
+            "%s to show the currency quick add editbox.",
+            GetCommandString(actionInfo)
+        ),
+        showObjectiveEditor = format("%s to show the objective editor.", GetCommandString(actionInfo)),
+        moveObjectiveToBank = format(
+            "%s to move all items until the objective to your bank.",
+            GetCommandString(actionInfo)
+        ),
+        moveAllToBank = format("%s to move all items to your bank.", GetCommandString(actionInfo)),
+    }
+
+    return actions[action] or ""
+end
+
 --[[ Options ]]
 L["Left Button"] = true
+L["Expand Tooltip"] = true
+L["* The following settings are profile specific."] = true
+L["Show Hints"] = true
+L["Show hints on tooltips without holding the modifier key."] = true
 L["Right Button"] = true
 L["Alt"] = true
 L["Control"] = true
@@ -42,6 +79,7 @@ L.showObjectiveEditor = "Show Objective Editor"
 L.showQuickAddEditBox = "Show Quick-Add EditBox"
 L.showQuickAddCurrencyEditBox = "Show Quick-Add Currency EditBox"
 L.onUse = "On Use"
+L["Hints"] = true
 L["Layout"] = true
 L["Tooltips"] = true
 L["Show Hyperlink"] = true
@@ -54,6 +92,7 @@ L["Slash Commands"] = true
 L["Are you sure you want to remove %s from this objective?"] = true
 L["Are you sure you want to clear this button?"] = true
 L["BLEND"] = true
+L["Style"] = true
 L["Custom Condition: Syntax error"] = true
 L["Custom Condition: Invalid function"] = true
 L["Lua Editor"] = true
@@ -88,9 +127,9 @@ L["MOD"] = true
 L["Modifier"] = true
 L["Mouse Button"] = true
 L["Alerts"] = true
-L["MONOCHROME"] = true
-L["OUTLINE"] = true
-L["THICKOUTLINE"] = true
+L["Monochrome"] = true
+L["Outline"] = true
+L["Thick Outline"] = true
 L["Alt ID"] = true
 L["Are you sure you want to remove %s from the tracker \"%s\"?"] = true
 L["Remove Alt ID"] = true

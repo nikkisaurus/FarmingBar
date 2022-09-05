@@ -336,13 +336,14 @@ function private:InitializeDatabase()
         global = {
             debug = {
                 enabled = false,
-                -- enabled = true,
+                enabled = true,
             },
             settings = {
                 tooltips = {
                     useGameTooltip = false,
                     modifier = "Alt",
                     showDetails = false,
+                    showHints = true,
                     showLink = true,
                 },
                 commands = {
