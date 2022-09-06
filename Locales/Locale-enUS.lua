@@ -215,7 +215,7 @@ L["Display"] = true
 L["Are you sure you want to reset this texture?"] = true
 L["Confirm"] = true
 L["Are you sure you want to reset this bar's hidden function?"] = true
-L["Button textures may be controlled by Masque and must be disabled through its settings for these to be applied."] =
+L["Button textures may be controlled by Masque and must be disabled through its settings for skins to be applied."] =
     true
 L["Hidden must be a function returning a boolean value."] = true
 L["Objectives"] = true
@@ -328,6 +328,28 @@ L[" to configure bars."] = true
 L["Chat Frame"] = true
 L["Default chat frame for chat alerts."] = true
 L["Chat frame for chat alerts from this bar."] = true
+L["New Skin"] = true
+L["Remove Skin"] = true
+L["Are you sure you want to remove skin \"%s\"?"] = true
+L["Are you sure you want to overwrite \"%s\" with \"%s\"?"] = true
+L["Bar Backdrop"] = true
+L["Gloss"] = true
+L["Highlight"] = true
+L["Icon"] = true
+L["Icon Border"] = true
+L["Normal"] = true
+L["Pushed"] = true
+L["Shadow"] = true
+L["Disable"] = true
+L["Blend"] = true
+L["AlphaKey"] = true
+L["Add"] = true
+L["Mod"] = true
+L["Background"] = true
+L["Border"] = true
+L["Artwork"] = true
+L["Overlay"] = true
+L["Highlight"] = true
 
 L.CustomCodeWarning =
     "This objective may contain custom Lua code. Make sure you only import objectives from trusted sources."

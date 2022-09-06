@@ -732,7 +732,7 @@ local function GetManageContent(barID, barDB, content)
             private:RemoveBar(barID)
         end
 
-        private:ShowConfirmationDialog(format(L["Are you sure you want to remove Bar \"%d\"?"], barID), deleteFunc)
+        private:ShowConfirmationDialog(format(L["Are you sure you want to remove Bar %d?"], barID), deleteFunc)
     end)
 
     -- Add children

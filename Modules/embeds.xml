@@ -7,6 +7,7 @@
     <Include file="Alerts.lua"/>
     <Include file="Counts.lua"/>
     <Include file="ObjectiveFrame.lua"/>
+    <Include file="Skins.lua"/>
     <Include file="ObjectiveTemplates.lua"/>
     <Include file="Templates/BuiltInTemplates.lua"/>
     <Include file="Templates/Templates.lua"/>

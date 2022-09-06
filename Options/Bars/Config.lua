@@ -31,7 +31,7 @@ function private:GetConfigOptions()
                 return addon.tcount(private.db.profile.bars) == 0
             end,
             confirm = function(_, value)
-                return format(L["Are you sure you want to remove Bar \"%d\"?"], value)
+                return format(L["Are you sure you want to remove Bar %d?"], value)
             end,
             set = function(_, value)
                 private:RemoveBar(value)

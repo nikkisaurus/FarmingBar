@@ -447,7 +447,9 @@ local methods = {
         else
             local icon, color = private:GetObjectiveIcon(buttonDB)
             widget.icon:SetTexture(icon)
-            if not private.db.global.skins[barDB.skin].buttonTextures.iconBorder.hidden and color then
+
+            local skin = private.db.global.skins[barDB.skin]
+            if not skin.buttonTextures.iconBorder.hidden and color then
                 widget.iconBorder:Show()
                 widget.iconBorder:SetVertexColor(unpack(color))
             else
@@ -504,8 +506,9 @@ local methods = {
 
     SetTextures = function(widget)
         local barDB = widget:GetDB()
+        local skin = private.db.global.skins[barDB.skin]
 
-        for layerName, textureInfo in pairs(private.db.global.skins[barDB.skin].buttonTextures) do
+        for layerName, textureInfo in pairs(skin.buttonTextures) do
             local layer = widget[layerName]
             local texture = LSM:Fetch(LSM.MediaType.BACKGROUND, textureInfo.texture)
 

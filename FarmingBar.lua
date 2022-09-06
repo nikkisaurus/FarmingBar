@@ -35,7 +35,7 @@ end
 
 --[[ StartDebug ]]
 function private:StartDebug()
-    private:LoadOptions("objectiveTemplates", "New")
+    private:LoadOptions("skins", "test", "buttonTextures")
 end
 
 function addon:OnProfile_(...)
@@ -335,6 +335,33 @@ private.lists = {
         red = LibStub("LibAddonUtils-1.0").ChatColors["RED"],
         green = LibStub("LibAddonUtils-1.0").ChatColors["GREEN"],
         gold = LibStub("LibAddonUtils-1.0").ChatColors["GOLD"],
+    },
+
+    buttonTextures = {
+        backdrop = L["Backdrop"],
+        gloss = L["Gloss"],
+        highlight = L["Highlight"],
+        icon = L["Icon"],
+        iconBorder = L["Icon Border"],
+        normal = L["Normal"],
+        pushed = L["Pushed"],
+        shadow = L["Shadow"],
+    },
+
+    blendModes = {
+        DISABLE = L["Disable"],
+        BLEND = L["Blend"],
+        ALPHAKEY = L["AlphaKey"],
+        ADD = L["Add"],
+        MOD = L["Mod"],
+    },
+
+    drawLayers = {
+        BACKGROUND = "Background",
+        BORDER = "Border",
+        ARTWORK = "Artwork",
+        OVERLAY = "Overlay",
+        HIGHLIGHT = "Highlight",
     },
 }
 

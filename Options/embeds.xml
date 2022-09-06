@@ -7,4 +7,6 @@
     <Include file="Bars/Config.lua"/>
     <Include file="ObjectiveEditor.lua"/>
     <Include file="Settings.lua"/>
+    <Include file="Skins/Skins.lua"/>
+    <Include file="Skins/Skin.lua"/>
 </Ui>

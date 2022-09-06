@@ -38,8 +38,7 @@ function private:GetOptions()
                 order = 4,
                 type = "group",
                 name = L["Skins"],
-                -- args = private:GetSkinsOptions(),
-                args = {},
+                args = private:GetSkinsOptions(),
             },
             profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(private.db),
             help = {
@@ -79,6 +78,9 @@ end
 function private:RefreshOptions(...)
     if self.options.args.config then
         self.options.args.config.args = self:GetConfigOptions()
+    end
+    if self.options.args.skins then
+        self.options.args.skins.args = self:GetSkinsOptions()
     end
     if self.options.args.objectiveTemplates then
         self.options.args.objectiveTemplates.args = self:GetObjectiveTemplatesOptions()

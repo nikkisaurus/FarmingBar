@@ -460,7 +460,7 @@ function private:GetSettingsOptions()
                 chatFrame = {
                     order = 5,
                     type = "select",
-                    name = "* " .. L["Chat Frame"],
+                    name = L["Chat Frame"],
                     desc = L["Default chat frame for chat alerts."],
                     get = function()
                         return private.db.profile.chatFrame
