@@ -351,6 +351,15 @@ L["Artwork"] = true
 L["Overlay"] = true
 L["Highlight"] = true
 
+L.InvalidCraftSkillID = "Invalid tradeskill name."
+L.MissingCraftRecipeName = "Please specify a tradeskill recipe name"
+L.UnknownRecipe = function(recipeName)
+    return format(
+        "You do not know the recipe: %s. If you believe this is an error, please manually open your tradeskill and try again.",
+        recipeName
+    )
+end
+
 L.CustomCodeWarning =
     "This objective may contain custom Lua code. Make sure you only import objectives from trusted sources."
 L.GetTexCoordID = function(id)
