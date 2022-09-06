@@ -183,10 +183,10 @@ local methods = {
 
     UpdateButtons = function(widget)
         widget:UpdateButtonTextures()
+        widget:UpdateFontstrings()
         for _, button in pairs(widget:GetButtons()) do
             button:SetCount()
         end
-        widget:UpdateFontstrings()
     end,
 
     UpdateButtonTextures = function(widget)

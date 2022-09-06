@@ -113,6 +113,7 @@ local editboxScripts = {
 
     OnEnterPressed = function(editbox)
         local widget = editbox.obj
+        local barDB = widget:GetDB()
         local barID, buttonID = widget:GetID()
         local editType = widget:GetUserData("editType")
         local input = tonumber(editbox:GetText())
@@ -121,6 +122,10 @@ local editboxScripts = {
             local objective = input or 0
             private.db.profile.bars[barID].buttons[buttonID].objective = objective
             widget:SetObjective()
+
+            if barDB.limitMats then
+                widget:GetBar():UpdateButtons()
+            end
 
             if private.db.global.settings.alerts.button.sound then
                 if objective == 0 then
