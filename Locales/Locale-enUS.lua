@@ -174,6 +174,7 @@ L["Count"] = true
 L["Counts"] = true
 L["%d more..."] = true
 L["Scale"] = true
+L["All Bars"] = true
 L["Skin"] = true
 L["Are you sure you want to clear Bar %d?"] = true
 L["Mouseover"] = true

@@ -47,7 +47,7 @@ private.defaults = {
             },
             Objective = {
                 enabled = true,
-                color = { 1, 1, 1, 1 },
+                color = { 1, 0.82, 0, 1 },
                 face = "Friz Quadrata TT",
                 outline = "OUTLINE",
                 size = 12,
@@ -414,7 +414,7 @@ function private:InitializeDatabase()
         global = {
             debug = {
                 enabled = false,
-                -- enabled = true,
+                enabled = true,
             },
             settings = {
                 alerts = {
@@ -547,7 +547,7 @@ function private:InitializeDatabase()
 
     addon:SetEnabledState(private.db.profile.enabled)
 
-    private.db.RegisterCallback(addon, "OnProfileChanged", "OnProfileChanged")
+    private.db.RegisterCallback(addon, "OnProfileChanged", "OnProfile_")
     private.db.RegisterCallback(addon, "OnProfileCopied", "OnProfile_")
     private.db.RegisterCallback(addon, "OnProfileReset", "OnProfile_")
 end

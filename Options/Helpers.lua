@@ -47,3 +47,65 @@ function private:AddSpecialFrame(frame, frameName)
     tinsert(UISpecialFrames, frameName)
     self[frameName] = frame
 end
+
+function private:GetMixedBarDBValues(info, path, path2)
+    local key = info[#info]
+    if info.option.type == "toggle" then
+        local count, total = 0, 0
+        for _, bar in pairs(private.bars) do
+            local barDB = bar:GetDB()
+
+            if (path2 and barDB[path][path2][key]) or (path and barDB[path][key]) or barDB[key] then
+                count = count + 1
+            end
+            total = total + 1
+        end
+
+        if count == 0 then
+            return false
+        elseif count == total then
+            return true
+        else
+            return nil
+        end
+    elseif info.option.type == "select" or info.option.type == "range" then
+        local value
+        for _, bar in pairs(private.bars) do
+            local barDB = bar:GetDB()
+            if not value then
+                value = (path2 and barDB[path][path2][key]) or (path and barDB[path][key]) or barDB[key]
+            elseif value ~= ((path2 and barDB[path][path2][key]) or (path and barDB[path][key]) or barDB[key]) then
+                return
+            end
+        end
+        return value
+    elseif info.option.type == "color" then
+        local r, g, b, a
+        for _, bar in pairs(private.bars) do
+            local barDB = bar:GetDB()
+            local R, G, B, A = unpack((path2 and barDB[path][path2][key]) or (path and barDB[path][key]) or barDB[key])
+            if not r then
+                r, g, b, a = R, G, B, A
+            elseif r ~= R or g ~= G or b ~= B or a ~= A then
+                return 1, 1, 1, 1
+            end
+        end
+        return r, g, b, a
+    end
+end
+
+function private:SetMixedBarDBValues(info, value, path, callback, path2)
+    for barID, bar in pairs(private.bars) do
+        if path2 then
+            private.db.profile.bars[barID][path][path2][info[#info]] = value
+        elseif path then
+            private.db.profile.bars[barID][path][info[#info]] = value
+        else
+            private.db.profile.bars[barID][info[#info]] = value
+        end
+
+        if callback and type(callback) == "function" then
+            callback(barID)
+        end
+    end
+end

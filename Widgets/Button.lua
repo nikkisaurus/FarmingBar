@@ -477,7 +477,7 @@ local methods = {
     end,
 
     SetObjective = function(widget)
-        local _, buttonDB = widget:GetDB()
+        local barDB, buttonDB = widget:GetDB()
         local objective = buttonDB and buttonDB.objective or 0
 
         if widget:IsEmpty() or not objective or objective == 0 then
@@ -485,7 +485,7 @@ local methods = {
             widget.objective:Hide()
         else
             local count = private:GetObjectiveWidgetCount(widget)
-            local color = count >= objective and { 0, 1, 0, 1 } or { 1, 0.82, 0, 1 }
+            local color = count >= objective and { 0, 1, 0, 1 } or barDB.fontstrings.Objective.color
 
             widget.objective:SetTextColor(unpack(color))
             widget.objective:SetText(addon.iformat(objective, 2))
