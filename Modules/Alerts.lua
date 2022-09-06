@@ -16,7 +16,7 @@ function private:Alert(widget, ...)
     local oldCount = ...
     local newCount = private:GetObjectiveWidgetCount(widget)
 
-    if oldCount == newCount then
+    if not oldCount or oldCount == newCount then
         return
     end
 

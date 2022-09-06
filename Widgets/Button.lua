@@ -54,7 +54,7 @@ local postClickMethods = {
     onUse = function(frame)
         local widget = frame.obj
         local _, buttonDB = widget:GetDB()
-        local itemID = buttonDB.onUse.itemID
+        local itemID = buttonDB and buttonDB.onUse.itemID
 
         if widget:IsEmpty() or buttonDB.onUse.type ~= "ITEM" or not itemID or not GetItemSpell(itemID) then
             return

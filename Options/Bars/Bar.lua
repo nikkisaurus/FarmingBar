@@ -463,6 +463,7 @@ function private:GetBarOptions(barID)
                                 private.db.profile.bars[barID][info[#info]] = value
                                 private.bars[barID]:DrawButtons()
                                 private.bars[barID]:LayoutButtons()
+                                private.bars[barID]:SetScale()
                             end,
                         },
                         buttonsPerAxis = {
