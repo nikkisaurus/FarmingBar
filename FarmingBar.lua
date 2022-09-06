@@ -38,12 +38,17 @@ function private:StartDebug()
     private:LoadOptions("skins", "test", "buttonTextures")
 end
 
-function addon:OnProfile_(...)
-    addon:Disable()
+function addon:OnProfileChanged()
     addon:SetEnabledState(private.db.profile.enabled)
-    if addon:IsEnabled() then
-        addon:Enable()
-    end
+    private:InitializeBars()
+end
+
+function addon:OnProfile_(...)
+    -- addon:Disable()
+    -- addon:SetEnabledState(private.db.profile.enabled)
+    -- if addon:IsEnabled() then
+    --     addon:Enable()
+    -- end
 end
 
 private.anchorPoints = {

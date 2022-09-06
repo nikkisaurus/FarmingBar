@@ -31,13 +31,14 @@ function addon:CURSOR_CHANGED()
 end
 
 function private:InitializeBars()
+    private:ReleaseAllBars()
+
     for barID, barDB in pairs(private.db.profile.bars) do
-        local bar = AceGUI:Create("FarmingBar_Bar")
-        bar:SetID(barID)
-        private.bars[barID] = bar
-        bar:SetCallback("OnRelease", function()
-            tremove(private.bars, barID)
-        end)
+        if addon:IsEnabled() then
+            local bar = AceGUI:Create("FarmingBar_Bar")
+            bar:SetID(barID)
+            private.bars[barID] = bar
+        end
     end
 
     addon:SPELL_UPDATE_COOLDOWN()
@@ -96,9 +97,10 @@ function private:RemoveBar(barID)
 end
 
 function private:ReleaseAllBars()
-    for _, bar in pairs(private.bars) do
+    for barID, bar in pairs(private.bars) do
         bar:Release()
     end
+    wipe(private.bars)
 end
 
 function private:DuplicateBar(barID)

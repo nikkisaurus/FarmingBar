@@ -149,11 +149,13 @@ local methods = {
 
         if type(objectiveTitle) == "string" then
             objectiveInfo = private.db.global.objectives[objectiveTitle]
-            icon = objectiveInfo and private:GetObjectiveIcon(objectiveInfo) or iconID
-        else -- button widget
+            icon = objectiveInfo and private:GetObjectiveIcon(objectiveInfo)
+        elseif objectiveTitle then -- button widget
             local _, buttonDB = objectiveTitle:GetDB()
             icon = buttonDB and buttonDB.icon.id
         end
+
+        icon = icon or iconID
 
         self.icon:SetImage(icon)
         self.icon:SetText(format("%d (%s)", icon, private.FileData[icon]))
