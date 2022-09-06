@@ -446,6 +446,9 @@ function private:GetObjectiveEditorTrackersContent(widget)
                             order = 2,
                             type = "toggle",
                             name = L["Alts"],
+                            hidden = function()
+                                return private:MissingDataStore()
+                            end,
                         },
                         GuildBank = {
                             order = 2,

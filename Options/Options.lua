@@ -137,6 +137,7 @@ function private:RegisterDataObject()
                     private.db.profile.enabled = true
                     addon:Enable()
                 end
+                private:RefreshOptions()
             elseif button == "LeftButton" and IsControlKeyDown() then
                 private:LoadOptions("help")
             elseif button == "LeftButton" then

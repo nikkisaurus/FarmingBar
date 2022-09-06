@@ -50,7 +50,7 @@ function private:GetConfigOptions()
                 private:SetMixedBarDBValues(info, value)
             end,
             disabled = function()
-                return addon.tcount(private.db.profile.bars) == 0
+                return addon.tcount(private.db.profile.bars) == 0 or not addon:IsEnabled()
             end,
             args = {
                 general = {

@@ -21,7 +21,9 @@ function private:GetSkinsOptions()
             type = "select",
             style = "dropdown",
             name = L["Remove Skin"],
-            disabled = function() end,
+            disabled = function()
+                return addon.tcount(private.db.global.skins) == 2
+            end,
             values = function()
                 local values = {}
 
