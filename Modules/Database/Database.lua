@@ -558,6 +558,7 @@ function private:InitializeDatabase()
     private.db.RegisterCallback(addon, "OnProfileReset", "OnProfile_")
 
     if private.backup then
+        private.db.global.backup = private.backup
         if private.backup.global.version == 4 then
             private:ConvertDB_V4()
         elseif private.backup.global.version == 3 then

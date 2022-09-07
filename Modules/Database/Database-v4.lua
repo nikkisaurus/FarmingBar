@@ -77,7 +77,7 @@ function private:ConvertDB_V4()
         local tooltips = private.backup.global.settings.tooltips
         if tooltips then
             if tooltips.condensedTooltip ~= nil then
-                private.db.global.settings.tooltips.showDetails = tooltips.condensedTooltip
+                private.db.global.settings.tooltips.showDetails = not tooltips.condensedTooltip
             end
             if tooltips.useGameTooltip ~= nil then
                 private.db.global.settings.tooltips.useGameTooltip = tooltips.useGameTooltip
