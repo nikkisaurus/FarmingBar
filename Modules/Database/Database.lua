@@ -412,9 +412,10 @@ end]],
 function private:InitializeDatabase()
     if FarmingBarDB and FarmingBarDB.global.version and FarmingBarDB.global.version < 5 then
         private.backup = FarmingBarDB
+        FarmingBarDB = nil
     end
 
-    private.db = LibStub("AceDB-3.0"):New("FarmingBarDevDB", {
+    private.db = LibStub("AceDB-3.0"):New("FarmingBarDB", {
         global = {
             version = 5,
             debug = {
