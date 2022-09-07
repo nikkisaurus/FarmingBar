@@ -410,17 +410,24 @@ end]],
 }
 
 function private:InitializeDatabase()
-    if FarmingBarDB and FarmingBarDB.global.version and FarmingBarDB.global.version < 5 then
-        private.backup = FarmingBarDB
-        FarmingBarDB = nil
+    if FarmingBarDB then
+        if FarmingBarDB.global and FarmingBarDB.global.version then
+            if FarmingBarDB.global.version == 4 then
+                private.version = 4
+                private.backup = FarmingBarDB
+                FarmingBarDB = nil
+            end
+        else
+            private.backup = FarmingBarDB
+            FarmingBarDB = nil
+        end
     end
 
     private.db = LibStub("AceDB-3.0"):New("FarmingBarDB", {
         global = {
-            version = 5,
             debug = {
                 enabled = false,
-                enabled = true,
+                -- enabled = true,
             },
             settings = {
                 alerts = {
@@ -553,16 +560,14 @@ function private:InitializeDatabase()
 
     addon:SetEnabledState(private.db.profile.enabled)
 
+    private.db.global.version = 5
+    private.db.global.backup = private.backup
+
     private.db.RegisterCallback(addon, "OnProfileChanged", "OnProfile_")
     private.db.RegisterCallback(addon, "OnProfileCopied", "OnProfile_")
     private.db.RegisterCallback(addon, "OnProfileReset", "OnProfile_")
 
-    if private.backup then
-        private.db.global.backup = private.backup
-        if private.backup.global.version == 4 then
-            private:ConvertDB_V4()
-        elseif private.backup.global.version == 3 then
-            private:ConvertDB_V3()
-        end
+    if private.version == 4 then
+        private:ConvertDB_V4()
     end
 end

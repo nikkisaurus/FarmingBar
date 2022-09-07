@@ -527,12 +527,12 @@ function private:ShowConfirmationDialog(msg, onAccept, onCancel, args1, args2)
         button2 = CANCEL,
         OnAccept = function()
             if onAccept then
-                onAccept(addon.unpack(args1, {}))
+                return onAccept(addon.unpack(args1, {}))
             end
         end,
         OnCancel = function()
             if onCancel then
-                onCancel(addon.unpack(args2, {}))
+                return onCancel(addon.unpack(args2, {}))
             end
         end,
         timeout = 0,
