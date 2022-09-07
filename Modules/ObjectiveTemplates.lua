@@ -36,9 +36,12 @@ function private:PickupObjectiveTemplate(objectiveTitle)
 end
 
 --[[ Database ]]
-function private:AddObjectiveTemplate(objectiveInfo)
-    local newObjectiveTitle =
-        private:IncrementString(objectiveInfo and objectiveInfo.title or L["New"], private, "ObjectiveTemplateExists")
+function private:AddObjectiveTemplate(objectiveInfo, title)
+    local newObjectiveTitle = private:IncrementString(
+        title or (objectiveInfo and objectiveInfo.title) or L["New"],
+        private,
+        "ObjectiveTemplateExists"
+    )
     private.db.global.objectives[newObjectiveTitle] = addon.CloneTable(objectiveInfo or private.defaults.objective)
     private.db.global.objectives[newObjectiveTitle].title = newObjectiveTitle
     private:RefreshOptions()

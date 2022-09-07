@@ -76,6 +76,9 @@ function private:NotifyChange()
 end
 
 function private:RefreshOptions(...)
+    if not self.options then
+        return
+    end
     if self.options.args.config then
         self.options.args.config.args = self:GetConfigOptions()
     end
@@ -147,5 +150,4 @@ function private:RegisterDataObject()
             end
         end,
     })
-    print(dataObject)
 end

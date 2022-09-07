@@ -51,6 +51,10 @@ local postClickMethods = {
         PickupObjectiveInfo(frame.obj)
     end,
 
+    moveObjectiveToBank = function(frame)
+        private:MoveObjectiveToBank(frame.obj)
+    end,
+
     onUse = function(frame)
         local widget = frame.obj
         local _, buttonDB = widget:GetDB()

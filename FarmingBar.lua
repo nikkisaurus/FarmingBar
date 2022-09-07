@@ -35,7 +35,7 @@ end
 
 --[[ StartDebug ]]
 function private:StartDebug()
-    private:LoadOptions("config", "allBars", "layout")
+    private:LoadOptions("settings")
 end
 
 function addon:OnProfile_(...)
