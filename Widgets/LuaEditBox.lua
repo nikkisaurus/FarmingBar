@@ -369,7 +369,7 @@ local function Constructor()
     editBox:SetScript("OnEditFocusGained", OnEditFocusGained)
 
     -- Add syntax highlighting
-    addon.indent.enable(editBox, _, 4)
+    addon.indent.enable(editBox, nil, 4)
 
     scrollFrame:SetScrollChild(editBox)
 
