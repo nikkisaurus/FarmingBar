@@ -120,17 +120,19 @@ function private:ConvertDB_V4()
                 trackers = {},
             }
 
-            for trackerKey, tracker in pairs(objective.trackers) do
-                local Type, id = strsplit(":", trackerKey)
-                objectiveInfo.trackers[tracker.order] = {
-                    type = Type,
-                    id = tonumber(id),
-                    objective = tracker.objective or 1,
-                    includeAlts = false,
-                    includeBank = false,
-                    includeGuildBank = {},
-                    altIDs = {},
-                }
+            if objective.trackers then
+                for trackerKey, tracker in pairs(objective.trackers) do
+                    local Type, id = strsplit(":", trackerKey)
+                    objectiveInfo.trackers[tracker.order] = {
+                        type = Type,
+                        id = tonumber(id),
+                        objective = tracker.objective or 1,
+                        includeAlts = false,
+                        includeBank = false,
+                        includeGuildBank = {},
+                        altIDs = {},
+                    }
+                end
             end
 
             private:AddObjectiveTemplate(objectiveInfo, objectiveTitle)
