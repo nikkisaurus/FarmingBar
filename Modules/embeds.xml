@@ -3,6 +3,7 @@
     <Include file="Database/Database-v4.lua"/>
     <Include file="Tooltips/Tooltips.lua"/>
     <Include file="Tooltips/ButtonTooltip.lua"/>
+    <Include file="Tooltips/BarTooltip.lua"/>
     <Include file="Bars.lua"/>
     <Include file="DataStore.lua"/>
     <Include file="Alerts.lua"/>

@@ -21,31 +21,41 @@ function private:GetSettingsOptions()
                         private.db.global.settings.tooltips[info[#info]] = value
                     end,
                     args = {
-                        useGameTooltip = {
+                        bar = {
                             order = 1,
+                            type = "toggle",
+                            name = L["Bar Tooltips"],
+                        },
+                        button = {
+                            order = 2,
+                            type = "toggle",
+                            name = L["Button Tooltips"],
+                        },
+                        useGameTooltip = {
+                            order = 3,
                             type = "toggle",
                             name = L["Use GameTooltip"],
                         },
                         showLink = {
-                            order = 2,
+                            order = 4,
                             type = "toggle",
                             name = L["Show Hyperlink"],
                             desc = L["Show item hyperlink on button tooltips."],
                         },
                         showDetails = {
-                            order = 3,
+                            order = 5,
                             type = "toggle",
                             name = L["Show Details"],
                             desc = L["Show all details on tooltips without holding the modifier key."],
                         },
                         showHints = {
-                            order = 4,
+                            order = 6,
                             type = "toggle",
                             name = L["Show Hints"],
                             desc = L["Show hints on tooltips without holding the modifier key."],
                         },
                         modifier = {
-                            order = 5,
+                            order = 7,
                             type = "select",
                             style = "dropdown",
                             name = L["Modifier"],

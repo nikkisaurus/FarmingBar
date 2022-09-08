@@ -22,6 +22,10 @@ local function GetIncludeCount(trackers, include)
 end
 
 function private:GetButtonTooltip(widget)
+    if not private.db.global.settings.tooltips.button then
+        return
+    end
+
     local barDB, buttonDB = widget:GetDB()
     local barID, buttonID = widget:GetID()
     local showDetails = private.db.global.settings.tooltips.showDetails

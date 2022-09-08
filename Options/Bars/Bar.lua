@@ -516,8 +516,16 @@ function private:GetBarOptions(barID)
                     type = "toggle",
                     name = L["Enable"],
                 },
-                color = {
+                showEdge = {
                     order = 2,
+                    type = "toggle",
+                    name = L["Show Edge"],
+                    hidden = function()
+                        return fontName ~= "Cooldown"
+                    end,
+                },
+                color = {
+                    order = 3,
                     type = "color",
                     hasAlpha = true,
                     name = L["Color"],
@@ -530,13 +538,13 @@ function private:GetBarOptions(barID)
                     end,
                 },
                 spacer = {
-                    order = 3,
+                    order = 4,
                     type = "description",
                     width = "full",
                     name = " ",
                 },
                 face = {
-                    order = 4,
+                    order = 5,
                     type = "select",
                     style = "dropdown",
                     dialogControl = "LSM30_Font",
@@ -544,14 +552,14 @@ function private:GetBarOptions(barID)
                     values = AceGUIWidgetLSMlists.font,
                 },
                 outline = {
-                    order = 5,
+                    order = 6,
                     type = "select",
                     style = "dropdown",
                     name = L["Font Outline"],
                     values = private.lists.outlines,
                 },
                 size = {
-                    order = 6,
+                    order = 7,
                     type = "range",
                     min = private.CONST.MIN_FONT_SIZE,
                     max = private.CONST.MAX_FONT_SIZE,
