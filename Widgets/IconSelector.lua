@@ -59,7 +59,8 @@ local methods = {
     LoadIcons = function(self, filter)
         -- Get displayed icons
         local icons = {}
-        for iconID, iconName in pairs(private.FileData) do
+        local fileData = (select(4, GetBuildInfo())) < 90207 and private.FileDataClassic or private.FileData
+        for iconID, iconName in pairs(fileData) do
             if
                 not filter
                 or filter == ""
@@ -122,10 +123,11 @@ local methods = {
                 end)
 
                 -- Setup tooltip
+                local fileData = (select(4, GetBuildInfo())) < 90207 and private.FileDataClassic or private.FileData
                 icon:SetCallback("OnEnter", function()
                     private:LoadTooltip(icon.frame, "ANCHOR_BOTTOMRIGHT", 0, 0, {
                         {
-                            line = private.FileData[iconID],
+                            line = fileData[iconID],
                             color = { 1, 0.82, 0, 1 },
                         },
                         {
@@ -157,8 +159,9 @@ local methods = {
 
         icon = icon or iconID
 
+        local fileData = (select(4, GetBuildInfo())) < 90207 and private.FileDataClassic or private.FileData
         self.icon:SetImage(icon)
-        self.icon:SetText(format("%d (%s)", icon, private.FileData[icon]))
+        self.icon:SetText(format("%d (%s)", icon, fileData[icon]))
 
         self:SetUserData("iconID", icon)
     end,
