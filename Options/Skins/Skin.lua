@@ -41,8 +41,18 @@ function private:GetSkinOptions(skinName)
                 return format(L["Are you sure you want to overwrite \"%s\" with \"%s\"?"], skinName, value)
             end,
         },
-        removeSkin = {
+        duplicateSkin = {
             order = 2,
+            type = "execute",
+            name = L["Duplicate"],
+            func = function()
+                local newSkinName = private:IncrementString(skinName, private, "SkinExists")
+                private:CopySkin(skinName, newSkinName)
+                private:RefreshOptions("skins", newSkinName)
+            end,
+        },
+        removeSkin = {
+            order = 3,
             type = "execute",
             name = REMOVE,
             func = function()
@@ -54,7 +64,7 @@ function private:GetSkinOptions(skinName)
             end,
         },
         backdrop = {
-            order = 3,
+            order = 4,
             type = "group",
             name = L["Bar Backdrop"],
             args = {
@@ -134,7 +144,7 @@ function private:GetSkinOptions(skinName)
             },
         },
         buttonTextures = {
-            order = 4,
+            order = 5,
             type = "group",
             name = L["Button Textures"],
             args = {},
