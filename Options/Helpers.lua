@@ -95,13 +95,14 @@ function private:GetMixedBarDBValues(info, path, path2)
 end
 
 function private:SetMixedBarDBValues(info, value, path, callback, path2)
+    local option = (info and type(info) == "table" and info[#info]) or info
     for barID, bar in pairs(private.bars) do
         if path2 then
-            private.db.profile.bars[barID][path][path2][info[#info]] = value
+            private.db.profile.bars[barID][path][path2][option] = value
         elseif path then
-            private.db.profile.bars[barID][path][info[#info]] = value
+            private.db.profile.bars[barID][path][option] = value
         else
-            private.db.profile.bars[barID][info[#info]] = value
+            private.db.profile.bars[barID][option] = value
         end
 
         if callback and type(callback) == "function" then

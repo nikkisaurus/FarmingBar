@@ -63,6 +63,8 @@ function private:InitializeOptions()
 
     LibStub("AceConfig-3.0"):RegisterOptionsTable(addonName .. "ObjectiveEditor", private:GetObjectiveEditor())
     ACD:SetDefaultSize(addonName .. "ObjectiveEditor", 650, 600)
+
+    LibStub("AceConfig-3.0"):RegisterOptionsTable(addonName .. "Commands", private:GetSlashCommandOptions())
 end
 
 function private:LoadOptions(...)
