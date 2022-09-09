@@ -161,7 +161,6 @@ function private:GetSettingsOptions()
                 bar = {
                     order = 1,
                     type = "group",
-                    inline = true,
                     name = L["Bar"],
                     get = function(info)
                         return private.db.global.settings.alerts.bar[info[#info]]
@@ -281,7 +280,6 @@ function private:GetSettingsOptions()
                 button = {
                     order = 2,
                     type = "group",
-                    inline = true,
                     name = L["Button"],
                     get = function(info)
                         return private.db.global.settings.alerts.button[info[#info]]
@@ -398,8 +396,131 @@ function private:GetSettingsOptions()
                     },
                 },
 
-                sounds = {
+                tracker = {
                     order = 3,
+                    type = "group",
+                    name = L["Trackers"],
+                    get = function(info)
+                        return private.db.global.settings.alerts.tracker[info[#info]]
+                    end,
+                    set = function(info, value)
+                        private.db.global.settings.alerts.tracker[info[#info]] = value
+                    end,
+                    args = {
+                        chat = {
+                            order = 1,
+                            type = "toggle",
+                            name = L["Chat"],
+                        },
+                        screen = {
+                            order = 2,
+                            type = "toggle",
+                            name = L["Screen"],
+                        },
+                        sound = {
+                            order = 3,
+                            type = "toggle",
+                            name = L["Sound"],
+                        },
+                        preview = {
+                            order = 4,
+                            type = "group",
+                            inline = true,
+                            name = L["Preview"],
+                            get = function(info)
+                                return tostring(private.db.global.settings.alerts.tracker.alertInfo[info[#info]])
+                            end,
+                            set = function(info, value)
+                                value = tonumber(value) or 0
+                                value = value >= 0 and value or 0
+
+                                local alertInfo = private.db.global.settings.alerts.tracker.alertInfo
+                                private.db.global.settings.alerts.tracker.alertInfo[info[#info]] = value
+                                private.db.global.settings.alerts.tracker.alertInfo.difference = alertInfo.newCount
+                                    - alertInfo.oldCount
+                                private.db.global.settings.alerts.tracker.alertInfo.lost = alertInfo.oldCount
+                                    > alertInfo.newCount
+                                private.db.global.settings.alerts.tracker.alertInfo.gained = alertInfo.oldCount
+                                    < alertInfo.newCount
+                                private.db.global.settings.alerts.tracker.alertInfo.trackerGoal = alertInfo.objective
+                                    * alertInfo.trackerObjective
+                                private.db.global.settings.alerts.tracker.alertInfo.objectiveMet = alertInfo.newCount
+                                    >= alertInfo.trackerGoal
+                                private.db.global.settings.alerts.tracker.alertInfo.newComplete = alertInfo.oldCount
+                                        < alertInfo.trackerGoal
+                                    and alertInfo.newCount >= alertInfo.trackerGoal
+                            end,
+                            args = {
+                                preview = {
+                                    order = 1,
+                                    type = "description",
+                                    name = function()
+                                        local alert = private:PreviewAlert("tracker")
+                                        local alertInfo = private.db.global.settings.alerts.tracker.alertInfo
+                                        return alertInfo.oldCount ~= alertInfo.newCount and alert or ""
+                                    end,
+                                },
+                                oldCount = {
+                                    order = 2,
+                                    type = "input",
+                                    name = "info.oldCount",
+                                },
+                                newCount = {
+                                    order = 3,
+                                    type = "input",
+                                    name = "info.newCount",
+                                },
+                                objective = {
+                                    order = 4,
+                                    type = "input",
+                                    name = "info.objective",
+                                },
+                                trackerObjective = {
+                                    order = 5,
+                                    type = "input",
+                                    name = "info.trackerObjective",
+                                },
+                            },
+                        },
+                        tracker = {
+                            order = 5,
+                            type = "input",
+                            multiline = true,
+                            dialogControl = "FarmingBar_LuaEditBox",
+                            width = "full",
+                            name = L["Format"],
+                            get = function(info)
+                                return private.status.luaeditbox
+                                    or private.db.global.settings.alerts[info[#info]].format
+                            end,
+                            set = function(info, value)
+                                private.db.global.settings.alerts[info[#info]].format = value
+                            end,
+                            validate = function(_, value)
+                                return private:ValidateAlert("tracker", value)
+                                    or L["Alert formats must be a function returning a string value."]
+                            end,
+                            arg = function(value)
+                                return private:ValidateAlert("tracker", value)
+                                    or L["Alert formats must be a function returning a string value."]
+                            end,
+                        },
+                        resetTracker = {
+                            order = 6,
+                            type = "execute",
+                            name = L["Reset Tracker Alert"],
+                            func = function()
+                                private.db.global.settings.alerts.tracker.format = private.defaults.trackerAlert
+                            end,
+                            confirm = function()
+                                return L["Are you sure you want to reset tracker alerts format?"]
+                            end,
+                        },
+                    },
+                },
+
+                sounds = {
+                    order = 4,
                     type = "group",
                     inline = true,
                     name = L["Sounds"],
@@ -461,17 +582,11 @@ function private:GetSettingsOptions()
                     },
                 },
 
-                note = {
-                    order = 4,
-                    type = "description",
-                    name = L["* The following settings are profile specific."],
-                },
-
                 chatFrame = {
                     order = 5,
                     type = "select",
                     name = L["Chat Frame"],
-                    desc = L["Default chat frame for chat alerts."],
+                    desc = L["Default chat frame for chat alerts. * Profile"],
                     get = function()
                         return private.db.profile.chatFrame
                     end,

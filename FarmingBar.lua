@@ -35,7 +35,7 @@ end
 
 --[[ StartDebug ]]
 function private:StartDebug()
-    private:LoadOptions("settings")
+    private:LoadOptions("settings", "alerts", "tracker")
 end
 
 function addon:OnProfile_(...)

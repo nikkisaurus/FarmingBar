@@ -407,6 +407,47 @@ end]],
     
     
 end]],
+
+    trackerAlert = [[function(info, colors)
+        -- info.title
+        -- info.trackerName
+        -- info.oldCount
+        -- info.newCount
+        -- info.difference
+        -- info.lost
+        -- info.gained
+        -- info.objective
+        -- info.trackerObjective
+        -- info.trackerGoal
+        -- info.objectiveMet
+        -- info.newComplete
+        -- colors.red = "|cffff0000"
+        -- colors.green = "|cff00ff00"
+        -- colors.gold = "|cffffcc00"
+        
+        
+        -- Tracker progress helpers
+        local diffColor = info.gained and colors.green or colors.red -- Color the sign green if gained or red if lost
+        local sign = info.gained and "+" or "" -- no need to use "-" because it's included in info.difference
+        
+        if info.objective > 0 then -- Tracker progress, with objective
+            
+            if info.newComplete then -- Tracker complete, with objective
+                
+                return format("%sTracker complete!|r (%s) %s %s%d/%d|r (%s%s%d|r)", colors.green,  info.title, info.trackerName, colors.green, info.newCount, info.trackerGoal, diffColor, sign, info.difference)
+                
+            else -- Tracker progress, with objective
+                
+                return format("%sTracker progress:|r (%s) %s %s%d/%d|r (%s%s%d|r)", colors.gold,  info.title, info.trackerName, colors.gold, info.newCount, info.trackerGoal, diffColor, sign, info.difference)
+                
+            end
+            
+        end
+        
+        -- Tracker progress, no objective
+        return format("%sTracker progress:|r (%s) %s %sx%d|r (%s%s%d|r)", colors.gold,  info.title, info.trackerName, colors.gold, info.newCount, diffColor, sign, info.difference)
+        
+    end]],
 }
 
 function private:InitializeDatabase()
@@ -464,6 +505,26 @@ function private:InitializeDatabase()
                             oldTotal = 1,
                             newProgress = 1,
                             newTotal = 1,
+                            newComplete = true,
+                        },
+                    },
+                    tracker = {
+                        sound = true,
+                        chat = true,
+                        screen = true,
+                        format = private.defaults.trackerAlert,
+                        alertInfo = {
+                            title = "Test Alert",
+                            trackerName = "Test Tracker",
+                            oldCount = 18,
+                            newCount = 21,
+                            difference = 3,
+                            lost = false,
+                            gained = true,
+                            objective = 10,
+                            trackerObjective = 2,
+                            trackerGoal = 20,
+                            objectiveMet = true,
                             newComplete = true,
                         },
                     },

@@ -9,7 +9,7 @@ function private:GetObjectiveWidgetCount(widget)
 
     local barDB, buttonDB = widget:GetDB()
     local _, buttonID = widget:GetID()
-    local trackers = buttonDB.trackers
+    local trackers = {}
     local condition = buttonDB.condition
 
     local count = 0
@@ -19,15 +19,24 @@ function private:GetObjectiveWidgetCount(widget)
             local trackerCount =
                 private:GetTrackerCount(trackerInfo, barDB.limitMats and widget:GetBar(), barDB.limitMats and buttonID)
             count = count > 0 and min(count, trackerCount) or trackerCount
+            trackers[trackerKey] = private:GetTrackerCount(
+                trackerInfo,
+                barDB.limitMats and widget:GetBar(),
+                barDB.limitMats and buttonID,
+                1
+            )
         end
     elseif condition.type == "ANY" then
         for trackerKey, trackerInfo in pairs(buttonDB.trackers) do
-            count = count
-                + private:GetTrackerCount(
-                    trackerInfo,
-                    barDB.limitMats and widget:GetBar(),
-                    barDB.limitMats and buttonID
-                )
+            local trackerCount =
+                private:GetTrackerCount(trackerInfo, barDB.limitMats and widget:GetBar(), barDB.limitMats and buttonID)
+            count = count + trackerCount
+            trackers[trackerKey] = private:GetTrackerCount(
+                trackerInfo,
+                barDB.limitMats and widget:GetBar(),
+                barDB.limitMats and buttonID,
+                1
+            )
         end
     elseif condition.type == "CUSTOM" then
         local func = loadstring("return " .. buttonDB.condition.func)
@@ -39,22 +48,23 @@ function private:GetObjectiveWidgetCount(widget)
         end
     end
 
-    return count
+    return count, trackers
 end
 
-function private:GetTrackerCount(trackerInfo, bar, buttonID)
+function private:GetTrackerCount(trackerInfo, bar, buttonID, overrideObjective)
     local DS = #private:GetMissingDataStoreModules() == 0
 
     if not trackerInfo then
         return 0
     end
 
+    local objective = overrideObjective or trackerInfo.objective
     local count = 0
     if trackerInfo.type == "ITEM" then
         if DS then
-            count = floor(private:GetDataStoreItemCount(trackerInfo.id, trackerInfo) / trackerInfo.objective)
+            count = floor(private:GetDataStoreItemCount(trackerInfo.id, trackerInfo) / objective)
         else
-            count = floor(GetItemCount(trackerInfo.id, trackerInfo.includeBank) / trackerInfo.objective)
+            count = floor(GetItemCount(trackerInfo.id, trackerInfo.includeBank) / objective)
         end
     elseif trackerInfo.type == "CURRENCY" then
         local quantity
@@ -62,7 +72,7 @@ function private:GetTrackerCount(trackerInfo, bar, buttonID)
             quantity = private:GetDataStoreCurrencyCount(trackerInfo.id)
         else
             local currency = C_CurrencyInfo.GetCurrencyInfo(trackerInfo.id)
-            quantity = currency and floor(currency.quantity / trackerInfo.objective) or 0
+            quantity = currency and floor(currency.quantity / objective) or 0
         end
         count = count + quantity
     end

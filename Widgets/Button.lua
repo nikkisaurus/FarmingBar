@@ -214,8 +214,8 @@ local scripts = {
         local widget = frame.obj
         local barDB = widget:GetDB()
         if not widget:IsEmpty() then
-            local oldCount = tonumber(widget.count:GetText())
-            private:Alert(widget, oldCount)
+            local oldCount, oldTrackers = widget:GetUserData("count"), widget:GetUserData("trackers")
+            private:Alert(widget, oldCount, oldTrackers)
         end
         widget:SetCount()
     end,
@@ -403,7 +403,10 @@ local methods = {
     end,
 
     SetCount = function(widget)
-        widget.count:SetText(addon.iformat(private:GetObjectiveWidgetCount(widget), 2, true))
+        local count, trackers = private:GetObjectiveWidgetCount(widget)
+        widget:SetUserData("count", count)
+        widget:SetUserData("trackers", trackers)
+        widget.count:SetText(addon.iformat(count, 2, true))
         widget:SetObjective()
     end,
 
