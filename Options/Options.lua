@@ -46,7 +46,7 @@ function private:GetOptions()
                 type = "group",
                 name = L["Help"],
                 childGroups = "tab",
-                -- args = private:GetHelpOptions(),
+                args = private:GetHelpOptions(),
                 args = {},
             },
         },

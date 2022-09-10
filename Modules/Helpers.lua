@@ -511,7 +511,7 @@ function private:ShowConfirmationDialog(msg, onAccept, onCancel, args1, args2)
 end
 
 function private:StartDebug()
-    private:LoadOptions("settings", "alerts", "tracker")
+    private:LoadOptions("help")
 end
 
 function private:StringToTitle(str)
