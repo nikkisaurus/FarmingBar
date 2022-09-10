@@ -51,6 +51,15 @@ function private:GetObjectiveWidgetCount(widget)
     return count, trackers
 end
 
+function private:GetObjectiveWidgetObjective(widget)
+    if widget:IsEmpty() then
+        return
+    end
+
+    local _, buttonDB = widget:GetDB()
+    return buttonDB.objective
+end
+
 function private:GetTrackerCount(trackerInfo, bar, buttonID, overrideObjective)
     local DS = #private:GetMissingDataStoreModules() == 0
 
@@ -116,15 +125,6 @@ function private:GetTrackerCount(trackerInfo, bar, buttonID, overrideObjective)
     count = count >= 0 and count or 0
 
     return count, trackerInfo.objective
-end
-
-function private:GetObjectiveWidgetObjective(widget)
-    if widget:IsEmpty() then
-        return
-    end
-
-    local _, buttonDB = widget:GetDB()
-    return buttonDB.objective
 end
 
 function private:GetTrackerObjectiveCount(widget, trackerKey)

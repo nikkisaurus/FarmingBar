@@ -4,6 +4,18 @@ local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 local AceGUI = LibStub("AceGUI-3.0")
 local LSM = LibStub("LibSharedMedia-3.0")
 
+local exclude = {
+    label = true,
+    buttons = true,
+    point = true,
+}
+
+function addon:CURSOR_CHANGED()
+    for _, bar in pairs(private.bars) do
+        bar:SetMouseover()
+    end
+end
+
 function addon:SPELL_UPDATE_COOLDOWN()
     for _, bar in pairs(private.bars) do
         local buttons = bar:GetButtons()
@@ -22,26 +34,6 @@ function addon:SPELL_UPDATE_COOLDOWN()
             end
         end
     end
-end
-
-function addon:CURSOR_CHANGED()
-    for _, bar in pairs(private.bars) do
-        bar:SetMouseover()
-    end
-end
-
-function private:InitializeBars()
-    private:ReleaseAllBars()
-
-    for barID, barDB in pairs(private.db.profile.bars) do
-        if addon:IsEnabled() then
-            local bar = AceGUI:Create("FarmingBar_Bar")
-            bar:SetID(barID)
-            private.bars[barID] = bar
-        end
-    end
-
-    addon:SPELL_UPDATE_COOLDOWN()
 end
 
 function private:AddBar()
@@ -70,11 +62,6 @@ function private:AddBar()
     return barID
 end
 
-local exclude = {
-    label = true,
-    buttons = true,
-    point = true,
-}
 function private:CopyBarDB(sourceID, destID)
     for key, value in pairs(private.db.profile.bars[sourceID]) do
         if not exclude[key] then
@@ -85,15 +72,29 @@ function private:CopyBarDB(sourceID, destID)
     private.bars[destID]:Update()
 end
 
+function private:DuplicateBar(barID)
+    local newBarID = private:AddBar()
+    private:CopyBarDB(barID, newBarID)
+    return newBarID
+end
+
 function private:GetBarName(barID)
     local barDB = private.db.profile.bars[barID]
     return L["Bar"] .. " " .. barID, barDB.title
 end
 
-function private:RemoveBar(barID)
+function private:InitializeBars()
     private:ReleaseAllBars()
-    tremove(private.db.profile.bars, barID)
-    private:InitializeBars()
+
+    for barID, barDB in pairs(private.db.profile.bars) do
+        if addon:IsEnabled() then
+            local bar = AceGUI:Create("FarmingBar_Bar")
+            bar:SetID(barID)
+            private.bars[barID] = bar
+        end
+    end
+
+    addon:SPELL_UPDATE_COOLDOWN()
 end
 
 function private:ReleaseAllBars()
@@ -103,10 +104,10 @@ function private:ReleaseAllBars()
     wipe(private.bars)
 end
 
-function private:DuplicateBar(barID)
-    local newBarID = private:AddBar()
-    private:CopyBarDB(barID, newBarID)
-    return newBarID
+function private:RemoveBar(barID)
+    private:ReleaseAllBars()
+    tremove(private.db.profile.bars, barID)
+    private:InitializeBars()
 end
 
 function private:ValidateHiddenFunc(value)

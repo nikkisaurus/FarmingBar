@@ -32,18 +32,6 @@ function private:GetObjectiveEditor()
     return private.editor
 end
 
-function private:GetObjectiveEditorName(widget)
-    local name = L.addonName .. " " .. L["Objective Editor"]
-
-    if not widget then
-        return name
-    end
-
-    local barID, buttonID = widget:GetID()
-
-    return format("%s (%d:%d)", name, barID, buttonID)
-end
-
 function private:GetObjectiveEditorGeneralContent(widget)
     if not widget then
         return {}
@@ -290,6 +278,18 @@ function private:GetObjectiveEditorGeneralContent(widget)
     }
 
     return args
+end
+
+function private:GetObjectiveEditorName(widget)
+    local name = L.addonName .. " " .. L["Objective Editor"]
+
+    if not widget then
+        return name
+    end
+
+    local barID, buttonID = widget:GetID()
+
+    return format("%s (%d:%d)", name, barID, buttonID)
 end
 
 function private:GetObjectiveEditorTrackersContent(widget)

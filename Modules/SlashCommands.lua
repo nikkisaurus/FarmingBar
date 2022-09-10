@@ -46,10 +46,10 @@ function addon:CraftTradeSkill(input)
     skillID = tradeskillIDs[strupper(skillID)]
 
     if not skillID then
-        addon:Print(L.InvalidCraftSkillID)
+        addon:Print(L["Invalid tradeskill name."])
         return
     elseif not recipeName or recipeName == "" then
-        addon:Print(L.MissingCraftRecipeName)
+        addon:Print(L["Please specify a tradeskill recipe name."])
         return
     end
 

@@ -4,25 +4,19 @@ local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 
 private.defaults = {
     bar = {
-        buttons = {},
-
-        --[[ General ]]
         alerts = {
             barProgress = false,
+            chatFrame = "ChatFrame1",
             completedObjectives = true,
             muteAll = false,
-            chatFrame = "ChatFrame1",
         },
-        label = "",
-        limitMats = false,
-
-        --[[ Appearance ]]
         alpha = 1,
         barAnchor = "TOPLEFT", -- "TOPLEFT", "TOPRIGHT", "BOTTOMLEFT", "BOTTOMRIGHT"
         buttonGrowth = "ROW", -- "ROW", "COL"
-        buttonSize = 40,
         buttonPadding = 2,
+        buttons = {},
         buttonsPerAxis = 6,
+        buttonSize = 40,
         fontstrings = {
             Cooldown = {
                 enabled = true,
@@ -62,6 +56,8 @@ private.defaults = {
             return
         end]],
         hiddenEvents = {},
+        label = "",
+        limitMats = false,
         mouseover = false,
         movable = true,
         numButtons = 12,
@@ -69,9 +65,130 @@ private.defaults = {
         scale = 1,
         showCooldown = true,
         showEmpty = true,
-
-        --[[ Skins ]]
         skin = "FarmingBar_Default",
+    },
+
+    barAlert = [[function(info, colors)
+    -- info.barID
+    -- info.label
+    -- info.lost
+    -- info.gained
+    -- info.difference
+    -- info.oldProgress
+    -- info.oldTotal
+    -- info.newProgress
+    -- info.newTotal
+    -- info.newComplete
+    -- colors.red = "|cffff0000"
+    -- colors.green = "|cff00ff00"
+    -- colors.gold = "|cffffcc00"
+    
+    
+    if info.newComplete then -- Bar complete
+        
+        return format("%sBar complete!|r Bar %d %s%d/%d|r", colors.green, info.barID, colors.green, info.newProgress, info.newTotal)
+        
+    else     -- Bar progress   
+        
+        local diffColor = info.gained and colors.green or colors.red -- Color the sign green if gained or red if lost
+        local sign = info.gained and "+" or "" -- no need to use "-" because it's included in info.difference
+        
+        return format("%sBar progress:|r Bar %d %s%d/%d|r (%s%s%d|r)", colors.gold, info.barID, colors.gold, info.newProgress, info.newTotal, diffColor, sign, info.difference)
+        
+    end
+    
+    
+end]],
+
+    buttonAlert = [[function(info, colors)
+-- info.title
+-- info.oldCount
+-- info.newCount
+-- info.difference
+-- info.lost
+-- info.gained
+-- info.objective
+-- info.objectiveMet
+-- info.newObjectiveMet
+-- info.reps
+-- colors.red = "|cffff0000"
+-- colors.green = "|cff00ff00"
+-- colors.gold = "|cffffcc00"
+
+
+-- Button progress helpers
+local diffColor = info.gained and colors.green or colors.red -- Color the sign green if gained or red if lost
+local sign = info.gained and "+" or "" -- no need to use "-" because it's included in info.difference
+
+
+if info.objective > 0  then -- Button progress, with objective
+    
+    if  info.newObjectiveMet and info.objectiveMet then -- Button progress, objective met
+        
+        return format("%sObjective complete!|r %s %s%d/%d|r x%d", colors.green,  info.title, colors.green, info.newCount, info.objective, info.reps)
+        
+    else -- Button progress, objective not met or already met
+        
+        local countColor = info.objectiveMet and colors.green or colors.gold
+        
+        return format("%sFarming update:|r %s %s%d/%d|r (%s%s%d|r)", colors.gold,  info.title, countColor,  info.newCount, info.objective, diffColor, sign, info.difference) 
+        
+    end
+    
+else -- Button progress, without objective
+    
+    return format("%sFarming update:|r %s %sx%d|r (%s%s%d|r)", colors.gold, info.title, colors.gold,  info.newCount, diffColor, sign, info.difference)
+    
+end
+
+
+end]],
+
+    objective = {
+        condition = {
+            type = "ALL", -- "ALL", "ANY", "CUSTOM"
+            func = [[function(trackers, GetTrackerCount)
+    -- This is the structure of the tracker table:
+    --trackers = {
+    --    [1] = {
+    --        type = "ITEM", -- "CURRENCY"
+    --        id = 0000,
+    --        objective = 1,
+    --        includeAlts = false,
+    --        includeBank = false,
+    --        includeGuildBank = {
+    --             ["GuildKey"] = true
+    --        },
+    --        altIDs = {
+    --            {
+    --                type = "ITEM", -- "CURRENCY"
+    --                id = 0000,
+    --                multiplier = 1,
+    --            }
+    --        },
+    --    },
+    --}
+    
+    -- NOTE: make sure the first argument of GetTrackerCount is nil
+    -- This function is not necessary, but available if your custom function is simple and doesn't change the way each tracker is calculated.
+    --local count =  GetTrackerCount(_, trackers[1])
+    
+    return GetTrackerCount(_, trackers[1])
+end]],
+        },
+        icon = {
+            type = "AUTO", -- "AUTO", "FALLBACK"
+            id = 134400,
+        },
+        mute = false,
+        objective = 0,
+        onUse = {
+            type = "NONE", -- "ITEM", "NONE", "MACROTEXT"
+            itemID = false,
+            macrotext = "",
+        },
+        title = "",
+        trackers = {},
     },
 
     skins = {
@@ -275,53 +392,6 @@ private.defaults = {
         },
     },
 
-    objective = {
-        title = "",
-        objective = 0,
-        mute = false,
-        icon = {
-            type = "AUTO", -- "AUTO", "FALLBACK"
-            id = 134400,
-        },
-        onUse = {
-            type = "NONE", -- "ITEM", "NONE", "MACROTEXT"
-            itemID = false,
-            macrotext = "",
-        },
-        condition = {
-            type = "ALL", -- "ALL", "ANY", "CUSTOM"
-            func = [[function(trackers, GetTrackerCount)
-    -- This is the structure of the tracker table:
-    --trackers = {
-    --    [1] = {
-    --        type = "ITEM", -- "CURRENCY"
-    --        id = 0000,
-    --        objective = 1,
-    --        includeAlts = false,
-    --        includeBank = false,
-    --        includeGuildBank = {
-    --             ["GuildKey"] = true
-    --        },
-    --        altIDs = {
-    --            {
-    --                type = "ITEM", -- "CURRENCY"
-    --                id = 0000,
-    --                multiplier = 1,
-    --            }
-    --        },
-    --    },
-    --}
-    
-    -- NOTE: make sure the first argument of GetTrackerCount is nil
-    -- This function is not necessary, but available if your custom function is simple and doesn't change the way each tracker is calculated.
-    --local count =  GetTrackerCount(_, trackers[1])
-    
-    return GetTrackerCount(_, trackers[1])
-end]],
-        },
-        trackers = {},
-    },
-
     tracker = {
         type = "ITEM",
         id = false,
@@ -331,82 +401,6 @@ end]],
         includeGuildBank = {},
         altIDs = {},
     },
-
-    buttonAlert = [[function(info, colors)
-    -- info.title
-    -- info.oldCount
-    -- info.newCount
-    -- info.difference
-    -- info.lost
-    -- info.gained
-    -- info.objective
-    -- info.objectiveMet
-    -- info.newObjectiveMet
-    -- info.reps
-    -- colors.red = "|cffff0000"
-    -- colors.green = "|cff00ff00"
-    -- colors.gold = "|cffffcc00"
-    
-    
-    -- Button progress helpers
-    local diffColor = info.gained and colors.green or colors.red -- Color the sign green if gained or red if lost
-    local sign = info.gained and "+" or "" -- no need to use "-" because it's included in info.difference
-    
-    
-    if info.objective > 0  then -- Button progress, with objective
-        
-        if  info.newObjectiveMet and info.objectiveMet then -- Button progress, objective met
-            
-            return format("%sObjective complete!|r %s %s%d/%d|r x%d", colors.green,  info.title, colors.green, info.newCount, info.objective, info.reps)
-            
-        else -- Button progress, objective not met or already met
-            
-            local countColor = info.objectiveMet and colors.green or colors.gold
-            
-            return format("%sFarming update:|r %s %s%d/%d|r (%s%s%d|r)", colors.gold,  info.title, countColor,  info.newCount, info.objective, diffColor, sign, info.difference) 
-            
-        end
-        
-    else -- Button progress, without objective
-        
-        return format("%sFarming update:|r %s %sx%d|r (%s%s%d|r)", colors.gold, info.title, colors.gold,  info.newCount, diffColor, sign, info.difference)
-        
-    end
-    
-    
-end]],
-
-    barAlert = [[function(info, colors)
-    -- info.barID
-    -- info.label
-    -- info.lost
-    -- info.gained
-    -- info.difference
-    -- info.oldProgress
-    -- info.oldTotal
-    -- info.newProgress
-    -- info.newTotal
-    -- info.newComplete
-    -- colors.red = "|cffff0000"
-    -- colors.green = "|cff00ff00"
-    -- colors.gold = "|cffffcc00"
-    
-    
-    if info.newComplete then -- Bar complete
-        
-        return format("%sBar complete!|r Bar %d %s%d/%d|r", colors.green, info.barID, colors.green, info.newProgress, info.newTotal)
-        
-    else     -- Bar progress   
-        
-        local diffColor = info.gained and colors.green or colors.red -- Color the sign green if gained or red if lost
-        local sign = info.gained and "+" or "" -- no need to use "-" because it's included in info.difference
-        
-        return format("%sBar progress:|r Bar %d %s%d/%d|r (%s%s%d|r)", colors.gold, info.barID, colors.gold, info.newProgress, info.newTotal, diffColor, sign, info.difference)
-        
-    end
-    
-    
-end]],
 
     trackerAlert = [[function(info, colors)
         -- info.title

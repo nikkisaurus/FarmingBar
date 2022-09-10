@@ -637,18 +637,3 @@ function private:GetObjectiveTemplateOptions(objectiveTemplateName)
 
     return options
 end
-
-function private:GetTrackerInfo(Type, id)
-    local name, icon
-    if Type == "ITEM" then
-        private:CacheItem()
-        name = GetItemInfo(id)
-        icon = GetItemIcon(id)
-    elseif Type == "CURRENCY" then
-        local currency = C_CurrencyInfo.GetCurrencyInfo(id)
-        name = currency and currency.name
-        icon = currency and currency.iconFileID
-    end
-
-    return name, icon
-end

@@ -6,4 +6,5 @@
     <Include file="IconSelector.lua"/>
     <Include file="LuaEditBox.lua"/>
     <Include file="LuaEditor.lua"/>
+    <Include file="ObjectiveFrame.lua"/>
 </Ui>

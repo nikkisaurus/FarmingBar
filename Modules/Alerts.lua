@@ -178,19 +178,6 @@ function private:AlertTracker(widget, trackerKey, oldCount, newCount)
     end
 end
 
-function private:ValidateAlert(Type, alert)
-    local func = loadstring("return " .. alert)
-    if type(func) == "function" then
-        local success, userFunc = pcall(func)
-        if success and type(userFunc) == "function" then
-            local ret = userFunc(private.db.global.settings.alerts[Type].alertInfo, private.lists.alertColors)
-            if ret and type(ret) == "string" then
-                return true
-            end
-        end
-    end
-end
-
 function private:PreviewAlert(Type)
     local alert = private.db.global.settings.alerts[Type]
     local func = loadstring("return " .. alert.format)
@@ -200,6 +187,19 @@ function private:PreviewAlert(Type)
             local ret = userFunc(alert.alertInfo, private.lists.alertColors)
             if ret and type(ret) == "string" then
                 return ret
+            end
+        end
+    end
+end
+
+function private:ValidateAlert(Type, alert)
+    local func = loadstring("return " .. alert)
+    if type(func) == "function" then
+        local success, userFunc = pcall(func)
+        if success and type(userFunc) == "function" then
+            local ret = userFunc(private.db.global.settings.alerts[Type].alertInfo, private.lists.alertColors)
+            if ret and type(ret) == "string" then
+                return true
             end
         end
     end

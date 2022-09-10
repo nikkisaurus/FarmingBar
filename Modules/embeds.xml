@@ -5,8 +5,8 @@
     <Include file="Database/Database.lua"/>
     <Include file="Database/Database-v4.lua"/>
     <Include file="DataStore.lua"/>
+    <Include file="Helpers.lua"/>
     <Include file="ItemMover.lua"/>
-    <Include file="ObjectiveFrame.lua"/>
     <Include file="ObjectiveTemplates.lua"/>
     <Include file="Skins.lua"/>
     <Include file="SlashCommands.lua"/>

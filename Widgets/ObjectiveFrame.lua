@@ -2,7 +2,6 @@ local addonName, private = ...
 local addon = LibStub("AceAddon-3.0"):GetAddon(addonName)
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 
---[[ Callbacks ]]
 local function frame_OnShow()
     for _, bar in pairs(private.bars) do
         bar:SetMouseover()
@@ -29,7 +28,6 @@ local function frame_OnUpdate(self)
     end
 end
 
---[[ Methods ]]
 local methods = {
     Clear = function(self)
         self.icon:SetTexture("")
@@ -61,7 +59,6 @@ local methods = {
     end,
 }
 
---[[ Widget ]]
 function private:InitializeObjectiveFrame()
     local frame = CreateFrame("Frame", "FarmingBarObjectiveFrame", UIParent)
     frame:SetSize(20, 20)

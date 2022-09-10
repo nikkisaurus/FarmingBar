@@ -1,15 +1,12 @@
 local addonName, private = ...
 local addon = LibStub("AceAddon-3.0"):GetAddon(addonName)
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
--- Optional libraries
 local ACD = LibStub("AceConfigDialog-3.0")
 local AceGUI = LibStub("AceGUI-3.0", true)
 local LSM = LibStub("LibSharedMedia-3.0")
 
 local Type = "FarmingBar_IconSelector"
 local Version = 1
-
--- *------------------------------------------------------------------------
 
 local function PageButton_OnClick(button, buttonID)
     local widget = button.obj
@@ -31,9 +28,6 @@ end
 local function SelectIcon(widget, iconID)
     widget:Fire("OnClose", iconID)
 end
-
--- *------------------------------------------------------------------------
--- Widget methods
 
 local methods = {
     OnAcquire = function(self)
@@ -182,9 +176,6 @@ local methods = {
         self.last:SetDisabled(page == numPages)
     end,
 }
-
--- *------------------------------------------------------------------------
--- Constructor
 
 local function Constructor()
     local window = AceGUI:Create("Frame")

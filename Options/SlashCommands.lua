@@ -95,7 +95,8 @@ function private:GetSlashCommandOptions()
                                 return L["Invalid barID. To apply to all bars, use barID 0."]
                             elseif not numButtons or numButtons < 1 or numButtons > private.CONST.MAX_BUTTONS then
                                 return format(
-                                    L["Please specify the number of buttons from 0 to %d."],
+                                    L["Please specify the number of buttons from %d to %d."],
+                                    1,
                                     private.CONST.MAX_BUTTONS
                                 )
                             end

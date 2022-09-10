@@ -7,7 +7,6 @@ local LSM = LibStub("LibSharedMedia-3.0")
 local Type = "FarmingBar_LuaEditor"
 local Version = 1
 
--- [[ Scripts ]]
 local scripts = {
     OnTextChanged = function(editbox)
         editbox.obj.button:Enable()
@@ -18,7 +17,6 @@ local scripts = {
     end,
 }
 
---[[ Methods ]]
 local methods = {
     OnAcquire = function(widget)
         widget:Show()
@@ -62,7 +60,6 @@ local methods = {
     end,
 }
 
---[[ Constructor ]]
 local function Constructor()
     local window = AceGUI:Create("Window")
     window:SetLayout("FILL")

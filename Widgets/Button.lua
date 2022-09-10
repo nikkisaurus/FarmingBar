@@ -7,7 +7,6 @@ local LSM = LibStub("LibSharedMedia-3.0")
 local Type = "FarmingBar_Button"
 local Version = 1
 
---[[ Helper Functions ]]
 local function PickupObjectiveInfo(widget)
     if not widget:IsEmpty() then
         local _, buttonDB = widget:GetDB()
@@ -109,7 +108,6 @@ local function ProcessKeybinds(frame, buttonClicked, ...)
     end
 end
 
--- [[ Scripts ]]
 local editboxScripts = {
     OnEditFocusGained = function(editbox)
         editbox:HighlightText()
@@ -252,7 +250,6 @@ local scripts = {
     end,
 }
 
---[[ Methods ]]
 local methods = {
     OnAcquire = function(widget)
         widget:Show()
@@ -632,7 +629,6 @@ local methods = {
     end,
 }
 
---[[ Constructor ]]
 local function Constructor()
     --[[ Frame ]]
     local frame = CreateFrame(

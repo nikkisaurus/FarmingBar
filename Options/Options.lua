@@ -98,10 +98,6 @@ function private:RefreshOptions(...)
     private:NotifyChange()
 end
 
-function private:SelectOptionsPath(...)
-    ACD:SelectGroup(addonName, ...)
-end
-
 function private:RegisterDataObject()
     local dataObject = LibStub("LibDataBroker-1.1"):NewDataObject(addonName, {
         type = "launcher",
@@ -152,4 +148,8 @@ function private:RegisterDataObject()
             end
         end,
     })
+end
+
+function private:SelectOptionsPath(...)
+    ACD:SelectGroup(addonName, ...)
 end

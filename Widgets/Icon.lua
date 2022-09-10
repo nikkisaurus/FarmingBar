@@ -7,7 +7,6 @@ local LSM = LibStub("LibSharedMedia-3.0")
 local Type = "FarmingBar_Icon"
 local Version = 1
 
---[[ Scripts ]]
 local scripts = {
     OnClick = function(button, mouseButton)
         button.obj:Fire("OnClick", mouseButton)
@@ -27,7 +26,6 @@ local scripts = {
     end,
 }
 
---[[ Methods ]]
 local methods = {
     OnAcquire = function(widget)
         widget:SetWidth(40)
@@ -64,7 +62,6 @@ local methods = {
     end,
 }
 
---[[ Constructor ]]
 local function Constructor()
     --[[ Frame ]]
     local frame = CreateFrame("Frame", Type .. AceGUI:GetNextWidgetNum(Type), UIParent)
