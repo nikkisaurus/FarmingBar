@@ -31,9 +31,10 @@ function private:GetButtonTooltip(widget)
     local showDetails = private.db.global.settings.tooltips.showDetails
     local showHints = private.db.global.settings.tooltips.showHints
         or _G["Is" .. private.db.global.settings.tooltips.modifier .. "KeyDown"]()
+    local isEmpty = widget:IsEmpty()
     local lines = {}
 
-    if widget:IsEmpty() then
+    if isEmpty then
         local pendingLines = {
             {
                 double = true,
@@ -198,24 +199,26 @@ function private:GetButtonTooltip(widget)
         }
 
         private:InsertPendingTooltipLines(lines, pendingLines)
+    end
 
-        pendingLines = {
-            {
-                color = private.CONST.TOOLTIP_TITLE,
-                line = L["Hints"],
-                hidden = not showDetails and not showHints,
-            },
-        }
+    pendingLines = {
+        {
+            color = private.CONST.TOOLTIP_TITLE,
+            line = L["Hints"],
+            hidden = not showDetails and not showHints,
+        },
+    }
 
-        for action, actionInfo in pairs(private.db.global.settings.keybinds) do
+    for action, actionInfo in pairs(private.db.global.settings.keybinds) do
+        if not isEmpty or action == "showQuickAddEditBox" or action == "showQuickAddCurrencyEditBox" then
             tinsert(pendingLines, {
                 line = L.ButtonHints(action, actionInfo),
                 hidden = not showDetails and not showHints,
             })
         end
-
-        private:InsertPendingTooltipLines(lines, pendingLines)
     end
+
+    private:InsertPendingTooltipLines(lines, pendingLines)
 
     return lines
 end
