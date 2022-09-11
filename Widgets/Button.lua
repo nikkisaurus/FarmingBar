@@ -139,7 +139,7 @@ local editboxScripts = {
                 end
             end
         elseif editType == "item" then
-            local itemID = private:ValidateItem(input)
+            local itemID = private:ValidateItem(tonumber(input))
             if itemID then
                 widget:CreateObjectiveInfo("ITEM", itemID)
             else

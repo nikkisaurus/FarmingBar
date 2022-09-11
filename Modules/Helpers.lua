@@ -552,6 +552,10 @@ function private:ValidateCurrency(currencyID)
 end
 
 function private:ValidateItem(itemID)
+    if not itemID then
+        return
+    end
+
     local _, itemLink = GetItemInfo(itemID)
     if itemLink then
         local itemString = select(3, strfind(itemLink, "|H(.+)|h"))
