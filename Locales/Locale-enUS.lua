@@ -328,6 +328,26 @@ L.OptionsHelp = function()
         },
         {
             2,
+            "Custom Alerts",
+            {
+                {
+                    1,
+                    "Custom alerts should return your alert as a string. The function will be provided a table with information about the alert and a color table for quick access to red, green, and gold colors.",
+                },
+            },
+        },
+        {
+            2,
+            "Hidden Funcs",
+            {
+                {
+                    1,
+                    "Hidden funcs allow you to set special conditions to hide your bars, such as by your professions, character name, zone, etc. Naturally, some situations may be variable, so you can specify events to listen for to update your bar's hidden status. Ultimately, your hidden func should return true to hide the bar or false/nil to show it. If you have enabled Hidden (Override Func), your bar will be hidden, even if your function doesn't return true.",
+                },
+            },
+        },
+        {
+            2,
             "Objective Templates",
             {
                 {
@@ -336,11 +356,11 @@ L.OptionsHelp = function()
                 },
                 {
                     3,
-                    "Custom Condition",
+                    "Alt IDs",
                 },
                 {
                     1,
-                    "Custom conditions are provided with the trackers database table and the default function used to calculate a tracker's count. From each tracker configuration, the tracker key can be edited to change the order of keys provided by the trackers table. Your custom function must return an integer indicating the count of your objective, and you have complete freedom within this function to calculate it.",
+                    "Trackers have alt IDs, which are items or currencies that are equivalent to the main tracker. For each alt ID, you can set a multiplier to indicate how many count toward 1 tracker. For example, a [Sacred Shard] may have an alt ID [Eternal Crystal] with a multiplier of 3, meaning each Eternal Crystal counts as 3 [Sacred Shard] (given your tracker objective is 1). Multipliers will also accept fractions and decimals; for example, an [Eternal Air] may have an alt ID [Crystallized Air] with a multiplier of 1/10, so that 10 [Crystallized Air] counts as 1 Eternal Air.",
                 },
                 {
                     3,
@@ -348,7 +368,15 @@ L.OptionsHelp = function()
                 },
                 {
                     1,
-                    "Auto icon, by default, will attempt to use the icon for the objective's on use item. However, if on use is set to \"None\" or \"Macrotext\", it will use the icon from the first tracker.",
+                    "By default, auto icon will attempt to use an icon from an objective's on use item. However, if on use is not an item, it will use the icon from the first tracker or the default miscellaneous icon.",
+                },
+                {
+                    3,
+                    "Custom Condition",
+                },
+                {
+                    1,
+                    "Custom conditions are provided with the trackers database table and the default function used to calculate a tracker's count. From each tracker configuration, the tracker key can be edited to change the order of keys provided by the trackers table. Your custom function must return an integer indicating the count of your objective, and you have complete freedom within this function to calculate it.",
                 },
                 {
                     3,
@@ -366,23 +394,15 @@ L.OptionsHelp = function()
                     1,
                     "Each tracker has its own individual goal and can be set to include other sources separately. While \"include bank\" is available by default, users with the DataStore addon (including plugins: DataStore, DataStore_Auctions, DataStore_Characters, DataStore_Containers, DataStore_Currencies, DataStore_Inventory, DataStore_Mails) may track items and currencies on alts and even from guild banks.",
                 },
-                {
-                    3,
-                    "Alt IDs",
-                },
-                {
-                    1,
-                    "Trackers also have alt IDs, which are items or currencies that are equivalent to the main tracker. For each alt ID, you can set a multiplier to indicate how many count toward 1 tracker. For example, a Sacred Shard may have an alt ID Eternal Crystal with a multiplier of 3, meaning each Eternal Crystal counts as 3 Sacred Shards (given your objective for shards is 1). Multipliers will also accept fractions and decimals; for example, an Eternal Air may have an alt ID Crystallized Air with a multiplier of 1/10, so that 10 Crystallized Airs count as 1 Eternal Air.",
-                },
             },
         },
         {
             2,
-            "Hidden Funcs",
+            "Skins",
             {
                 {
                     1,
-                    "Hidden funcs allow you to set special conditions to hide your bars. If you are not familiar with Lua, it is still easy to adjust: simply add \"true\" after \"return\" to hide the bar. The possibilities this creates only ends at what you (or someone else) is able to write. You can hide a bar based on your professions, character name, zone, etc. Because some of these may be variable, you can track hidden events which will trigger an update on your bar.",
+                    "The Skin Editor allows you to customize each layer of your buttons. Note that if you are using Masque, its settings take precedent over both built-in and user skins. If you would like your skin to override Masque, disable Farming Bar in its settings.",
                 },
             },
         },
@@ -392,27 +412,7 @@ L.OptionsHelp = function()
             {
                 {
                     1,
-                    "Templates offer a quick way to load your bar up with farming objectives. You can save an existing bar as a template to easily apply it to another profile or bar, or you can load one of the built-in templates for a quick start.",
-                },
-            },
-        },
-        {
-            2,
-            "Custom Alerts",
-            {
-                {
-                    1,
-                    "Custom alerts allow you to customize exactly how you want your alerts to be formatted. Your alert should return a string, and it's provided several pieces of information to help.",
-                },
-            },
-        },
-        {
-            2,
-            "Skins",
-            {
-                {
-                    1,
-                    "Customize the look of your buttons by creating your own skin. The Skin Editor lets you customize several aspects of each layer on the button. Keep in mind that if you're using Masque, its settings will take precedent over any default or custom skins.",
+                    "Templates are a collection of farming objectives that you can easily load onto new bars. When you create a template, it saves a snapshot of the bar at the moment, including button IDs, objectives, and settings. It will not, however, change your bar settings.",
                 },
             },
         },
