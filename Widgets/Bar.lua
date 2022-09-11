@@ -187,8 +187,8 @@ local methods = {
         end
 
         -- Backdrop
-        local width = (barDB.buttonSize * barDB.buttonsPerAxis)
-            + (barDB.buttonPadding * (barDB.buttonsPerAxis + 1))
+        local width = (barDB.buttonSize * min(barDB.numButtons, barDB.buttonsPerAxis))
+            + (barDB.buttonPadding * (min(barDB.numButtons, barDB.buttonsPerAxis) + 1))
             + (2 * skin.backdrop.bgFile.tileSize)
         local numRows = ceil(#buttons / barDB.buttonsPerAxis)
         local height = (barDB.buttonSize * numRows)
