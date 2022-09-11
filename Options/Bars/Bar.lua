@@ -338,9 +338,21 @@ function private:GetBarOptions(barID)
                     type = "group",
                     inline = true,
                     name = L["Hidden"],
+                    get = function(info)
+                        return barDB[info[#info]]
+                    end,
+                    set = function(info, value)
+                        private.db.profile.bars[barID][info[#info]] = value
+                        private.bars[barID]:SetHidden()
+                    end,
                     args = {
-                        hiddenEvents = {
+                        overrideHidden = {
                             order = 1,
+                            type = "toggle",
+                            name = L["Hidden (Override Func)"],
+                        },
+                        hiddenEvents = {
+                            order = 2,
                             type = "input",
                             width = "full",
                             name = L["Events"],
@@ -375,19 +387,12 @@ function private:GetBarOptions(barID)
                             end,
                         },
                         hidden = {
-                            order = 2,
+                            order = 3,
                             type = "input",
                             width = "full",
                             dialogControl = "FarmingBar_LuaEditBox",
                             multiline = true,
                             name = L["Hidden"],
-                            get = function(info)
-                                return barDB[info[#info]]
-                            end,
-                            set = function(info, value)
-                                private.db.profile.bars[barID][info[#info]] = value
-                                private.bars[barID]:SetHidden()
-                            end,
                             validate = function(_, value)
                                 return private:ValidateHiddenFunc(value)
                             end,
@@ -396,7 +401,7 @@ function private:GetBarOptions(barID)
                             end,
                         },
                         resetHidden = {
-                            order = 3,
+                            order = 4,
                             type = "execute",
                             name = RESET,
                             func = function(info)

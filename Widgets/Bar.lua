@@ -139,6 +139,9 @@ local methods = {
 
     Hide = function(widget)
         widget.frame:Hide()
+        for _, button in pairs(widget:GetButtons()) do
+            button:Hide()
+        end
     end,
 
     LayoutButtons = function(widget)
@@ -245,6 +248,11 @@ local methods = {
     SetHidden = function(widget)
         local barDB = widget:GetDB()
 
+        if barDB.overrideHidden then
+            widget:Hide()
+            return
+        end
+
         local func = loadstring("return " .. barDB.hidden)
         if type(func) == "function" then
             local success, userFunc = pcall(func)
@@ -254,14 +262,6 @@ local methods = {
                     widget:Hide()
                 else
                     widget:Show()
-                end
-
-                for _, button in pairs(widget:GetButtons()) do
-                    if hidden then
-                        button:Hide()
-                    else
-                        button:Show()
-                    end
                 end
             else
                 error(L["barDB.hidden must return a \"function\""])
@@ -371,6 +371,10 @@ local methods = {
 
     Show = function(widget)
         widget.frame:Show()
+
+        for _, button in pairs(widget:GetButtons()) do
+            button:Show()
+        end
     end,
 
     Update = function(widget)

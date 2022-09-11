@@ -140,6 +140,7 @@ L["General"] = true
 L["Gloss"] = true
 L["Guild Bank"] = true
 L["Help"] = true
+L["Hidden (Override Func)"] = true
 L["Hidden must be a function returning a boolean value."] = true
 L["Hidden"] = true
 L["Highlight"] = true

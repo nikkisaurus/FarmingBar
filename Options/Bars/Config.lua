@@ -230,6 +230,17 @@ function private:GetConfigOptions()
                                 end)
                             end,
                         },
+                        overrideHidden = {
+                            order = 5,
+                            type = "toggle",
+                            tristate = true,
+                            name = L["Hidden (Override Func)"],
+                            set = function(info, value)
+                                private:SetMixedBarDBValues(info, value, _, function(barID)
+                                    private.bars[barID]:SetHidden()
+                                end)
+                            end,
+                        },
                     },
                 },
                 layout = {

@@ -50,6 +50,7 @@ private.defaults = {
                 y = -2,
             },
         },
+        overrideHidden = false,
         hidden = [[function()
             -- To hide this bar, return true
             -- To show this bar, return nil
@@ -462,7 +463,7 @@ function private:InitializeDatabase()
         global = {
             debug = {
                 enabled = false,
-                -- enabled = true,
+                enabled = true,
             },
             settings = {
                 alerts = {
