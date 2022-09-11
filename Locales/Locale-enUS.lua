@@ -298,6 +298,128 @@ L["View Code"] = true
 L["X-Offset"] = true
 L["Y-Offset"] = true
 
+L.OptionsHelp = function()
+    -- Type 1 = string, 2 = group, 3 = header
+    local strs = {
+        {
+            3,
+            format("Farming Bar - Version %.1f", 3.0),
+        },
+        {
+            1,
+            format(
+                "Farming Bar allows you to create an unlimited number of bars to track items and complex objectives. You can either place an item on the bar or create an objective template to drag onto the bar. Once a button is tracking a farming objective, options become available to customize and edit. By default, %s opens the Objective Editor, where you can edit properties similar to the Objective Template Builder. You can also set an goal for each farming objective; just %s the button and enter your goal into the editbox. Other actions that can be performed on buttons can be seen in the Hints section at the bottom of the button's tooltip.",
+                addon.ColorFontString("control+right-click", "LIGHTBLUE"),
+                addon.ColorFontString("control+left-click", "LIGHTBLUE")
+            ),
+        },
+        {
+            3,
+            "Issues",
+        },
+        {
+            1,
+            format(
+                "For any bugs or feature requests, please create a ticket at %s. General questions should be left as comments at %s.",
+                addon.ColorFontString("tinyurl.com/farmingbarissues", "LIGHTBLUE"),
+                addon.ColorFontString("tinyurl.com/farmingbarwow", "LIGHTBLUE")
+            ),
+        },
+        {
+            2,
+            "Objective Templates",
+            {
+                {
+                    1,
+                    "The Objective Template Builder allows you to create highly customizable farming objectives, which can be placed onto a bar by left-clicking the objective's icon. Objectives consist of trackers, which are individual items or currencies that have their own goals to meet before counting towards the objective. By default, an objective is not met until the objective of all trackers is met. However, you can mix and match trackers by using the tracker condition \"ALL\". Additionally, if you are comfortable with Lua, you can create a custom function to control how your objective is counted.",
+                },
+                {
+                    3,
+                    "Custom Condition",
+                },
+                {
+                    1,
+                    "Custom conditions are provided with the trackers database table and the default function used to calculate a tracker's count. From each tracker configuration, the tracker key can be edited to change the order of keys provided by the trackers table. Your custom function must return an integer indicating the count of your objective, and you have complete freedom within this function to calculate it.",
+                },
+                {
+                    3,
+                    "Auto Icon",
+                },
+                {
+                    1,
+                    "Auto icon, by default, will attempt to use the icon for the objective's on use item. However, if on use is set to \"None\" or \"Macrotext\", it will use the icon from the first tracker.",
+                },
+                {
+                    3,
+                    "On Use",
+                },
+                {
+                    1,
+                    "An objective's on use setting controls the behavior of the button when used. For example, when you place an item on a bar, by default, it's on use is to use the item placed. With the Objective Template Builder, you can specify any item, regardless of whether it's being tracked, for its on use effect. Additionally, you can supply a macrotext to be run when using your objective, including the built-in \"/craft profession recipe name\" command, which allows you to craft a profession item on use.",
+                },
+                {
+                    3,
+                    "Trackers",
+                },
+                {
+                    1,
+                    "Each tracker has its own individual goal and can be set to include other sources separately. While \"include bank\" is available by default, users with the DataStore addon (including plugins: DataStore, DataStore_Auctions, DataStore_Characters, DataStore_Containers, DataStore_Currencies, DataStore_Inventory, DataStore_Mails) may track items and currencies on alts and even from guild banks.",
+                },
+                {
+                    3,
+                    "Alt IDs",
+                },
+                {
+                    1,
+                    "Trackers also have alt IDs, which are items or currencies that are equivalent to the main tracker. For each alt ID, you can set a multiplier to indicate how many count toward 1 tracker. For example, a Sacred Shard may have an alt ID Eternal Crystal with a multiplier of 3, meaning each Eternal Crystal counts as 3 Sacred Shards (given your objective for shards is 1). Multipliers will also accept fractions and decimals; for example, an Eternal Air may have an alt ID Crystallized Air with a multiplier of 1/10, so that 10 Crystallized Airs count as 1 Eternal Air.",
+                },
+            },
+        },
+        {
+            2,
+            "Hidden Funcs",
+            {
+                {
+                    1,
+                    "Hidden funcs allow you to set special conditions to hide your bars. If you are not familiar with Lua, it is still easy to adjust: simply add \"true\" after \"return\" to hide the bar. The possibilities this creates only ends at what you (or someone else) is able to write. You can hide a bar based on your professions, character name, zone, etc. Because some of these may be variable, you can track hidden events which will trigger an update on your bar.",
+                },
+            },
+        },
+        {
+            2,
+            "Templates",
+            {
+                {
+                    1,
+                    "Templates offer a quick way to load your bar up with farming objectives. You can save an existing bar as a template to easily apply it to another profile or bar, or you can load one of the built-in templates for a quick start.",
+                },
+            },
+        },
+        {
+            2,
+            "Custom Alerts",
+            {
+                {
+                    1,
+                    "Custom alerts allow you to customize exactly how you want your alerts to be formatted. Your alert should return a string, and it's provided several pieces of information to help.",
+                },
+            },
+        },
+        {
+            2,
+            "Skins",
+            {
+                {
+                    1,
+                    "Customize the look of your buttons by creating your own skin. The Skin Editor lets you customize several aspects of each layer on the button. Keep in mind that if you're using Masque, its settings will take precedent over any default or custom skins.",
+                },
+            },
+        },
+    }
+
+    return strs
+end
+
 local function GetCommandString(actionInfo)
     -- Ctrl+right-click
     local mods = private:StringToTitle(gsub(actionInfo.modifier, "-", "+")) -- Put in title case and replace - with +
