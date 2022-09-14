@@ -32,6 +32,7 @@ L["Add Tracker"] = true
 L["Add"] = true
 L["Alert formats must be a function returning a string value."] = true
 L["Alerts"] = true
+L["All"] = true
 L["All Bars"] = true
 L["Alpha"] = true
 L["AlphaKey"] = true
