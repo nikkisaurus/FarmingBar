@@ -7,12 +7,16 @@ function addon:OnDisable()
     private:RefreshOptions("settings")
     addon:UnregisterEvent("CURSOR_CHANGED")
     addon:UnregisterEvent("SPELL_UPDATE_COOLDOWN")
+    addon:UnregisterEvent("BANKFRAME_OPENED")
+    addon:UnregisterEvent("BANKFRAME_CLOSED")
 end
 
 function addon:OnEnable()
     private:InitializeBars()
     addon:RegisterEvent("CURSOR_CHANGED")
     addon:RegisterEvent("SPELL_UPDATE_COOLDOWN")
+    addon:RegisterEvent("BANKFRAME_OPENED")
+    addon:RegisterEvent("BANKFRAME_CLOSED")
 
     if private.db.global.debug.enabled then
         C_Timer.After(1, private.StartDebug)

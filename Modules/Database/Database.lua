@@ -555,11 +555,11 @@ function private:InitializeDatabase()
                         button = "LeftButton",
                         modifier = "",
                     },
-                    moveObjectiveToBank = { -- TODO
+                    moveObjectiveToBank = {
                         button = "RightButton",
                         modifier = "alt-ctrl",
                     },
-                    moveAllToBank = { -- TODO
+                    moveAllToBank = {
                         button = "LeftButton",
                         modifier = "alt-ctrl",
                     },

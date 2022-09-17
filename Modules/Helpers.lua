@@ -328,6 +328,14 @@ local function MSQ_Callback(...)
     end
 end
 
+function addon:BANKFRAME_CLOSED()
+    private.status.bankOpen = false
+end
+
+function addon:BANKFRAME_OPENED()
+    private.status.bankOpen = true
+end
+
 function private:AddSpecialFrame(frame, frameName)
     _G[frameName] = frame
     tinsert(UISpecialFrames, frameName)

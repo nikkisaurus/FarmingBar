@@ -51,6 +51,18 @@ local postClickMethods = {
     end,
 
     moveObjectiveToBank = function(frame)
+        local widget = frame.obj
+        local _, buttonDB = widget:GetDB()
+        if not buttonDB.objective or buttonDB.objective == 0 then
+            return
+        end
+
+        addon:RegisterEvent("BAG_UPDATE_DELAYED")
+        private:MoveObjectiveToBank(widget)
+    end,
+
+    moveAllToBank = function(frame)
+        addon:RegisterEvent("BAG_UPDATE_DELAYED")
         private:MoveObjectiveToBank(frame.obj)
     end,
 

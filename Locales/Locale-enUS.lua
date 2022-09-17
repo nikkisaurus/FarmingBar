@@ -189,6 +189,7 @@ L["Monochrome"] = true
 L["Mouse Button"] = true
 L["Mouseover"] = true
 L["Movable"] = true
+L["Move canceled; please open bank frame."] = true
 L["moveAllToBank"] = "Move All to Bank"
 L["moveObjective"] = "Move Objective"
 L["moveObjectiveToBank"] = "Move Objective to Bank"
