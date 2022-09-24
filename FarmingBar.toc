@@ -1,57 +1,23 @@
-## Interface: 90100
-## Interface-Retail: 90100
-## Interface-Classic: 11306
-## Interface-BCC: 20501
+## Interface: 90205
+## Interface-Retail: 90205
+
 ## Title: FarmingBar
-## Author: Nikketa-Hyjal-US
 ## Notes: Action bar to display and track objective goals.
 ## Version: @project-version@
-## SavedVariables: FarmingBarDB
-## SavedVariablesPerCharacter: FarmingBarCharacterDB
+## Author: Nikketa-Hyjal-US
+
+## SavedVariables: FarmingBarDB, FarmingBarDevDB
+## OptionalDeps: DataStore, DataStore_Auctions, DataStore_Characters, DataStore_Containers, DataStore_Currency, DataStore_Inventory, DataStore_Mails
+
 ## X-Curse-Project-ID: 351688
 ## X-WoWI-ID: 25440
+## X-Wago-ID: BO67dYK3
 
-# Libraries
-Libs\LibStub\LibStub.lua
-Libs\CallbackHandler-1.0\CallbackHandler-1.0.xml
-Libs\AceAddon-3.0\AceAddon-3.0.xml
-Libs\AceEvent-3.0\AceEvent-3.0.xml
-Libs\AceTimer-3.0\AceTimer-3.0.xml
-Libs\AceDB-3.0\AceDB-3.0.xml
-Libs\AceDBOptions-3.0\AceDBOptions-3.0.xml
-Libs\AceLocale-3.0\AceLocale-3.0.xml
-Libs\AceConsole-3.0\AceConsole-3.0.xml
-Libs\AceGUI-3.0\AceGUI-3.0.xml
-Libs\AceConfig-3.0\AceConfig-3.0.xml
-Libs\LibSharedMedia-3.0\lib.xml
-Libs\AceGUI-3.0-SharedMediaWidgets\widget.xml
-Libs\LibDataBroker-1.1\LibDataBroker-1.1.lua
-Libs\LibAddonUtils\LibAddonUtils.xml
-
-# Locales
+libs.xml
 Locales\Locale-enUS.lua
-
-# Core
-Core\Core.lua
-Data\Database.lua
-Core\Frames.xml
-Core\Bars.lua
-Core\Buttons.lua
-
-# Options
-Options\Commands.lua
-Options\Interface.lua
-
-# #@retail@
-Data\FileDataRetail.lua
-# #@end-retail@
-# #@non-retail@
-Data\FileDataClassic.lua
-# #@end-non-retail@
-
-# Modules
-Modules\ItemMover.lua
-Modules\ObjectiveBuilder.lua
-Modules\Skin.lua
-Modules\Templates.lua
-Modules\Tooltips.lua
+Media\FileData.lua
+Media\FileDataClassic.lua
+Widgets\embeds.xml
+Modules\embeds.xml
+Options\embeds.xml
+FarmingBar.lua
