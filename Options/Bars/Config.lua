@@ -140,6 +140,11 @@ function private:GetConfigOptions()
                             name = L["Limit Mats"],
                             desc = L["Objectives on this bar cannot use materials already accounted for by another objective on the same bar."],
                             descStyle = "inline",
+                            set = function(info, value)
+                                private:SetMixedBarDBValues(info, value, _, function(barID)
+                                    private.bars[barID]:UpdateButtons()
+                                end)
+                            end,
                         },
                     },
                 },

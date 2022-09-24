@@ -71,7 +71,7 @@ local postClickMethods = {
         local _, buttonDB = widget:GetDB()
         local itemID = buttonDB and buttonDB.onUse.itemID
 
-        if widget:IsEmpty() or buttonDB.onUse.type ~= "ITEM" or not itemID or not GetItemSpell(itemID) then
+        if widget:IsEmpty() or buttonDB.onUse.type == "NONE" or not itemID or not GetItemSpell(itemID) then
             return
         end
     end,
@@ -472,7 +472,7 @@ local methods = {
             local skin = private.db.global.skins[barDB.skin]
             if not skin.buttonTextures.iconBorder.hidden and color then
                 widget.iconBorder:Show()
-                widget.iconBorder:SetVertexColor(unpack(color))
+                widget.iconBorder:SetVertexColor(addon.unpack(color, { 1, 1, 1, 1 }))
             else
                 widget.iconBorder:Hide()
             end
@@ -654,7 +654,7 @@ local function Constructor()
     frame:SetMovable(true)
     frame:EnableMouse(true)
     frame:RegisterForDrag("LeftButton", "RightButton")
-    frame:RegisterForClicks("AnyUp")
+    frame:RegisterForClicks("AnyDown")
 
     for script, func in pairs(scripts) do
         frame:SetScript(script, func)

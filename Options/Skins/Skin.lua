@@ -36,6 +36,7 @@ function private:GetSkinOptions(skinName)
             set = function(_, value)
                 private:CopySkin(value, skinName)
                 private:UpdateBarSkins(skinName)
+                private:RefreshOptions()
             end,
             confirm = function(_, value)
                 return format(L["Are you sure you want to overwrite \"%s\" with \"%s\"?"], skinName, value)
@@ -203,6 +204,9 @@ function private:GetSkinOptions(skinName)
                     type = "color",
                     hasAlpha = true,
                     name = L["Background Color"],
+                    hidden = function()
+                        return layerName == "iconBorder"
+                    end,
                     get = function(info)
                         return unpack(layer[info[#info]])
                     end,

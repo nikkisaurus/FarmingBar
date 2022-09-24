@@ -8,6 +8,7 @@ function private:GetBarTooltip(widget)
     end
 
     local showHints = private.db.global.settings.tooltips.showHints
+        or _G["Is" .. private.db.global.settings.tooltips.modifier .. "KeyDown"]()
     local showDetails = private.db.global.settings.tooltips.showDetails
         or _G["Is" .. private.db.global.settings.tooltips.modifier .. "KeyDown"]()
 
