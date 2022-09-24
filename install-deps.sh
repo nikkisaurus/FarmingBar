@@ -13,7 +13,7 @@ svn checkout https://repos.curseforge.com/wow/ace3/trunk/AceHook-3.0 ./Libs/AceH
 svn checkout https://repos.curseforge.com/wow/libsharedmedia-3-0/trunk/LibSharedMedia-3.0 ./Libs/LibSharedMedia-3.0
 svn checkout https://repos.curseforge.com/wow/ace-gui-3-0-shared-media-widgets/trunk ./Libs/AceGUI-3.0-SharedMediaWidgets
 git clone https://github.com/SFX-WoW/AceGUI-3.0_SFX-Widgets ./Libs/AceGUI-3.0_SFX-Widgets
-svn checkout https://repos.curseforge.com/wow/libdatabroker-1-1 ./Libs/LibDataBroker-1.1
+git clone https://github.com/tekkub/libdatabroker-1-1.git ./Libs/LibDataBroker-1.1
 git clone https://github.com/SafeteeWoW/LibDeflate ./Libs/LibDeflate
-git clone https://github.com/rossnichols/LibSerialize ./Libs/LibSerialize
+git clone https://github.com/rossnichols/LibSerialize ./Libs/LibSerialize-1.1.3
 git clone https://github.com/niketa-wow/libaddonutils ./Libs/LibAddonUtils
