@@ -20,7 +20,7 @@ local scripts = {
 local methods = {
     OnAcquire = function(widget)
         widget:Show()
-        addon.indent.enable(widget.editbox, _, 4) -- adds syntax highlighting
+        addon.indent.enable(widget.editbox, nil, 4) -- adds syntax highlighting
         widget.status = {}
     end,
 
