@@ -20,12 +20,13 @@ externals:
     Libs/LibSharedMedia-3.0: https://repos.curseforge.com/wow/libsharedmedia-3-0/trunk/LibSharedMedia-3.0
     Libs/AceGUI-3.0-SharedMediaWidgets: https://repos.curseforge.com/wow/ace-gui-3-0-shared-media-widgets/trunk
     Libs/AceGUI-3.0_SFX-Widgets: https://github.com/SFX-WoW/AceGUI-3.0_SFX-Widgets
-    Libs/LibDataBroker-1.1: https://repos.curseforge.com/wow/libdatabroker-1-1
+    Libs/LibDataBroker-1.1: https://github.com/tekkub/libdatabroker-1-1.git
     Libs/LibDeflate: https://github.com/SafeteeWoW/LibDeflate
     Libs/LibSerialize-1.1.3: https://github.com/rossnichols/LibSerialize
     Libs/LibAddonUtils: https://github.com/niketa-wow/libaddonutils
 
 embedded-libraries:
+    - libdatabroker-1-1
     - libaddonutils
     - libdeflate
     - sfx-widgets
