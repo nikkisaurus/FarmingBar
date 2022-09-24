@@ -79,7 +79,7 @@ local function Constructor()
     label:SetPoint("BOTTOM")
     label:SetJustifyH("CENTER")
     label:SetJustifyV("BOTTOM")
-    label:SetWordWrap()
+    label:SetWordWrap(false)
 
     --[[ Widget ]]
     local widget = {

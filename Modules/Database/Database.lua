@@ -538,6 +538,8 @@ function private:InitializeDatabase()
                     showDetails = false,
                     showHints = true,
                     showLink = true,
+                    bar = true,
+                    button = true,
                 },
                 commands = {
                     farmingbar = true,

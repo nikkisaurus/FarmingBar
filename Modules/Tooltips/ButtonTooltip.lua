@@ -29,6 +29,7 @@ function private:GetButtonTooltip(widget)
     local barDB, buttonDB = widget:GetDB()
     local barID, buttonID = widget:GetID()
     local showDetails = private.db.global.settings.tooltips.showDetails
+        or _G["Is" .. private.db.global.settings.tooltips.modifier .. "KeyDown"]()
     local showHints = private.db.global.settings.tooltips.showHints
         or _G["Is" .. private.db.global.settings.tooltips.modifier .. "KeyDown"]()
     local isEmpty = widget:IsEmpty()

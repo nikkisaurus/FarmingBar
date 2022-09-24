@@ -101,6 +101,10 @@ function private:GetBarOptions(barID)
                     name = L["Limit Mats"],
                     desc = L["Objectives on this bar cannot use materials already accounted for by another objective on the same bar."],
                     descStyle = "inline",
+                    set = function(info, value)
+                        private.db.profile.bars[barID][info[#info]] = value
+                        private.bars[barID]:UpdateButtons()
+                    end,
                 },
                 manage = {
                     order = 3,

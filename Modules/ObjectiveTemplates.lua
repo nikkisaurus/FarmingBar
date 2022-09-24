@@ -60,7 +60,8 @@ function private:GetObjectiveIcon(objectiveInfo)
         if id then
             private.CacheItem(id)
             local _, _, rarity = GetItemInfo(id)
-            colors = rarity and rarity >= 2 and { GetItemQualityColor(rarity) }
+            local r, g, b = GetItemQualityColor(rarity)
+            colors = rarity and rarity >= 2 and { r, g, b, 1 }
         end
         return GetItemIcon(id), colors
     elseif not objectiveInfo.trackers[1] then
@@ -71,7 +72,8 @@ function private:GetObjectiveIcon(objectiveInfo)
         if id then
             private.CacheItem(id)
             local _, _, rarity = GetItemInfo(id)
-            colors = rarity and rarity >= 2 and { GetItemQualityColor(rarity) }
+            local r, g, b = GetItemQualityColor(rarity)
+            colors = rarity and rarity >= 2 and { r, g, b, 1 }
         end
         return GetItemIcon(id), colors
     else

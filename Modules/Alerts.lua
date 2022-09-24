@@ -35,7 +35,8 @@ function private:Alert(widget, ...)
         objective = buttonDB.objective,
         objectiveMet = newCount >= buttonDB.objective,
         newObjectiveMet = newCount >= buttonDB.objective and oldCount < buttonDB.objective,
-        reps = newCount >= buttonDB.objective and floor(newCount / buttonDB.objective) or 0,
+        reps = (buttonDB.objective and buttonDB.objective > 0)
+            and (newCount >= buttonDB.objective and floor(newCount / buttonDB.objective) or 0),
     }
 
     local func = loadstring("return " .. alert)
