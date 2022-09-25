@@ -467,6 +467,7 @@ function private:InitializeDatabase()
                 -- enabled = true,
             },
             settings = {
+                autoLoot = false,
                 alerts = {
                     button = {
                         sound = true,

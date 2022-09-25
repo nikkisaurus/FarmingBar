@@ -74,6 +74,14 @@ local postClickMethods = {
         if widget:IsEmpty() or buttonDB.onUse.type == "NONE" or not itemID or not GetItemSpell(itemID) then
             return
         end
+
+        if not GetCVar("autoLootDefault") and private.db.global.settings.autoLoot and GetNumLootItems() > 0 then
+            C_Timer.After(0.5, function()
+                for i = 1, GetNumLootItems() do
+                    LootSlot(i)
+                end
+            end)
+        end
     end,
 
     showObjectiveEditBox = function(frame)
