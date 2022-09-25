@@ -18,14 +18,17 @@ function private:ConvertDB_V2()
             local alerts = private.backup.global.alerts
             if alerts.chat ~= nil then
                 private.db.global.settings.alerts.button.chat = alerts.chat
+                private.db.global.settings.alerts.tracker.chat = alerts.chat
             end
 
             if alerts.screen ~= nil then
                 private.db.global.settings.alerts.button.screen = alerts.screen
+                private.db.global.settings.alerts.tracker.screen = alerts.screen
             end
 
             if alerts.sound ~= nil then
                 private.db.global.settings.alerts.button.sound = alerts.sound
+                private.db.global.settings.alerts.tracker.sound = alerts.sound
             end
 
             -- Bar
@@ -38,10 +41,38 @@ function private:ConvertDB_V2()
             end
 
             if alerts.barSound ~= nil then
-                private.db.global.settings.alerts.button.sound = alerts.barSound
+                private.db.global.settings.alerts.bar.sound = alerts.barSound
             end
 
             private.db.profile.chatFrame = alerts.chatFrame
+        end
+
+        -- Sounds
+        local sounds = private.backup.global.sounds
+        if sounds then
+            if sounds.objectiveSet then
+                private.db.global.settings.alerts.sounds.objectiveSet = sounds.objectiveSet
+            end
+
+            if sounds.objectiveCleared then
+                private.db.global.settings.alerts.sounds.objectiveCleared = sounds.objectiveCleared
+            end
+
+            if sounds.barProgress then
+                private.db.global.settings.alerts.sounds.barProgress = sounds.barProgress
+            end
+
+            if sounds.barComplete then
+                private.db.global.settings.alerts.sounds.barComplete = sounds.barComplete
+            end
+
+            if sounds.farmingProgress then
+                private.db.global.settings.alerts.sounds.progress = sounds.farmingProgress
+            end
+
+            if sounds.objectiveComplete then
+                private.db.global.settings.alerts.sounds.objectiveMet = sounds.objectiveComplete
+            end
         end
 
         -- Tooltips

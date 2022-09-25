@@ -54,6 +54,37 @@ FarmingBarDB = {
     ["profileKeys"] = {
         ["Nikketa - Hyjal"] = "Default",
     },
+    ["global"] = {
+        ["commands"] = {
+            ["fbar"] = false,
+            ["fb"] = true,
+            ["farmbar"] = false,
+            ["farm"] = false,
+        },
+        ["tooltips"] = {
+            ["mod"] = "Shift",
+            ["button"] = false,
+            ["enableMod"] = false,
+            ["bar"] = false,
+        },
+        ["alerts"] = {
+            ["barChat"] = false,
+            ["chatFrame"] = "ChatFrame6",
+            ["barScreen"] = false,
+            ["barSound"] = false,
+            ["sound"] = false,
+            ["screen"] = false,
+            ["chat"] = false,
+        },
+        ["sounds"] = {
+            ["objectiveCleared"] = "MSBT Cooldown",
+            ["barComplete"] = "BugSack: Fatality",
+            ["farmingProgress"] = "MSBT Low Health",
+            ["objectiveComplete"] = "None",
+            ["objectiveSet"] = "Loot Coin",
+            ["barProgress"] = "MSBT Low Mana",
+        },
+    },
     ["profiles"] = {
         ["Default"] = {},
     },
