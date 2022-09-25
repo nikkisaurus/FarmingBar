@@ -151,12 +151,13 @@ local editboxScripts = {
                 end
             end
         elseif editType == "item" then
-            local itemID = private:ValidateItem(tonumber(input))
-            if itemID then
-                widget:CreateObjectiveInfo("ITEM", itemID)
-            else
-                addon:Print(L["Invalid item ID."])
-            end
+            addon.CacheItem(tonumber(input), function(itemID)
+                if GetItemInfoInstant(itemID) then
+                    widget:CreateObjectiveInfo("ITEM", itemID)
+                else
+                    addon:Print(L["Invalid item ID."])
+                end
+            end, tonumber(input))
         elseif editType == "currency" then
             local currencyID = private:ValidateCurrency(input or 0)
             if currencyID then
