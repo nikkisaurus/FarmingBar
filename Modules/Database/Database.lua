@@ -454,6 +454,7 @@ function private:InitializeDatabase()
                 FarmingBarDB = nil
             end
         else
+            private.version = 2
             private.backup = FarmingBarDB
             FarmingBarDB = nil
         end
@@ -598,7 +599,7 @@ function private:InitializeDatabase()
         },
         profile = {
             enabled = true,
-            chatFrame = "ChatFrame1",
+            chatFrame = (DEFAULT_CHAT_FRAME:GetName()),
             bars = {
                 private.defaults.bar,
             },
@@ -619,7 +620,6 @@ function private:InitializeDatabase()
     addon:SetEnabledState(private.db.profile.enabled)
 
     private.db.global.version = 5
-    private.db.global.backup = private.backup
 
     private.db.RegisterCallback(addon, "OnProfileChanged", "OnProfile_")
     private.db.RegisterCallback(addon, "OnProfileCopied", "OnProfile_")
@@ -627,5 +627,7 @@ function private:InitializeDatabase()
 
     if private.version == 4 then
         private:ConvertDB_V4()
+    elseif private.version == 2 then
+        private:ConvertDB_V2()
     end
 end
