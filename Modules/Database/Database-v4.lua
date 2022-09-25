@@ -8,7 +8,7 @@ function private:ConvertDB_V4()
         -- Commands
         if private.backup.global.settings.commands then
             for command, enabled in pairs(private.backup.global.settings.commands) do
-                private.db.global.settings.commands[command] = enabled
+                private.db.global.settings.commands[command] = enabled and true or false
             end
         end
 

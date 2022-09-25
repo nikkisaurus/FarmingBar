@@ -151,6 +151,25 @@ function private:GetSettingsOptions()
                         },
                     },
                 },
+                misc = {
+                    order = 4,
+                    type = "group",
+                    inline = true,
+                    name = L["Miscellaneous"],
+                    get = function(info)
+                        return private.db.global.settings[info[#info]]
+                    end,
+                    set = function(info, value)
+                        private.db.global.settings[info[#info]] = value
+                    end,
+                    args = {
+                        autoLoot = {
+                            order = 1,
+                            type = "toggle",
+                            name = L["Auto Loot"],
+                        },
+                    },
+                },
             },
         },
         alerts = {

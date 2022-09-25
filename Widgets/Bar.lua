@@ -66,6 +66,8 @@ local anchorScripts = {
             addon:Unhook(anchor, "OnUpdate")
         end
 
+        private:ClearTooltip()
+
         local widget = anchor.obj
         widget:CallScript("OnLeave", widget.frame, ...)
     end,

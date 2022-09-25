@@ -74,6 +74,14 @@ local postClickMethods = {
         if widget:IsEmpty() or buttonDB.onUse.type == "NONE" or not itemID or not GetItemSpell(itemID) then
             return
         end
+
+        if not GetCVar("autoLootDefault") and private.db.global.settings.autoLoot and GetNumLootItems() > 0 then
+            C_Timer.After(0.5, function()
+                for i = 1, GetNumLootItems() do
+                    LootSlot(i)
+                end
+            end)
+        end
     end,
 
     showObjectiveEditBox = function(frame)
@@ -107,13 +115,14 @@ local postClickMethods = {
 local function ProcessKeybinds(frame, buttonClicked, ...)
     for keybind, keybindInfo in pairs(private.db.global.settings.keybinds) do
         if buttonClicked == keybindInfo.button then
-            local mod = private:GetModifierString()
+            local modifier = private:GetModifierString()
             local isDragging = frame.obj:GetUserData("dragging")
 
-            if mod == keybindInfo.modifier and (keybindInfo.type == "drag" and isDragging or not isDragging) then
+            if modifier == keybindInfo.modifier and (keybindInfo.type == "drag" and isDragging or not isDragging) then
                 local func = postClickMethods[keybind]
                 if func then
                     func(frame, keybindInfo, buttonClicked, ...)
+                    return
                 end
             end
         end
@@ -151,12 +160,13 @@ local editboxScripts = {
                 end
             end
         elseif editType == "item" then
-            local itemID = private:ValidateItem(tonumber(input))
-            if itemID then
-                widget:CreateObjectiveInfo("ITEM", itemID)
-            else
-                addon:Print(L["Invalid item ID."])
-            end
+            addon.CacheItem(tonumber(input), function(itemID)
+                if GetItemInfoInstant(itemID) then
+                    widget:CreateObjectiveInfo("ITEM", itemID)
+                else
+                    addon:Print(L["Invalid item ID."])
+                end
+            end, tonumber(input))
         elseif editType == "currency" then
             local currencyID = private:ValidateCurrency(input or 0)
             if currencyID then
@@ -205,7 +215,9 @@ local scripts = {
     end,
 
     OnDragStop = function(frame, ...)
-        frame.obj:SetUserData("dragging")
+        C_Timer.After(0.2, function()
+            frame.obj:SetUserData("dragging")
+        end)
     end,
 
     OnEnter = function(frame, ...)
@@ -258,7 +270,9 @@ local scripts = {
             return
         end
 
-        ProcessKeybinds(frame, buttonClicked, ...)
+        C_Timer.After(0.2, function()
+            ProcessKeybinds(frame, buttonClicked)
+        end)
     end,
 }
 
