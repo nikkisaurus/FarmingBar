@@ -40,3 +40,4 @@ ignore:
     - Libs/\*.txt
     - Libs/\*.textile
     - .stylua.toml
+    - install-deps.sh
