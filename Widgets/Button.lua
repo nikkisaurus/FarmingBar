@@ -107,13 +107,14 @@ local postClickMethods = {
 local function ProcessKeybinds(frame, buttonClicked, ...)
     for keybind, keybindInfo in pairs(private.db.global.settings.keybinds) do
         if buttonClicked == keybindInfo.button then
-            local mod = private:GetModifierString()
+            local modifier = private:GetModifierString()
             local isDragging = frame.obj:GetUserData("dragging")
 
-            if mod == keybindInfo.modifier and (keybindInfo.type == "drag" and isDragging or not isDragging) then
+            if modifier == keybindInfo.modifier and (keybindInfo.type == "drag" and isDragging or not isDragging) then
                 local func = postClickMethods[keybind]
                 if func then
                     func(frame, keybindInfo, buttonClicked, ...)
+                    return
                 end
             end
         end
@@ -206,7 +207,9 @@ local scripts = {
     end,
 
     OnDragStop = function(frame, ...)
-        frame.obj:SetUserData("dragging")
+        C_Timer.After(0.2, function()
+            frame.obj:SetUserData("dragging")
+        end)
     end,
 
     OnEnter = function(frame, ...)
@@ -259,7 +262,9 @@ local scripts = {
             return
         end
 
-        ProcessKeybinds(frame, buttonClicked, ...)
+        C_Timer.After(0.2, function()
+            ProcessKeybinds(frame, buttonClicked)
+        end)
     end,
 }
 
