@@ -271,8 +271,31 @@ function private:GetSettingsOptions()
                                 },
                             },
                         },
-                        bar = {
+                        formatType = {
                             order = 5,
+                            type = "select",
+                            style = "dropdown",
+                            name = L["Format Type"],
+                            values = {
+                                STRING = L["String"],
+                                FUNC = L["Function"],
+                            },
+                        },
+                        formatStr = {
+                            order = 6,
+                            type = "input",
+                            width = "full",
+                            name = L["Format"],
+                            validate = function(_, value)
+                                return private:ValidateAlert("bar", value)
+                                    or L["Alert formats must be a string value. Please be sure if statements are properly formatted and do not cause a Lua error."]
+                            end,
+                            hidden = function()
+                                return private.db.global.settings.alerts.bar.formatType == "FUNC"
+                            end,
+                        },
+                        bar = {
+                            order = 6,
                             type = "input",
                             multiline = true,
                             dialogControl = "FarmingBar_LuaEditBox",
@@ -293,13 +316,18 @@ function private:GetSettingsOptions()
                                 return private:ValidateAlert("bar", value)
                                     or L["Alert formats must be a function returning a string value."]
                             end,
+                            hidden = function()
+                                return private.db.global.settings.alerts.bar.formatType == "STRING"
+                            end,
                         },
                         resetBar = {
-                            order = 6,
+                            order = 7,
                             type = "execute",
                             name = L["Reset Bar Alert"],
+                            desc = L["Reset both string and function bar formats."],
                             func = function()
                                 private.db.global.settings.alerts.bar.format = private.defaults.barAlert
+                                private.db.global.settings.alerts.bar.formatStr = private.defaults.barAlertStr
                             end,
                             confirm = function()
                                 return L["Are you sure you want to reset bar alerts format?"]
@@ -357,13 +385,13 @@ function private:GetSettingsOptions()
                                     > alertInfo.newCount
                                 private.db.global.settings.alerts.button.alertInfo.gained = alertInfo.oldCount
                                     < alertInfo.newCount
-                                private.db.global.settings.alerts.button.alertInfo.objectiveMet = alertInfo.newCount
-                                    >= alertInfo.objective
-                                private.db.global.settings.alerts.button.alertInfo.newObjectiveMet = alertInfo.oldCount
-                                    < alertInfo.objective
+                                private.db.global.settings.alerts.button.alertInfo.goalMet = alertInfo.newCount
+                                    >= alertInfo.goal
+                                private.db.global.settings.alerts.button.alertInfo.newGoalMet = alertInfo.oldCount
+                                    < alertInfo.goal
                                 private.db.global.settings.alerts.button.alertInfo.reps = alertInfo.newCount
-                                            >= alertInfo.objective
-                                        and floor(alertInfo.newCount / alertInfo.objective)
+                                            >= alertInfo.goal
+                                        and floor(alertInfo.newCount / alertInfo.goal)
                                     or 0
                             end,
                             args = {
@@ -396,8 +424,31 @@ function private:GetSettingsOptions()
                                 },
                             },
                         },
-                        button = {
+                        formatType = {
                             order = 5,
+                            type = "select",
+                            style = "dropdown",
+                            name = L["Format Type"],
+                            values = {
+                                STRING = L["String"],
+                                FUNC = L["Function"],
+                            },
+                        },
+                        formatStr = {
+                            order = 6,
+                            type = "input",
+                            width = "full",
+                            name = L["Format"],
+                            validate = function(_, value)
+                                return private:ValidateAlert("button", value)
+                                    or L["Alert formats must be a string value. Please be sure if statements are properly formatted and do not cause a Lua error."]
+                            end,
+                            hidden = function()
+                                return private.db.global.settings.alerts.button.formatType == "FUNC"
+                            end,
+                        },
+                        button = {
+                            order = 6,
                             type = "input",
                             multiline = true,
                             dialogControl = "FarmingBar_LuaEditBox",
@@ -418,13 +469,18 @@ function private:GetSettingsOptions()
                                 return private:ValidateAlert("button", value)
                                     or L["Alert formats must be a function returning a string value."]
                             end,
+                            hidden = function()
+                                return private.db.global.settings.alerts.button.formatType == "STRING"
+                            end,
                         },
                         resetButton = {
-                            order = 6,
+                            order = 7,
                             type = "execute",
                             name = L["Reset Button Alert"],
+                            desc = L["Reset both string and function button formats."],
                             func = function()
                                 private.db.global.settings.alerts.button.format = private.defaults.buttonAlert
+                                private.db.global.settings.alerts.button.formatStr = private.defaults.buttonAlertStr
                             end,
                             confirm = function()
                                 return L["Are you sure you want to reset button alerts format?"]
@@ -472,7 +528,11 @@ function private:GetSettingsOptions()
                             end,
                             set = function(info, value)
                                 value = tonumber(value) or 0
-                                value = value >= 0 and value or 0
+                                if info[#info] == "trackerGoal" then
+                                    value = value >= 1 and value or 1
+                                else
+                                    value = value >= 0 and value or 0
+                                end
 
                                 local alertInfo = private.db.global.settings.alerts.tracker.alertInfo
                                 private.db.global.settings.alerts.tracker.alertInfo[info[#info]] = value
@@ -482,13 +542,13 @@ function private:GetSettingsOptions()
                                     > alertInfo.newCount
                                 private.db.global.settings.alerts.tracker.alertInfo.gained = alertInfo.oldCount
                                     < alertInfo.newCount
-                                private.db.global.settings.alerts.tracker.alertInfo.trackerGoal = alertInfo.objective
-                                    * alertInfo.trackerObjective
-                                private.db.global.settings.alerts.tracker.alertInfo.objectiveMet = alertInfo.newCount
-                                    >= alertInfo.trackerGoal
+                                private.db.global.settings.alerts.tracker.alertInfo.trackerGoalTotal = alertInfo.goal
+                                    * alertInfo.trackerGoal
+                                private.db.global.settings.alerts.tracker.alertInfo.goalMet = alertInfo.newCount
+                                    >= alertInfo.trackerGoalTotal
                                 private.db.global.settings.alerts.tracker.alertInfo.newComplete = alertInfo.oldCount
-                                        < alertInfo.trackerGoal
-                                    and alertInfo.newCount >= alertInfo.trackerGoal
+                                        < alertInfo.trackerGoalTotal
+                                    and alertInfo.newCount >= alertInfo.trackerGoalTotal
                             end,
                             args = {
                                 preview = {
@@ -526,8 +586,31 @@ function private:GetSettingsOptions()
                                 },
                             },
                         },
-                        tracker = {
+                        formatType = {
                             order = 5,
+                            type = "select",
+                            style = "dropdown",
+                            name = L["Format Type"],
+                            values = {
+                                STRING = L["String"],
+                                FUNC = L["Function"],
+                            },
+                        },
+                        formatStr = {
+                            order = 6,
+                            type = "input",
+                            width = "full",
+                            name = L["Format"],
+                            validate = function(_, value)
+                                return private:ValidateAlert("tracker", value)
+                                    or L["Alert formats must be a string value. Please be sure if statements are properly formatted and do not cause a Lua error."]
+                            end,
+                            hidden = function()
+                                return private.db.global.settings.alerts.tracker.formatType == "FUNC"
+                            end,
+                        },
+                        tracker = {
+                            order = 6,
                             type = "input",
                             multiline = true,
                             dialogControl = "FarmingBar_LuaEditBox",
@@ -548,13 +631,17 @@ function private:GetSettingsOptions()
                                 return private:ValidateAlert("tracker", value)
                                     or L["Alert formats must be a function returning a string value."]
                             end,
+                            hidden = function()
+                                return private.db.global.settings.alerts.tracker.formatType == "STRING"
+                            end,
                         },
                         resetTracker = {
-                            order = 6,
+                            order = 7,
                             type = "execute",
                             name = L["Reset Tracker Alert"],
                             func = function()
                                 private.db.global.settings.alerts.tracker.format = private.defaults.trackerAlert
+                                private.db.global.settings.alerts.tracker.formatStr = private.defaults.trackerAlertStr
                             end,
                             confirm = function()
                                 return L["Are you sure you want to reset tracker alerts format?"]

@@ -101,6 +101,8 @@ private.defaults = {
     
 end]],
 
+    barAlertStr = [[%gold%Bar progress:%color% %b %progressColor%%c/%t%color% (%diffColor%%d%color%)]],
+
     buttonAlert = [[function(info, colors)
 -- info.title
 -- info.oldCount
@@ -144,6 +146,8 @@ end
 
 
 end]],
+
+    buttonAlertStr = [[%if(%g>0 and %c>=%g and %C<%g,%green%Objective complete!,%gold%Farming update:)if%%color% %t %progressColor%%if(%g==0,x,)if%%c%if(%g>0,/%g,)if%%color% %if(%O>0,x%O,(%diffColor%%d%color%))if%]],
 
     objective = {
         condition = {
@@ -433,16 +437,18 @@ end]],
                 
             else -- Tracker progress, with goal
                 
-                return format("%sTracker progress:|r (%s) %s %s%d/%d|r (%s%s%d|r)", colors.gold,  info.title, info.trackerName, colors.gold, info.newCount, info.trackerGoalTotal, diffColor, sign, info.difference)
+                return format("%sTracker update:|r (%s) %s %s%d/%d|r (%s%s%d|r)", colors.gold,  info.title, info.trackerName, colors.gold, info.newCount, info.trackerGoalTotal, diffColor, sign, info.difference)
                 
             end
             
         end
         
         -- Tracker progress, no goal
-        return format("%sTracker progress:|r (%s) %s %sx%d|r (%s%s%d|r)", colors.gold,  info.title, info.trackerName, colors.gold, info.newCount, diffColor, sign, info.difference)
+        return format("%sTracker update:|r (%s) %s %sx%d|r (%s%s%d|r)", colors.gold,  info.title, info.trackerName, colors.gold, info.newCount, diffColor, sign, info.difference)
         
     end]],
+
+    trackerAlertStr = [[%if(%g>0 and %c>=%G and %C<%G,%green%Tracker complete!,%gold%Tracker update:)if%%color% (%t) %T %progressColor%%if(%g==0,x,)if%%c%if(%g~=0,/%G,)if%%color% (%diffColor%%d%color%)]],
 }
 
 function private:InitializeDatabase()
@@ -474,6 +480,8 @@ function private:InitializeDatabase()
                         chat = true,
                         screen = true,
                         format = private.defaults.buttonAlert,
+                        formatStr = private.defaults.buttonAlertStr,
+                        formatType = "STRING", -- STRING, FUNC
                         alertInfo = {
                             title = "Test Alert",
                             oldCount = 0,
@@ -492,6 +500,8 @@ function private:InitializeDatabase()
                         chat = true,
                         screen = true,
                         format = private.defaults.barAlert,
+                        formatStr = private.defaults.barAlertStr,
+                        formatType = "STRING", -- STRING, FUNC
                         alertInfo = {
                             barID = 1,
                             label = "Test Bar",
@@ -510,6 +520,8 @@ function private:InitializeDatabase()
                         chat = true,
                         screen = true,
                         format = private.defaults.trackerAlert,
+                        formatStr = private.defaults.trackerAlertStr,
+                        formatType = "STRING", -- STRING, FUNC
                         alertInfo = {
                             title = "Test Alert",
                             trackerName = "Test Tracker",
