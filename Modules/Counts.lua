@@ -12,13 +12,13 @@ function private:GetObjectiveWidgetCount(widget)
     local trackers = {}
     local condition = buttonDB.condition
 
-    local count = 0
+    local count
 
     if condition.type == "ALL" then
-        for trackerKey, trackerInfo in pairs(buttonDB.trackers) do
+        for trackerKey, trackerInfo in addon.pairs(buttonDB.trackers) do
             local trackerCount =
                 private:GetTrackerCount(trackerInfo, barDB.limitMats and widget:GetBar(), barDB.limitMats and buttonID)
-            count = count > 0 and min(count, trackerCount) or trackerCount
+            count = count and min(count, trackerCount) or trackerCount
             trackers[trackerKey] = private:GetTrackerCount(
                 trackerInfo,
                 barDB.limitMats and widget:GetBar(),
@@ -30,7 +30,7 @@ function private:GetObjectiveWidgetCount(widget)
         for trackerKey, trackerInfo in pairs(buttonDB.trackers) do
             local trackerCount =
                 private:GetTrackerCount(trackerInfo, barDB.limitMats and widget:GetBar(), barDB.limitMats and buttonID)
-            count = count + trackerCount
+            count = (count or 0) + trackerCount
             trackers[trackerKey] = private:GetTrackerCount(
                 trackerInfo,
                 barDB.limitMats and widget:GetBar(),
@@ -43,7 +43,7 @@ function private:GetObjectiveWidgetCount(widget)
         if type(func) == "function" then
             local success, userFunc = pcall(func)
             if success and type(userFunc) == "function" then
-                count = count + (userFunc(buttonDB.trackers, private.GetTrackerCount) or 0)
+                count = (count or 0) + (userFunc(buttonDB.trackers, private.GetTrackerCount) or 0)
             end
         end
     end

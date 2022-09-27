@@ -101,6 +101,8 @@ private.defaults = {
     
 end]],
 
+    barAlertStr = [[%gold%Bar progress:%color% %b %progressColor%%c/%t%color% (%diffColor%%d%color%)]],
+
     buttonAlert = [[function(info, colors)
 -- info.title
 -- info.oldCount
@@ -108,9 +110,9 @@ end]],
 -- info.difference
 -- info.lost
 -- info.gained
--- info.objective
--- info.objectiveMet
--- info.newObjectiveMet
+-- info.goal
+-- info.goalMet
+-- info.newGoalMet
 -- info.reps
 -- colors.red = "|cffff0000"
 -- colors.green = "|cff00ff00"
@@ -122,21 +124,21 @@ local diffColor = info.gained and colors.green or colors.red -- Color the sign g
 local sign = info.gained and "+" or "" -- no need to use "-" because it's included in info.difference
 
 
-if info.objective > 0  then -- Button progress, with objective
+if info.goal > 0  then -- Button progress, with goal
     
-    if  info.newObjectiveMet and info.objectiveMet then -- Button progress, objective met
+    if  info.newGoalMet and info.goalMet then -- Button progress, goal met
         
-        return format("%sObjective complete!|r %s %s%d/%d|r x%d", colors.green,  info.title, colors.green, info.newCount, info.objective, info.reps)
+        return format("%sObjective complete!|r %s %s%d/%d|r x%d", colors.green,  info.title, colors.green, info.newCount, info.goal, info.reps)
         
-    else -- Button progress, objective not met or already met
+    else -- Button progress, goal not met or already met
         
-        local countColor = info.objectiveMet and colors.green or colors.gold
+        local countColor = info.goalMet and colors.green or colors.gold
         
-        return format("%sFarming update:|r %s %s%d/%d|r (%s%s%d|r)", colors.gold,  info.title, countColor,  info.newCount, info.objective, diffColor, sign, info.difference) 
+        return format("%sFarming update:|r %s %s%d/%d|r (%s%s%d|r)", colors.gold,  info.title, countColor,  info.newCount, info.goal, diffColor, sign, info.difference) 
         
     end
     
-else -- Button progress, without objective
+else -- Button progress, without goal
     
     return format("%sFarming update:|r %s %sx%d|r (%s%s%d|r)", colors.gold, info.title, colors.gold,  info.newCount, diffColor, sign, info.difference)
     
@@ -144,6 +146,8 @@ end
 
 
 end]],
+
+    buttonAlertStr = [[%if(%g>0 and %c>=%g and %C<%g,%green%Objective complete!,%gold%Farming update:)if%%color% %t %progressColor%%if(%g==0,x,)if%%c%if(%g>0,/%g,)if%%color% %if(%O>0,x%O,(%diffColor%%d%color%))if%]],
 
     objective = {
         condition = {
@@ -411,10 +415,10 @@ end]],
         -- info.difference
         -- info.lost
         -- info.gained
-        -- info.objective
-        -- info.trackerObjective
+        -- info.goal
         -- info.trackerGoal
-        -- info.objectiveMet
+        -- info.trackerGoalTotal
+        -- info.goalMet
         -- info.newComplete
         -- colors.red = "|cffff0000"
         -- colors.green = "|cff00ff00"
@@ -425,24 +429,26 @@ end]],
         local diffColor = info.gained and colors.green or colors.red -- Color the sign green if gained or red if lost
         local sign = info.gained and "+" or "" -- no need to use "-" because it's included in info.difference
         
-        if info.objective > 0 then -- Tracker progress, with objective
+        if info.goal > 0 then -- Tracker progress, with goal
             
-            if info.newComplete then -- Tracker complete, with objective
+            if info.newComplete then -- Tracker complete, with goal
                 
-                return format("%sTracker complete!|r (%s) %s %s%d/%d|r (%s%s%d|r)", colors.green,  info.title, info.trackerName, colors.green, info.newCount, info.trackerGoal, diffColor, sign, info.difference)
+                return format("%sTracker complete!|r (%s) %s %s%d/%d|r (%s%s%d|r)", colors.green,  info.title, info.trackerName, colors.green, info.newCount, info.trackerGoalTotal, diffColor, sign, info.difference)
                 
-            else -- Tracker progress, with objective
+            else -- Tracker progress, with goal
                 
-                return format("%sTracker progress:|r (%s) %s %s%d/%d|r (%s%s%d|r)", colors.gold,  info.title, info.trackerName, colors.gold, info.newCount, info.trackerGoal, diffColor, sign, info.difference)
+                return format("%sTracker update:|r (%s) %s %s%d/%d|r (%s%s%d|r)", colors.gold,  info.title, info.trackerName, colors.gold, info.newCount, info.trackerGoalTotal, diffColor, sign, info.difference)
                 
             end
             
         end
         
-        -- Tracker progress, no objective
-        return format("%sTracker progress:|r (%s) %s %sx%d|r (%s%s%d|r)", colors.gold,  info.title, info.trackerName, colors.gold, info.newCount, diffColor, sign, info.difference)
+        -- Tracker progress, no goal
+        return format("%sTracker update:|r (%s) %s %sx%d|r (%s%s%d|r)", colors.gold,  info.title, info.trackerName, colors.gold, info.newCount, diffColor, sign, info.difference)
         
     end]],
+
+    trackerAlertStr = [[%if(%g>0 and %c>=%G and %C<%G,%green%Tracker complete!,%gold%Tracker update:)if%%color% (%t) %T %progressColor%%if(%g==0,x,)if%%c%if(%g~=0,/%G,)if%%color% (%diffColor%%d%color%)]],
 }
 
 function private:InitializeDatabase()
@@ -474,6 +480,8 @@ function private:InitializeDatabase()
                         chat = true,
                         screen = true,
                         format = private.defaults.buttonAlert,
+                        formatStr = private.defaults.buttonAlertStr,
+                        formatType = "STRING", -- STRING, FUNC
                         alertInfo = {
                             title = "Test Alert",
                             oldCount = 0,
@@ -481,9 +489,9 @@ function private:InitializeDatabase()
                             difference = 0,
                             lost = false,
                             gained = true,
-                            objective = 20,
-                            objectiveMet = false,
-                            newObjectiveMet = true,
+                            goal = 20,
+                            goalMet = false,
+                            newGoalMet = true,
                             reps = 0,
                         },
                     },
@@ -492,6 +500,8 @@ function private:InitializeDatabase()
                         chat = true,
                         screen = true,
                         format = private.defaults.barAlert,
+                        formatStr = private.defaults.barAlertStr,
+                        formatType = "STRING", -- STRING, FUNC
                         alertInfo = {
                             barID = 1,
                             label = "Test Bar",
@@ -510,6 +520,8 @@ function private:InitializeDatabase()
                         chat = true,
                         screen = true,
                         format = private.defaults.trackerAlert,
+                        formatStr = private.defaults.trackerAlertStr,
+                        formatType = "STRING", -- STRING, FUNC
                         alertInfo = {
                             title = "Test Alert",
                             trackerName = "Test Tracker",
@@ -518,9 +530,9 @@ function private:InitializeDatabase()
                             difference = 3,
                             lost = false,
                             gained = true,
-                            objective = 10,
-                            trackerObjective = 2,
-                            trackerGoal = 20,
+                            goal = 10,
+                            trackerGoal = 2,
+                            trackerGoalTotal = 20,
                             objectiveMet = true,
                             newComplete = true,
                         },

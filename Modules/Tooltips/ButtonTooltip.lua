@@ -66,7 +66,7 @@ function private:GetButtonTooltip(widget)
             },
             {
                 double = true,
-                k = L["Objective"],
+                k = L["Goal"],
                 v = objective > 0 and addon.iformat(objective, 1) or "-",
             },
             {

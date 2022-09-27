@@ -12,11 +12,12 @@ function private:GetWidget(i, key, value)
             type = "description",
             name = value[2],
         }
-    elseif Type == 2 then
+    elseif Type == 2 or Type == 4 then
         local group = {
             order = i,
             type = "group",
             name = value[2],
+            inline = Type == 4,
             args = {},
         }
 

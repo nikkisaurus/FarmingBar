@@ -63,7 +63,16 @@ function addon:CraftTradeSkill(input)
 end
 
 function addon:HandleSlashCommand(input)
-    LibStub("AceConfigCmd-3.0").HandleCommand(addon, "farmingbar", addonName .. "Commands", input)
+    if not input or input == "" then
+        private:LoadOptions()
+    else
+        LibStub("AceConfigCmd-3.0").HandleCommand(
+            addon,
+            "farmingbar",
+            addonName .. "Commands",
+            strlower(input) ~= "help" and input or ""
+        )
+    end
 end
 
 function private:InitializeSlashCommands()

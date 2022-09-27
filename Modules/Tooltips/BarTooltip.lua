@@ -7,6 +7,8 @@ function private:GetBarTooltip(widget)
         return
     end
 
+    local barDB = widget:GetDB()
+    local progress, progressTotal = widget:GetProgress()
     local showHints = private.db.global.settings.tooltips.showHints
         or _G["Is" .. private.db.global.settings.tooltips.modifier .. "KeyDown"]()
     local showDetails = private.db.global.settings.tooltips.showDetails
@@ -16,6 +18,12 @@ function private:GetBarTooltip(widget)
         {
             line = L["Bar"] .. " " .. widget:GetID(),
             color = private.CONST.TOOLTIP_TITLE,
+        },
+        {
+            double = true,
+            k = L["Bar Progress"],
+            v = barDB.alerts.barProgress and (format("%d/%d", progress, progressTotal)) or L["Disabled"],
+            hidden = not showDetails,
         },
         {
             double = true,

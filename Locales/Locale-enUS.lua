@@ -19,6 +19,52 @@ private.status = {
     },
 }
 
+L["Disabled"] = true
+L["Set the old count for the tracker."] = true
+L["Set the new count for the tracker."] = true
+L["Set the goal for the tracker."] = true
+L["Set the old count for the objective."] = true
+L["Set the new count for the objective."] = true
+L["Set the goal for the objective."] = true
+L["Set the old goal progress for the bar."] = true
+L["Set the new goal progress for the bar."] = true
+L["Set the number of goals for the bar."] = true
+L["Enable chat alerts."] = true
+L["Enable screen alerts."] = true
+L["Enable sound alerts."] = true
+L["Goal"] = true
+L["Set the sound played when progress is made toward an objective."] = true
+L["Set the sound played when a goal is set for an objective."] = true
+L["Set the sound played when a goal is met for an objective."] = true
+L["Set the sound played when a goal is cleared from an objective."] = true
+L["Set the sound played when progress is made towards a bar's goals."] = true
+L["Set the sound played when all goals are met on a bar."] = true
+L["Automatically loot items when using an objective, regardless of whether auto loot is enabled in game settings."] =
+    true
+L["Set the default size of bar buttons."] = true
+L["Set the default padding of bar buttons."] = true
+L["Enable this slash command."] = true
+L["Use the GameTooltip for bar and button tooltips instead of Farming Bar's default tooltip."] = true
+L["Show tooltips when hovering over a bar's anchor."] = true
+L["Show tooltips when hovering over a button."] = true
+L["The ID of a tracker which is equivalent to this tracker."] = true
+L["Include counts from the selected guild bank(s) for this tracker."] = true
+L["Include counts from alts for this tracker."] = true
+L["Include counts from the bank for this tracker."] = true
+L["Set the amount of this tracker required to count toward one of this objective."] = true
+L["Set the order of this tracker."] = true
+L["Set the macrotext to be run when using this objective."] = true
+L["Set the ID of the item to use when using this objective."] = true
+L["Set the type of action performed when using this objective."] = true
+L["Left-click to pickup this objective."] = true
+L["Set the ID or path of the icon texture."] = true
+L["Left-click to pickup this objective.\nRight-click to edit this objective."] = true
+L["Set the number of buttons per bar."] = true
+L["Set the spacing between buttons."] = true
+L["Set the number of buttons before a bar wraps to a new column or row."] = true
+L["Set the direction buttons grow: row (horizontally) or col (vertically)."] = true
+L["Set the anchor of the button to the bar."] = true
+L["Hides the bar, regardless of the output from the custom hidden function."] = true
 L[" for help."] = true
 L[" to configure bars."] = true
 L[" to configure settings."] = true
@@ -70,6 +116,8 @@ L["Bar Anchor"] = true
 L["Bar Backdrop"] = true
 L["Bar Complete"] = true
 L["Bar is already assigned an ID: %d"] = true
+L["Reset both string and function bar formats."] = true
+L["Reset both string and function button formats."] = true
 L["Bar Progress"] = true
 L["Bar Tooltips"] = true
 L["Bar"] = true
@@ -92,21 +140,26 @@ L["Buttons"] = true
 L["Chat frame for chat alerts from this bar."] = true
 L["Chat Frame"] = true
 L["Chat"] = true
+L["Alert formats must be a string value. Please be sure if statements are properly formatted and do not cause a Lua error."] =
+    true
 L["Chat Frame"] = true
 L["Choose"] = true
 L["Clear Bar"] = true
 L["Clear"] = true
-L["clearObjective"] = "Clear Objective"
+L["clearObjective"] = "Clear Goal"
 L["Code Viewer"] = true
 L["Color"] = true
-L["Completed Objectives"] = true
+L["Completed Goals"] = true
 L["Condition"] = true
 L["Config"] = true
 L["Configure bar settings."] = true
 L["Confirm"] = true
-L["Continue tracking objectives after completion."] = true
+L["Continue tracking farming progress after goal completion."] = true
 L["Control"] = true
 L["Copy From"] = true
+L["String"] = true
+L["Function"] = true
+L["Format Type"] = true
 L["Count"] = true
 L["Currency"] = true
 L["Custom Condition"] = true
@@ -130,7 +183,6 @@ L["Expand Tooltip"] = true
 L["Expand"] = true
 L["Export Frame"] = true
 L["Export"] = true
-L["Fallback Icon"] = true
 L["Fallback"] = true
 L["Farming Progress"] = true
 L["First"] = true
@@ -172,7 +224,7 @@ L["Invalid template name."] = true
 L["Invalid Tracker/Alt ID"] = true
 L["Invalid tradeskill name."] = true
 L["Item"] = true
-L["ItemID"] = true
+L["Item ID"] = true
 L["Keybinds"] = true
 L["Label"] = true
 L["Last"] = true
@@ -195,7 +247,7 @@ L["Movable"] = true
 L["Move canceled; please open bank frame."] = true
 L["moveAllToBank"] = "Move All to Bank"
 L["moveObjective"] = "Move Objective"
-L["moveObjectiveToBank"] = "Move Objective to Bank"
+L["moveObjectiveToBank"] = "Move Goal to Bank"
 L["Multiplier"] = true
 L["Mute alerts for this button."] = true
 L["Mute alerts for this objective."] = true
@@ -207,10 +259,10 @@ L["New Skin"] = true
 L["New"] = true
 L["None"] = true
 L["Normal"] = true
-L["Objective Cleared"] = true
-L["Objective Complete"] = true
+L["Goal Cleared"] = true
+L["Goal Complete"] = true
 L["Objective Editor"] = true
-L["Objective Set"] = true
+L["Goal Set"] = true
 L["Objective Templates"] = true
 L["Objective"] = true
 L["Objectives on this bar cannot use materials already accounted for by another objective on the same bar."] = true
@@ -247,8 +299,8 @@ L["Set the number of buttons on bar."] = true
 L["Set the number of buttons per axis."] = true
 L["Set the padding of bar's buttons."] = true
 L["Set the size of bar's buttons."] = true
-L["Sets bar alpha."] = true
-L["Sets bar scale."] = true
+L["Set bar alpha."] = true
+L["Set bar scale."] = true
 L["Settings"] = true
 L["Shadow"] = true
 L["Shift"] = true
@@ -264,7 +316,7 @@ L["Show Hyperlink"] = true
 L["Show item hyperlink on button tooltips."] = true
 L["Show options frame."] = true
 L["Show this bar only on mouseover."] = true
-L["showObjectiveEditBox"] = "Show Objective EditBox"
+L["showObjectiveEditBox"] = "Show Goal EditBox"
 L["showObjectiveEditor"] = "Show Objective Editor"
 L["showQuickAddCurrencyEditBox"] = "Show Quick-Add Currency EditBox"
 L["showQuickAddEditBox"] = "Show Quick-Add EditBox"
@@ -288,7 +340,7 @@ L["Toggle bar tooltips."] = true
 L["Toggle button tooltips."] = true
 L["Toggle tooltips."] = true
 L["Tooltips"] = true
-L["Track the number of completed objectives on this bar."] = true
+L["Track the number of completed goals on this bar."] = true
 L["Tracker already exists for this objective."] = true
 L["Tracker ID"] = true
 L["Tracker Key"] = true
@@ -333,21 +385,188 @@ L.OptionsHelp = function()
         },
         {
             2,
-            "Custom Alerts",
+            "Alerts",
             {
                 {
                     1,
-                    "Custom alerts should return your alert as a string. The function will be provided a table with information about the alert and a color table for quick access to red, green, and gold colors.",
+                    "Custom alerts should return your alert as a string. If you choose to use the function format type, it will be provided a table with information about the alert and a color table for quick access to red, green, and gold colors. If you choose the string format type, you will be able to use several placeholders, outlined below.",
                 },
-            },
-        },
-        {
-            2,
-            "Hidden Funcs",
-            {
                 {
-                    1,
-                    "Hidden funcs allow you to set special conditions to hide your bars, such as by your professions, character name, zone, etc. Naturally, some situations may be variable, so you can specify events to listen for to update your bar's hidden status. Ultimately, your hidden func should return true to hide the bar or false/nil to show it. If you have enabled Hidden (Override Func), your bar will be hidden, even if your function doesn't return true.",
+                    4,
+                    "Bar Alerts",
+                    {
+                        {
+                            1,
+                            format("%s = %s", addon.ColorFontString("%b", "LIGHTBLUE"), "bar ID name"),
+                        },
+                        {
+                            1,
+                            format("%s = %s", addon.ColorFontString("%B", "LIGHTBLUE"), "long bar name"),
+                        },
+                        {
+                            1,
+                            format("%s = %s", addon.ColorFontString("%c", "LIGHTBLUE"), "new progress count"),
+                        },
+                        {
+                            1,
+                            format("%s = %s", addon.ColorFontString("%d", "LIGHTBLUE"), "difference"),
+                        },
+                        {
+                            1,
+                            format("%s = %s", addon.ColorFontString("%n", "LIGHTBLUE"), "bar name"),
+                        },
+                        {
+                            1,
+                            format("%s = %s", addon.ColorFontString("%p", "LIGHTBLUE"), "percentage of completion"),
+                        },
+                        {
+                            1,
+                            format("%s = %s", addon.ColorFontString("%r", "LIGHTBLUE"), "remainder of completion"),
+                        },
+                        {
+                            1,
+                            format("%s = %s", addon.ColorFontString("%t", "LIGHTBLUE"), "new progress total"),
+                        },
+                    },
+                },
+                {
+                    4,
+                    "Button Alerts",
+                    {
+                        {
+                            1,
+                            format("%s = %s", addon.ColorFontString("%c", "LIGHTBLUE"), "new count"),
+                        },
+                        {
+                            1,
+                            format("%s = %s", addon.ColorFontString("%C", "LIGHTBLUE"), "old count"),
+                        },
+                        {
+                            1,
+                            format("%s = %s", addon.ColorFontString("%d", "LIGHTBLUE"), "difference"),
+                        },
+                        {
+                            1,
+                            format("%s = %s", addon.ColorFontString("%g", "LIGHTBLUE"), "goal"),
+                        },
+                        {
+                            1,
+                            format("%s = %s", addon.ColorFontString("%O", "LIGHTBLUE"), "repititions of completion"),
+                        },
+                        {
+                            1,
+                            format("%s = %s", addon.ColorFontString("%p", "LIGHTBLUE"), "percentage of completion"),
+                        },
+                        {
+                            1,
+                            format("%s = %s", addon.ColorFontString("%r", "LIGHTBLUE"), "remainder of completion"),
+                        },
+                        {
+                            1,
+                            format("%s = %s", addon.ColorFontString("%t", "LIGHTBLUE"), "objective title"),
+                        },
+                    },
+                },
+                {
+                    4,
+                    "Colors",
+                    {
+                        {
+                            1,
+                            format(
+                                "%s = %s",
+                                addon.ColorFontString("%color%", "LIGHTBLUE"),
+                                "||r - closes out color codes"
+                            ),
+                        },
+                        {
+                            1,
+                            format(
+                                "%s = %s",
+                                addon.ColorFontString("%diffColor%", "LIGHTBLUE"),
+                                "green or red, depending on whether difference is positive or negative"
+                            ),
+                        },
+                        {
+                            1,
+                            addon.ColorFontString("%gold%", "LIGHTBLUE"),
+                        },
+                        {
+                            1,
+                            addon.ColorFontString("%green%", "LIGHTBLUE"),
+                        },
+                        {
+                            1,
+                            format(
+                                "%s = %s",
+                                addon.ColorFontString("%progressColor%", "LIGHTBLUE"),
+                                "green or yellow, depending on whether progress is positive or negative"
+                            ),
+                        },
+                        {
+                            1,
+                            addon.ColorFontString("%red%", "LIGHTBLUE"),
+                        },
+                    },
+                },
+                {
+                    4,
+                    "If Statements",
+                    {
+                        {
+                            1,
+                            addon.ColorFontString("%if(condition,then,else)if%", "LIGHTBLUE"),
+                        },
+                        {
+                            1,
+                            format(
+                                "If statements can be used to control when certain pieces of text are displayed within your alert and must follow the format above. \"condition\" should be a lua expression and when true, \"then\" will show up in your alert, otherwise \"else\" will. You must provide a comma after \"then\", even if you have a blank \"else\" statement. For example: %s would mean \"if goal is equal to zero (goal is not set), then print x, else print nothing\".",
+                                addon.ColorFontString("%if(%g==0,x,)if%", "LIGHTBLUE")
+                            ),
+                        },
+                    },
+                },
+                {
+                    4,
+                    "Tracker Alerts",
+                    {
+                        {
+                            1,
+                            format("%s = %s", addon.ColorFontString("%c", "LIGHTBLUE"), "new count"),
+                        },
+                        {
+                            1,
+                            format("%s = %s", addon.ColorFontString("%C", "LIGHTBLUE"), "old count"),
+                        },
+                        {
+                            1,
+                            format("%s = %s", addon.ColorFontString("%d", "LIGHTBLUE"), "difference"),
+                        },
+                        {
+                            1,
+                            format("%s = %s", addon.ColorFontString("%g", "LIGHTBLUE"), "objective goal"),
+                        },
+                        {
+                            1,
+                            format("%s = %s", addon.ColorFontString("%G", "LIGHTBLUE"), "tracker goal total"),
+                        },
+                        {
+                            1,
+                            format("%s = %s", addon.ColorFontString("%p", "LIGHTBLUE"), "percentage of completion"),
+                        },
+                        {
+                            1,
+                            format("%s = %s", addon.ColorFontString("%r", "LIGHTBLUE"), "remainder of completion"),
+                        },
+                        {
+                            1,
+                            format("%s = %s", addon.ColorFontString("%t", "LIGHTBLUE"), "objective title"),
+                        },
+                        {
+                            1,
+                            format("%s = %s", addon.ColorFontString("%T", "LIGHTBLUE"), "tracker title"),
+                        },
+                    },
                 },
             },
         },
@@ -360,64 +579,103 @@ L.OptionsHelp = function()
                     "The Objective Template Builder allows you to create highly customizable farming objectives, which can be placed onto a bar by left-clicking the objective's icon. Objectives consist of trackers, which are individual items or currencies that have their own goals to meet before counting towards the objective. By default, an objective is not met until the objective of all trackers is met. However, you can mix and match trackers by using the tracker condition \"ALL\". Additionally, if you are comfortable with Lua, you can create a custom function to control how your objective is counted.",
                 },
                 {
-                    3,
+                    4,
                     "Alt IDs",
+                    {
+                        {
+                            1,
+                            "Trackers have alt IDs, which are items or currencies that are equivalent to the main tracker. For each alt ID, you can set a multiplier to indicate how many count toward 1 tracker. For example, a [Sacred Shard] may have an alt ID [Eternal Crystal] with a multiplier of 3, meaning each Eternal Crystal counts as 3 [Sacred Shard] (given your tracker objective is 1). Multipliers will also accept fractions and decimals; for example, an [Eternal Air] may have an alt ID [Crystallized Air] with a multiplier of 1/10, so that 10 [Crystallized Air] counts as 1 Eternal Air.",
+                        },
+                    },
                 },
                 {
-                    1,
-                    "Trackers have alt IDs, which are items or currencies that are equivalent to the main tracker. For each alt ID, you can set a multiplier to indicate how many count toward 1 tracker. For example, a [Sacred Shard] may have an alt ID [Eternal Crystal] with a multiplier of 3, meaning each Eternal Crystal counts as 3 [Sacred Shard] (given your tracker objective is 1). Multipliers will also accept fractions and decimals; for example, an [Eternal Air] may have an alt ID [Crystallized Air] with a multiplier of 1/10, so that 10 [Crystallized Air] counts as 1 Eternal Air.",
-                },
-                {
-                    3,
+                    4,
                     "Auto Icon",
+                    {
+                        {
+                            1,
+                            "By default, auto icon will attempt to use an icon from an objective's on use item. However, if on use is not an item, it will use the icon from the first tracker or the default miscellaneous icon.",
+                        },
+                    },
                 },
                 {
-                    1,
-                    "By default, auto icon will attempt to use an icon from an objective's on use item. However, if on use is not an item, it will use the icon from the first tracker or the default miscellaneous icon.",
-                },
-                {
-                    3,
+                    4,
                     "Custom Condition",
+                    {
+                        {
+                            1,
+                            "Custom conditions are provided with the trackers database table and the default function used to calculate a tracker's count. From each tracker configuration, the tracker key can be edited to change the order of keys provided by the trackers table. Your custom function must return an integer indicating the count of your objective, and you have complete freedom within this function to calculate it.",
+                        },
+                    },
                 },
                 {
-                    1,
-                    "Custom conditions are provided with the trackers database table and the default function used to calculate a tracker's count. From each tracker configuration, the tracker key can be edited to change the order of keys provided by the trackers table. Your custom function must return an integer indicating the count of your objective, and you have complete freedom within this function to calculate it.",
-                },
-                {
-                    3,
+                    4,
                     "On Use",
+                    {
+                        {
+                            1,
+                            "An objective's on use setting controls the behavior of the button when used. For example, when you place an item on a bar, by default, it's on use is to use the item placed. With the Objective Template Builder, you can specify any item, regardless of whether it's being tracked, for its on use effect. Additionally, you can supply a macrotext to be run when using your objective, including the built-in \"/craft profession recipe name\" command, which allows you to craft a profession item on use.",
+                        },
+                    },
                 },
                 {
-                    1,
-                    "An objective's on use setting controls the behavior of the button when used. For example, when you place an item on a bar, by default, it's on use is to use the item placed. With the Objective Template Builder, you can specify any item, regardless of whether it's being tracked, for its on use effect. Additionally, you can supply a macrotext to be run when using your objective, including the built-in \"/craft profession recipe name\" command, which allows you to craft a profession item on use.",
-                },
-                {
-                    3,
+                    4,
                     "Trackers",
-                },
-                {
-                    1,
-                    "Each tracker has its own individual goal and can be set to include other sources separately. While \"include bank\" is available by default, users with the DataStore addon (including plugins: DataStore, DataStore_Auctions, DataStore_Characters, DataStore_Containers, DataStore_Currencies, DataStore_Inventory, DataStore_Mails) may track items and currencies on alts and even from guild banks.",
-                },
-            },
-        },
-        {
-            2,
-            "Skins",
-            {
-                {
-                    1,
-                    "The Skin Editor allows you to customize each layer of your buttons. Note that if you are using Masque, its settings take precedent over both built-in and user skins. If you would like your skin to override Masque, disable Farming Bar in its settings.",
+                    {
+                        {
+                            1,
+                            "Each tracker has its own individual goal and can be set to include other sources separately. While \"include bank\" is available by default, users with the DataStore addon (including plugins: DataStore, DataStore_Auctions, DataStore_Characters, DataStore_Containers, DataStore_Currencies, DataStore_Inventory, DataStore_Mails) may track items and currencies on alts and even from guild banks.",
+                        },
+                    },
                 },
             },
         },
         {
             2,
-            "Templates",
+            "Miscellaneous",
             {
                 {
-                    1,
-                    "Templates are a collection of farming objectives that you can easily load onto new bars. When you create a template, it saves a snapshot of the bar at the moment, including button IDs, objectives, and settings. It will not, however, change your bar settings.",
+                    4,
+                    "Commands",
+                    {
+                        {
+                            1,
+                            format(
+                                "Command documentation can be accessed via the command %s.",
+                                addon.ColorFontString("/farmingbar help", "LIGHTBLUE")
+                            ),
+                        },
+                    },
+                },
+                {
+                    4,
+                    "Hidden Funcs",
+                    {
+                        {
+                            1,
+                            "Hidden funcs allow you to set special conditions to hide your bars, such as by your professions, character name, zone, etc. Naturally, some situations may be variable, so you can specify events to listen for to update your bar's hidden status. Ultimately, your hidden func should return true to hide the bar or false/nil to show it. If you have enabled Hidden (Override Func), your bar will be hidden, even if your function doesn't return true.",
+                        },
+                    },
+                },
+                {
+                    4,
+                    "Skins",
+                    {
+                        {
+                            1,
+                            "The Skin Editor allows you to customize each layer of your buttons. Note that if you are using Masque, its settings take precedent over both built-in and user skins. If you would like your skin to override Masque, disable Farming Bar in its settings.",
+                        },
+                    },
+                },
+                {
+                    4,
+                    "Templates",
+                    {
+                        {
+                            1,
+                            "Templates are a collection of farming objectives that you can easily load onto new bars. When you create a template, it saves a snapshot of the bar at the moment, including button IDs, objectives, and settings. It will not, however, change your bar settings.",
+                        },
+                    },
                 },
             },
         },
@@ -442,7 +700,7 @@ L.ButtonHints = function(action, actionInfo)
         moveObjective = format("%s to move this objective.", GetCommandString(actionInfo)),
         dragObjective = format("%s to move this objective.", GetCommandString(actionInfo)),
         clearObjective = format("%s to clear this objective.", GetCommandString(actionInfo)),
-        showObjectiveEditBox = format("%s to show the objective editbox.", GetCommandString(actionInfo)),
+        showObjectiveEditBox = format("%s to show the goal editbox.", GetCommandString(actionInfo)),
         showQuickAddEditBox = format("%s to show the quick add editbox.", GetCommandString(actionInfo)),
         showQuickAddCurrencyEditBox = format(
             "%s to show the currency quick add editbox.",
