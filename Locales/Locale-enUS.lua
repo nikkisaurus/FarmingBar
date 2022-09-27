@@ -19,6 +19,7 @@ private.status = {
     },
 }
 
+L["Disabled"] = true
 L["Set the old count for the tracker."] = true
 L["Set the new count for the tracker."] = true
 L["Set the goal for the tracker."] = true
