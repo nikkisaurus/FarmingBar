@@ -89,7 +89,8 @@ function private:GetObjectiveTemplateOptions(objectiveTemplateName)
                     dialogControl = "FarmingBar_Icon",
                     image = private:GetObjectiveIcon(objectiveTemplate),
                     width = 0.25,
-                    name = " ",
+                    name = objectiveTemplate.title,
+                    desc = L["Left-click to pickup this objective."],
                     func = funcs.icon,
                 },
 
@@ -107,7 +108,7 @@ function private:GetObjectiveTemplateOptions(objectiveTemplateName)
                 iconType = {
                     order = 3,
                     type = "select",
-                    name = L["Fallback Icon"],
+                    name = L["Icon"],
                     values = private.lists.iconType,
                     get = function(info)
                         return objectiveTemplate.icon.type
@@ -122,6 +123,7 @@ function private:GetObjectiveTemplateOptions(objectiveTemplateName)
                     order = 3,
                     type = "input",
                     name = L["Icon ID"],
+                    desc = L["Set the ID or path of the icon texture."],
                     hidden = function()
                         return objectiveTemplate.icon.type == "AUTO"
                     end,
@@ -214,6 +216,7 @@ function private:GetObjectiveTemplateOptions(objectiveTemplateName)
                             order = 2,
                             type = "select",
                             name = L["Type"],
+                            desc = L["Set the type of action performed when using this objective."],
                             values = private.lists.onUseType,
                             set = function(info, value)
                                 private.db.global.objectives[objectiveTemplateName].onUse[info[#info]] = value
@@ -224,7 +227,8 @@ function private:GetObjectiveTemplateOptions(objectiveTemplateName)
                         itemID = {
                             order = 3,
                             type = "input",
-                            name = L["ItemID"],
+                            name = L["Item ID"],
+                            desc = L["Set the ID of the item to use when using this objective."],
                             hidden = function()
                                 return objectiveTemplate.onUse.type ~= "ITEM"
                             end,
@@ -247,6 +251,7 @@ function private:GetObjectiveTemplateOptions(objectiveTemplateName)
                             multiline = true,
                             width = "full",
                             name = L["Macrotext"],
+                            desc = L["Set the macrotext to be run when using this objective."],
                             hidden = function()
                                 return objectiveTemplate.onUse.type ~= "MACROTEXT"
                             end,
@@ -389,6 +394,7 @@ function private:GetObjectiveTemplateOptions(objectiveTemplateName)
                     order = 1,
                     type = "input",
                     name = L["Tracker Key"],
+                    desc = L["Set the order of this tracker."],
                     get = function(info)
                         return tostring(trackerKey)
                     end,
@@ -407,7 +413,8 @@ function private:GetObjectiveTemplateOptions(objectiveTemplateName)
                 objective = {
                     order = 2,
                     type = "input",
-                    name = L["Objective"],
+                    name = L["Goal"],
+                    desc = L["Set the amount of this tracker required to count toward one of this objective."],
                     get = function(info)
                         return tostring(tracker[info[#info]])
                     end,
@@ -436,16 +443,19 @@ function private:GetObjectiveTemplateOptions(objectiveTemplateName)
                             order = 1,
                             type = "toggle",
                             name = L["Bank"],
+                            desc = L["Include counts from the bank for this tracker."],
                         },
                         Alts = {
                             order = 2,
                             type = "toggle",
                             name = L["Alts"],
+                            desc = L["Include counts from alts for this tracker."],
                         },
                         GuildBank = {
                             order = 2,
                             type = "multiselect",
                             name = L["Guild Bank"],
+                            desc = L["Include counts from the selected guild bank(s) for this tracker."],
                             values = private:GetGuildsList(),
                             get = function(info, guildKey)
                                 return tracker["include" .. info[#info]][guildKey]
@@ -485,6 +495,7 @@ function private:GetObjectiveTemplateOptions(objectiveTemplateName)
                             order = 2,
                             type = "input",
                             name = L["Alt ID"],
+                            desc = L["The ID of a tracker which is equivalent to this tracker."],
                             set = function(_, value)
                                 local pendingAltIDType = private.status.options.objectiveTemplates.newAltIDType
                                 local validID = private:ValidateTracker(objectiveTemplateName, pendingAltIDType, value)

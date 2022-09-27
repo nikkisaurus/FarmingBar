@@ -49,7 +49,7 @@ function private:GetSlashCommandOptions()
                     alpha = {
                         type = "execute",
                         name = "",
-                        desc = GetCommandDesc("/farmingbar bar alpha", L["Sets bar alpha."], "barID | 0", "alpha"),
+                        desc = GetCommandDesc("/farmingbar bar alpha", L["Set bar alpha."], "barID | 0", "alpha"),
                         validate = function(info)
                             local _, command, barID, alpha = strsplit(" ", info.input:trim())
                             barID = tonumber(barID)
@@ -292,7 +292,7 @@ function private:GetSlashCommandOptions()
                     scale = {
                         type = "execute",
                         name = "",
-                        desc = GetCommandDesc("/farmingbar bar scale", L["Sets bar scale."], "barID | 0", "scale"),
+                        desc = GetCommandDesc("/farmingbar bar scale", L["Set bar scale."], "barID | 0", "scale"),
                         validate = function(info)
                             local _, command, barID, scale = strsplit(" ", info.input:trim())
                             barID = tonumber(barID)

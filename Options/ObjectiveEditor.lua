@@ -47,7 +47,7 @@ function private:GetObjectiveEditorGeneralContent(widget)
             dialogControl = "FarmingBar_Icon",
             image = private:GetObjectiveIcon(buttonDB),
             width = 0.25,
-            name = " ",
+            name = buttonDB.title,
         },
 
         title = {
@@ -66,7 +66,7 @@ function private:GetObjectiveEditorGeneralContent(widget)
         iconType = {
             order = 3,
             type = "select",
-            name = L["Fallback Icon"],
+            name = L["Icon"],
             values = private.lists.iconType,
             get = function(info)
                 return buttonDB.icon.type
@@ -82,6 +82,7 @@ function private:GetObjectiveEditorGeneralContent(widget)
             order = 3,
             type = "input",
             name = L["Icon ID"],
+            desc = L["Set the ID or path of the icon texture."],
             hidden = function()
                 return buttonDB.icon.type == "AUTO"
             end,
@@ -179,6 +180,7 @@ function private:GetObjectiveEditorGeneralContent(widget)
                     order = 2,
                     type = "select",
                     name = L["Type"],
+                    desc = L["Set the type of action performed when using this objective."],
                     values = private.lists.onUseType,
                     set = function(info, value)
                         widget:SetDBValue("onUse", info[#info], value)
@@ -190,7 +192,8 @@ function private:GetObjectiveEditorGeneralContent(widget)
                 itemID = {
                     order = 3,
                     type = "input",
-                    name = L["ItemID"],
+                    name = L["Item ID"],
+                    desc = L["Set the ID of the item to use when using this objective."],
                     hidden = function()
                         return buttonDB.onUse.type ~= "ITEM"
                     end,
@@ -214,6 +217,7 @@ function private:GetObjectiveEditorGeneralContent(widget)
                     multiline = true,
                     width = "full",
                     name = L["Macrotext"],
+                    desc = L["Set the macrotext to be run when using this objective."],
                     hidden = function()
                         return buttonDB.onUse.type ~= "MACROTEXT"
                     end,
@@ -401,6 +405,7 @@ function private:GetObjectiveEditorTrackersContent(widget)
                     order = 1,
                     type = "input",
                     name = L["Tracker Key"],
+                    desc = L["Set the order of this tracker."],
                     get = function(info)
                         return tostring(trackerKey)
                     end,
@@ -412,7 +417,8 @@ function private:GetObjectiveEditorTrackersContent(widget)
                 objective = {
                     order = 2,
                     type = "input",
-                    name = L["Objective"],
+                    name = L["Goal"],
+                    desc = L["Set the amount of this tracker required to count toward one of this objective."],
                     get = function(info)
                         return tostring(tracker[info[#info]])
                     end,
@@ -441,11 +447,13 @@ function private:GetObjectiveEditorTrackersContent(widget)
                             order = 1,
                             type = "toggle",
                             name = L["Bank"],
+                            desc = L["Include counts from the bank for this tracker."],
                         },
                         Alts = {
                             order = 2,
                             type = "toggle",
                             name = L["Alts"],
+                            desc = L["Include counts from alts for this tracker."],
                             hidden = function()
                                 return private:MissingDataStore()
                             end,
@@ -454,6 +462,7 @@ function private:GetObjectiveEditorTrackersContent(widget)
                             order = 2,
                             type = "multiselect",
                             name = L["Guild Bank"],
+                            desc = L["Include counts from the selected guild bank(s) for this tracker."],
                             values = private:GetGuildsList(),
                             get = function(info, guildKey)
                                 return tracker["include" .. info[#info]][guildKey]
@@ -493,6 +502,7 @@ function private:GetObjectiveEditorTrackersContent(widget)
                             order = 2,
                             type = "input",
                             name = L["Alt ID"],
+                            desc = L["The ID of a tracker which is equivalent to this tracker."],
                             set = function(_, value)
                                 local pendingAltIDType = private.status.objectiveEditor.newAltIDType
                                 local validID = private:ValidateTracker(widget, pendingAltIDType, value)

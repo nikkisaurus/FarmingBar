@@ -30,7 +30,7 @@ function private:GetOptions()
             settings = {
                 order = 3,
                 type = "group",
-                name = L["Settings"],
+                name = L["Set tings"],
                 childGroups = "tab",
                 args = private:GetSettingsOptions(),
             },

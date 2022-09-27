@@ -32,9 +32,9 @@ function private:Alert(widget, ...)
         difference = newCount - oldCount,
         lost = oldCount > newCount,
         gained = oldCount < newCount,
-        objective = buttonDB.objective,
-        objectiveMet = newCount >= buttonDB.objective,
-        newObjectiveMet = newCount >= buttonDB.objective and oldCount < buttonDB.objective,
+        goal = buttonDB.objective,
+        goalMet = newCount >= buttonDB.objective,
+        newGoalMet = newCount >= buttonDB.objective and oldCount < buttonDB.objective,
         reps = (buttonDB.objective and buttonDB.objective > 0)
             and (newCount >= buttonDB.objective and floor(newCount / buttonDB.objective) or 0),
     }
@@ -144,9 +144,9 @@ function private:AlertTracker(widget, trackerKey, oldCount, newCount)
         difference = newCount - oldCount,
         lost = oldCount > newCount,
         gained = oldCount < newCount,
-        objective = buttonDB.objective,
-        trackerObjective = tracker.objective,
-        trackerGoal = trackerGoal,
+        goal = buttonDB.objective,
+        trackerGoal = tracker.objective,
+        trackerGoalTotal = trackerGoal,
         objectiveMet = newCount >= trackerGoal,
         newComplete = oldCount < trackerGoal and newCount >= trackerGoal,
     }

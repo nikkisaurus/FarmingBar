@@ -40,15 +40,15 @@ function private:GetBarOptions(barID)
                             type = "toggle",
                             width = "full",
                             name = L["Bar Progress"],
-                            desc = L["Track the number of completed objectives on this bar."],
+                            desc = L["Track the number of completed goals on this bar."],
                             descStyle = "inline",
                         },
                         completedObjectives = {
                             order = 2,
                             type = "toggle",
                             width = "full",
-                            name = L["Completed Objectives"],
-                            desc = L["Continue tracking objectives after completion."],
+                            name = L["Completed Goals"],
+                            desc = L["Continue tracking farming progress after goal completion."],
                             descStyle = "inline",
                         },
                         muteAll = {
@@ -354,6 +354,7 @@ function private:GetBarOptions(barID)
                             order = 1,
                             type = "toggle",
                             name = L["Hidden (Override Func)"],
+                            desc = L["Hides the bar, regardless of the output from the custom hidden function."],
                         },
                         hiddenEvents = {
                             order = 2,
@@ -437,6 +438,7 @@ function private:GetBarOptions(barID)
                     type = "select",
                     style = "dropdown",
                     name = L["Bar Anchor"],
+                    desc = L["Set the anchor of the button to the bar."],
                     values = private.lists.barAnchor,
                 },
                 buttonGrowth = {
@@ -444,6 +446,7 @@ function private:GetBarOptions(barID)
                     type = "select",
                     style = "dropdown",
                     name = L["Button Growth"],
+                    desc = L["Set the direction buttons grow: row (horizontally) or col (vertically)."],
                     values = private.lists.buttonGrowth,
                 },
                 movable = {
@@ -468,6 +471,7 @@ function private:GetBarOptions(barID)
                             max = private.CONST.MAX_BUTTONS,
                             step = 1,
                             name = L["Buttons"],
+                            desc = L["Set the number of buttons per bar."],
                             set = function(info, value)
                                 private.db.profile.bars[barID][info[#info]] = value
                                 private.bars[barID]:DrawButtons()
@@ -482,6 +486,7 @@ function private:GetBarOptions(barID)
                             max = private.CONST.MAX_BUTTONS,
                             step = 1,
                             name = L["Buttons Per Axis"],
+                            desc = L["Set the number of buttons before a bar wraps to a new column or row."],
                         },
                         buttonPadding = {
                             order = 3,
@@ -490,6 +495,7 @@ function private:GetBarOptions(barID)
                             max = private.CONST.MAX_PADDING,
                             step = 1,
                             name = L["Button Padding"],
+                            desc = L["Set the spacing between buttons."],
                         },
                         buttonSize = {
                             order = 4,

@@ -76,7 +76,7 @@ function private:GetConfigOptions()
                                     tristate = true,
                                     width = "full",
                                     name = L["Bar Progress"],
-                                    desc = L["Track the number of completed objectives on this bar."],
+                                    desc = L["Track the number of completed goals on this bar."],
                                     descStyle = "inline",
                                 },
                                 completedObjectives = {
@@ -84,8 +84,8 @@ function private:GetConfigOptions()
                                     type = "toggle",
                                     tristate = true,
                                     width = "full",
-                                    name = L["Completed Objectives"],
-                                    desc = L["Continue tracking objectives after completion."],
+                                    name = L["Completed Goals"],
+                                    desc = L["Continue tracking farming progress after goal completion."],
                                     descStyle = "inline",
                                 },
                                 muteAll = {
@@ -240,6 +240,7 @@ function private:GetConfigOptions()
                             type = "toggle",
                             tristate = true,
                             name = L["Hidden (Override Func)"],
+                            desc = L["Hides the bar, regardless of the output from the custom hidden function."],
                             set = function(info, value)
                                 private:SetMixedBarDBValues(info, value, _, function(barID)
                                     private.bars[barID]:SetHidden()
@@ -266,6 +267,7 @@ function private:GetConfigOptions()
                             type = "select",
                             style = "dropdown",
                             name = L["Bar Anchor"],
+                            desc = L["Set the anchor of the button to the bar."],
                             values = private.lists.barAnchor,
                         },
                         buttonGrowth = {
@@ -273,6 +275,7 @@ function private:GetConfigOptions()
                             type = "select",
                             style = "dropdown",
                             name = L["Button Growth"],
+                            desc = L["Set the direction buttons grow: row (horizontally) or col (vertically)."],
                             values = private.lists.buttonGrowth,
                         },
                         movable = {
@@ -298,6 +301,7 @@ function private:GetConfigOptions()
                                     max = private.CONST.MAX_BUTTONS,
                                     step = 1,
                                     name = L["Buttons"],
+                                    desc = L["Set the number of buttons per bar."],
                                     set = function(info, value)
                                         private:SetMixedBarDBValues(info, value, _, function(barID)
                                             private.bars[barID]:DrawButtons()
@@ -313,6 +317,7 @@ function private:GetConfigOptions()
                                     max = private.CONST.MAX_BUTTONS,
                                     step = 1,
                                     name = L["Buttons Per Axis"],
+                                    desc = L["Set the number of buttons before a bar wraps to a new column or row."],
                                 },
                                 buttonPadding = {
                                     order = 3,
@@ -321,6 +326,7 @@ function private:GetConfigOptions()
                                     max = private.CONST.MAX_PADDING,
                                     step = 1,
                                     name = L["Button Padding"],
+                                    desc = L["Set the spacing between buttons."],
                                 },
                                 buttonSize = {
                                     order = 4,

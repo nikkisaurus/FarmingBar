@@ -108,9 +108,9 @@ end]],
 -- info.difference
 -- info.lost
 -- info.gained
--- info.objective
--- info.objectiveMet
--- info.newObjectiveMet
+-- info.goal
+-- info.goalMet
+-- info.newGoalMet
 -- info.reps
 -- colors.red = "|cffff0000"
 -- colors.green = "|cff00ff00"
@@ -122,21 +122,21 @@ local diffColor = info.gained and colors.green or colors.red -- Color the sign g
 local sign = info.gained and "+" or "" -- no need to use "-" because it's included in info.difference
 
 
-if info.objective > 0  then -- Button progress, with objective
+if info.goal > 0  then -- Button progress, with goal
     
-    if  info.newObjectiveMet and info.objectiveMet then -- Button progress, objective met
+    if  info.newGoalMet and info.goalMet then -- Button progress, goal met
         
-        return format("%sObjective complete!|r %s %s%d/%d|r x%d", colors.green,  info.title, colors.green, info.newCount, info.objective, info.reps)
+        return format("%sObjective complete!|r %s %s%d/%d|r x%d", colors.green,  info.title, colors.green, info.newCount, info.goal, info.reps)
         
-    else -- Button progress, objective not met or already met
+    else -- Button progress, goal not met or already met
         
-        local countColor = info.objectiveMet and colors.green or colors.gold
+        local countColor = info.goalMet and colors.green or colors.gold
         
-        return format("%sFarming update:|r %s %s%d/%d|r (%s%s%d|r)", colors.gold,  info.title, countColor,  info.newCount, info.objective, diffColor, sign, info.difference) 
+        return format("%sFarming update:|r %s %s%d/%d|r (%s%s%d|r)", colors.gold,  info.title, countColor,  info.newCount, info.goal, diffColor, sign, info.difference) 
         
     end
     
-else -- Button progress, without objective
+else -- Button progress, without goal
     
     return format("%sFarming update:|r %s %sx%d|r (%s%s%d|r)", colors.gold, info.title, colors.gold,  info.newCount, diffColor, sign, info.difference)
     
@@ -411,10 +411,10 @@ end]],
         -- info.difference
         -- info.lost
         -- info.gained
-        -- info.objective
-        -- info.trackerObjective
+        -- info.goal
         -- info.trackerGoal
-        -- info.objectiveMet
+        -- info.trackerGoalTotal
+        -- info.goalMet
         -- info.newComplete
         -- colors.red = "|cffff0000"
         -- colors.green = "|cff00ff00"
@@ -425,21 +425,21 @@ end]],
         local diffColor = info.gained and colors.green or colors.red -- Color the sign green if gained or red if lost
         local sign = info.gained and "+" or "" -- no need to use "-" because it's included in info.difference
         
-        if info.objective > 0 then -- Tracker progress, with objective
+        if info.goal > 0 then -- Tracker progress, with goal
             
-            if info.newComplete then -- Tracker complete, with objective
+            if info.newComplete then -- Tracker complete, with goal
                 
-                return format("%sTracker complete!|r (%s) %s %s%d/%d|r (%s%s%d|r)", colors.green,  info.title, info.trackerName, colors.green, info.newCount, info.trackerGoal, diffColor, sign, info.difference)
+                return format("%sTracker complete!|r (%s) %s %s%d/%d|r (%s%s%d|r)", colors.green,  info.title, info.trackerName, colors.green, info.newCount, info.trackerGoalTotal, diffColor, sign, info.difference)
                 
-            else -- Tracker progress, with objective
+            else -- Tracker progress, with goal
                 
-                return format("%sTracker progress:|r (%s) %s %s%d/%d|r (%s%s%d|r)", colors.gold,  info.title, info.trackerName, colors.gold, info.newCount, info.trackerGoal, diffColor, sign, info.difference)
+                return format("%sTracker progress:|r (%s) %s %s%d/%d|r (%s%s%d|r)", colors.gold,  info.title, info.trackerName, colors.gold, info.newCount, info.trackerGoalTotal, diffColor, sign, info.difference)
                 
             end
             
         end
         
-        -- Tracker progress, no objective
+        -- Tracker progress, no goal
         return format("%sTracker progress:|r (%s) %s %sx%d|r (%s%s%d|r)", colors.gold,  info.title, info.trackerName, colors.gold, info.newCount, diffColor, sign, info.difference)
         
     end]],
@@ -481,9 +481,9 @@ function private:InitializeDatabase()
                             difference = 0,
                             lost = false,
                             gained = true,
-                            objective = 20,
-                            objectiveMet = false,
-                            newObjectiveMet = true,
+                            goal = 20,
+                            goalMet = false,
+                            newGoalMet = true,
                             reps = 0,
                         },
                     },
@@ -518,9 +518,9 @@ function private:InitializeDatabase()
                             difference = 3,
                             lost = false,
                             gained = true,
-                            objective = 10,
-                            trackerObjective = 2,
-                            trackerGoal = 20,
+                            goal = 10,
+                            trackerGoal = 2,
+                            trackerGoalTotal = 20,
                             objectiveMet = true,
                             newComplete = true,
                         },
