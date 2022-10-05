@@ -12,6 +12,11 @@ function addon:OnDisable()
 end
 
 function addon:OnEnable()
+    -- This is for DBV2 conversion to update each toon's profile key
+    local realmKey = GetRealmName()
+    local charKey = UnitName("player") .. " - " .. realmKey
+    private.db:SetProfile(FarmingBarDB.profileKeys[charKey])
+
     private:InitializeBars()
     addon:RegisterEvent("CURSOR_CHANGED")
     addon:RegisterEvent("SPELL_UPDATE_COOLDOWN")
@@ -24,6 +29,7 @@ function addon:OnEnable()
 end
 
 function addon:OnInitialize()
+    private.bars = {}
     private:InitializeDatabase()
     private:InitializeOptions()
     private:RegisterMedia()
@@ -32,7 +38,6 @@ function addon:OnInitialize()
     private:InitializeObjectiveFrame()
     private:InitializeMasque()
     private:InitializeSlashCommands()
-    private.bars = {}
 end
 
 function addon:OnProfile_(...)

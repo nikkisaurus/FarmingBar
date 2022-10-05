@@ -31,8 +31,7 @@ L["* The following settings are profile specific."] = true
 L["Add Tracker"] = true
 L["Add"] = true
 L["Alert formats must be a function returning a string value."] = true
-L["Alert formats must be a string value. Please be sure if statements are properly formatted and do not cause a Lua error."] =
-    true
+L["Alert formats must be a string value. Please be sure if statements are properly formatted and do not cause a Lua error."] = true
 L["Alerts"] = true
 L["All Bars"] = true
 L["All"] = true
@@ -64,8 +63,7 @@ L["Auction Close"] = true
 L["Auction Open"] = true
 L["Auto Loot"] = true
 L["Auto"] = true
-L["Automatically loot items when using an objective, regardless of whether auto loot is enabled in game settings."] =
-    true
+L["Automatically loot items when using an objective, regardless of whether auto loot is enabled in game settings."] = true
 L["Backdrop"] = true
 L["Background Color"] = true
 L["Background"] = true
@@ -86,8 +84,7 @@ L["Button Growth"] = true
 L["Button is already assigned an ID: %d:%d"] = true
 L["Button Padding"] = true
 L["Button Size"] = true
-L["Button textures may be controlled by Masque and must be disabled through its settings for skins to be applied."] =
-    true
+L["Button textures may be controlled by Masque and must be disabled through its settings for skins to be applied."] = true
 L["Button Textures"] = true
 L["Button Tooltips"] = true
 L["Button"] = true
@@ -110,6 +107,8 @@ L["Configure bar settings."] = true
 L["Confirm"] = true
 L["Continue tracking farming progress after goal completion."] = true
 L["Control"] = true
+L["Converted Currency"] = true
+L["Converted Item"] = true
 L["Copy From"] = true
 L["Count"] = true
 L["Currency"] = true
@@ -365,11 +364,7 @@ L.OptionsHelp = function()
         },
         {
             1,
-            format(
-                "Farming Bar allows you to create an unlimited number of bars to track items and complex objectives. You can either place an item on the bar or create an objective template to drag onto the bar. Once a button is tracking a farming objective, options become available to customize and edit. By default, %s opens the Objective Editor, where you can edit properties similar to the Objective Template Builder. You can also set an goal for each farming objective; just %s the button and enter your goal into the editbox. Other actions that can be performed on buttons can be seen in the Hints section at the bottom of the button's tooltip.",
-                addon.ColorFontString("control+right-click", "LIGHTBLUE"),
-                addon.ColorFontString("control+left-click", "LIGHTBLUE")
-            ),
+            format("Farming Bar allows you to create an unlimited number of bars to track items and complex objectives. You can either place an item on the bar or create an objective template to drag onto the bar. Once a button is tracking a farming objective, options become available to customize and edit. By default, %s opens the Objective Editor, where you can edit properties similar to the Objective Template Builder. You can also set an goal for each farming objective; just %s the button and enter your goal into the editbox. Other actions that can be performed on buttons can be seen in the Hints section at the bottom of the button's tooltip.", addon.ColorFontString("control+right-click", "LIGHTBLUE"), addon.ColorFontString("control+left-click", "LIGHTBLUE")),
         },
         {
             3,
@@ -377,11 +372,7 @@ L.OptionsHelp = function()
         },
         {
             1,
-            format(
-                "For any bugs or feature requests, please create a ticket at %s. General questions should be left as comments at %s.",
-                addon.ColorFontString("tinyurl.com/farmingbarissues", "LIGHTBLUE"),
-                addon.ColorFontString("tinyurl.com/farmingbarwow", "LIGHTBLUE")
-            ),
+            format("For any bugs or feature requests, please create a ticket at %s. General questions should be left as comments at %s.", addon.ColorFontString("tinyurl.com/farmingbarissues", "LIGHTBLUE"), addon.ColorFontString("tinyurl.com/farmingbarwow", "LIGHTBLUE")),
         },
         {
             2,
@@ -473,19 +464,11 @@ L.OptionsHelp = function()
                     {
                         {
                             1,
-                            format(
-                                "%s = %s",
-                                addon.ColorFontString("%color%", "LIGHTBLUE"),
-                                "||r - closes out color codes"
-                            ),
+                            format("%s = %s", addon.ColorFontString("%color%", "LIGHTBLUE"), "||r - closes out color codes"),
                         },
                         {
                             1,
-                            format(
-                                "%s = %s",
-                                addon.ColorFontString("%diffColor%", "LIGHTBLUE"),
-                                "green or red, depending on whether difference is positive or negative"
-                            ),
+                            format("%s = %s", addon.ColorFontString("%diffColor%", "LIGHTBLUE"), "green or red, depending on whether difference is positive or negative"),
                         },
                         {
                             1,
@@ -497,11 +480,7 @@ L.OptionsHelp = function()
                         },
                         {
                             1,
-                            format(
-                                "%s = %s",
-                                addon.ColorFontString("%progressColor%", "LIGHTBLUE"),
-                                "green or yellow, depending on whether progress is positive or negative"
-                            ),
+                            format("%s = %s", addon.ColorFontString("%progressColor%", "LIGHTBLUE"), "green or yellow, depending on whether progress is positive or negative"),
                         },
                         {
                             1,
@@ -519,10 +498,7 @@ L.OptionsHelp = function()
                         },
                         {
                             1,
-                            format(
-                                "If statements can be used to control when certain pieces of text are displayed within your alert and must follow the format above. \"condition\" should be a lua expression and when true, \"then\" will show up in your alert, otherwise \"else\" will. You must provide a comma after \"then\", even if you have a blank \"else\" statement. For example: %s would mean \"if goal is equal to zero (goal is not set), then print x, else print nothing\".",
-                                addon.ColorFontString("%if(%g==0,x,)if%", "LIGHTBLUE")
-                            ),
+                            format("If statements can be used to control when certain pieces of text are displayed within your alert and must follow the format above. \"condition\" should be a lua expression and when true, \"then\" will show up in your alert, otherwise \"else\" will. You must provide a comma after \"then\", even if you have a blank \"else\" statement. For example: %s would mean \"if goal is equal to zero (goal is not set), then print x, else print nothing\".", addon.ColorFontString("%if(%g==0,x,)if%", "LIGHTBLUE")),
                         },
                     },
                 },
@@ -640,10 +616,7 @@ L.OptionsHelp = function()
                     {
                         {
                             1,
-                            format(
-                                "Command documentation can be accessed via the command %s.",
-                                addon.ColorFontString("/farmingbar help", "LIGHTBLUE")
-                            ),
+                            format("Command documentation can be accessed via the command %s.", addon.ColorFontString("/farmingbar help", "LIGHTBLUE")),
                         },
                     },
                 },
@@ -702,15 +675,9 @@ L.ButtonHints = function(action, actionInfo)
         clearObjective = format("%s to clear this objective.", GetCommandString(actionInfo)),
         showObjectiveEditBox = format("%s to show the goal editbox.", GetCommandString(actionInfo)),
         showQuickAddEditBox = format("%s to show the quick add editbox.", GetCommandString(actionInfo)),
-        showQuickAddCurrencyEditBox = format(
-            "%s to show the currency quick add editbox.",
-            GetCommandString(actionInfo)
-        ),
+        showQuickAddCurrencyEditBox = format("%s to show the currency quick add editbox.", GetCommandString(actionInfo)),
         showObjectiveEditor = format("%s to show the objective editor.", GetCommandString(actionInfo)),
-        moveObjectiveToBank = format(
-            "%s to move all items until the objective to your bank.",
-            GetCommandString(actionInfo)
-        ),
+        moveObjectiveToBank = format("%s to move all items until the objective to your bank.", GetCommandString(actionInfo)),
         moveAllToBank = format("%s to move all items to your bank.", GetCommandString(actionInfo)),
     }
 
@@ -728,8 +695,5 @@ L.GetTexCoordID = function(id)
 end
 
 L.UnknownRecipe = function(recipeName)
-    return format(
-        "You do not know the recipe: %s. If you believe this is an error, please manually open your tradeskill and try again.",
-        recipeName
-    )
+    return format("You do not know the recipe: %s. If you believe this is an error, please manually open your tradeskill and try again.", recipeName)
 end

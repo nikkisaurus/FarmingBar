@@ -27,6 +27,7 @@ private.defaults = {
                 anchor = "CENTER",
                 x = 0,
                 y = 0,
+                showEdge = false,
             },
             Count = {
                 enabled = true,
@@ -37,7 +38,6 @@ private.defaults = {
                 anchor = "BOTTOMRIGHT",
                 x = -1,
                 y = 2,
-                showEdge = false,
             },
             Objective = {
                 enabled = true,
