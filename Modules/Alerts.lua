@@ -204,7 +204,7 @@ function private:ParseAlert(alert, alertInfo)
     local progressColor = alertInfo.goal and (alertInfo.newCount >= alertInfo.goal and "|cff00ff00" or "|cffffcc00") or ""
 
     -- Replaces placeholders with data: colors come first so things like %c, %d, and %p don't get changed before colors can be evaluated
-    alert = alert:gsub("%%color%%", "|r"):gsub("%%diffColor%%", diffColor):gsub("%%progressColor%%", progressColor):gsub("%%green%%", private.lists.alertColors.green):gsub("%%gold%%", private.lists.alertColors.gold):gsub("%%red%%", private.lists.alertColors.red):gsub("%%c", alertInfo.newCount):gsub("%%C", alertInfo.oldCount):gsub("%%d", (alertInfo.difference > 0 and "+" or "") .. alertInfo.difference):gsub("%%g", alertInfo.goal or ""):gsub("%%O", alertInfo.reps):gsub("%%p", percent):gsub("%%r", remainder):gsub("%%t", alertInfo.title or "")
+    alert = alert:gsub("%%color%%", "|r"):gsub("%%diffColor%%", diffColor):gsub("%%progressColor%%", progressColor):gsub("%%green%%", private.lists.alertColors.green):gsub("%%gold%%", private.lists.alertColors.gold):gsub("%%red%%", private.lists.alertColors.red):gsub("%%c", alertInfo.newCount):gsub("%%C", alertInfo.oldCount):gsub("%%d", (alertInfo.difference > 0 and "+" or "") .. alertInfo.difference):gsub("%%g", alertInfo.goal or ""):gsub("%%O", alertInfo.reps or 0):gsub("%%p", percent):gsub("%%r", remainder):gsub("%%t", alertInfo.title or "")
 
     alert = private:ParseIfStatement(alert)
 
