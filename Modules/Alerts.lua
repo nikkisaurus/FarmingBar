@@ -36,8 +36,7 @@ function private:Alert(widget, ...)
         goal = buttonDB.objective,
         goalMet = newCount >= buttonDB.objective,
         newGoalMet = newCount >= buttonDB.objective and oldCount < buttonDB.objective,
-        reps = (buttonDB.objective and buttonDB.objective > 0)
-            and (newCount >= buttonDB.objective and floor(newCount / buttonDB.objective) or 0),
+        reps = (buttonDB.objective and buttonDB.objective > 0) and (newCount >= buttonDB.objective and floor(newCount / buttonDB.objective) or 0) or 0,
     }
 
     if alertType == "FUNC" then
@@ -54,10 +53,7 @@ function private:Alert(widget, ...)
         alert = private:ParseAlert(alert, alertInfo)
     end
 
-    if
-        not barDB.alerts.completedObjectives and alertInfo.objectiveMet and not alertInfo.newObjectiveMet
-        or not alert
-    then
+    if not barDB.alerts.completedObjectives and alertInfo.objectiveMet and not alertInfo.newObjectiveMet or not alert then
         return
     end
 
@@ -116,10 +112,7 @@ function private:AlertBar(widget, progress, total, newProgress, newTotal)
         alert = private:ParseBarAlert(alert, alertInfo)
     end
 
-    if
-        not barDB.alerts.completedObjectives and alertInfo.objectiveMet and not alertInfo.newObjectiveMet
-        or not alert
-    then
+    if not barDB.alerts.completedObjectives and alertInfo.objectiveMet and not alertInfo.newObjectiveMet or not alert then
         return
     end
 
@@ -208,25 +201,10 @@ function private:ParseAlert(alert, alertInfo)
     local remainder = alertInfo.goal and (alertInfo.goal - alertInfo.newCount) or ""
 
     local diffColor = alertInfo.difference > 0 and "|cff00ff00" or "|cffff0000"
-    local progressColor = alertInfo.goal and (alertInfo.newCount >= alertInfo.goal and "|cff00ff00" or "|cffffcc00")
-        or ""
+    local progressColor = alertInfo.goal and (alertInfo.newCount >= alertInfo.goal and "|cff00ff00" or "|cffffcc00") or ""
 
     -- Replaces placeholders with data: colors come first so things like %c, %d, and %p don't get changed before colors can be evaluated
-    alert = alert
-        :gsub("%%color%%", "|r")
-        :gsub("%%diffColor%%", diffColor)
-        :gsub("%%progressColor%%", progressColor)
-        :gsub("%%green%%", private.lists.alertColors.green)
-        :gsub("%%gold%%", private.lists.alertColors.gold)
-        :gsub("%%red%%", private.lists.alertColors.red)
-        :gsub("%%c", alertInfo.newCount)
-        :gsub("%%C", alertInfo.oldCount)
-        :gsub("%%d", (alertInfo.difference > 0 and "+" or "") .. alertInfo.difference)
-        :gsub("%%g", alertInfo.goal or "")
-        :gsub("%%O", alertInfo.reps)
-        :gsub("%%p", percent)
-        :gsub("%%r", remainder)
-        :gsub("%%t", alertInfo.title or "")
+    alert = alert:gsub("%%color%%", "|r"):gsub("%%diffColor%%", diffColor):gsub("%%progressColor%%", progressColor):gsub("%%green%%", private.lists.alertColors.green):gsub("%%gold%%", private.lists.alertColors.gold):gsub("%%red%%", private.lists.alertColors.red):gsub("%%c", alertInfo.newCount):gsub("%%C", alertInfo.oldCount):gsub("%%d", (alertInfo.difference > 0 and "+" or "") .. alertInfo.difference):gsub("%%g", alertInfo.goal or ""):gsub("%%O", alertInfo.reps):gsub("%%p", percent):gsub("%%r", remainder):gsub("%%t", alertInfo.title or "")
 
     alert = private:ParseIfStatement(alert)
 
@@ -235,8 +213,7 @@ end
 
 function private:ParseBarAlert(alert, alertInfo)
     local barIDName = L["Bar"] .. " " .. alertInfo.barID
-    local barNameLong =
-        string.format("%s%s", barIDName, alertInfo.label ~= "" and string.format(" (%s)", alertInfo.label) or "")
+    local barNameLong = string.format("%s%s", barIDName, alertInfo.label ~= "" and string.format(" (%s)", alertInfo.label) or "")
     local barName = alertInfo.label == "" and barIDName or alertInfo.label
 
     local percent = math.floor((alertInfo.newProgress / alertInfo.newTotal) * 100)
@@ -246,21 +223,7 @@ function private:ParseBarAlert(alert, alertInfo)
     local diffColor = alertInfo.difference > 0 and "|cff00ff00" or "|cffff0000"
 
     -- -- Replaces placeholders with data: colors come first so things like %c and %p don't get changed before colors can be evaluated
-    alert = alert
-        :gsub("%%color%%", "|r")
-        :gsub("%%diffColor%%", diffColor)
-        :gsub("%%progressColor%%", progressColor)
-        :gsub("%%green%%", private.lists.alertColors.green)
-        :gsub("%%gold%%", private.lists.alertColors.gold)
-        :gsub("%%red%%", private.lists.alertColors.red)
-        :gsub("%%b", barIDName)
-        :gsub("%%B", barNameLong)
-        :gsub("%%c", alertInfo.newProgress)
-        :gsub("%%d", (alertInfo.difference > 0 and "+" or "") .. alertInfo.difference)
-        :gsub("%%n", barName)
-        :gsub("%%p", percent)
-        :gsub("%%r", remainder)
-        :gsub("%%t", alertInfo.newTotal)
+    alert = alert:gsub("%%color%%", "|r"):gsub("%%diffColor%%", diffColor):gsub("%%progressColor%%", progressColor):gsub("%%green%%", private.lists.alertColors.green):gsub("%%gold%%", private.lists.alertColors.gold):gsub("%%red%%", private.lists.alertColors.red):gsub("%%b", barIDName):gsub("%%B", barNameLong):gsub("%%c", alertInfo.newProgress):gsub("%%d", (alertInfo.difference > 0 and "+" or "") .. alertInfo.difference):gsub("%%n", barName):gsub("%%p", percent):gsub("%%r", remainder):gsub("%%t", alertInfo.newTotal)
 
     alert = private:ParseIfStatement(alert)
 
@@ -277,10 +240,7 @@ function private:ParseIfStatement(alert)
         local matches = { alert:match("%%if%((.+),(.+),(.*)%)!!") }
 
         -- Evalutes the if statement and makes the replacement
-        alert = alert:gsub(
-            "%%if%((.+),(.+),(.*)%)!!",
-            assert(loadstring("return " .. matches[1]))() and matches[2] or matches[3]
-        )
+        alert = alert:gsub("%%if%((.+),(.+),(.*)%)!!", assert(loadstring("return " .. matches[1]))() and matches[2] or matches[3])
     end
 
     return alert
@@ -294,22 +254,7 @@ function private:ParseTrackerAlert(alert, alertInfo)
     local progressColor = alertInfo.trackerGoal >= alertInfo.trackerGoalTotal and "|cff00ff00" or "|cffffcc00"
 
     -- Replaces placeholders with data: colors come first so things like %c, %d, and %p don't get changed before colors can be evaluated
-    alert = alert
-        :gsub("%%color%%", "|r")
-        :gsub("%%diffColor%%", diffColor)
-        :gsub("%%progressColor%%", progressColor)
-        :gsub("%%green%%", private.lists.alertColors.green)
-        :gsub("%%gold%%", private.lists.alertColors.gold)
-        :gsub("%%red%%", private.lists.alertColors.red)
-        :gsub("%%c", alertInfo.newCount)
-        :gsub("%%C", alertInfo.oldCount)
-        :gsub("%%d", (alertInfo.difference > 0 and "+" or "") .. alertInfo.difference)
-        :gsub("%%g", alertInfo.goal or "")
-        :gsub("%%G", alertInfo.trackerGoalTotal or "")
-        :gsub("%%p", percent)
-        :gsub("%%r", remainder)
-        :gsub("%%t", alertInfo.title or "")
-        :gsub("%%T", alertInfo.trackerName)
+    alert = alert:gsub("%%color%%", "|r"):gsub("%%diffColor%%", diffColor):gsub("%%progressColor%%", progressColor):gsub("%%green%%", private.lists.alertColors.green):gsub("%%gold%%", private.lists.alertColors.gold):gsub("%%red%%", private.lists.alertColors.red):gsub("%%c", alertInfo.newCount):gsub("%%C", alertInfo.oldCount):gsub("%%d", (alertInfo.difference > 0 and "+" or "") .. alertInfo.difference):gsub("%%g", alertInfo.goal or ""):gsub("%%G", alertInfo.trackerGoalTotal or ""):gsub("%%p", percent):gsub("%%r", remainder):gsub("%%t", alertInfo.title or ""):gsub("%%T", alertInfo.trackerName)
 
     alert = private:ParseIfStatement(alert)
 
@@ -331,9 +276,7 @@ function private:PreviewAlert(Type)
             end
         end
     else
-        return (Type == "button" and private:ParseAlert(alert.formatStr, alert.alertInfo))
-            or (Type == "bar" and private:ParseBarAlert(alert.formatStr, alert.alertInfo))
-            or (Type == "tracker" and private:ParseTrackerAlert(alert.formatStr, alert.alertInfo))
+        return (Type == "button" and private:ParseAlert(alert.formatStr, alert.alertInfo)) or (Type == "bar" and private:ParseBarAlert(alert.formatStr, alert.alertInfo)) or (Type == "tracker" and private:ParseTrackerAlert(alert.formatStr, alert.alertInfo))
     end
 end
 
@@ -350,14 +293,7 @@ function private:ValidateAlert(Type, alert)
             end
         end
     else
-        local success, ret = pcall(
-            Type == "button" and private.ParseAlert
-                or Type == "bar" and private.ParseBarAlert
-                or Type == "tracker" and private.ParseTrackerAlert,
-            private,
-            alert,
-            private.db.global.settings.alerts[Type].alertInfo
-        )
+        local success, ret = pcall(Type == "button" and private.ParseAlert or Type == "bar" and private.ParseBarAlert or Type == "tracker" and private.ParseTrackerAlert, private, alert, private.db.global.settings.alerts[Type].alertInfo)
 
         if success and type(ret) == "string" then
             return true
