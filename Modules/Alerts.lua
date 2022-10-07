@@ -197,11 +197,11 @@ function private:AlertTracker(widget, trackerKey, oldCount, newCount)
 end
 
 function private:ParseAlert(alert, alertInfo)
-    local percent = alertInfo.goal and (math.floor((alertInfo.newCount / alertInfo.goal) * 100)) or ""
-    local remainder = alertInfo.goal and (alertInfo.goal - alertInfo.newCount) or ""
+    local percent = alertInfo.goal and alertInfo.goal > 0 and (math.floor((alertInfo.newCount / alertInfo.goal) * 100)) or ""
+    local remainder = alertInfo.goal and alertInfo.goal > 0 and (alertInfo.goal - alertInfo.newCount) or ""
 
     local diffColor = alertInfo.difference > 0 and "|cff00ff00" or "|cffff0000"
-    local progressColor = alertInfo.goal and (alertInfo.newCount >= alertInfo.goal and "|cff00ff00" or "|cffffcc00") or ""
+    local progressColor = alertInfo.goal and alertInfo.goal > 0 and (alertInfo.newCount >= alertInfo.goal and "|cff00ff00" or "|cffffcc00") or ""
 
     -- Replaces placeholders with data: colors come first so things like %c, %d, and %p don't get changed before colors can be evaluated
     alert = alert:gsub("%%color%%", "|r"):gsub("%%diffColor%%", diffColor):gsub("%%progressColor%%", progressColor):gsub("%%green%%", private.lists.alertColors.green):gsub("%%gold%%", private.lists.alertColors.gold):gsub("%%red%%", private.lists.alertColors.red):gsub("%%c", alertInfo.newCount):gsub("%%C", alertInfo.oldCount):gsub("%%d", (alertInfo.difference > 0 and "+" or "") .. alertInfo.difference):gsub("%%g", alertInfo.goal or ""):gsub("%%O", alertInfo.reps or 0):gsub("%%p", percent):gsub("%%r", remainder):gsub("%%t", alertInfo.title or "")
