@@ -237,6 +237,9 @@ local methods = {
         end
 
         local barDB = widget:GetDB()
+        if not barDB then
+            return
+        end
 
         RegisterStateDriver(widget.frame, "visibility", barDB.hideInCombat and "[combat] hide" or "")
         for _, button in pairs(widget:GetButtons()) do
