@@ -148,7 +148,7 @@ function private:AlertTracker(widget, trackerKey, oldCount, newCount)
 
     local alertInfo = {
         title = buttonDB.title,
-        trackerName = name,
+        trackerName = name or L["Tracker"] .. " " .. trackerKey,
         oldCount = oldCount,
         newCount = newCount,
         difference = newCount - oldCount,
