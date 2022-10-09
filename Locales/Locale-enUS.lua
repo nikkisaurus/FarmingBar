@@ -554,7 +554,7 @@ L.OptionsHelp = function()
             {
                 {
                     1,
-                    "The Objective Template Builder allows you to create highly customizable farming objectives, which can be placed onto a bar by left-clicking the objective's icon. Objectives consist of trackers, which are individual items or currencies that have their own goals to meet before counting towards the objective. By default, an objective is not met until the objective of all trackers is met. However, you can mix and match trackers by using the tracker condition \"ALL\". Additionally, if you are comfortable with Lua, you can create a custom function to control how your objective is counted.",
+                    "The Objective Template Builder allows you to create highly customizable farming objectives, which can be placed onto a bar by left-clicking the objective's icon. Objectives consist of trackers, which are individual items or currencies that have their own goals to meet before counting towards the objective. By default, an objective is not met until the objective of all trackers is met. However, you can mix and match trackers by using the tracker condition \"ANY\". Additionally, if you are comfortable with Lua, you can create a custom function to control how your objective is counted.",
                 },
                 {
                     4,
