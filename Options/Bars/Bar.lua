@@ -178,8 +178,7 @@ function private:GetBarOptions(barID)
                                         return values
                                     end,
                                     set = function(_, value)
-                                        private.db.profile.bars[barID].buttons =
-                                            addon.CloneTable(private.db.global.templates[value])
+                                        private.db.profile.bars[barID].buttons = addon.CloneTable(private.db.global.templates[value])
                                         private.bars[barID]:UpdateButtons()
                                     end,
                                 },
@@ -356,8 +355,14 @@ function private:GetBarOptions(barID)
                             name = L["Hidden (Override Func)"],
                             desc = L["Hides the bar, regardless of the output from the custom hidden function."],
                         },
-                        hiddenEvents = {
+                        hideInCombat = {
                             order = 2,
+                            type = "toggle",
+                            name = L["Hide In Combat"],
+                            desc = L["Hides the bar in combat and restores visibility (based upon your other settings) upon leaving combat."],
+                        },
+                        hiddenEvents = {
+                            order = 3,
                             type = "input",
                             width = "full",
                             name = L["Events"],
@@ -392,7 +397,7 @@ function private:GetBarOptions(barID)
                             end,
                         },
                         hidden = {
-                            order = 3,
+                            order = 4,
                             type = "input",
                             width = "full",
                             dialogControl = "FarmingBar_LuaEditBox",
@@ -406,7 +411,7 @@ function private:GetBarOptions(barID)
                             end,
                         },
                         resetHidden = {
-                            order = 4,
+                            order = 5,
                             type = "execute",
                             name = RESET,
                             func = function(info)

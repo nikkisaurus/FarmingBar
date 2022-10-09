@@ -57,6 +57,7 @@ private.defaults = {
             return
         end]],
         hiddenEvents = {},
+        hideInCombat = false,
         label = "",
         limitMats = false,
         mouseover = false,

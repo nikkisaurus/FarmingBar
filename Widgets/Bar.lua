@@ -20,8 +20,12 @@ local scripts = {
         end
     end,
 
-    OnEvent = function(frame)
-        frame.obj:SetHidden()
+    OnEvent = function(frame, event)
+        if event == "PLAYER_REGEN_ENABLED" then
+            frame.obj:SetHidden()
+        else
+            frame.obj:SetHidden()
+        end
     end,
 
     OnLeave = function(frame)
@@ -219,6 +223,8 @@ local methods = {
         for _, event in pairs(barDB.hiddenEvents) do
             widget.frame:RegisterEvent(event)
         end
+
+        widget.frame:RegisterEvent("PLAYER_REGEN_ENABLED")
     end,
 
     SetHeight = function(widget, height)
@@ -226,7 +232,16 @@ local methods = {
     end,
 
     SetHidden = function(widget)
+        if UnitAffectingCombat("player") then
+            return
+        end
+
         local barDB = widget:GetDB()
+
+        RegisterStateDriver(widget.frame, "visibility", barDB.hideInCombat and "[combat] hide" or "")
+        for _, button in pairs(widget:GetButtons()) do
+            RegisterStateDriver(button.frame, "visibility", barDB.hideInCombat and "[combat] hide" or "")
+        end
 
         if barDB.overrideHidden then
             widget:Hide()
