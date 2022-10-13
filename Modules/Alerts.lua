@@ -133,6 +133,7 @@ function private:AlertBar(widget, progress, total, newProgress, newTotal)
     end
 end
 
+local cache = {}
 function private:AlertTracker(widget, trackerKey, oldCount, newCount)
     local alertSettings = private.db.global.settings.alerts.tracker
     local alertType = alertSettings.formatType
@@ -140,15 +141,20 @@ function private:AlertTracker(widget, trackerKey, oldCount, newCount)
     local barDB, buttonDB = widget:GetDB()
     local tracker = buttonDB.trackers[trackerKey]
 
-    if tracker.type == "ITEM" then
-        private:CacheItem(tracker.id)
+    if tracker.type == "ITEM" and not cache[tracker.id] then
+        addon.CacheItem(tracker.id, function(itemID, private, widget, trackerKey, oldCount, newCount, cache)
+            cache[itemID] = (GetItemInfo(itemID))
+            private:AlertTracker(widget, trackerKey, oldCount, newCount)
+        end, private, widget, trackerKey, oldCount, newCount, cache)
+        return
     end
+
     local name = private:GetTrackerInfo(tracker.type, tracker.id)
     local trackerGoal = (buttonDB.objective > 0 and buttonDB.objective or 1) * tracker.objective
 
     local alertInfo = {
         title = buttonDB.title,
-        trackerName = name,
+        trackerName = name or L["Tracker"] .. " " .. trackerKey,
         oldCount = oldCount,
         newCount = newCount,
         difference = newCount - oldCount,

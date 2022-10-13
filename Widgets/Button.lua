@@ -152,9 +152,7 @@ local editboxScripts = {
 
             if private.db.global.settings.alerts.button.sound then
                 if objective == 0 then
-                    PlaySoundFile(
-                        LSM:Fetch(LSM.MediaType.SOUND, private.db.global.settings.alerts.sounds.objectiveCleared)
-                    )
+                    PlaySoundFile(LSM:Fetch(LSM.MediaType.SOUND, private.db.global.settings.alerts.sounds.objectiveCleared))
                 else
                     PlaySoundFile(LSM:Fetch(LSM.MediaType.SOUND, private.db.global.settings.alerts.sounds.objectiveSet))
                 end
@@ -388,9 +386,7 @@ local methods = {
 
     SetAttributes = function(widget)
         local info = private.db.global.settings.keybinds.onUse
-        local buttonType = (info.modifier ~= "" and (info.modifier .. "-") or "")
-            .. "type"
-            .. (info.button == "RightButton" and 2 or 1)
+        local buttonType = (info.modifier ~= "" and (info.modifier .. "-") or "") .. "type" .. (info.button == "RightButton" and 2 or 1)
         local isEmpty = widget:IsEmpty()
         local _, buttonDB = widget:GetDB()
 
@@ -657,12 +653,7 @@ local methods = {
 
 local function Constructor()
     --[[ Frame ]]
-    local frame = CreateFrame(
-        "Button",
-        Type .. AceGUI:GetNextWidgetNum(Type),
-        UIParent,
-        "BackdropTemplate, SecureActionButtonTemplate"
-    )
+    local frame = CreateFrame("Button", Type .. AceGUI:GetNextWidgetNum(Type), UIParent, "BackdropTemplate, SecureActionButtonTemplate, SecureHandlerStateTemplate")
     frame:SetFrameStrata("MEDIUM")
     frame:SetFrameLevel(1)
     frame:SetMovable(true)
