@@ -543,6 +543,8 @@ function private:InitializeDatabase()
                         objectiveCleared = L["Quest Failed"],
                         barProgress = L["Auction Open"],
                         barComplete = L["Auction Close"],
+                        trackerProgress = L["Select Difficulty"],
+                        trackerComplete = L["Quest Objective Complete"],
                         progress = L["Loot Coin"],
                         objectiveMet = L["Quest Complete"],
                     },

@@ -53,7 +53,7 @@ function private:Alert(widget, ...)
         alert = private:ParseAlert(alert, alertInfo)
     end
 
-    if not barDB.alerts.completedObjectives and alertInfo.objectiveMet and not alertInfo.newObjectiveMet or not alert then
+    if not barDB.alerts.completedObjectives and alertInfo.objectiveMet and not alertInfo.newGoalMet or not alert then
         return
     end
 
@@ -66,7 +66,7 @@ function private:Alert(widget, ...)
     end
 
     if alertSettings.sound then
-        if alertInfo.newObjectiveMet then
+        if alertInfo.newGoalMet then
             PlaySoundFile(LSM:Fetch(LSM.MediaType.SOUND, private.db.global.settings.alerts.sounds.objectiveMet))
         elseif alertInfo.gained then
             PlaySoundFile(LSM:Fetch(LSM.MediaType.SOUND, private.db.global.settings.alerts.sounds.progress))
@@ -112,7 +112,7 @@ function private:AlertBar(widget, progress, total, newProgress, newTotal)
         alert = private:ParseBarAlert(alert, alertInfo)
     end
 
-    if not barDB.alerts.completedObjectives and alertInfo.objectiveMet and not alertInfo.newObjectiveMet or not alert then
+    if not alert then
         return
     end
 
@@ -195,9 +195,9 @@ function private:AlertTracker(widget, trackerKey, oldCount, newCount)
 
     if alertSettings.sound then
         if alertInfo.newComplete then
-            PlaySoundFile(LSM:Fetch(LSM.MediaType.SOUND, private.db.global.settings.alerts.sounds.barComplete))
+            PlaySoundFile(LSM:Fetch(LSM.MediaType.SOUND, private.db.global.settings.alerts.sounds.trackerComplete))
         elseif alertInfo.gained then
-            PlaySoundFile(LSM:Fetch(LSM.MediaType.SOUND, private.db.global.settings.alerts.sounds.barProgress))
+            PlaySoundFile(LSM:Fetch(LSM.MediaType.SOUND, private.db.global.settings.alerts.sounds.trackerProgress))
         end
     end
 end
