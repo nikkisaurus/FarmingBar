@@ -74,8 +74,40 @@ function private:GetSettingsOptions()
                     name = L["Slash Commands"],
                     args = {},
                 },
-                style = {
+                templates = {
                     order = 3,
+                    type = "group",
+                    inline = true,
+                    name = L["Templates"],
+                    args = {
+                        removeTemplate = {
+                            order = 1,
+                            type = "select",
+                            style = "dropdown",
+                            name = L["Remove Template"],
+                            values = function()
+                                local templates = {}
+
+                                for templateName, _ in pairs(private.db.global.templates) do
+                                    templates[templateName] = templateName
+                                end
+
+                                return templates
+                            end,
+                            disabled = function()
+                                return addon.tcount(private.db.global.templates) == 0
+                            end,
+                            confirm = function(_, value)
+                                return format(L["Are you sure you want to delete the template \"%s\"?"], value)
+                            end,
+                            set = function(_, value)
+                                private.db.global.templates[value] = nil
+                            end,
+                        },
+                    },
+                },
+                style = {
+                    order = 4,
                     type = "group",
                     inline = true,
                     name = L["Style"],
@@ -157,7 +189,7 @@ function private:GetSettingsOptions()
                     },
                 },
                 misc = {
-                    order = 4,
+                    order = 5,
                     type = "group",
                     inline = true,
                     name = L["Miscellaneous"],
@@ -226,16 +258,11 @@ function private:GetSettingsOptions()
 
                                 local alertInfo = private.db.global.settings.alerts.bar.alertInfo
                                 private.db.global.settings.alerts.bar.alertInfo[info[#info]] = value
-                                private.db.global.settings.alerts.bar.alertInfo.lost = alertInfo.oldProgress
-                                    > alertInfo.newProgress
-                                private.db.global.settings.alerts.bar.alertInfo.gained = alertInfo.oldProgress
-                                    < alertInfo.newProgress
-                                private.db.global.settings.alerts.bar.alertInfo.difference = alertInfo.newProgress
-                                    - alertInfo.oldProgress
+                                private.db.global.settings.alerts.bar.alertInfo.lost = alertInfo.oldProgress > alertInfo.newProgress
+                                private.db.global.settings.alerts.bar.alertInfo.gained = alertInfo.oldProgress < alertInfo.newProgress
+                                private.db.global.settings.alerts.bar.alertInfo.difference = alertInfo.newProgress - alertInfo.oldProgress
                                 private.db.global.settings.alerts.bar.alertInfo.oldTotal = alertInfo.newTotal
-                                private.db.global.settings.alerts.bar.alertInfo.newComplete = alertInfo.oldProgress
-                                        < alertInfo.newTotal
-                                    and alertInfo.newProgress == alertInfo.newTotal
+                                private.db.global.settings.alerts.bar.alertInfo.newComplete = alertInfo.oldProgress < alertInfo.newTotal and alertInfo.newProgress == alertInfo.newTotal
                             end,
                             args = {
                                 preview = {
@@ -244,11 +271,7 @@ function private:GetSettingsOptions()
                                     name = function()
                                         local alert = private:PreviewAlert("bar")
                                         local alertInfo = private.db.global.settings.alerts.bar.alertInfo
-                                        return alertInfo.oldProgress ~= alertInfo.newProgress
-                                                and alertInfo.newTotal > 0
-                                                and alertInfo.newProgress <= alertInfo.newTotal
-                                                and alert
-                                            or ""
+                                        return alertInfo.oldProgress ~= alertInfo.newProgress and alertInfo.newTotal > 0 and alertInfo.newProgress <= alertInfo.newTotal and alert or ""
                                     end,
                                 },
                                 oldProgress = {
@@ -287,8 +310,7 @@ function private:GetSettingsOptions()
                             width = "full",
                             name = L["Format"],
                             validate = function(_, value)
-                                return private:ValidateAlert("bar", value)
-                                    or L["Alert formats must be a string value. Please be sure if statements are properly formatted and do not cause a Lua error."]
+                                return private:ValidateAlert("bar", value) or L["Alert formats must be a string value. Please be sure if statements are properly formatted and do not cause a Lua error."]
                             end,
                             hidden = function()
                                 return private.db.global.settings.alerts.bar.formatType == "FUNC"
@@ -302,19 +324,16 @@ function private:GetSettingsOptions()
                             width = "full",
                             name = L["Format"],
                             get = function(info)
-                                return private.status.luaeditbox
-                                    or private.db.global.settings.alerts[info[#info]].format
+                                return private.status.luaeditbox or private.db.global.settings.alerts[info[#info]].format
                             end,
                             set = function(info, value)
                                 private.db.global.settings.alerts[info[#info]].format = value
                             end,
                             validate = function(_, value)
-                                return private:ValidateAlert("bar", value)
-                                    or L["Alert formats must be a function returning a string value."]
+                                return private:ValidateAlert("bar", value) or L["Alert formats must be a function returning a string value."]
                             end,
                             arg = function(value)
-                                return private:ValidateAlert("bar", value)
-                                    or L["Alert formats must be a function returning a string value."]
+                                return private:ValidateAlert("bar", value) or L["Alert formats must be a function returning a string value."]
                             end,
                             hidden = function()
                                 return private.db.global.settings.alerts.bar.formatType == "STRING"
@@ -379,20 +398,12 @@ function private:GetSettingsOptions()
 
                                 local alertInfo = private.db.global.settings.alerts.button.alertInfo
                                 private.db.global.settings.alerts.button.alertInfo[info[#info]] = value
-                                private.db.global.settings.alerts.button.alertInfo.difference = alertInfo.newCount
-                                    - alertInfo.oldCount
-                                private.db.global.settings.alerts.button.alertInfo.lost = alertInfo.oldCount
-                                    > alertInfo.newCount
-                                private.db.global.settings.alerts.button.alertInfo.gained = alertInfo.oldCount
-                                    < alertInfo.newCount
-                                private.db.global.settings.alerts.button.alertInfo.goalMet = alertInfo.newCount
-                                    >= alertInfo.goal
-                                private.db.global.settings.alerts.button.alertInfo.newGoalMet = alertInfo.oldCount
-                                    < alertInfo.goal
-                                private.db.global.settings.alerts.button.alertInfo.reps = alertInfo.newCount
-                                            >= alertInfo.goal
-                                        and floor(alertInfo.newCount / alertInfo.goal)
-                                    or 0
+                                private.db.global.settings.alerts.button.alertInfo.difference = alertInfo.newCount - alertInfo.oldCount
+                                private.db.global.settings.alerts.button.alertInfo.lost = alertInfo.oldCount > alertInfo.newCount
+                                private.db.global.settings.alerts.button.alertInfo.gained = alertInfo.oldCount < alertInfo.newCount
+                                private.db.global.settings.alerts.button.alertInfo.goalMet = alertInfo.newCount >= alertInfo.goal
+                                private.db.global.settings.alerts.button.alertInfo.newGoalMet = alertInfo.oldCount < alertInfo.goal
+                                private.db.global.settings.alerts.button.alertInfo.reps = alertInfo.newCount >= alertInfo.goal and floor(alertInfo.newCount / alertInfo.goal) or 0
                             end,
                             args = {
                                 preview = {
@@ -440,8 +451,7 @@ function private:GetSettingsOptions()
                             width = "full",
                             name = L["Format"],
                             validate = function(_, value)
-                                return private:ValidateAlert("button", value)
-                                    or L["Alert formats must be a string value. Please be sure if statements are properly formatted and do not cause a Lua error."]
+                                return private:ValidateAlert("button", value) or L["Alert formats must be a string value. Please be sure if statements are properly formatted and do not cause a Lua error."]
                             end,
                             hidden = function()
                                 return private.db.global.settings.alerts.button.formatType == "FUNC"
@@ -455,19 +465,16 @@ function private:GetSettingsOptions()
                             width = "full",
                             name = L["Format"],
                             get = function(info)
-                                return private.status.luaeditbox
-                                    or private.db.global.settings.alerts[info[#info]].format
+                                return private.status.luaeditbox or private.db.global.settings.alerts[info[#info]].format
                             end,
                             set = function(info, value)
                                 private.db.global.settings.alerts[info[#info]].format = value
                             end,
                             validate = function(_, value)
-                                return private:ValidateAlert("button", value)
-                                    or L["Alert formats must be a function returning a string value."]
+                                return private:ValidateAlert("button", value) or L["Alert formats must be a function returning a string value."]
                             end,
                             arg = function(value)
-                                return private:ValidateAlert("button", value)
-                                    or L["Alert formats must be a function returning a string value."]
+                                return private:ValidateAlert("button", value) or L["Alert formats must be a function returning a string value."]
                             end,
                             hidden = function()
                                 return private.db.global.settings.alerts.button.formatType == "STRING"
@@ -536,19 +543,12 @@ function private:GetSettingsOptions()
 
                                 local alertInfo = private.db.global.settings.alerts.tracker.alertInfo
                                 private.db.global.settings.alerts.tracker.alertInfo[info[#info]] = value
-                                private.db.global.settings.alerts.tracker.alertInfo.difference = alertInfo.newCount
-                                    - alertInfo.oldCount
-                                private.db.global.settings.alerts.tracker.alertInfo.lost = alertInfo.oldCount
-                                    > alertInfo.newCount
-                                private.db.global.settings.alerts.tracker.alertInfo.gained = alertInfo.oldCount
-                                    < alertInfo.newCount
-                                private.db.global.settings.alerts.tracker.alertInfo.trackerGoalTotal = alertInfo.goal
-                                    * alertInfo.trackerGoal
-                                private.db.global.settings.alerts.tracker.alertInfo.goalMet = alertInfo.newCount
-                                    >= alertInfo.trackerGoalTotal
-                                private.db.global.settings.alerts.tracker.alertInfo.newComplete = alertInfo.oldCount
-                                        < alertInfo.trackerGoalTotal
-                                    and alertInfo.newCount >= alertInfo.trackerGoalTotal
+                                private.db.global.settings.alerts.tracker.alertInfo.difference = alertInfo.newCount - alertInfo.oldCount
+                                private.db.global.settings.alerts.tracker.alertInfo.lost = alertInfo.oldCount > alertInfo.newCount
+                                private.db.global.settings.alerts.tracker.alertInfo.gained = alertInfo.oldCount < alertInfo.newCount
+                                private.db.global.settings.alerts.tracker.alertInfo.trackerGoalTotal = alertInfo.goal * alertInfo.trackerGoal
+                                private.db.global.settings.alerts.tracker.alertInfo.goalMet = alertInfo.newCount >= alertInfo.trackerGoalTotal
+                                private.db.global.settings.alerts.tracker.alertInfo.newComplete = alertInfo.oldCount < alertInfo.trackerGoalTotal and alertInfo.newCount >= alertInfo.trackerGoalTotal
                             end,
                             args = {
                                 preview = {
@@ -602,8 +602,7 @@ function private:GetSettingsOptions()
                             width = "full",
                             name = L["Format"],
                             validate = function(_, value)
-                                return private:ValidateAlert("tracker", value)
-                                    or L["Alert formats must be a string value. Please be sure if statements are properly formatted and do not cause a Lua error."]
+                                return private:ValidateAlert("tracker", value) or L["Alert formats must be a string value. Please be sure if statements are properly formatted and do not cause a Lua error."]
                             end,
                             hidden = function()
                                 return private.db.global.settings.alerts.tracker.formatType == "FUNC"
@@ -617,19 +616,16 @@ function private:GetSettingsOptions()
                             width = "full",
                             name = L["Format"],
                             get = function(info)
-                                return private.status.luaeditbox
-                                    or private.db.global.settings.alerts[info[#info]].format
+                                return private.status.luaeditbox or private.db.global.settings.alerts[info[#info]].format
                             end,
                             set = function(info, value)
                                 private.db.global.settings.alerts[info[#info]].format = value
                             end,
                             validate = function(_, value)
-                                return private:ValidateAlert("tracker", value)
-                                    or L["Alert formats must be a function returning a string value."]
+                                return private:ValidateAlert("tracker", value) or L["Alert formats must be a function returning a string value."]
                             end,
                             arg = function(value)
-                                return private:ValidateAlert("tracker", value)
-                                    or L["Alert formats must be a function returning a string value."]
+                                return private:ValidateAlert("tracker", value) or L["Alert formats must be a function returning a string value."]
                             end,
                             hidden = function()
                                 return private.db.global.settings.alerts.tracker.formatType == "STRING"

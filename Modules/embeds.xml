@@ -11,8 +11,7 @@
     <Include file="ObjectiveTemplates.lua"/>
     <Include file="Skins.lua"/>
     <Include file="SlashCommands.lua"/>
-    <Include file="Templates/BuiltInTemplates.lua"/>
-    <Include file="Templates/Templates.lua"/>
+    <Include file="Templates.lua"/>
     <Include file="Tooltips/BarTooltip.lua"/>
     <Include file="Tooltips/ButtonTooltip.lua"/>
     <Include file="Tooltips/Tooltips.lua"/>

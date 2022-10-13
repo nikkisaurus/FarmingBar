@@ -157,7 +157,8 @@ function private:GetBarOptions(barID)
                                         return values
                                     end,
                                     set = function(_, value)
-                                        private:LoadTemplate(barID, value)
+                                        private.db.profile.bars[barID].buttons = addon.CloneTable(private.templates[value])
+                                        private.bars[barID]:UpdateButtons()
                                     end,
                                 },
                                 userTemplates = {
