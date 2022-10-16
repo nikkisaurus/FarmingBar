@@ -472,7 +472,7 @@ function private:InitializeDatabase()
     private.db = LibStub("AceDB-3.0"):New("FarmingBarDB", {
         global = {
             debug = {
-                enabled = true,
+                -- enabled = true,
             },
             settings = {
                 autoLoot = false,
@@ -640,7 +640,6 @@ function private:InitializeDatabase()
         private:ConvertDB_V5()
     end
     private.db.global.version = 6
-    private.db.global.version = 5 -- ! TODO
 
     private.db.RegisterCallback(addon, "OnProfileChanged", "OnProfile_")
     private.db.RegisterCallback(addon, "OnProfileCopied", "OnProfile_")
