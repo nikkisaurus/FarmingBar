@@ -32,8 +32,7 @@ function private:GetTooltipTextureLine(hidden)
 end
 
 function private:InitializeTooltip()
-    FarmingBar_Tooltip = FarmingBar_Tooltip
-        or CreateFrame("GameTooltip", "FarmingBar_Tooltip", UIParent, "GameTooltipTemplate")
+    FarmingBar_Tooltip = FarmingBar_Tooltip or CreateFrame("GameTooltip", "FarmingBar_Tooltip", UIParent, "GameTooltipTemplate")
 end
 
 function private:InsertPendingTooltipLines(lines, pendingLines)
@@ -59,9 +58,9 @@ function private:LoadTooltip(owner, anchor, x, y, lines)
             elseif line.texture then
                 tooltip:AddTexture(line.line, line.size)
             elseif line.double then
-                tooltip:AddDoubleLine(line.k, line.v, addon.unpack(line.color, private.CONST.TOOLTIP_KEYVALUE))
+                tooltip:AddDoubleLine(line.k, line.v, addon:unpack(line.color, private.CONST.TOOLTIP_KEYVALUE))
             else
-                local r, g, b = addon.unpack(line.color, private.CONST.TOOLTIP_DESC)
+                local r, g, b = addon:unpack(line.color, private.CONST.TOOLTIP_DESC)
                 tooltip:AddLine(line.line, r, g, b, line.wrap)
             end
         end

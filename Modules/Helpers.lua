@@ -342,28 +342,6 @@ function private:AddSpecialFrame(frame, frameName)
     self[frameName] = frame
 end
 
-function private:CacheItem(itemID)
-    local co = coroutine.create(private.CacheItemCo)
-    local _, cachedItemID = coroutine.resume(co, itemID)
-    while not cachedItemID do
-        _, cachedItemID = coroutine.resume(co, itemID)
-    end
-end
-
-function private.CacheItemCo(itemID)
-    if not itemID then
-        return
-    end
-
-    C_Timer.NewTicker(0.1, function(self)
-        if GetItemInfo(itemID) then
-            self:Cancel()
-            return
-        end
-    end)
-    coroutine.yield(itemID)
-end
-
 function private:GetMixedBarDBValues(info, path, path2)
     local key = info[#info]
     if info.option.type == "toggle" then
@@ -499,12 +477,12 @@ function private:ShowConfirmationDialog(msg, onAccept, onCancel, args1, args2)
         button2 = CANCEL,
         OnAccept = function()
             if onAccept then
-                return onAccept(addon.unpack(args1, {}))
+                return onAccept(addon:unpack(args1, {}))
             end
         end,
         OnCancel = function()
             if onCancel then
-                return onCancel(addon.unpack(args2, {}))
+                return onCancel(addon:unpack(args2, {}))
             end
         end,
         timeout = 0,
@@ -517,7 +495,7 @@ function private:ShowConfirmationDialog(msg, onAccept, onCancel, args1, args2)
 end
 
 function private:StartDebug()
-    private:LoadOptions("help")
+    private:LoadOptions("objectiveTemplates")
 end
 
 function private:StringToTitle(str)

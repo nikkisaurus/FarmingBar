@@ -55,19 +55,14 @@ local methods = {
         local icons = {}
         local fileData = (select(4, GetBuildInfo())) < 90207 and private.FileDataClassic or private.FileData
         for iconID, iconName in pairs(fileData) do
-            if
-                not filter
-                or filter == ""
-                or strfind(strlower(iconName), strlower(filter))
-                or tonumber(filter) and strfind(iconID, tonumber(filter))
-            then
+            if not filter or filter == "" or strfind(strlower(iconName), strlower(filter)) or tonumber(filter) and strfind(iconID, tonumber(filter)) then
                 tinsert(icons, { iconID = iconID, iconName = iconName })
             end
         end
         self:SetUserData("icons", icons)
 
         -- Determine the number of icons per page
-        local numIcons = addon.tcount(icons)
+        local numIcons = addon:tcount(icons)
         local numPages = ceil(numIcons / private.CONST.MAX_ICONS)
         self:SetUserData("page", 1)
         self:SetUserData("numPages", numPages)
@@ -161,9 +156,7 @@ local methods = {
     end,
 
     SetPageText = function(self)
-        self.iconScrollFrame:SetTitle(
-            format("%s %d/%d", L["Page"], self:GetUserData("page"), self:GetUserData("numPages"))
-        )
+        self.iconScrollFrame:SetTitle(format("%s %d/%d", L["Page"], self:GetUserData("page"), self:GetUserData("numPages")))
     end,
 
     UpdateButtons = function(self)

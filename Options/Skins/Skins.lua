@@ -22,7 +22,7 @@ function private:GetSkinsOptions()
             style = "dropdown",
             name = L["Remove Skin"],
             disabled = function()
-                return addon.tcount(private.db.global.skins) == 2
+                return addon:tcount(private.db.global.skins) == 2
             end,
             values = function()
                 local values = {}
@@ -38,7 +38,7 @@ function private:GetSkinsOptions()
             sorting = function()
                 local sorting = {}
 
-                for skinName, _ in addon.pairs(private.db.global.skins) do
+                for skinName, _ in addon:pairs(private.db.global.skins) do
                     if not private.defaults.skins[skinName] then
                         tinsert(sorting, skinName)
                     end
@@ -57,10 +57,7 @@ function private:GetSkinsOptions()
         note = {
             order = 3,
             type = "description",
-            name = addon.ColorFontString(
-                L["Button textures may be controlled by Masque and must be disabled through its settings for skins to be applied."],
-                "RED"
-            ),
+            name = addon:ColorFontString(L["Button textures may be controlled by Masque and must be disabled through its settings for skins to be applied."], "RED"),
             hidden = function()
                 return not private.MSQ
             end,

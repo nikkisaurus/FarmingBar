@@ -17,4 +17,5 @@
 <Include file="Libs\LibDeflate\lib.xml"/>
 <Include file="Libs\LibSerialize-1.1.3\lib.xml"/>
 <Include file="Libs\LibAddonUtils\LibAddonUtils.xml"/>
+<Include file="Libs\LibAddonUtils-2.0\LibAddonUtils-2.0.lua"/>
 </Ui>

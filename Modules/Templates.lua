@@ -16672,7 +16672,7 @@ end
 function private:SaveTemplate(barID, templateName)
     local widget = private.bars[barID]
     local barDB = widget:GetDB()
-    private.db.global.templates[templateName] = addon.CloneTable(barDB.buttons)
+    private.db.global.templates[templateName] = addon:CloneTable(barDB.buttons)
 end
 
 function private:TemplateExists(templateName)

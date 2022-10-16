@@ -3,8 +3,7 @@ name: Bug Report
 about: Report a bug.
 title: "[BUG] "
 labels: bug
-assignees: niketa-wow
-
+assignees: nikkisaurus
 ---
 
 **Describe the bug**
@@ -15,6 +14,7 @@ The game client you are playing on.
 
 **To Reproduce**
 Steps to reproduce the behavior:
+
 1. Go to '...'
 2. Click on '....'
 3. Scroll down to '....'

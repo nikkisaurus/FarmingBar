@@ -28,10 +28,8 @@ function private:GetButtonTooltip(widget)
 
     local barDB, buttonDB = widget:GetDB()
     local barID, buttonID = widget:GetID()
-    local showDetails = private.db.global.settings.tooltips.showDetails
-        or _G["Is" .. private.db.global.settings.tooltips.modifier .. "KeyDown"]()
-    local showHints = private.db.global.settings.tooltips.showHints
-        or _G["Is" .. private.db.global.settings.tooltips.modifier .. "KeyDown"]()
+    local showDetails = private.db.global.settings.tooltips.showDetails or _G["Is" .. private.db.global.settings.tooltips.modifier .. "KeyDown"]()
+    local showHints = private.db.global.settings.tooltips.showHints or _G["Is" .. private.db.global.settings.tooltips.modifier .. "KeyDown"]()
     local isEmpty = widget:IsEmpty()
     local lines = {}
 
@@ -62,17 +60,17 @@ function private:GetButtonTooltip(widget)
             {
                 double = true,
                 k = L["Count"],
-                v = addon.iformat(private:GetObjectiveWidgetCount(widget), 1, true),
+                v = addon:iformat(private:GetObjectiveWidgetCount(widget), 1, true),
             },
             {
                 double = true,
                 k = L["Goal"],
-                v = objective > 0 and addon.iformat(objective, 1) or "-",
+                v = objective > 0 and addon:iformat(objective, 1) or "-",
             },
             {
                 double = true,
                 k = L["Trackers"],
-                v = addon.tcount(trackers),
+                v = addon:tcount(trackers),
             },
         }
 
@@ -81,24 +79,21 @@ function private:GetButtonTooltip(widget)
         -- Trackers
         for trackerKey, tracker in pairs(trackers) do
             if trackerKey <= 5 or showDetails then
-                local count = addon.iformat(private:GetTrackerCount(tracker), 1, true)
+                local count = addon:iformat(private:GetTrackerCount(tracker), 1, true)
                 local trackerObjective = private:GetTrackerObjectiveCount(widget, trackerKey)
-                local trackerName, trackerIcon
+                local trackerIcon
                 if tracker.type == "ITEM" then
-                    private:CacheItem()
-                    trackerName = GetItemInfo(tracker.id)
                     trackerIcon = GetItemIcon(tracker.id)
                 elseif tracker.type == "CURRENCY" then
                     local currency = C_CurrencyInfo.GetCurrencyInfo(tracker.id)
-                    trackerName = currency and currency.name
                     trackerIcon = currency and currency.iconFileID
                 end
 
                 tinsert(pendingLines, {
                     double = true,
                     color = private.CONST.TOOLTIP_KEYVALUE2,
-                    k = private:GetSubstring(trackerName, 30) or L["Tracker"] .. " " .. trackerKey,
-                    v = trackerObjective > 0 and format("%s/%s", count, addon.iformat(objective, 1)) or count,
+                    k = private:GetSubstring(tracker.name, 30) or L["Tracker"] .. " " .. trackerKey,
+                    v = trackerObjective > 0 and format("%s/%s", count, addon:iformat(objective, 1)) or count,
                 })
 
                 tinsert(pendingLines, {
@@ -107,7 +102,7 @@ function private:GetButtonTooltip(widget)
                 })
             else
                 tinsert(pendingLines, {
-                    line = format(L["%d more..."], addon.tcount(trackers) - 5),
+                    line = format(L["%d more..."], addon:tcount(trackers) - 5),
                 })
                 break
             end
@@ -136,19 +131,19 @@ function private:GetButtonTooltip(widget)
             {
                 double = true,
                 k = L["Include Bank"],
-                v = format("%d/%d", GetIncludeCount(trackers, "includeBank"), addon.tcount(trackers)),
+                v = format("%d/%d", GetIncludeCount(trackers, "includeBank"), addon:tcount(trackers)),
                 hidden = not showDetails,
             },
             {
                 double = true,
                 k = L["Include Alts"],
-                v = format("%d/%d", GetIncludeCount(trackers, "includeAlts"), addon.tcount(trackers)),
+                v = format("%d/%d", GetIncludeCount(trackers, "includeAlts"), addon:tcount(trackers)),
                 hidden = not showDetails or private:MissingDataStore(),
             },
             {
                 double = true,
                 k = L["Include Guild Bank"],
-                v = format("%d/%d", GetIncludeCount(trackers, "includeGuildBank"), addon.tcount(trackers)),
+                v = format("%d/%d", GetIncludeCount(trackers, "includeGuildBank"), addon:tcount(trackers)),
                 hidden = not showDetails or private:MissingDataStore(),
             },
             private:GetTooltipBlankLine(not showDetails),

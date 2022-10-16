@@ -2,27 +2,70 @@ local addonName, private = ...
 local addon = LibStub("AceAddon-3.0"):GetAddon(addonName)
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 
+function private:AddObjective(widget, Type, id, alert)
+    return addon:Cache(strlower(Type), id, function(success, id, private, widget, Type, id, alert)
+        if success then
+            local name, icon = private:GetTrackerInfo(Type, id)
+
+            local template = addon:CloneTable(private.defaults.objective)
+            template.title = name
+            template.icon.id = icon
+            template.onUse.type = Type == "ITEM" and Type or "NONE"
+            template.onUse.itemID = Type == "ITEM" and id or "NONE"
+
+            local tracker = addon:CloneTable(private.defaults.tracker)
+            tracker.type = Type
+            tracker.id = id
+            tracker.name = name or ""
+            tinsert(template.trackers, tracker)
+
+            widget:SetObjectiveInfo(template)
+        elseif alert then
+            addon:Print(alert)
+        end
+    end, { private, widget, Type, id, alert })
+end
+
 function private:AddObjectiveTemplate(objectiveInfo, title)
-    local newObjectiveTitle = private:IncrementString(
-        title or (objectiveInfo and objectiveInfo.title) or L["New"],
-        private,
-        "ObjectiveTemplateExists"
-    )
-    private.db.global.objectives[newObjectiveTitle] = addon.CloneTable(objectiveInfo or private.defaults.objective)
+    local newObjectiveTitle = private:IncrementString(title or (objectiveInfo and objectiveInfo.title) or L["New"], private, "ObjectiveTemplateExists")
+    private.db.global.objectives[newObjectiveTitle] = addon:CloneTable(objectiveInfo or private.defaults.objective)
     private.db.global.objectives[newObjectiveTitle].title = newObjectiveTitle
     private:RefreshOptions()
     return newObjectiveTitle
 end
 
-function private:AddObjectiveTemplateTracker(objectiveTitle, trackerType, trackerID)
-    local trackerInfo = addon.CloneTable(private.defaults.tracker)
-    trackerInfo.type = trackerType
-    trackerInfo.id = trackerID
-    tinsert(private.db.global.objectives[objectiveTitle].trackers, trackerInfo)
-    return #private.db.global.objectives[objectiveTitle].trackers
+function private:AddObjectiveTracker(objective, trackerType, trackerID)
+    local tracker = addon:CloneTable(private.defaults.tracker)
+    tracker.type = trackerType
+    tracker.id = trackerID
+
+    local trackerKey
+    if type(objective) == "string" then
+        tinsert(private.db.global.objectives[objective].trackers, tracker)
+        trackerKey = #private.db.global.objectives[objective].trackers
+    else
+        local _, buttonDB = objective:GetDB()
+        trackerKey = #buttonDB.trackers + 1
+    end
+
+    addon:Cache(strlower(tracker.type), tracker.id, function(success, id, private, objective, trackerType, trackerKey)
+        if success then
+            local tracker
+            if type(objective) == "string" then
+                tracker = private.db.global.objectives[objective].trackers[trackerKey]
+            else
+                _, tracker = objective:AddTracker(trackerType, id)
+            end
+
+            local name = private:GetTrackerInfo(tracker.type, id)
+            tracker.name = name or ""
+        end
+    end, { private, objective, tracker.type, trackerKey })
+
+    return trackerKey
 end
 
-function private:AddObjectiveTemplateTrackerAltID(objectiveTitle, trackerKey, altType, altID)
+function private:AddObjectiveTrackerAltID(objectiveTitle, trackerKey, altType, altID)
     tinsert(private.db.global.objectives[objectiveTitle].trackers[trackerKey].altIDs, {
         type = altType,
         id = altID,
@@ -45,7 +88,7 @@ end
 
 function private:DuplicateObjectiveTemplate(objectiveTitle)
     local newObjectiveTitle = private:IncrementString(objectiveTitle, private, "ObjectiveTemplateExists")
-    private.db.global.objectives[newObjectiveTitle] = addon.CloneTable(private.db.global.objectives[objectiveTitle])
+    private.db.global.objectives[newObjectiveTitle] = addon:CloneTable(private.db.global.objectives[objectiveTitle])
     private.db.global.objectives[newObjectiveTitle].title = newObjectiveTitle
     private:RefreshOptions()
     return newObjectiveTitle
@@ -55,31 +98,11 @@ function private:GetObjectiveIcon(objectiveInfo)
     if objectiveInfo.icon.type == "FALLBACK" then
         return objectiveInfo.icon.id
     elseif objectiveInfo.onUse.type == "ITEM" then
-        local id = objectiveInfo.onUse.itemID
-        local colors
-        if id then
-            private.CacheItem(id)
-            local _, _, rarity = GetItemInfo(id)
-            if rarity then
-                local r, g, b = GetItemQualityColor(rarity)
-                colors = rarity >= 2 and { r, g, b, 1 }
-            end
-        end
-        return GetItemIcon(id), colors
+        return GetItemIcon(objectiveInfo.onUse.itemID)
     elseif not objectiveInfo.trackers[1] then
         return 134400
     elseif objectiveInfo.trackers[1].type == "ITEM" then
-        local id = objectiveInfo.trackers[1].id
-        local colors
-        if id then
-            private.CacheItem(id)
-            local _, _, rarity = GetItemInfo(id)
-            if rarity then
-                local r, g, b = GetItemQualityColor(rarity)
-                colors = rarity >= 2 and { r, g, b, 1 }
-            end
-        end
-        return GetItemIcon(id), colors
+        return GetItemIcon(objectiveInfo.trackers[1].id)
     else
         return C_CurrencyInfo.GetCurrencyInfo(objectiveInfo.trackers[1].id).iconFileID
     end
@@ -93,21 +116,9 @@ function private:GetObjectiveTemplateTrackerIcon(trackerType, trackerKey)
     end
 end
 
-function private:GetObjectiveTemplateTrackerName(trackerType, trackerKey)
-    if trackerType == "ITEM" then
-        private:CacheItem(trackerKey)
-        local itemName = GetItemInfo(trackerKey)
-        return itemName
-    elseif trackerType == "CURRENCY" then
-        local currency = C_CurrencyInfo.GetCurrencyInfo(trackerKey)
-        return currency.name
-    end
-end
-
 function private:GetTrackerInfo(Type, id)
     local name, icon
     if Type == "ITEM" then
-        private:CacheItem()
         name = GetItemInfo(id)
         icon = GetItemIcon(id)
     elseif Type == "CURRENCY" then
@@ -156,7 +167,7 @@ function private:RemoveObjectiveTemplateTracker(objectiveTemplateName, trackerKe
 end
 
 function private:RenameObjectiveTemplate(objectiveTitle, newObjectiveTitle)
-    private.db.global.objectives[newObjectiveTitle] = addon.CloneTable(private.db.global.objectives[objectiveTitle])
+    private.db.global.objectives[newObjectiveTitle] = addon:CloneTable(private.db.global.objectives[objectiveTitle])
     private.db.global.objectives[newObjectiveTitle].title = newObjectiveTitle
     private.db.global.objectives[objectiveTitle] = nil
     return newObjectiveTitle
@@ -164,11 +175,11 @@ end
 
 function private:UpdateTrackerKeys(objectiveTemplateName, trackerKey, newTrackerKey)
     local trackers = private.db.global.objectives[objectiveTemplateName].trackers
-    if trackerKey > addon.tcount(trackers) then
+    if trackerKey > addon:tcount(trackers) then
         return trackerKey
     end
 
-    local trackerInfo = addon.CloneTable(trackers[trackerKey])
+    local trackerInfo = addon:CloneTable(trackers[trackerKey])
     tremove(private.db.global.objectives[objectiveTemplateName].trackers, trackerKey)
     tinsert(private.db.global.objectives[objectiveTemplateName].trackers, newTrackerKey, trackerInfo)
 
@@ -192,10 +203,8 @@ function private:ValidateTracker(objectiveTemplateName, trackerType, trackerID)
     end
 
     if type(objectiveTemplateName) == "string" then
-        return not private:ObjectiveTemplateTrackerExists(objectiveTemplateName, trackerType, isValid) and isValid
-            or L["Tracker already exists for this objective."]
+        return not private:ObjectiveTemplateTrackerExists(objectiveTemplateName, trackerType, isValid) and isValid or L["Tracker already exists for this objective."]
     else
-        return not objectiveTemplateName:TrackerExists(trackerType, isValid) and isValid
-            or L["Tracker already exists for this objective."]
+        return not objectiveTemplateName:TrackerExists(trackerType, isValid) and isValid or L["Tracker already exists for this objective."]
     end
 end

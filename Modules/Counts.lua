@@ -15,28 +15,16 @@ function private:GetObjectiveWidgetCount(widget)
     local count
 
     if condition.type == "ALL" then
-        for trackerKey, trackerInfo in addon.pairs(buttonDB.trackers) do
-            local trackerCount =
-                private:GetTrackerCount(trackerInfo, barDB.limitMats and widget:GetBar(), barDB.limitMats and buttonID)
+        for trackerKey, trackerInfo in addon:pairs(buttonDB.trackers) do
+            local trackerCount = private:GetTrackerCount(trackerInfo, barDB.limitMats and widget:GetBar(), barDB.limitMats and buttonID)
             count = count and min(count, trackerCount) or trackerCount
-            trackers[trackerKey] = private:GetTrackerCount(
-                trackerInfo,
-                barDB.limitMats and widget:GetBar(),
-                barDB.limitMats and buttonID,
-                1
-            )
+            trackers[trackerKey] = private:GetTrackerCount(trackerInfo, barDB.limitMats and widget:GetBar(), barDB.limitMats and buttonID, 1)
         end
     elseif condition.type == "ANY" then
         for trackerKey, trackerInfo in pairs(buttonDB.trackers) do
-            local trackerCount =
-                private:GetTrackerCount(trackerInfo, barDB.limitMats and widget:GetBar(), barDB.limitMats and buttonID)
+            local trackerCount = private:GetTrackerCount(trackerInfo, barDB.limitMats and widget:GetBar(), barDB.limitMats and buttonID)
             count = (count or 0) + trackerCount
-            trackers[trackerKey] = private:GetTrackerCount(
-                trackerInfo,
-                barDB.limitMats and widget:GetBar(),
-                barDB.limitMats and buttonID,
-                1
-            )
+            trackers[trackerKey] = private:GetTrackerCount(trackerInfo, barDB.limitMats and widget:GetBar(), barDB.limitMats and buttonID, 1)
         end
     elseif condition.type == "CUSTOM" then
         local func = loadstring("return " .. buttonDB.condition.func)

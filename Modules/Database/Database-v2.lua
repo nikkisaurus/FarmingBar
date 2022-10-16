@@ -105,7 +105,7 @@ function private:ConvertDB_V2()
                 buttonID = tonumber(buttonID)
                 local Type = objective.type
                 if buttonID <= private.CONST.MAX_BUTTONS and Type then
-                    local template = addon.CloneTable(private.defaults.objective)
+                    local template = addon:CloneTable(private.defaults.objective)
 
                     if Type == "mixedItems" then -- ANY
                         template.condition.type = "ANY"
@@ -114,7 +114,7 @@ function private:ConvertDB_V2()
                         template.icon.id = objective.icon or 134400
 
                         for _, itemID in pairs(objective.items) do
-                            local tracker = addon.CloneTable(private.defaults.tracker)
+                            local tracker = addon:CloneTable(private.defaults.tracker)
                             tracker.id = itemID
                             tinsert(template.trackers, tracker)
                         end
@@ -125,7 +125,7 @@ function private:ConvertDB_V2()
                         template.icon.id = objective.icon or 134400
 
                         for itemID, count in pairs(objective.items) do
-                            local tracker = addon.CloneTable(private.defaults.tracker)
+                            local tracker = addon:CloneTable(private.defaults.tracker)
                             tracker.id = itemID
                             tracker.objective = count or 1
                             tinsert(template.trackers, tracker)
@@ -135,7 +135,7 @@ function private:ConvertDB_V2()
                         template.title = objective.title ~= "" and objective.title or L["Converted Item"]
                         template.icon.type = "FALLBACK"
                         template.icon.id = GetItemIcon(objective.itemID) or 134400
-                        local tracker = addon.CloneTable(private.defaults.tracker)
+                        local tracker = addon:CloneTable(private.defaults.tracker)
                         tracker.id = objective.itemID
                         tracker.objective = objective.objective or 1
                         tinsert(template.trackers, tracker)
@@ -145,14 +145,14 @@ function private:ConvertDB_V2()
                         template.icon.type = "FALLBACK"
                         local currency = C_CurrencyInfo.GetCurrencyInfo(objective.currencyID)
                         template.icon.id = currency and currency.iconFileID or 134400
-                        local tracker = addon.CloneTable(private.defaults.tracker)
+                        local tracker = addon:CloneTable(private.defaults.tracker)
                         tracker.type = "CURRENCY"
                         tracker.id = objective.currencyID
                         tracker.objective = objective.objective or 1
                         tinsert(template.trackers, tracker)
                     end
 
-                    private.db.global.templates[templateName][buttonID] = addon.CloneTable(template)
+                    private.db.global.templates[templateName][buttonID] = addon:CloneTable(template)
                 end
             end
         end
@@ -184,7 +184,7 @@ function private:ConvertDB_V2()
 
             for barID, barDB in pairs(charDB.bars) do
                 -- Add bar to profile
-                local bar = addon.CloneTable(private.defaults.bar)
+                local bar = addon:CloneTable(private.defaults.bar)
                 if barDB.trackProgress then
                     bar.alerts.barProgress = barDB.trackProgress
                 end
@@ -288,13 +288,13 @@ function private:ConvertDB_V2()
                 end
                 bar.skin = skin or "FarmingBar_Default"
 
-                profile.bars[barID] = addon.CloneTable(bar)
+                profile.bars[barID] = addon:CloneTable(bar)
 
                 -- Save objectives as templates
-                for buttonID, objective in addon.pairs(barDB.objectives) do
+                for buttonID, objective in addon:pairs(barDB.objectives) do
                     local Type = objective.type
 
-                    local template = addon.CloneTable(private.defaults.objective)
+                    local template = addon:CloneTable(private.defaults.objective)
 
                     if Type == "mixedItems" then -- ANY
                         template.condition.type = "ANY"
@@ -303,7 +303,7 @@ function private:ConvertDB_V2()
                         template.icon.id = objective.icon or 134400
 
                         for _, itemID in pairs(objective.items) do
-                            local tracker = addon.CloneTable(private.defaults.tracker)
+                            local tracker = addon:CloneTable(private.defaults.tracker)
                             tracker.id = itemID
                             tinsert(template.trackers, tracker)
                         end
@@ -314,7 +314,7 @@ function private:ConvertDB_V2()
                         template.icon.id = objective.icon or 134400
 
                         for itemID, count in pairs(objective.items) do
-                            local tracker = addon.CloneTable(private.defaults.tracker)
+                            local tracker = addon:CloneTable(private.defaults.tracker)
                             tracker.id = itemID
                             tracker.objective = count or 1
                             tinsert(template.trackers, tracker)
@@ -324,7 +324,7 @@ function private:ConvertDB_V2()
                         template.title = objective.title ~= "" and objective.title or L["Converted Item"]
                         template.icon.type = "FALLBACK"
                         template.icon.id = GetItemIcon(objective.itemID) or 134400
-                        local tracker = addon.CloneTable(private.defaults.tracker)
+                        local tracker = addon:CloneTable(private.defaults.tracker)
                         tracker.id = objective.itemID
                         tracker.objective = objective.objective or 1
                         tinsert(template.trackers, tracker)
@@ -334,7 +334,7 @@ function private:ConvertDB_V2()
                         template.icon.type = "FALLBACK"
                         local currency = C_CurrencyInfo.GetCurrencyInfo(objective.currencyID)
                         template.icon.id = currency and currency.iconFileID or 134400
-                        local tracker = addon.CloneTable(private.defaults.tracker)
+                        local tracker = addon:CloneTable(private.defaults.tracker)
                         tracker.type = "CURRENCY"
                         tracker.id = objective.currencyID
                         tracker.objective = objective.objective or 1
@@ -344,7 +344,7 @@ function private:ConvertDB_V2()
                     private:AddObjectiveTemplate(template, template.title)
 
                     -- Add objective to bar
-                    profile.bars[barID].buttons[buttonID] = addon.CloneTable(template)
+                    profile.bars[barID].buttons[buttonID] = addon:CloneTable(template)
                 end
             end
 

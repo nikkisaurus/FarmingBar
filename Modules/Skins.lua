@@ -3,12 +3,12 @@ local addon = LibStub("AceAddon-3.0"):GetAddon(addonName)
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 
 function private:CopySkin(sourceSkinName, destSkinName)
-    private.db.global.skins[destSkinName] = addon.CloneTable(private.db.global.skins[sourceSkinName])
+    private.db.global.skins[destSkinName] = addon:CloneTable(private.db.global.skins[sourceSkinName])
 end
 
 function private:CreateSkin(skinName, skin)
     local newSkinName = private:IncrementString(skinName, private, "SkinExists")
-    private.db.global.skins[newSkinName] = addon.CloneTable(skin or private.defaults.skins.FarmingBar_Default)
+    private.db.global.skins[newSkinName] = addon:CloneTable(skin or private.defaults.skins.FarmingBar_Default)
     private:RefreshOptions()
     return newSkinName
 end

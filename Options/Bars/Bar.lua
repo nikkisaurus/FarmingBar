@@ -85,7 +85,7 @@ function private:GetBarOptions(barID)
                                     end
                                 end
 
-                                for name, frame in addon.pairs(values) do
+                                for name, frame in addon:pairs(values) do
                                     tinsert(sorting, frame)
                                 end
 
@@ -145,7 +145,7 @@ function private:GetBarOptions(barID)
                                     style = "dropdown",
                                     name = L["Templates"],
                                     disabled = function()
-                                        return addon.tcount(private.templates) == 0
+                                        return addon:tcount(private.templates) == 0
                                     end,
                                     values = function()
                                         local values = {}
@@ -157,7 +157,7 @@ function private:GetBarOptions(barID)
                                         return values
                                     end,
                                     set = function(_, value)
-                                        private.db.profile.bars[barID].buttons = addon.CloneTable(private.templates[value])
+                                        private.db.profile.bars[barID].buttons = addon:CloneTable(private.templates[value])
                                         private.bars[barID]:UpdateButtons()
                                     end,
                                 },
@@ -167,7 +167,7 @@ function private:GetBarOptions(barID)
                                     style = "dropdown",
                                     name = L["User Templates"],
                                     disabled = function()
-                                        return addon.tcount(private.db.global.templates) == 0
+                                        return addon:tcount(private.db.global.templates) == 0
                                     end,
                                     values = function()
                                         local values = {}
@@ -179,7 +179,7 @@ function private:GetBarOptions(barID)
                                         return values
                                     end,
                                     set = function(_, value)
-                                        private.db.profile.bars[barID].buttons = addon.CloneTable(private.db.global.templates[value])
+                                        private.db.profile.bars[barID].buttons = addon:CloneTable(private.db.global.templates[value])
                                         private.bars[barID]:UpdateButtons()
                                     end,
                                 },
@@ -208,7 +208,7 @@ function private:GetBarOptions(barID)
                             values = function()
                                 local values = {}
 
-                                for BarID, _ in addon.pairs(private.db.profile.bars) do
+                                for BarID, _ in addon:pairs(private.db.profile.bars) do
                                     if BarID ~= barID then
                                         values[BarID] = private:GetBarName(BarID)
                                     end
@@ -217,7 +217,7 @@ function private:GetBarOptions(barID)
                                 return values
                             end,
                             disabled = function()
-                                return addon.tcount(private.db.profile.bars) == 1
+                                return addon:tcount(private.db.profile.bars) == 1
                             end,
                             set = function(_, value)
                                 private:CopyBarDB(value, barID)
@@ -269,7 +269,7 @@ function private:GetBarOptions(barID)
                     values = function()
                         local values = {}
 
-                        for skinName, _ in addon.pairs(private.db.global.skins) do
+                        for skinName, _ in addon:pairs(private.db.global.skins) do
                             values[skinName] = skinName
                         end
 
@@ -518,7 +518,7 @@ function private:GetBarOptions(barID)
     }
 
     local i = 101
-    for fontName, fontDB in addon.pairs(barDB.fontstrings) do
+    for fontName, fontDB in addon:pairs(barDB.fontstrings) do
         options.appearance.args[fontName] = {
             order = i,
             type = "group",

@@ -168,6 +168,7 @@ end]],
     --        altIDs = {
     --            {
     --                type = "ITEM", -- "CURRENCY"
+    --                name = "",
     --                id = 0000,
     --                multiplier = 1,
     --            }
@@ -401,6 +402,7 @@ end]],
     tracker = {
         type = "ITEM",
         id = false,
+        name = "",
         objective = 1,
         includeAlts = false,
         includeBank = false,
@@ -470,8 +472,7 @@ function private:InitializeDatabase()
     private.db = LibStub("AceDB-3.0"):New("FarmingBarDB", {
         global = {
             debug = {
-                enabled = false,
-                -- enabled = true,
+                enabled = true,
             },
             settings = {
                 autoLoot = false,
@@ -635,7 +636,11 @@ function private:InitializeDatabase()
 
     addon:SetEnabledState(private.db.profile.enabled)
 
-    private.db.global.version = 5
+    if private.db.global.version == 5 then
+        private:ConvertDB_V5()
+    end
+    private.db.global.version = 6
+    private.db.global.version = 5 -- ! TODO
 
     private.db.RegisterCallback(addon, "OnProfileChanged", "OnProfile_")
     private.db.RegisterCallback(addon, "OnProfileCopied", "OnProfile_")

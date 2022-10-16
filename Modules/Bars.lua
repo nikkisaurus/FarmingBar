@@ -37,7 +37,7 @@ function addon:SPELL_UPDATE_COOLDOWN()
 end
 
 function private:AddBar()
-    local barDB = addon.CloneTable(private.defaults.bar)
+    local barDB = addon:CloneTable(private.defaults.bar)
     local styleDB = private.db.profile.style
 
     barDB.buttonSize = styleDB.buttons.size
@@ -65,7 +65,7 @@ end
 function private:CopyBarDB(sourceID, destID)
     for key, value in pairs(private.db.profile.bars[sourceID]) do
         if not exclude[key] then
-            private.db.profile.bars[destID][key] = addon.CloneTable(value)
+            private.db.profile.bars[destID][key] = addon:CloneTable(value)
         end
     end
 

@@ -69,7 +69,7 @@ function private:ConvertDB_V4()
         if private.backup.global.settings.keybinds then
             -- Button
             for action, info in pairs(private.backup.global.settings.keybinds.button) do
-                private.db.global.settings.keybinds[action == "useItem" and "onUse" or action] = addon.CloneTable(info)
+                private.db.global.settings.keybinds[action == "useItem" and "onUse" or action] = addon:CloneTable(info)
             end
         end
 

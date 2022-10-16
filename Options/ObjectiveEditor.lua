@@ -151,25 +151,18 @@ function private:GetObjectiveEditorGeneralContent(widget)
                 itemPreview = {
                     order = 1,
                     type = "description",
-                    name = function()
-                        local itemID = buttonDB.onUse.itemID
-                        if not itemID then
-                            return ""
+                    name = buttonDB.onUse.itemID and addon:CacheItem(buttonDB.onUse.itemID, function(success, id)
+                        if success then
+                            return (GetItemInfo(id))
                         end
-
-                        private:CacheItem(itemID)
-
-                        return (GetItemInfo(itemID))
-                    end,
+                    end) or "",
                     image = function()
                         local itemID = buttonDB.onUse.itemID
                         if not itemID then
                             return ""
                         end
 
-                        private:CacheItem(itemID)
-
-                        return select(10, GetItemInfo(itemID)), 24, 24
+                        return GetItemIcon(itemID), 24, 24
                     end,
                     hidden = function()
                         return buttonDB.onUse.type ~= "ITEM"
@@ -264,19 +257,14 @@ function private:GetObjectiveEditorGeneralContent(widget)
                 return values
             end,
             set = function(_, value)
-                widget:SetObjectiveInfo(addon.CloneTable(private.db.global.objectives[value]))
+                widget:SetObjectiveInfo(addon:CloneTable(private.db.global.objectives[value]))
                 private:RefreshObjectiveEditor(widget)
             end,
             confirm = function(_, value)
-                return format(
-                    L["Are you sure you want to overwrite Bar %d Button %d with objective template \"%s\"?"],
-                    barID,
-                    buttonID,
-                    value
-                )
+                return format(L["Are you sure you want to overwrite Bar %d Button %d with objective template \"%s\"?"], barID, buttonID, value)
             end,
             disabled = function()
-                return addon.tcount(private.db.global.objectives) == 0
+                return addon:tcount(private.db.global.objectives) == 0
             end,
         },
     }
@@ -344,17 +332,12 @@ function private:GetObjectiveEditorTrackersContent(widget)
             end,
         },
 
-        trackersList = {
+        newTracker = {
             order = 3,
             type = "group",
-            name = L["Trackers"],
+            inline = true,
+            name = L["Add Tracker"],
             args = {
-                newTrackerHeader = {
-                    order = 1,
-                    type = "header",
-                    name = L["Add Tracker"],
-                },
-
                 newTrackerType = {
                     order = 2,
                     type = "select",
@@ -378,10 +361,10 @@ function private:GetObjectiveEditorTrackersContent(widget)
                     set = function(_, value)
                         local pendingTrackerType = private.status.objectiveEditor.newTrackerType
                         local validID = private:ValidateTracker(widget, pendingTrackerType, value)
-                        local trackerKey = widget:AddTracker(pendingTrackerType, validID)
+                        local trackerKey = private:AddObjectiveTracker(widget, pendingTrackerType, validID)
 
                         widget:SetCount()
-                        private:RefreshObjectiveEditor(widget, "trackers", "trackersList", "tracker" .. trackerKey)
+                        private:RefreshObjectiveEditor(widget, "trackers", "tracker" .. trackerKey)
                     end,
                     validate = function(_, value)
                         return private:ValidateTracker(widget, private.status.objectiveEditor.newTrackerType, value)
@@ -392,13 +375,13 @@ function private:GetObjectiveEditorTrackersContent(widget)
     }
 
     local i = 4
-    for trackerKey, tracker in addon.pairs(buttonDB.trackers) do
+    for trackerKey, tracker in addon:pairs(buttonDB.trackers) do
         local trackerName, trackerIcon = private:GetTrackerInfo(tracker.type, tracker.id)
 
-        args.trackersList.args["tracker" .. trackerKey] = {
+        args["tracker" .. trackerKey] = {
             order = i,
             type = "group",
-            name = trackerName or L["Tracker"] .. " " .. trackerKey,
+            name = tracker.name ~= "" and tracker.name or L["Tracker"] .. " " .. trackerKey,
             icon = trackerIcon or 134400,
             args = {
                 trackerKey = {
@@ -411,7 +394,7 @@ function private:GetObjectiveEditorTrackersContent(widget)
                     end,
                     set = function(info, value)
                         local newTrackerKey = widget:UpdateTrackerKeys(trackerKey, tonumber(value))
-                        private:RefreshObjectiveEditor(widget, "trackers", "trackersList", "tracker" .. newTrackerKey)
+                        private:RefreshObjectiveEditor(widget, "trackers", "tracker" .. newTrackerKey)
                     end,
                 },
                 objective = {
@@ -472,7 +455,7 @@ function private:GetObjectiveEditorTrackersContent(widget)
                                 widget:SetCount()
                             end,
                             disabled = function()
-                                return addon.tcount(private:GetGuildsList()) == 0
+                                return addon:tcount(private:GetGuildsList()) == 0
                             end,
                             hidden = function()
                                 return private:MissingDataStore()
@@ -519,11 +502,7 @@ function private:GetObjectiveEditorTrackersContent(widget)
                                     return L["Alt ID already exists for this tracker."]
                                 end
 
-                                return private:ValidateTracker(
-                                    widget,
-                                    private.status.objectiveEditor.newAltIDType,
-                                    value
-                                ) or L["Invalid Alt ID"]
+                                return private:ValidateTracker(widget, private.status.objectiveEditor.newAltIDType, value) or L["Invalid Alt ID"]
                             end,
                         },
                         removeAltID = {
@@ -535,30 +514,23 @@ function private:GetObjectiveEditorTrackersContent(widget)
                                 local values = {}
 
                                 for AltKey, AltInfo in pairs(tracker.altIDs) do
-                                    local altIDName = private:GetTrackerInfo(AltInfo.type, AltInfo.id)
-                                    values[AltKey] = altIDName
+                                    values[AltKey] = AltInfo.name or L["Alt ID"] .. " " .. AltKey
                                 end
 
                                 return values
                             end,
                             set = function(_, value)
-                                private.db.profile.bars[barID].buttons[buttonID].trackers[trackerKey].altIDs[value] =
-                                    nil
+                                private.db.profile.bars[barID].buttons[buttonID].trackers[trackerKey].altIDs[value] = nil
                                 widget:SetCount()
                                 private:RefreshObjectiveEditor(widget)
                             end,
                             confirm = function(_, value)
                                 local AltInfo = tracker.altIDs[value]
-                                local altIDName = private:GetTrackerInfo(AltInfo.type, AltInfo.id)
 
-                                return format(
-                                    L["Are you sure you want to remove %s from the tracker \"%s\"?"],
-                                    altIDName,
-                                    trackerName or L["Tracker"] .. " " .. trackerKey
-                                )
+                                return format(L["Are you sure you want to remove %s from the tracker \"%s\"?"], AltInfo.name or L["Alt ID"] .. " " .. value, trackerName or L["Tracker"] .. " " .. trackerKey)
                             end,
                             disabled = function()
-                                return addon.tcount(tracker.altIDs) == 0
+                                return addon:tcount(tracker.altIDs) == 0
                             end,
                         },
                         altIDsList = {
@@ -581,62 +553,60 @@ function private:GetObjectiveEditorTrackersContent(widget)
                         private:RefreshObjectiveEditor(widget)
                     end,
                     confirm = function(_)
-                        return format(
-                            L["Are you sure you want to remove %s from %s?"],
-                            private:GetTrackerInfo(tracker.type, tracker.id),
-                            buttonDB.title
-                        )
+                        return format(L["Are you sure you want to remove %s from %s?"], private:GetTrackerInfo(tracker.type, tracker.id), buttonDB.title)
                     end,
                 },
             },
         }
 
         local I = 1
-        for altKey, altInfo in addon.pairs(tracker.altIDs) do
-            local altIDName, altIDIcon = private:GetTrackerInfo(altInfo.type, altInfo.id)
+        for altKey, altInfo in addon:pairs(tracker.altIDs) do
+            local _, altIDIcon = private:GetTrackerInfo(altInfo.type, altInfo.id)
 
-            args.trackersList.args["tracker" .. trackerKey].args.altIDs.args.altIDsList.args["altID" .. altKey] = {
+            args["tracker" .. trackerKey].args.altIDs.args.altIDsList.args["altID" .. altKey] = {
                 order = I,
                 type = "description",
                 width = 3 / 2,
-                name = altIDName or L["Alt ID"] .. " " .. altKey,
+                name = altInfo.id and addon:CacheItem(altInfo.id, function(success, id)
+                    if success then
+                        return (GetItemInfo(id))
+                    end
+                end) or L["Alt ID"] .. " " .. altKey,
                 image = altIDIcon or 134400,
                 imageWidth = 20,
                 imageHeight = 20,
             }
 
-            args.trackersList.args["tracker" .. trackerKey].args.altIDs.args.altIDsList.args["altID" .. altKey .. "Multiplier"] =
-                {
-                    order = I + 1,
-                    type = "input",
-                    width = 1 / 2,
-                    name = L["Multiplier"],
-                    get = function()
-                        return tostring(altInfo.multiplier)
-                    end,
-                    set = function(_, value)
-                        local num, den = strsplit("/", value)
-                        local multiplier
+            args["tracker" .. trackerKey].args.altIDs.args.altIDsList.args["altID" .. altKey .. "Multiplier"] = {
+                order = I + 1,
+                type = "input",
+                width = 1 / 2,
+                name = L["Multiplier"],
+                get = function()
+                    return tostring(altInfo.multiplier)
+                end,
+                set = function(_, value)
+                    local num, den = strsplit("/", value)
+                    local multiplier
 
-                        if den then
-                            num = tonumber(num)
-                            den = tonumber(den)
-                            if num and den and den ~= 0 then
-                                multiplier = addon.round(num / den, 3)
-                            else
-                                multiplier = 1
-                            end
+                    if den then
+                        num = tonumber(num)
+                        den = tonumber(den)
+                        if num and den and den ~= 0 then
+                            multiplier = addon:round(num / den, 3)
                         else
-                            multiplier = tonumber(value) or 1
+                            multiplier = 1
                         end
+                    else
+                        multiplier = tonumber(value) or 1
+                    end
 
-                        multiplier = multiplier > 0 and multiplier or 1
+                    multiplier = multiplier > 0 and multiplier or 1
 
-                        private.db.profile.bars[barID].buttons[buttonID].trackers[trackerKey].altIDs[altKey].multiplier =
-                            multiplier
-                        widget:SetCount()
-                    end,
-                }
+                    private.db.profile.bars[barID].buttons[buttonID].trackers[trackerKey].altIDs[altKey].multiplier = multiplier
+                    widget:SetCount()
+                end,
+            }
 
             I = I + 2
         end

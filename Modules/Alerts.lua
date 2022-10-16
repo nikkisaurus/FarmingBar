@@ -134,72 +134,71 @@ function private:AlertBar(widget, progress, total, newProgress, newTotal)
 end
 
 local cache = {}
-function private:AlertTracker(widget, trackerKey, oldCount, newCount)
-    local alertSettings = private.db.global.settings.alerts.tracker
-    local alertType = alertSettings.formatType
-    local alert = alertType == "FUNC" and alertSettings.format or alertSettings.formatStr
+function private:AlertTracker(widget, trackerKey, ...)
     local barDB, buttonDB = widget:GetDB()
     local tracker = buttonDB.trackers[trackerKey]
 
-    if tracker.type == "ITEM" and not cache[tracker.id] then
-        addon.CacheItem(tracker.id, function(itemID, private, widget, trackerKey, oldCount, newCount, cache)
-            cache[itemID] = (GetItemInfo(itemID))
-            private:AlertTracker(widget, trackerKey, oldCount, newCount)
-        end, private, widget, trackerKey, oldCount, newCount, cache)
-        return
-    end
+    addon:Cache(strlower(tracker.type), tracker.id, function(success, id, tracker, oldCount, newCount)
+        if success then
+            local name, icon = private:GetTrackerInfo(tracker.type, id)
+            local trackerGoalTotal = (buttonDB.objective > 0 and buttonDB.objective or 1) * tracker.objective
 
-    local name = private:GetTrackerInfo(tracker.type, tracker.id)
-    local trackerGoal = (buttonDB.objective > 0 and buttonDB.objective or 1) * tracker.objective
+            local alertInfo = {
+                -- Button
+                goal = buttonDB.objective,
+                title = buttonDB.title,
+                -- Tracker
+                difference = newCount - oldCount,
+                gained = oldCount < newCount,
+                lost = oldCount > newCount,
+                newComplete = oldCount < trackerGoalTotal and newCount >= trackerGoalTotal,
+                newCount = newCount,
+                objectiveMet = newCount >= trackerGoalTotal,
+                oldCount = oldCount,
+                trackerGoal = tracker.objective,
+                trackerGoalTotal = trackerGoalTotal,
+                trackerName = name or L["Tracker"] .. " " .. trackerKey,
+            }
 
-    local alertInfo = {
-        title = buttonDB.title,
-        trackerName = name or L["Tracker"] .. " " .. trackerKey,
-        oldCount = oldCount,
-        newCount = newCount,
-        difference = newCount - oldCount,
-        lost = oldCount > newCount,
-        gained = oldCount < newCount,
-        goal = buttonDB.objective,
-        trackerGoal = tracker.objective,
-        trackerGoalTotal = trackerGoal,
-        objectiveMet = newCount >= trackerGoal,
-        newComplete = oldCount < trackerGoal and newCount >= trackerGoal,
-    }
+            local alertSettings = private.db.global.settings.alerts.tracker
+            local alertType = alertSettings.formatType
+            local alert = alertType == "FUNC" and alertSettings.format or alertSettings.formatStr
 
-    if alertType == "FUNC" then
-        local func = loadstring("return " .. alert)
-        if type(func) == "function" then
-            local success, userFunc = pcall(func)
-            if success and type(userFunc) == "function" then
-                alert = userFunc(alertInfo, private.lists.alertColors)
+            if alertType == "FUNC" then
+                local func = loadstring("return " .. alert)
+                if type(func) == "function" then
+                    local success, userFunc = pcall(func)
+                    if success and type(userFunc) == "function" then
+                        alert = userFunc(alertInfo, private.lists.alertColors)
+                    else
+                        return
+                    end
+                end
             else
+                alert = private:ParseTrackerAlert(alert, alertInfo)
+            end
+
+            if not alert then
                 return
             end
+
+            if alertSettings.chat then
+                addon:Print(_G[barDB.alerts.chatFrame], alert)
+            end
+
+            if alertSettings.screen then
+                UIErrorsFrame:AddMessage(alert, 1, 1, 1)
+            end
+
+            if alertSettings.sound then
+                if alertInfo.newComplete then
+                    PlaySoundFile(LSM:Fetch(LSM.MediaType.SOUND, private.db.global.settings.alerts.sounds.trackerComplete))
+                elseif alertInfo.gained then
+                    PlaySoundFile(LSM:Fetch(LSM.MediaType.SOUND, private.db.global.settings.alerts.sounds.trackerProgress))
+                end
+            end
         end
-    else
-        alert = private:ParseTrackerAlert(alert, alertInfo)
-    end
-
-    if not alert then
-        return
-    end
-
-    if alertSettings.chat then
-        addon:Print(_G[barDB.alerts.chatFrame], alert)
-    end
-
-    if alertSettings.screen then
-        UIErrorsFrame:AddMessage(alert, 1, 1, 1)
-    end
-
-    if alertSettings.sound then
-        if alertInfo.newComplete then
-            PlaySoundFile(LSM:Fetch(LSM.MediaType.SOUND, private.db.global.settings.alerts.sounds.trackerComplete))
-        elseif alertInfo.gained then
-            PlaySoundFile(LSM:Fetch(LSM.MediaType.SOUND, private.db.global.settings.alerts.sounds.trackerProgress))
-        end
-    end
+    end, { tracker, ... })
 end
 
 function private:ParseAlert(alert, alertInfo)

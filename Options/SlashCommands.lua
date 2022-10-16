@@ -18,10 +18,10 @@ local function GetCommandDesc(cmd, desc, ...)
     local args = { ... }
 
     for key, arg in pairs(args) do
-        args[key] = addon.ColorFontString(format("[%s]", arg), "LIGHTRED")
+        args[key] = addon:ColorFontString(format("[%s]", arg), "LIGHTRED")
     end
 
-    return strjoin(" ", addon.ColorFontString(cmd, "LIGHTBLUE"), table.concat(args, " ")) .. ": " .. desc
+    return strjoin(" ", addon:ColorFontString(cmd, "LIGHTBLUE"), table.concat(args, " ")) .. ": " .. desc
 end
 
 function private:GetSlashCommandOptions()
@@ -33,18 +33,7 @@ function private:GetSlashCommandOptions()
             bar = {
                 type = "group",
                 name = "bar",
-                desc = GetCommandDesc(
-                    "/farmingbar bar",
-                    L["Configure bar settings."],
-                    "alpha",
-                    "axis",
-                    "buttons",
-                    "grow",
-                    "movable",
-                    "padding",
-                    "scale",
-                    "size"
-                ),
+                desc = GetCommandDesc("/farmingbar bar", L["Configure bar settings."], "alpha", "axis", "buttons", "grow", "movable", "padding", "scale", "size"),
                 args = {
                     alpha = {
                         type = "execute",
@@ -80,12 +69,7 @@ function private:GetSlashCommandOptions()
                     axis = {
                         type = "execute",
                         name = "",
-                        desc = GetCommandDesc(
-                            "/farmingbar bar axis",
-                            L["Set the number of buttons per axis."],
-                            "barID | 0",
-                            "numButtons"
-                        ),
+                        desc = GetCommandDesc("/farmingbar bar axis", L["Set the number of buttons per axis."], "barID | 0", "numButtons"),
                         validate = function(info)
                             local _, command, barID, numButtons = strsplit(" ", info.input:trim())
                             barID = tonumber(barID)
@@ -94,11 +78,7 @@ function private:GetSlashCommandOptions()
                             if not barID or (barID ~= 0 and not private.bars[barID]) then
                                 return L["Invalid barID. To apply to all bars, use barID 0."]
                             elseif not numButtons or numButtons < 1 or numButtons > private.CONST.MAX_BUTTONS then
-                                return format(
-                                    L["Please specify the number of buttons from %d to %d."],
-                                    1,
-                                    private.CONST.MAX_BUTTONS
-                                )
+                                return format(L["Please specify the number of buttons from %d to %d."], 1, private.CONST.MAX_BUTTONS)
                             end
                         end,
                         func = function(info)
@@ -119,12 +99,7 @@ function private:GetSlashCommandOptions()
                     buttons = {
                         type = "execute",
                         name = "",
-                        desc = GetCommandDesc(
-                            "/farmingbar bar buttons",
-                            L["Set the number of buttons on bar."],
-                            "barID | 0",
-                            "numButtons"
-                        ),
+                        desc = GetCommandDesc("/farmingbar bar buttons", L["Set the number of buttons on bar."], "barID | 0", "numButtons"),
                         validate = function(info)
                             local _, command, barID, numButtons = strsplit(" ", info.input:trim())
                             barID = tonumber(barID)
@@ -133,11 +108,7 @@ function private:GetSlashCommandOptions()
                             if not barID or (barID ~= 0 and not private.bars[barID]) then
                                 return L["Invalid barID. To apply to all bars, use barID 0."]
                             elseif not numButtons or numButtons < 1 or numButtons > private.CONST.MAX_BUTTONS then
-                                return format(
-                                    L["Please specify a number between %d and %d."],
-                                    1,
-                                    private.CONST.MAX_BUTTONS
-                                )
+                                return format(L["Please specify a number between %d and %d."], 1, private.CONST.MAX_BUTTONS)
                             end
                         end,
                         func = function(info)
@@ -162,13 +133,7 @@ function private:GetSlashCommandOptions()
                     grow = {
                         type = "execute",
                         name = "",
-                        desc = GetCommandDesc(
-                            "/farmingbar bar grow",
-                            L["Set the direction of bar's growth."],
-                            "barID | 0",
-                            "bottomleft | bottomright | topleft | topright",
-                            "col | row"
-                        ),
+                        desc = GetCommandDesc("/farmingbar bar grow", L["Set the direction of bar's growth."], "barID | 0", "bottomleft | bottomright | topleft | topright", "col | row"),
                         validate = function(info)
                             local _, command, barID, anchor, grow = strsplit(" ", info.input:trim())
                             barID = tonumber(barID)
@@ -202,12 +167,7 @@ function private:GetSlashCommandOptions()
                     movable = {
                         type = "execute",
                         name = "",
-                        desc = GetCommandDesc(
-                            "/farmingbar bar movable",
-                            L["Lock or unlock bar."],
-                            "barID | 0",
-                            "true | false | toggle"
-                        ),
+                        desc = GetCommandDesc("/farmingbar bar movable", L["Lock or unlock bar."], "barID | 0", "true | false | toggle"),
                         validate = function(info)
                             local _, command, barID, movable = strsplit(" ", info.input:trim())
                             barID = tonumber(barID)
@@ -249,12 +209,7 @@ function private:GetSlashCommandOptions()
                     padding = {
                         type = "execute",
                         name = "",
-                        desc = GetCommandDesc(
-                            "/farmingbar bar padding",
-                            L["Set the padding of bar's buttons."],
-                            "barID | 0",
-                            "padding"
-                        ),
+                        desc = GetCommandDesc("/farmingbar bar padding", L["Set the padding of bar's buttons."], "barID | 0", "padding"),
                         validate = function(info)
                             local _, command, barID, padding = strsplit(" ", info.input:trim())
                             barID = tonumber(barID)
@@ -262,16 +217,8 @@ function private:GetSlashCommandOptions()
 
                             if not barID or (barID ~= 0 and not private.bars[barID]) then
                                 return L["Invalid barID. To apply to all bars, use barID 0."]
-                            elseif
-                                not padding
-                                or padding < private.CONST.MIN_PADDING
-                                or padding > private.CONST.MAX_PADDING
-                            then
-                                return format(
-                                    L["Please specify a number between %d and %d."],
-                                    private.CONST.MIN_PADDING,
-                                    private.CONST.MAX_PADDING
-                                )
+                            elseif not padding or padding < private.CONST.MIN_PADDING or padding > private.CONST.MAX_PADDING then
+                                return format(L["Please specify a number between %d and %d."], private.CONST.MIN_PADDING, private.CONST.MAX_PADDING)
                             end
                         end,
                         func = function(info)
@@ -301,11 +248,7 @@ function private:GetSlashCommandOptions()
                             if not barID or (barID ~= 0 and not private.bars[barID]) then
                                 return L["Invalid barID. To apply to all bars, use barID 0."]
                             elseif not scale or scale < private.CONST.MIN_SCALE or scale > private.CONST.MAX_SCALE then
-                                return format(
-                                    L["Please specify a number between %s and %s."],
-                                    tostring(private.CONST.MIN_SCALE),
-                                    tostring(private.CONST.MAX_SCALE)
-                                )
+                                return format(L["Please specify a number between %s and %s."], tostring(private.CONST.MIN_SCALE), tostring(private.CONST.MAX_SCALE))
                             end
                             return true
                         end,
@@ -327,12 +270,7 @@ function private:GetSlashCommandOptions()
                     size = {
                         type = "execute",
                         name = "",
-                        desc = GetCommandDesc(
-                            "/farmingbar bar size",
-                            L["Set the size of bar's buttons."],
-                            "barID | 0",
-                            "buttonSize"
-                        ),
+                        desc = GetCommandDesc("/farmingbar bar size", L["Set the size of bar's buttons."], "barID | 0", "buttonSize"),
                         validate = function(info)
                             local _, command, barID, size = strsplit(" ", info.input:trim())
                             barID = tonumber(barID)
@@ -340,16 +278,8 @@ function private:GetSlashCommandOptions()
 
                             if not barID or (barID ~= 0 and not private.bars[barID]) then
                                 return L["Invalid barID. To apply to all bars, use barID 0."]
-                            elseif
-                                not size
-                                or size < private.CONST.MIN_BUTTON_SIZE
-                                or size > private.CONST.MAX_BUTTON_SIZE
-                            then
-                                return format(
-                                    L["Please specify a number between %d and %d."],
-                                    private.CONST.MIN_BUTTON_SIZE,
-                                    private.CONST.MAX_BUTTON_SIZE
-                                )
+                            elseif not size or size < private.CONST.MIN_BUTTON_SIZE or size > private.CONST.MAX_BUTTON_SIZE then
+                                return format(L["Please specify a number between %d and %d."], private.CONST.MIN_BUTTON_SIZE, private.CONST.MAX_BUTTON_SIZE)
                             end
                         end,
                         func = function(info)
@@ -414,11 +344,7 @@ function private:GetSlashCommandOptions()
             tooltips = {
                 type = "group",
                 name = "",
-                desc = GetCommandDesc(
-                    "/farmingbar tooltips",
-                    L["Toggle tooltips."],
-                    "bar | button | disable | enable | toggle"
-                ),
+                desc = GetCommandDesc("/farmingbar tooltips", L["Toggle tooltips."], "bar | button | disable | enable | toggle"),
                 args = {
                     bar = {
                         type = "execute",

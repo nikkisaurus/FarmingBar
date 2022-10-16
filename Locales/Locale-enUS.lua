@@ -1,7 +1,7 @@
 local addonName, private = ...
 local addon = LibStub("AceAddon-3.0"):NewAddon(addonName, "AceConsole-3.0", "AceEvent-3.0", "AceHook-3.0")
 local L = LibStub("AceLocale-3.0"):NewLocale(addonName, "enUS", true)
-LibStub("LibAddonUtils-1.0"):Embed(addon)
+LibStub("LibAddonUtils-2.0"):Embed(addon)
 
 L.addonName = "Farming Bar"
 
@@ -374,7 +374,7 @@ L.OptionsHelp = function()
         },
         {
             1,
-            format("Farming Bar allows you to create an unlimited number of bars to track items and complex objectives. You can either place an item on the bar or create an objective template to drag onto the bar. Once a button is tracking a farming objective, options become available to customize and edit. By default, %s opens the Objective Editor, where you can edit properties similar to the Objective Template Builder. You can also set an goal for each farming objective; just %s the button and enter your goal into the editbox. Other actions that can be performed on buttons can be seen in the Hints section at the bottom of the button's tooltip.", addon.ColorFontString("control+right-click", "LIGHTBLUE"), addon.ColorFontString("control+left-click", "LIGHTBLUE")),
+            format("Farming Bar allows you to create an unlimited number of bars to track items and complex objectives. You can either place an item on the bar or create an objective template to drag onto the bar. Once a button is tracking a farming objective, options become available to customize and edit. By default, %s opens the Objective Editor, where you can edit properties similar to the Objective Template Builder. You can also set an goal for each farming objective; just %s the button and enter your goal into the editbox. Other actions that can be performed on buttons can be seen in the Hints section at the bottom of the button's tooltip.", addon:ColorFontString("control+right-click", "LIGHTBLUE"), addon:ColorFontString("control+left-click", "LIGHTBLUE")),
         },
         {
             3,
@@ -382,7 +382,7 @@ L.OptionsHelp = function()
         },
         {
             1,
-            format("For any bugs or feature requests, please create a ticket at %s. General questions should be left as comments at %s.", addon.ColorFontString("tinyurl.com/farmingbarissues", "LIGHTBLUE"), addon.ColorFontString("tinyurl.com/farmingbarwow", "LIGHTBLUE")),
+            format("For any bugs or feature requests, please create a ticket at %s. General questions should be left as comments at %s.", addon:ColorFontString("tinyurl.com/farmingbarissues", "LIGHTBLUE"), addon:ColorFontString("tinyurl.com/farmingbarwow", "LIGHTBLUE")),
         },
         {
             2,
@@ -398,35 +398,35 @@ L.OptionsHelp = function()
                     {
                         {
                             1,
-                            format("%s = %s", addon.ColorFontString("%b", "LIGHTBLUE"), "bar ID name"),
+                            format("%s = %s", addon:ColorFontString("%b", "LIGHTBLUE"), "bar ID name"),
                         },
                         {
                             1,
-                            format("%s = %s", addon.ColorFontString("%B", "LIGHTBLUE"), "long bar name"),
+                            format("%s = %s", addon:ColorFontString("%B", "LIGHTBLUE"), "long bar name"),
                         },
                         {
                             1,
-                            format("%s = %s", addon.ColorFontString("%c", "LIGHTBLUE"), "new progress count"),
+                            format("%s = %s", addon:ColorFontString("%c", "LIGHTBLUE"), "new progress count"),
                         },
                         {
                             1,
-                            format("%s = %s", addon.ColorFontString("%d", "LIGHTBLUE"), "difference"),
+                            format("%s = %s", addon:ColorFontString("%d", "LIGHTBLUE"), "difference"),
                         },
                         {
                             1,
-                            format("%s = %s", addon.ColorFontString("%n", "LIGHTBLUE"), "bar name"),
+                            format("%s = %s", addon:ColorFontString("%n", "LIGHTBLUE"), "bar name"),
                         },
                         {
                             1,
-                            format("%s = %s", addon.ColorFontString("%p", "LIGHTBLUE"), "percentage of completion"),
+                            format("%s = %s", addon:ColorFontString("%p", "LIGHTBLUE"), "percentage of completion"),
                         },
                         {
                             1,
-                            format("%s = %s", addon.ColorFontString("%r", "LIGHTBLUE"), "remainder of completion"),
+                            format("%s = %s", addon:ColorFontString("%r", "LIGHTBLUE"), "remainder of completion"),
                         },
                         {
                             1,
-                            format("%s = %s", addon.ColorFontString("%t", "LIGHTBLUE"), "new progress total"),
+                            format("%s = %s", addon:ColorFontString("%t", "LIGHTBLUE"), "new progress total"),
                         },
                     },
                 },
@@ -436,35 +436,35 @@ L.OptionsHelp = function()
                     {
                         {
                             1,
-                            format("%s = %s", addon.ColorFontString("%c", "LIGHTBLUE"), "new count"),
+                            format("%s = %s", addon:ColorFontString("%c", "LIGHTBLUE"), "new count"),
                         },
                         {
                             1,
-                            format("%s = %s", addon.ColorFontString("%C", "LIGHTBLUE"), "old count"),
+                            format("%s = %s", addon:ColorFontString("%C", "LIGHTBLUE"), "old count"),
                         },
                         {
                             1,
-                            format("%s = %s", addon.ColorFontString("%d", "LIGHTBLUE"), "difference"),
+                            format("%s = %s", addon:ColorFontString("%d", "LIGHTBLUE"), "difference"),
                         },
                         {
                             1,
-                            format("%s = %s", addon.ColorFontString("%g", "LIGHTBLUE"), "goal"),
+                            format("%s = %s", addon:ColorFontString("%g", "LIGHTBLUE"), "goal"),
                         },
                         {
                             1,
-                            format("%s = %s", addon.ColorFontString("%O", "LIGHTBLUE"), "repititions of completion"),
+                            format("%s = %s", addon:ColorFontString("%O", "LIGHTBLUE"), "repititions of completion"),
                         },
                         {
                             1,
-                            format("%s = %s", addon.ColorFontString("%p", "LIGHTBLUE"), "percentage of completion"),
+                            format("%s = %s", addon:ColorFontString("%p", "LIGHTBLUE"), "percentage of completion"),
                         },
                         {
                             1,
-                            format("%s = %s", addon.ColorFontString("%r", "LIGHTBLUE"), "remainder of completion"),
+                            format("%s = %s", addon:ColorFontString("%r", "LIGHTBLUE"), "remainder of completion"),
                         },
                         {
                             1,
-                            format("%s = %s", addon.ColorFontString("%t", "LIGHTBLUE"), "objective title"),
+                            format("%s = %s", addon:ColorFontString("%t", "LIGHTBLUE"), "objective title"),
                         },
                     },
                 },
@@ -474,27 +474,27 @@ L.OptionsHelp = function()
                     {
                         {
                             1,
-                            format("%s = %s", addon.ColorFontString("%color%", "LIGHTBLUE"), "||r - closes out color codes"),
+                            format("%s = %s", addon:ColorFontString("%color%", "LIGHTBLUE"), "||r - closes out color codes"),
                         },
                         {
                             1,
-                            format("%s = %s", addon.ColorFontString("%diffColor%", "LIGHTBLUE"), "green or red, depending on whether difference is positive or negative"),
+                            format("%s = %s", addon:ColorFontString("%diffColor%", "LIGHTBLUE"), "green or red, depending on whether difference is positive or negative"),
                         },
                         {
                             1,
-                            addon.ColorFontString("%gold%", "LIGHTBLUE"),
+                            addon:ColorFontString("%gold%", "LIGHTBLUE"),
                         },
                         {
                             1,
-                            addon.ColorFontString("%green%", "LIGHTBLUE"),
+                            addon:ColorFontString("%green%", "LIGHTBLUE"),
                         },
                         {
                             1,
-                            format("%s = %s", addon.ColorFontString("%progressColor%", "LIGHTBLUE"), "green or yellow, depending on whether progress is positive or negative"),
+                            format("%s = %s", addon:ColorFontString("%progressColor%", "LIGHTBLUE"), "green or yellow, depending on whether progress is positive or negative"),
                         },
                         {
                             1,
-                            addon.ColorFontString("%red%", "LIGHTBLUE"),
+                            addon:ColorFontString("%red%", "LIGHTBLUE"),
                         },
                     },
                 },
@@ -504,11 +504,11 @@ L.OptionsHelp = function()
                     {
                         {
                             1,
-                            addon.ColorFontString("%if(condition,then,else)if%", "LIGHTBLUE"),
+                            addon:ColorFontString("%if(condition,then,else)if%", "LIGHTBLUE"),
                         },
                         {
                             1,
-                            format("If statements can be used to control when certain pieces of text are displayed within your alert and must follow the format above. \"condition\" should be a lua expression and when true, \"then\" will show up in your alert, otherwise \"else\" will. You must provide a comma after \"then\", even if you have a blank \"else\" statement. For example: %s would mean \"if goal is equal to zero (goal is not set), then print x, else print nothing\".", addon.ColorFontString("%if(%g==0,x,)if%", "LIGHTBLUE")),
+                            format("If statements can be used to control when certain pieces of text are displayed within your alert and must follow the format above. \"condition\" should be a lua expression and when true, \"then\" will show up in your alert, otherwise \"else\" will. You must provide a comma after \"then\", even if you have a blank \"else\" statement. For example: %s would mean \"if goal is equal to zero (goal is not set), then print x, else print nothing\".", addon:ColorFontString("%if(%g==0,x,)if%", "LIGHTBLUE")),
                         },
                     },
                 },
@@ -518,39 +518,39 @@ L.OptionsHelp = function()
                     {
                         {
                             1,
-                            format("%s = %s", addon.ColorFontString("%c", "LIGHTBLUE"), "new count"),
+                            format("%s = %s", addon:ColorFontString("%c", "LIGHTBLUE"), "new count"),
                         },
                         {
                             1,
-                            format("%s = %s", addon.ColorFontString("%C", "LIGHTBLUE"), "old count"),
+                            format("%s = %s", addon:ColorFontString("%C", "LIGHTBLUE"), "old count"),
                         },
                         {
                             1,
-                            format("%s = %s", addon.ColorFontString("%d", "LIGHTBLUE"), "difference"),
+                            format("%s = %s", addon:ColorFontString("%d", "LIGHTBLUE"), "difference"),
                         },
                         {
                             1,
-                            format("%s = %s", addon.ColorFontString("%g", "LIGHTBLUE"), "objective goal"),
+                            format("%s = %s", addon:ColorFontString("%g", "LIGHTBLUE"), "objective goal"),
                         },
                         {
                             1,
-                            format("%s = %s", addon.ColorFontString("%G", "LIGHTBLUE"), "tracker goal total"),
+                            format("%s = %s", addon:ColorFontString("%G", "LIGHTBLUE"), "tracker goal total"),
                         },
                         {
                             1,
-                            format("%s = %s", addon.ColorFontString("%p", "LIGHTBLUE"), "percentage of completion"),
+                            format("%s = %s", addon:ColorFontString("%p", "LIGHTBLUE"), "percentage of completion"),
                         },
                         {
                             1,
-                            format("%s = %s", addon.ColorFontString("%r", "LIGHTBLUE"), "remainder of completion"),
+                            format("%s = %s", addon:ColorFontString("%r", "LIGHTBLUE"), "remainder of completion"),
                         },
                         {
                             1,
-                            format("%s = %s", addon.ColorFontString("%t", "LIGHTBLUE"), "objective title"),
+                            format("%s = %s", addon:ColorFontString("%t", "LIGHTBLUE"), "objective title"),
                         },
                         {
                             1,
-                            format("%s = %s", addon.ColorFontString("%T", "LIGHTBLUE"), "tracker title"),
+                            format("%s = %s", addon:ColorFontString("%T", "LIGHTBLUE"), "tracker title"),
                         },
                     },
                 },
@@ -626,7 +626,7 @@ L.OptionsHelp = function()
                     {
                         {
                             1,
-                            format("Command documentation can be accessed via the command %s.", addon.ColorFontString("/farmingbar help", "LIGHTBLUE")),
+                            format("Command documentation can be accessed via the command %s.", addon:ColorFontString("/farmingbar help", "LIGHTBLUE")),
                         },
                     },
                 },
@@ -674,7 +674,7 @@ local function GetCommandString(actionInfo)
     button = mods == "" and button or format("+%s", strlower(button))
     local clickType = actionInfo.type and "drag" or "click"
 
-    return addon.ColorFontString(format("%s%s-%s", mods, button, clickType), "TORQUISEBLUE")
+    return addon:ColorFontString(format("%s%s-%s", mods, button, clickType), "TORQUISEBLUE")
 end
 
 L.ButtonHints = function(action, actionInfo)

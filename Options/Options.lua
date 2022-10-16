@@ -103,29 +103,11 @@ function private:RegisterDataObject()
         label = addonName,
         OnTooltipShow = function(self)
             self:AddLine(addonName)
-            self:AddLine(
-                addon:IsEnabled() and "Enabled" or "Disabled",
-                addon:IsEnabled() and 0 or 1,
-                addon:IsEnabled() and 1 or 0,
-                0,
-                1
-            )
-            self:AddLine(addon.ColorFontString("Left-click", "TORQUISEBLUE") .. L[" to configure bars."], 1, 1, 1, 1)
-            self:AddLine(
-                addon.ColorFontString("Right-click", "TORQUISEBLUE") .. L[" to configure settings."],
-                1,
-                1,
-                1,
-                1
-            )
-            self:AddLine(addon.ColorFontString("Control+left-click", "TORQUISEBLUE") .. L[" for help."], 1, 1, 1, 1)
-            self:AddLine(
-                addon.ColorFontString("Alt+right-click", "TORQUISEBLUE") .. L[" to enable/disable the active profile."],
-                1,
-                1,
-                1,
-                1
-            )
+            self:AddLine(addon:IsEnabled() and "Enabled" or "Disabled", addon:IsEnabled() and 0 or 1, addon:IsEnabled() and 1 or 0, 0, 1)
+            self:AddLine(addon:ColorFontString("Left-click", "TORQUISEBLUE") .. L[" to configure bars."], 1, 1, 1, 1)
+            self:AddLine(addon:ColorFontString("Right-click", "TORQUISEBLUE") .. L[" to configure settings."], 1, 1, 1, 1)
+            self:AddLine(addon:ColorFontString("Control+left-click", "TORQUISEBLUE") .. L[" for help."], 1, 1, 1, 1)
+            self:AddLine(addon:ColorFontString("Alt+right-click", "TORQUISEBLUE") .. L[" to enable/disable the active profile."], 1, 1, 1, 1)
         end,
         OnClick = function(_, button)
             if IsAltKeyDown() and button == "RightButton" then

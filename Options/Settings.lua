@@ -95,7 +95,7 @@ function private:GetSettingsOptions()
                                 return templates
                             end,
                             disabled = function()
-                                return addon.tcount(private.db.global.templates) == 0
+                                return addon:tcount(private.db.global.templates) == 0
                             end,
                             confirm = function(_, value)
                                 return format(L["Are you sure you want to delete the template \"%s\"?"], value)
@@ -765,7 +765,7 @@ function private:GetSettingsOptions()
                             end
                         end
 
-                        for name, frame in addon.pairs(values) do
+                        for name, frame in addon:pairs(values) do
                             tinsert(sorting, frame)
                         end
 
@@ -783,7 +783,7 @@ function private:GetSettingsOptions()
     }
 
     local i = 1
-    for command, enabled in addon.pairs(private.db.global.settings.commands) do
+    for command, enabled in addon:pairs(private.db.global.settings.commands) do
         options.general.args.commands.args[command] = {
             order = i,
             type = "toggle",
@@ -801,7 +801,7 @@ function private:GetSettingsOptions()
     end
 
     i = 1
-    for action, keybind in addon.pairs(private.db.global.settings.keybinds) do
+    for action, keybind in addon:pairs(private.db.global.settings.keybinds) do
         options.keybinds.args[action] = {
             order = i,
             type = "group",

@@ -24,13 +24,13 @@ local function PlaceObjectiveInfo(widget)
         if altWidget then
             if not isEmpty then
                 local _, buttonDB = widget:GetDB()
-                altWidget:SetObjectiveInfo(addon.CloneTable(buttonDB))
+                altWidget:SetObjectiveInfo(addon:CloneTable(buttonDB))
             else
                 altWidget:Clear()
             end
         end
 
-        widget:SetObjectiveInfo(addon.CloneTable(objectiveInfo))
+        widget:SetObjectiveInfo(addon:CloneTable(objectiveInfo))
         private.ObjectiveFrame:Clear()
 
         return true
@@ -158,17 +158,11 @@ local editboxScripts = {
                 end
             end
         elseif editType == "item" then
-            addon.CacheItem(tonumber(input), function(itemID)
-                if GetItemInfoInstant(itemID) then
-                    widget:CreateObjectiveInfo("ITEM", itemID)
-                else
-                    addon:Print(L["Invalid item ID."])
-                end
-            end, tonumber(input))
+            private:AddObjective(widget, "ITEM", tonumber(input), L["Invalid item ID."])
         elseif editType == "currency" then
             local currencyID = private:ValidateCurrency(input or 0)
             if currencyID then
-                widget:CreateObjectiveInfo("CURRENCY", currencyID)
+                private:AddObjective(widget, "CURRENCY", currencyID)
             else
                 addon:Print(L["Invalid currency ID."])
             end
@@ -262,7 +256,7 @@ local scripts = {
         if PlaceObjectiveInfo(widget) then
             return
         elseif cursorType == "item" and itemID then
-            widget:CreateObjectiveInfo("ITEM", itemID)
+            private:AddObjective(widget, "ITEM", itemID)
             ClearCursor()
 
             return
@@ -288,11 +282,12 @@ local methods = {
 
     AddTracker = function(widget, trackerType, trackerID)
         local barID, buttonID = widget:GetID()
-        local trackerInfo = addon.CloneTable(private.defaults.tracker)
-        trackerInfo.type = trackerType
-        trackerInfo.id = trackerID
-        tinsert(private.db.profile.bars[barID].buttons[buttonID].trackers, trackerInfo)
-        return #private.db.profile.bars[barID].buttons[buttonID].trackers
+        local tracker = addon:CloneTable(private.defaults.tracker)
+        tracker.type = trackerType
+        tracker.id = trackerID
+        tinsert(private.db.profile.bars[barID].buttons[buttonID].trackers, tracker)
+        local trackerKey = #private.db.profile.bars[barID].buttons[buttonID].trackers
+        return trackerKey, private.db.profile.bars[barID].buttons[buttonID].trackers[trackerKey]
     end,
 
     AddTrackerAltID = function(widget, trackerKey, altType, altID)
@@ -308,27 +303,6 @@ local methods = {
         local barID, buttonID = widget:GetID()
         private.db.profile.bars[barID].buttons[buttonID] = nil
         widget:UpdateAttributes()
-    end,
-
-    CreateObjectiveInfo = function(widget, Type, id)
-        if Type == "ITEM" then
-            private.CacheItem(id)
-        end
-
-        local name, icon = private:GetTrackerInfo(Type, id)
-
-        local template = addon.CloneTable(private.defaults.objective)
-        template.title = name
-        template.icon.id = icon
-        template.onUse.type = Type == "ITEM" and Type or "NONE"
-        template.onUse.itemID = Type == "ITEM" and id or "NONE"
-
-        local tracker = addon.CloneTable(private.defaults.tracker)
-        tracker.type = Type
-        tracker.id = id
-        tinsert(template.trackers, tracker)
-
-        widget:SetObjectiveInfo(template)
     end,
 
     DrawButton = function(widget)
@@ -425,7 +399,7 @@ local methods = {
         local count, trackers = private:GetObjectiveWidgetCount(widget)
         widget:SetUserData("count", count)
         widget:SetUserData("trackers", trackers)
-        widget.count:SetText(addon.iformat(count, 2, true))
+        widget.count:SetText(addon:iformat(count, 2, true))
         widget:SetObjective()
     end,
 
@@ -476,13 +450,23 @@ local methods = {
             widget.icon:SetTexture()
             widget.iconBorder:Hide()
         else
-            local icon, color = private:GetObjectiveIcon(buttonDB)
+            local icon = private:GetObjectiveIcon(buttonDB)
             widget.icon:SetTexture(icon)
 
             local skin = private.db.global.skins[barDB.skin]
-            if not skin.buttonTextures.iconBorder.hidden and color then
-                widget.iconBorder:Show()
-                widget.iconBorder:SetVertexColor(addon.unpack(color, { 1, 1, 1, 1 }))
+            if not skin.buttonTextures.iconBorder.hidden and buttonDB.onUse.type == "ITEM" then
+                addon:CacheItem(buttonDB.onUse.itemID, function(success, id, widget)
+                    if success then
+                        local _, _, rarity = GetItemInfo(id)
+                        if rarity and rarity >= 2 then
+                            local r, g, b = GetItemQualityColor(rarity)
+                            widget.iconBorder:Show()
+                            widget.iconBorder:SetVertexColor(r, g, b, 1)
+                        else
+                            widget.iconBorder:Hide()
+                        end
+                    end
+                end, { widget })
             else
                 widget.iconBorder:Hide()
             end
@@ -514,7 +498,7 @@ local methods = {
             local color = count >= objective and { 0, 1, 0, 1 } or barDB.fontstrings.Objective.color
 
             widget.objective:SetTextColor(unpack(color))
-            widget.objective:SetText(addon.iformat(objective, 2))
+            widget.objective:SetText(addon:iformat(objective, 2))
             widget.objective:Show()
         end
     end,
@@ -556,8 +540,8 @@ local methods = {
                 private.MSQ.button:ReSkin(true)
             else
                 layer:SetTexture(texture)
-                layer:SetVertexColor(addon.unpack(textureInfo.color, { 1, 1, 1, 1 }))
-                layer:SetTexCoord(addon.unpack(textureInfo.texCoords, { 0, 1, 0, 1 }))
+                layer:SetVertexColor(addon:unpack(textureInfo.color, { 1, 1, 1, 1 }))
+                layer:SetTexCoord(addon:unpack(textureInfo.texCoords, { 0, 1, 0, 1 }))
                 layer:SetBlendMode(textureInfo.blendMode)
                 layer:SetDrawLayer(textureInfo.drawLayer, textureInfo.layer)
 
@@ -639,11 +623,11 @@ local methods = {
         local _, buttonDB = widget:GetDB()
         local barID, buttonID = widget:GetID()
 
-        if trackerKey > addon.tcount(buttonDB.trackers) then
+        if trackerKey > addon:tcount(buttonDB.trackers) then
             return trackerKey
         end
 
-        local trackerInfo = addon.CloneTable(buttonDB.trackers[trackerKey])
+        local trackerInfo = addon:CloneTable(buttonDB.trackers[trackerKey])
         tremove(private.db.profile.bars[barID].buttons[buttonID].trackers, trackerKey)
         tinsert(private.db.profile.bars[barID].buttons[buttonID].trackers, newTrackerKey, trackerInfo)
 

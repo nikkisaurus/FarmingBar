@@ -25,7 +25,7 @@ function private:GetSkinOptions(skinName)
             sorting = function()
                 local sorting = {}
 
-                for SkinName, _ in addon.pairs(private.db.global.skins) do
+                for SkinName, _ in addon:pairs(private.db.global.skins) do
                     if SkinName ~= skinName then
                         tinsert(sorting, SkinName)
                     end
@@ -153,7 +153,7 @@ function private:GetSkinOptions(skinName)
     }
 
     local i = 1
-    for layerName, layer in addon.pairs(skin.buttonTextures) do
+    for layerName, layer in addon:pairs(skin.buttonTextures) do
         options.buttonTextures.args[layerName] = {
             order = i,
             type = "group",

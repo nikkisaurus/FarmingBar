@@ -21,14 +21,14 @@ function private:GetConfigOptions()
             values = function()
                 local values = {}
 
-                for barID, _ in addon.pairs(private.db.profile.bars) do
+                for barID, _ in addon:pairs(private.db.profile.bars) do
                     values[barID] = private:GetBarName(barID)
                 end
 
                 return values
             end,
             disabled = function()
-                return addon.tcount(private.db.profile.bars) == 0
+                return addon:tcount(private.db.profile.bars) == 0
             end,
             confirm = function(_, value)
                 return format(L["Are you sure you want to remove Bar %d?"], value)
@@ -50,7 +50,7 @@ function private:GetConfigOptions()
                 private:SetMixedBarDBValues(info, value)
             end,
             disabled = function()
-                return addon.tcount(private.db.profile.bars) == 0 or not addon:IsEnabled()
+                return addon:tcount(private.db.profile.bars) == 0 or not addon:IsEnabled()
             end,
             args = {
                 general = {
@@ -123,7 +123,7 @@ function private:GetConfigOptions()
                                             end
                                         end
 
-                                        for name, frame in addon.pairs(values) do
+                                        for name, frame in addon:pairs(values) do
                                             tinsert(sorting, frame)
                                         end
 
@@ -161,7 +161,7 @@ function private:GetConfigOptions()
                             values = function()
                                 local values = {}
 
-                                for skinName, _ in addon.pairs(private.db.global.skins) do
+                                for skinName, _ in addon:pairs(private.db.global.skins) do
                                     values[skinName] = skinName
                                 end
 
@@ -345,7 +345,7 @@ function private:GetConfigOptions()
     }
 
     local i = 101
-    for fontName, fontDB in addon.pairs(private.defaults.bar.fontstrings) do
+    for fontName, fontDB in addon:pairs(private.defaults.bar.fontstrings) do
         options.allBars.args.appearance.args[fontName] = {
             order = i,
             type = "group",

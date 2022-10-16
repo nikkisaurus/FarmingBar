@@ -198,7 +198,7 @@ local methods = {
         local frame = widget.frame
         local texture = LSM:Fetch(LSM.MediaType.BACKGROUND, skin.backdrop.bgFile.bgFile)
         local edgeFile = LSM:Fetch(LSM.MediaType.BORDER, skin.backdrop.bgFile.edgeFile)
-        local bgFile = addon.CloneTable(skin.backdrop.bgFile)
+        local bgFile = addon:CloneTable(skin.backdrop.bgFile)
         bgFile.bgFile = texture
         bgFile.edgeFile = edgeFile
         frame:SetBackdrop(skin.backdrop.enabled and bgFile)

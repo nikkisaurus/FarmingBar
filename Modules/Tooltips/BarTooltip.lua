@@ -9,10 +9,8 @@ function private:GetBarTooltip(widget)
 
     local barDB = widget:GetDB()
     local progress, progressTotal = widget:GetProgress()
-    local showHints = private.db.global.settings.tooltips.showHints
-        or _G["Is" .. private.db.global.settings.tooltips.modifier .. "KeyDown"]()
-    local showDetails = private.db.global.settings.tooltips.showDetails
-        or _G["Is" .. private.db.global.settings.tooltips.modifier .. "KeyDown"]()
+    local showHints = private.db.global.settings.tooltips.showHints or _G["Is" .. private.db.global.settings.tooltips.modifier .. "KeyDown"]()
+    local showDetails = private.db.global.settings.tooltips.showDetails or _G["Is" .. private.db.global.settings.tooltips.modifier .. "KeyDown"]()
 
     local lines = {
         {
@@ -37,12 +35,12 @@ function private:GetBarTooltip(widget)
             hidden = not showDetails and not showHints,
         },
         {
-            line = addon.ColorFontString("Control+click", "TORQUISEBLUE") .. L[" to lock and hide anchor."],
+            line = addon:ColorFontString("Control+click", "TORQUISEBLUE") .. L[" to lock and hide anchor."],
             color = private.CONST.TOOLTIP_DESC,
             hidden = not showDetails and not showHints,
         },
         {
-            line = addon.ColorFontString("Right-click", "TORQUISEBLUE") .. L[" to configure this bar."],
+            line = addon:ColorFontString("Right-click", "TORQUISEBLUE") .. L[" to configure this bar."],
             color = private.CONST.TOOLTIP_DESC,
             hidden = not showDetails and not showHints,
         },

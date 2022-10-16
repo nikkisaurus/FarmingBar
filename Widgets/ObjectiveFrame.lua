@@ -50,7 +50,7 @@ local methods = {
         ClearCursor()
         self.icon:SetTexture(private:GetObjectiveIcon(objectiveInfo))
         self.text:SetText(objectiveTitle or "")
-        self.objectiveInfo = addon.CloneTable(objectiveInfo)
+        self.objectiveInfo = addon:CloneTable(objectiveInfo)
         self:Show()
     end,
 

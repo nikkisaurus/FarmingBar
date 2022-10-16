@@ -33,7 +33,7 @@ function private:GetWidget(i, key, value)
         return {
             order = i,
             type = "description",
-            name = addon.ColorFontString(value[2], "GOLD"),
+            name = addon:ColorFontString(value[2], "GOLD"),
             fontSize = "medium",
         }
     end

@@ -7,7 +7,7 @@ local LibDeflate = LibStub("LibDeflate")
 local function GetObjectiveTemplatesList()
     local values, sorting = {}, {}
 
-    for objectiveTemplateName, _ in addon.pairs(private.db.global.objectives) do
+    for objectiveTemplateName, _ in addon:pairs(private.db.global.objectives) do
         values[objectiveTemplateName] = objectiveTemplateName
         tinsert(sorting, objectiveTemplateName)
     end
@@ -83,18 +83,13 @@ function private:GetObjectiveTemplatesOptions()
                     importObjective:AddChild(icon)
 
                     local objective = AceGUI:Create("Label")
-                    objective:SetText(addon.ColorFontString(objectiveTemplate.title, "SEXBLUE"))
+                    objective:SetText(addon:ColorFontString(objectiveTemplate.title, "SEXBLUE"))
                     objective:SetFontObject(GameFontNormalLarge)
                     importObjective:AddChild(objective)
 
                     local warning = AceGUI:Create("Label")
                     warning:SetFullWidth(true)
-                    warning:SetText(
-                        addon.ColorFontString(
-                            L["This objective may contain custom Lua code. Make sure you only import objectives from trusted sources."],
-                            "red"
-                        )
-                    )
+                    warning:SetText(addon:ColorFontString(L["This objective may contain custom Lua code. Make sure you only import objectives from trusted sources."], "red"))
                     importObjective:AddChild(warning)
 
                     local spacer = AceGUI:Create("Label")
@@ -186,10 +181,7 @@ function private:GetObjectiveTemplatesOptions()
             sorting = sorting,
             name = L["Remove Objective Template"],
             confirm = function(_, objectiveTemplateName)
-                return format(
-                    L["Are you sure you want to delete the objective template \"%s\"?"],
-                    objectiveTemplateName
-                )
+                return format(L["Are you sure you want to delete the objective template \"%s\"?"], objectiveTemplateName)
             end,
             set = function(_, objectiveTemplateName)
                 private:DeleteObjectiveTemplate(objectiveTemplateName)
@@ -207,7 +199,7 @@ function private:GetObjectiveTemplatesOptions()
     }
 
     local i = 101
-    for objectiveTemplateName, objectiveTemplate in addon.pairs(private.db.global.objectives) do
+    for objectiveTemplateName, objectiveTemplate in addon:pairs(private.db.global.objectives) do
         options.objectiveTemplatesList.args[objectiveTemplateName] = {
             order = i,
             type = "execute",
