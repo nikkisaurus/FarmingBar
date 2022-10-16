@@ -13,7 +13,6 @@ svn checkout --force https://repos.curseforge.com/wow/ace3/trunk/AceHook-3.0 ./L
 svn checkout --force https://repos.curseforge.com/wow/ace3/trunk/AceLocale-3.0 ./Libs/AceLocale-3.0
 # svn checkout --force https://repos.curseforge.com/wow/ace3/trunk/AceSerializer-3.0 ./Libs/AceSerializer-3.0
 # svn checkout --force https://repos.curseforge.com/wow/ace3/trunk/AceTimer-3.0 ./Libs/AceTimer-3.0
-git clone https://github.com/nikkisaurus/libaddonutils ./Libs/LibAddonUtils
 git clone https://github.com/nikkisaurus/LibAddonUtils-2.0 ./Libs/LibAddonUtils-2.0
 svn checkout https://repos.curseforge.com/wow/ace-gui-3-0-shared-media-widgets/trunk ./Libs/AceGUI-3.0-SharedMediaWidgets
 git clone https://github.com/tekkub/libdatabroker-1-1.git ./Libs/LibDataBroker-1.1
