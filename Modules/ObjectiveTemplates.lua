@@ -128,7 +128,7 @@ function private:GetTrackerInfo(Type, id)
         name = GetItemInfo(id)
         icon = GetItemIcon(id)
     elseif Type == "CURRENCY" then
-        local currency = C_CurrencyInfo.GetCurrencyInfo(id)
+        local currency = C_CurrencyInfo.GetCurrencyInfo(id or tonumber(id) or 0)
         name = currency and currency.name
         icon = currency and currency.iconFileID
     end

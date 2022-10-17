@@ -492,6 +492,7 @@ function private:GetObjectiveEditorTrackersContent(widget)
                                 addon:Cache(strlower(pendingAltIDType), value, function(success, id, private, widget, pendingAltIDType, trackerKey)
                                     if success then
                                         local validID = private:ValidateTracker(widget, pendingAltIDType, id)
+                                        validID = validID == L["Tracker already exists for this objective."] and id or validID
 
                                         if widget:TrackerAltIDExists(trackerKey, pendingAltIDType, validID) then
                                             addon:Print(L["Alt ID already exists for this tracker."])
@@ -626,6 +627,7 @@ end
 function private:RefreshObjectiveEditor(widget, ...)
     if private.editor then
         private.editor.name = private:GetObjectiveEditorName(widget)
+        private.editor.widget = widget
         private.editor.args.general.args = private:GetObjectiveEditorGeneralContent(widget)
         private.editor.args.trackers.args = private:GetObjectiveEditorTrackersContent(widget)
     end

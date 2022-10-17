@@ -39,7 +39,11 @@ end
 
 local postClickMethods = {
     clearObjective = function(frame)
-        frame.obj:Clear()
+        local widget = frame.obj
+        if private.editor and private.editor.widget == widget then
+            private:CloseObjectiveEditor()
+        end
+        widget:Clear()
     end,
 
     dragObjective = function(frame)
