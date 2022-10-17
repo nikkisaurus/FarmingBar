@@ -71,6 +71,12 @@ function private:AddObjectiveTrackerAltID(objectiveTitle, trackerKey, altType, a
         id = altID,
         multiplier = 1,
     })
+    local altIDKey = #private.db.global.objectives[objectiveTitle].trackers[trackerKey].altIDs
+    addon:Cache(strlower(altType), altID, function(success, id, private, objectiveTitle, trackerKey, altIDKey)
+        local altID = private.db.global.objectives[objectiveTitle].trackers[trackerKey].altIDs[altIDKey]
+        local name = private:GetTrackerInfo(altID.type, id)
+        altID.name = name or ""
+    end, { private, objectiveTitle, trackerKey, altIDKey })
 end
 
 function private:DeleteObjectiveTemplate(objectiveTitle)

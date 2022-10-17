@@ -488,21 +488,26 @@ function private:GetObjectiveEditorTrackersContent(widget)
                             desc = L["The ID of a tracker which is equivalent to this tracker."],
                             set = function(_, value)
                                 local pendingAltIDType = private.status.objectiveEditor.newAltIDType
-                                local validID = private:ValidateTracker(widget, pendingAltIDType, value)
 
-                                widget:AddTrackerAltID(trackerKey, pendingAltIDType, validID)
-                                widget:SetCount()
-                                private:RefreshObjectiveEditor(widget)
-                            end,
-                            validate = function(_, value)
-                                local pendingAltIDType = private.status.objectiveEditor.newAltIDType
-                                local validID = private:ValidateTracker(widget, pendingAltIDType, value)
+                                addon:Cache(strlower(pendingAltIDType), value, function(success, id, private, widget, pendingAltIDType, trackerKey)
+                                    if success then
+                                        local validID = private:ValidateTracker(widget, pendingAltIDType, id)
 
-                                if widget:TrackerAltIDExists(trackerKey, pendingAltIDType, validID) then
-                                    return L["Alt ID already exists for this tracker."]
-                                end
+                                        if widget:TrackerAltIDExists(trackerKey, pendingAltIDType, validID) then
+                                            addon:Print(L["Alt ID already exists for this tracker."])
+                                            return
+                                        elseif not validID then
+                                            addon:Print(L["Invalid Alt ID"])
+                                            return
+                                        end
 
-                                return private:ValidateTracker(widget, private.status.objectiveEditor.newAltIDType, value) or L["Invalid Alt ID"]
+                                        widget:AddTrackerAltID(trackerKey, pendingAltIDType, validID)
+                                        widget:SetCount()
+                                        private:RefreshObjectiveEditor(widget)
+                                    else
+                                        addon:Print(L["Invalid Alt ID"])
+                                    end
+                                end, { private, widget, pendingAltIDType, trackerKey })
                             end,
                         },
                         removeAltID = {
@@ -514,7 +519,7 @@ function private:GetObjectiveEditorTrackersContent(widget)
                                 local values = {}
 
                                 for AltKey, AltInfo in pairs(tracker.altIDs) do
-                                    values[AltKey] = AltInfo.name or L["Alt ID"] .. " " .. AltKey
+                                    values[AltKey] = AltInfo.name ~= "" and AltInfo.name or L["Alt ID"] .. " " .. AltKey
                                 end
 
                                 return values
@@ -567,11 +572,7 @@ function private:GetObjectiveEditorTrackersContent(widget)
                 order = I,
                 type = "description",
                 width = 3 / 2,
-                name = altInfo.id and addon:CacheItem(altInfo.id, function(success, id)
-                    if success then
-                        return (GetItemInfo(id))
-                    end
-                end) or L["Alt ID"] .. " " .. altKey,
+                name = altInfo.name ~= "" and altInfo.name or L["Alt ID"] .. " " .. altKey,
                 image = altIDIcon or 134400,
                 imageWidth = 20,
                 imageHeight = 20,

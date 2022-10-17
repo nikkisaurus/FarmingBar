@@ -468,21 +468,24 @@ function private:GetObjectiveTemplateOptions(objectiveTemplateName)
                             desc = L["The ID of a tracker which is equivalent to this tracker."],
                             set = function(_, value)
                                 local pendingAltIDType = private.status.options.objectiveTemplates.newAltIDType
-                                local validID = private:ValidateTracker(objectiveTemplateName, pendingAltIDType, value)
+                                addon:Cache(strlower(pendingAltIDType), value, function(success, id, private, objectiveTemplateName, pendingAltIDType, trackerKey)
+                                    if success then
+                                        local validID = private:ValidateTracker(objectiveTemplateName, pendingAltIDType, value)
 
-                                private:AddObjectiveTrackerAltID(objectiveTemplateName, trackerKey, pendingAltIDType, validID)
+                                        if private:ObjectiveTemplateTrackerAltIDExists(objectiveTemplateName, trackerKey, pendingAltIDType, validID) then
+                                            addon:Print(L["Alt ID already exists for this tracker."])
+                                            return
+                                        elseif not validID then
+                                            addon:Print(L["Invalid Alt ID"])
+                                            return
+                                        end
 
-                                private:RefreshOptions()
-                            end,
-                            validate = function(_, value)
-                                local pendingAltIDType = private.status.options.objectiveTemplates.newAltIDType
-                                local validID = private:ValidateTracker(objectiveTemplateName, pendingAltIDType, value)
-
-                                if private:ObjectiveTemplateTrackerAltIDExists(objectiveTemplateName, trackerKey, pendingAltIDType, validID) then
-                                    return L["Alt ID already exists for this tracker."]
-                                end
-
-                                return private:ValidateTracker(objectiveTemplateName, private.status.options.objectiveTemplates.newAltIDType, value) or L["Invalid Alt ID"]
+                                        private:AddObjectiveTrackerAltID(objectiveTemplateName, trackerKey, pendingAltIDType, validID)
+                                        private:RefreshOptions()
+                                    else
+                                        addon:Print(L["Invalid Alt ID"])
+                                    end
+                                end, { private, objectiveTemplateName, pendingAltIDType, trackerKey })
                             end,
                         },
                         removeAltID = {
@@ -494,7 +497,7 @@ function private:GetObjectiveTemplateOptions(objectiveTemplateName)
                                 local values = {}
 
                                 for AltKey, AltInfo in pairs(tracker.altIDs) do
-                                    values[AltKey] = AltInfo.name or L["Alt ID"] .. " " .. AltKey
+                                    values[AltKey] = AltInfo.name ~= "" and AltInfo.name or L["Alt ID"] .. " " .. AltKey
                                 end
 
                                 return values
@@ -545,11 +548,7 @@ function private:GetObjectiveTemplateOptions(objectiveTemplateName)
                 order = I,
                 type = "description",
                 width = 3 / 2,
-                name = altInfo.id and addon:CacheItem(altInfo.id, function(success, id)
-                    if success then
-                        return (GetItemInfo(id))
-                    end
-                end) or L["Alt ID"] .. " " .. altKey,
+                name = altInfo.name ~= "" and altInfo.name or L["Alt ID"] .. " " .. altKey,
                 image = altIDIcon or 134400,
                 imageWidth = 20,
                 imageHeight = 20,

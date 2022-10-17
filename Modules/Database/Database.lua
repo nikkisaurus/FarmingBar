@@ -472,7 +472,7 @@ function private:InitializeDatabase()
     private.db = LibStub("AceDB-3.0"):New("FarmingBarDB", {
         global = {
             debug = {
-                -- enabled = true,
+                enabled = true,
             },
             settings = {
                 autoLoot = false,

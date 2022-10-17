@@ -297,6 +297,12 @@ local methods = {
             id = altID,
             multiplier = 1,
         })
+        local altIDKey = #private.db.profile.bars[barID].buttons[buttonID].trackers[trackerKey].altIDs
+        addon:Cache(strlower(altType), altID, function(success, id, private, barID, buttonID, trackerKey, altIDKey)
+            local altID = private.db.profile.bars[barID].buttons[buttonID].trackers[trackerKey].altIDs[altIDKey]
+            local name = private:GetTrackerInfo(altID.type, id)
+            altID.name = name or ""
+        end, { private, barID, buttonID, trackerKey, altIDKey })
     end,
 
     Clear = function(widget)
