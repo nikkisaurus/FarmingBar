@@ -47,7 +47,9 @@ function private:GetSkinOptions(skinName)
             type = "execute",
             name = L["Duplicate"],
             func = function()
-                local newSkinName = private:IncrementString(skinName, private, "SkinExists")
+                local newSkinName = addon:IncrementString(skinName, function(str, private)
+                    return private:SkinExists(str)
+                end, { private })
                 private:CopySkin(skinName, newSkinName)
                 private:RefreshOptions("skins", newSkinName)
             end,

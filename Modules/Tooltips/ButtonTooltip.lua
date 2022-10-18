@@ -92,7 +92,7 @@ function private:GetButtonTooltip(widget)
                 tinsert(pendingLines, {
                     double = true,
                     color = private.CONST.TOOLTIP_KEYVALUE2,
-                    k = private:GetSubstring(tracker.name, 30) or L["Tracker"] .. " " .. trackerKey,
+                    k = addon:GetSubstring(tracker.name, 30) or L["Tracker"] .. " " .. trackerKey,
                     v = trackerObjective > 0 and format("%s/%s", count, addon:iformat(objective, 1)) or count,
                 })
 
@@ -125,7 +125,7 @@ function private:GetButtonTooltip(widget)
             {
                 double = true,
                 k = L["Name"],
-                v = private:GetSubstring(buttonDB.title, 15),
+                v = addon:GetSubstring(buttonDB.title, 15),
                 hidden = not showDetails,
             },
             {
@@ -150,11 +150,11 @@ function private:GetButtonTooltip(widget)
             {
                 double = true,
                 k = L["OnUse"],
-                v = L[private:StringToTitle(buttonDB.onUse.type)],
+                v = L[addon:StringToTitle(buttonDB.onUse.type)],
                 hidden = not showDetails,
             },
             {
-                line = private:GetSubstring(onUsePreview, 30),
+                line = addon:GetSubstring(onUsePreview, 30),
                 hidden = not showDetails or onUseType == "NONE",
             },
             {
@@ -166,11 +166,11 @@ function private:GetButtonTooltip(widget)
             {
                 double = true,
                 k = L["Condition"],
-                v = L[private:StringToTitle(buttonDB.condition.type)],
+                v = L[addon:StringToTitle(buttonDB.condition.type)],
                 hidden = not showDetails,
             },
             {
-                line = private:GetSubstring(buttonDB.condition.func, 30),
+                line = addon:GetSubstring(buttonDB.condition.func, 30),
                 hidden = not showDetails or buttonDB.condition.type ~= "CUSTOM",
             },
         }

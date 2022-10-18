@@ -2,10 +2,6 @@
     <Include file="Alerts.lua"/>
     <Include file="Bars.lua"/>
     <Include file="Counts.lua"/>
-    <Include file="Database/Database.lua"/>
-    <Include file="Database/Database-v2.lua"/>
-    <Include file="Database/Database-v4.lua"/>
-    <Include file="Database/Database-v5.lua"/>
     <Include file="DataStore.lua"/>
     <Include file="Helpers.lua"/>
     <Include file="ItemMover.lua"/>

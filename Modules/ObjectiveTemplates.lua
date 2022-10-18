@@ -27,7 +27,9 @@ function private:AddObjective(widget, Type, id, alert)
 end
 
 function private:AddObjectiveTemplate(objectiveInfo, title)
-    local newObjectiveTitle = private:IncrementString(title or (objectiveInfo and objectiveInfo.title) or L["New"], private, "ObjectiveTemplateExists")
+    local newObjectiveTitle = addon:IncrementString(title or (objectiveInfo and objectiveInfo.title) or L["New"], function(str, private)
+        return private:ObjectiveTemplateExists(str)
+    end, { private })
     private.db.global.objectives[newObjectiveTitle] = addon:CloneTable(objectiveInfo or private.defaults.objective)
     private.db.global.objectives[newObjectiveTitle].title = newObjectiveTitle
     private:RefreshOptions()
@@ -93,7 +95,9 @@ function private:DeleteObjectiveTemplateTrackerAltID(objectiveTitle, trackerKey,
 end
 
 function private:DuplicateObjectiveTemplate(objectiveTitle)
-    local newObjectiveTitle = private:IncrementString(objectiveTitle, private, "ObjectiveTemplateExists")
+    local newObjectiveTitle = addon:IncrementString(objectiveTitle, function(str, private)
+        return private:ObjectiveTemplateExists(str)
+    end, { private })
     private.db.global.objectives[newObjectiveTitle] = addon:CloneTable(private.db.global.objectives[objectiveTitle])
     private.db.global.objectives[newObjectiveTitle].title = newObjectiveTitle
     private:RefreshOptions()

@@ -12,9 +12,6 @@ function private:GetSkinsOptions()
                 local newSkinName = private:CreateSkin(value)
                 private:RefreshOptions("skins", newSkinName)
             end,
-            validate = function(_, value)
-                return not private:SkinExists(value)
-            end,
         },
         removeSkin = {
             order = 2,

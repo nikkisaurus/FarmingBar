@@ -670,7 +670,7 @@ end
 
 local function GetCommandString(actionInfo)
     -- Ctrl+right-click
-    local mods = private:StringToTitle(gsub(actionInfo.modifier, "-", "+")) -- Put in title case and replace - with +
+    local mods = addon:StringToTitle(gsub(actionInfo.modifier, "-", "+")) -- Put in title case and replace - with +
     local button = gsub(actionInfo.button, "Button", "")
     button = mods == "" and button or format("+%s", strlower(button))
     local clickType = actionInfo.type and "drag" or "click"

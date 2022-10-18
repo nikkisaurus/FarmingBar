@@ -176,7 +176,7 @@ local function Constructor()
     window:SetLayout("Flow")
 
     local frame = window.frame
-    private:AddSpecialFrame(frame, "FarmingBar_IconSelector")
+    addon:AddSpecialFrame(frame, "FarmingBar_IconSelector")
 
     local icon = AceGUI:Create("InteractiveLabel")
     icon:SetFullWidth(true)

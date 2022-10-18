@@ -119,7 +119,7 @@ local postClickMethods = {
 local function ProcessKeybinds(frame, buttonClicked, ...)
     for keybind, keybindInfo in pairs(private.db.global.settings.keybinds) do
         if buttonClicked == keybindInfo.button then
-            local modifier = private:GetModifierString()
+            local modifier = addon:GetModifierString()
             local isDragging = frame.obj:GetUserData("dragging")
 
             if modifier == keybindInfo.modifier and (keybindInfo.type == "drag" and isDragging or not isDragging) then

@@ -7,7 +7,9 @@ function private:CopySkin(sourceSkinName, destSkinName)
 end
 
 function private:CreateSkin(skinName, skin)
-    local newSkinName = private:IncrementString(skinName, private, "SkinExists")
+    local newSkinName = addon:IncrementString(skinName, function(str, private)
+        return private:SkinExists(str)
+    end, { private })
     private.db.global.skins[newSkinName] = addon:CloneTable(skin or private.defaults.skins.FarmingBar_Default)
     private:RefreshOptions()
     return newSkinName

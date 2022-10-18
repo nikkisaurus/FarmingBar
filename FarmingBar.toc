@@ -17,6 +17,7 @@ libs.xml
 Locales\Locale-enUS.lua
 Media\FileData.lua
 Media\FileDataClassic.lua
+Database\embeds.xml
 Widgets\embeds.xml
 Modules\embeds.xml
 Options\embeds.xml

@@ -336,12 +336,6 @@ function addon:BANKFRAME_OPENED()
     private.status.bankOpen = true
 end
 
-function private:AddSpecialFrame(frame, frameName)
-    _G[frameName] = frame
-    tinsert(UISpecialFrames, frameName)
-    self[frameName] = frame
-end
-
 function private:GetMixedBarDBValues(info, path, path2)
     local key = info[#info]
     if info.option.type == "toggle" then
@@ -385,43 +379,6 @@ function private:GetMixedBarDBValues(info, path, path2)
             end
         end
         return r, g, b, a
-    end
-end
-
-function private:GetModifierString()
-    local modifier = ""
-    if IsShiftKeyDown() then
-        modifier = "shift"
-    end
-    if IsControlKeyDown() then
-        modifier = "ctrl" .. (modifier ~= "" and "-" or "") .. modifier
-    end
-    if IsAltKeyDown() then
-        modifier = "alt" .. (modifier ~= "" and "-" or "") .. modifier
-    end
-    return modifier
-end
-
-function private:GetSubstring(str, len)
-    str = str or ""
-    return strsub(str, 1, len) .. (strlen(str) > len and "..." or "")
-end
-
-function private:IncrementString(str, obj, validateFunc)
-    local func = validateFunc and obj[validateFunc] or _G[validateFunc]
-    if func(obj, str) then
-        local i = 2
-        while true do
-            local newStr = format("%s %d", str, i)
-
-            if not func(obj, newStr) then
-                return newStr
-            else
-                i = i + 1
-            end
-        end
-    else
-        return str
     end
 end
 
@@ -496,16 +453,6 @@ end
 
 function private:StartDebug()
     private:LoadOptions("objectiveTemplates")
-end
-
-function private:StringToTitle(str)
-    local strs = { strsplit(" ", str) }
-
-    for key, Str in pairs(strs) do
-        strs[key] = strupper(strsub(Str, 1, 1)) .. strlower(strsub(Str, 2, strlen(Str)))
-    end
-
-    return table.concat(strs, " ")
 end
 
 function private:ValidateConditionFunc(value)
