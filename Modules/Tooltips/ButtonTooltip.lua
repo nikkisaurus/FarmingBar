@@ -2,6 +2,14 @@ local addonName, private = ...
 local addon = LibStub("AceAddon-3.0"):GetAddon(addonName)
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 
+local function GetGoalColor(completed)
+    return completed and addon.ChatColors["GREEN"] or addon.ChatColors["GOLD"]
+end
+
+local function GetProgressColor(completed)
+    return completed > 0 and addon.ChatColors["GREEN"] or addon.ChatColors["GOLD"]
+end
+
 local function GetIncludeCount(trackers, include)
     local count = 0
 
@@ -79,8 +87,6 @@ function private:GetButtonTooltip(widget)
         -- Trackers
         for trackerKey, tracker in pairs(trackers) do
             if trackerKey <= 5 or showDetails then
-                local count = addon:iformat(private:GetTrackerCount(tracker), 1, true)
-                local trackerObjective = private:GetTrackerObjectiveCount(widget, trackerKey)
                 local trackerIcon
                 if tracker.type == "ITEM" then
                     trackerIcon = GetItemIcon(tracker.id)
@@ -89,11 +95,21 @@ function private:GetButtonTooltip(widget)
                     trackerIcon = currency and currency.iconFileID
                 end
 
+                local count = addon:iformat(private:GetTrackerCount(tracker), 1, true)
+                local totalTrackerGoal = private:GetTrackerObjectiveCount(widget, trackerKey)
+                local completed = floor(count / tracker.objective)
+
+                local progressColor = GetProgressColor(completed)
+                local countStr = format("%s (%s%d/%s|r)", addon:ColorFontString(completed, progressColor), progressColor, count, addon:iformat(tracker.objective, 1))
+                if totalTrackerGoal > 0 then
+                    countStr = format("%s (%s%d/%s|r) [%s]", addon:ColorFontString(completed, progressColor), progressColor, count, addon:iformat(tracker.objective, 1), addon:ColorFontString(addon:iformat(totalTrackerGoal, 1), GetGoalColor(tonumber(count) >= totalTrackerGoal)))
+                end
+
                 tinsert(pendingLines, {
                     double = true,
                     color = private.CONST.TOOLTIP_KEYVALUE2,
                     k = addon:GetSubstring(tracker.name, 30) or L["Tracker"] .. " " .. trackerKey,
-                    v = trackerObjective > 0 and format("%s/%s", count, addon:iformat(objective, 1)) or count,
+                    v = countStr,
                 })
 
                 tinsert(pendingLines, {
