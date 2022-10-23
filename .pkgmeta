@@ -24,7 +24,7 @@ externals:
     Libs/LibSharedMedia-3.0: https://repos.curseforge.com/wow/libsharedmedia-3-0/trunk/LibSharedMedia-3.0
 
 embedded-libraries:
-    - libaddonutils-2.0
+    - libaddonutils-2-0
     - libdatabroker-1-1
     - libdeflate
 
