@@ -289,9 +289,9 @@ private.lists = {
     },
 
     alertColors = {
-        red = LibStub("LibAddonUtils-1.0").ChatColors["RED"],
-        green = LibStub("LibAddonUtils-1.0").ChatColors["GREEN"],
-        gold = LibStub("LibAddonUtils-1.0").ChatColors["GOLD"],
+        red = LibStub("LibAddonUtils-2.0").ChatColors["RED"],
+        green = LibStub("LibAddonUtils-2.0").ChatColors["GREEN"],
+        gold = LibStub("LibAddonUtils-2.0").ChatColors["GOLD"],
     },
 
     buttonTextures = {
