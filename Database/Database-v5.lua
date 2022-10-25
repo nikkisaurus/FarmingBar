@@ -5,7 +5,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 function private:ConvertDB_V5()
     if private.db.global.objectives then
         for objectiveTitle, objective in pairs(private.db.global.objectives) do
-            for trackerKey, tracker in pairs(objective.trackers) do
+            for trackerKey, tracker in pairs(objective.trackers or {}) do
                 if not tracker.name or tracker.name == "" then
                     addon:Cache(strlower(tracker.type), tracker.id, function(success, id, private, objectiveTitle, trackerKey)
                         if success then
@@ -16,7 +16,7 @@ function private:ConvertDB_V5()
                     end, { private, objectiveTitle, trackerKey })
                 end
 
-                for altIDKey, altID in pairs(tracker.altIDs) do
+                for altIDKey, altID in pairs(tracker.altIDs or {}) do
                     if not altID.name or altID.name == "" then
                         addon:Cache(strlower(altID.type), altID.id, function(success, id, private, FarmingBarDB, profileName, barID, buttonID, trackerKey, altIDKey)
                             if success then
@@ -33,9 +33,9 @@ function private:ConvertDB_V5()
 
     if FarmingBarDB.profiles then
         for profileName, profile in pairs(FarmingBarDB.profiles) do
-            for barID, bar in pairs(profile.bars) do
-                for buttonID, button in pairs(bar.buttons) do
-                    for trackerKey, tracker in pairs(button.trackers) do
+            for barID, bar in pairs(profile.bars or {}) do
+                for buttonID, button in pairs(bar.buttons or {}) do
+                    for trackerKey, tracker in pairs(button.trackers or {}) do
                         if not tracker.name or tracker.name == "" then
                             addon:Cache(strlower(tracker.type), tracker.id, function(success, id, private, FarmingBarDB, profileName, barID, buttonID, trackerKey)
                                 if success then
@@ -45,7 +45,7 @@ function private:ConvertDB_V5()
                                 end
                             end, { private, FarmingBarDB, profileName, barID, buttonID, trackerKey })
                         end
-                        for altIDKey, altID in pairs(tracker.altIDs) do
+                        for altIDKey, altID in pairs(tracker.altIDs or {}) do
                             if not altID.name or altID.name == "" then
                                 addon:Cache(strlower(altID.type), altID.id, function(success, id, private, FarmingBarDB, profileName, barID, buttonID, trackerKey, altIDKey)
                                     if success then
