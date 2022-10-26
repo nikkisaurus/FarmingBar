@@ -653,7 +653,7 @@ local function Constructor()
     frame:SetMovable(true)
     frame:EnableMouse(true)
     frame:RegisterForDrag("LeftButton", "RightButton")
-    frame:RegisterForClicks("AnyUp", "AnyDown")
+    frame:RegisterForClicks("AnyDown")
 
     for script, func in pairs(scripts) do
         frame:SetScript(script, func)
