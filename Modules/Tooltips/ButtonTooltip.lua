@@ -97,7 +97,7 @@ function private:GetButtonTooltip(widget)
 
                 local count = addon:iformat(private:GetTrackerCount(tracker), 1, true)
                 local totalTrackerGoal = private:GetTrackerObjectiveCount(widget, trackerKey)
-                local completed = floor(count / tracker.objective)
+                local completed = floor((tonumber(count) or 0) / tracker.objective)
 
                 local progressColor = GetProgressColor(completed)
                 local countStr = format("%s (%s%d/%s|r)", addon:ColorFontString(completed, progressColor), progressColor, count, addon:iformat(tracker.objective, 1))
