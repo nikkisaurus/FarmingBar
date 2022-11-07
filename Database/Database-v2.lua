@@ -161,6 +161,9 @@ function private:ConvertDB_V2()
     -- Bars
     if private.backup.char then
         for char, charDB in pairs(private.backup.char) do
+            C_Timer.After(1, function()
+                print(char)
+            end)
             -- Get profile specific info that should now be bar specific
             local profileKey = private.backup.profileKeys[char]
             local profile = private.backup.profiles[profileKey]
@@ -278,7 +281,10 @@ function private:ConvertDB_V2()
                     bar.numButtons = min(barDB.visibleButtons, private.CONST.MAX_BUTTONS)
                 end
                 if barDB.position then
-                    bar.point = { unpack(barDB.position) }
+                    C_Timer.After(1, function()
+                        print("POS")
+                    end)
+                    bar.point = addon:CloneTable(barDB.position)
                 end
                 if barDB.scale then
                     bar.scale = barDB.scale
@@ -291,60 +297,62 @@ function private:ConvertDB_V2()
                 profile.bars[barID] = addon:CloneTable(bar)
 
                 -- Save objectives as templates
-                for buttonID, objective in addon:pairs(barDB.objectives) do
-                    local Type = objective.type
+                if barDB.objectives then
+                    for buttonID, objective in addon:pairs(barDB.objectives) do
+                        local Type = objective.type
 
-                    local template = addon:CloneTable(private.defaults.objective)
+                        local template = addon:CloneTable(private.defaults.objective)
 
-                    if Type == "mixedItems" then -- ANY
-                        template.condition.type = "ANY"
-                        template.title = objective.title or ""
-                        template.icon.type = "FALLBACK"
-                        template.icon.id = objective.icon or 134400
+                        if Type == "mixedItems" then -- ANY
+                            template.condition.type = "ANY"
+                            template.title = objective.title or ""
+                            template.icon.type = "FALLBACK"
+                            template.icon.id = objective.icon or 134400
 
-                        for _, itemID in pairs(objective.items) do
+                            for _, itemID in pairs(objective.items) do
+                                local tracker = addon:CloneTable(private.defaults.tracker)
+                                tracker.id = itemID
+                                tinsert(template.trackers, tracker)
+                            end
+                        elseif Type == "shoppingList" then -- ALL
+                            template.condition.type = "ALL"
+                            template.title = objective.title or ""
+                            template.icon.type = "FALLBACK"
+                            template.icon.id = objective.icon or 134400
+
+                            for itemID, count in pairs(objective.items) do
+                                local tracker = addon:CloneTable(private.defaults.tracker)
+                                tracker.id = itemID
+                                tracker.objective = count or 1
+                                tinsert(template.trackers, tracker)
+                            end
+                        elseif Type == "item" then
+                            template.condition.type = "ALL"
+                            template.title = objective.title ~= "" and objective.title or L["Converted Item"]
+                            template.icon.type = "FALLBACK"
+                            template.icon.id = GetItemIcon(objective.itemID) or 134400
                             local tracker = addon:CloneTable(private.defaults.tracker)
-                            tracker.id = itemID
+                            tracker.id = objective.itemID
+                            tracker.objective = objective.objective or 1
+                            tinsert(template.trackers, tracker)
+                        elseif Type == "currency" then
+                            template.condition.type = "ALL"
+                            template.title = objective.title ~= "" and objective.title or L["Converted Currency"]
+                            template.icon.type = "FALLBACK"
+                            local currency = C_CurrencyInfo.GetCurrencyInfo(objective.currencyID)
+                            template.icon.id = currency and currency.iconFileID or 134400
+                            local tracker = addon:CloneTable(private.defaults.tracker)
+                            tracker.type = "CURRENCY"
+                            tracker.id = objective.currencyID
+                            tracker.objective = objective.objective or 1
                             tinsert(template.trackers, tracker)
                         end
-                    elseif Type == "shoppingList" then -- ALL
-                        template.condition.type = "ALL"
-                        template.title = objective.title or ""
-                        template.icon.type = "FALLBACK"
-                        template.icon.id = objective.icon or 134400
 
-                        for itemID, count in pairs(objective.items) do
-                            local tracker = addon:CloneTable(private.defaults.tracker)
-                            tracker.id = itemID
-                            tracker.objective = count or 1
-                            tinsert(template.trackers, tracker)
-                        end
-                    elseif Type == "item" then
-                        template.condition.type = "ALL"
-                        template.title = objective.title ~= "" and objective.title or L["Converted Item"]
-                        template.icon.type = "FALLBACK"
-                        template.icon.id = GetItemIcon(objective.itemID) or 134400
-                        local tracker = addon:CloneTable(private.defaults.tracker)
-                        tracker.id = objective.itemID
-                        tracker.objective = objective.objective or 1
-                        tinsert(template.trackers, tracker)
-                    elseif Type == "currency" then
-                        template.condition.type = "ALL"
-                        template.title = objective.title ~= "" and objective.title or L["Converted Currency"]
-                        template.icon.type = "FALLBACK"
-                        local currency = C_CurrencyInfo.GetCurrencyInfo(objective.currencyID)
-                        template.icon.id = currency and currency.iconFileID or 134400
-                        local tracker = addon:CloneTable(private.defaults.tracker)
-                        tracker.type = "CURRENCY"
-                        tracker.id = objective.currencyID
-                        tracker.objective = objective.objective or 1
-                        tinsert(template.trackers, tracker)
+                        private:AddObjectiveTemplate(template, template.title)
+
+                        -- Add objective to bar
+                        profile.bars[barID].buttons[buttonID] = addon:CloneTable(template)
                     end
-
-                    private:AddObjectiveTemplate(template, template.title)
-
-                    -- Add objective to bar
-                    profile.bars[barID].buttons[buttonID] = addon:CloneTable(template)
                 end
             end
 
