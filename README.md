@@ -1,12 +1,12 @@
-### **Farming Bar**
+# **Farming Bar**
 
 Action bar to display and track farming objectives.
 
-#### **Inspiration**
+## **Inspiration**
 
 Farming Bar was inspired by [FarmIt](https://www.curseforge.com/wow/addons/farmit) with the goal of improvement and maintenance. Be sure to explore the new interface and settings to familiarize yourself with any changes and new features.
 
-#### **Features**
+## **Features**
 
 -   Create an unlimited number of bars and drag items onto them in order to track your inventory.
 -   Set farming objectives that can be tracked through personalized alerts.
@@ -15,8 +15,18 @@ Farming Bar was inspired by [FarmIt](https://www.curseforge.com/wow/addons/farmi
 
 You can access the configuration interface by right-clicking any bar's anchor button. You can also open the main interface using _/farmingbar show_.
 
-##### **Feedback**
+## **Feedback and Issues**
 
-Please use the [issue tracker](https://github.com/nikkisaurus/farmingbar/issues) for all feature requests and bugs. Any other comments are welcomed below.
+All feature requests and issue reports should be addressed through the [issue tracker](https://github.com/nikkisaurus/farmingbar/issues).
 
-**[Donate](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=NYN3WUR4A68SE&currency_code=USD&source=url)**
+## **Links**
+
+-   [Curseforge](https://www.curseforge.com/wow/addons/farming-bar)
+-   [Discord](https://discord.gg/tSeVUJaM3u)
+-   [Github](https://github.com/nikkisaurus/FarmingBar)
+-   [Wago](https://addons.wago.io/addons/farmingbar)
+-   [WoW Interface](https://www.wowinterface.com/downloads/info25440-FarmingBar.html)
+
+## **Donate**
+
+Any [donations](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=NYN3WUR4A68SE¤cy_code=USD&source=url) are much appreciated!
