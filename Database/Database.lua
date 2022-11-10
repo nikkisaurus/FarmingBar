@@ -629,6 +629,7 @@ function private:InitializeDatabase()
                 buttons = {
                     size = 45,
                     padding = 2,
+                    abbreviateCount = false,
                 },
             },
         },

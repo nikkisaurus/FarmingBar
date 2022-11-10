@@ -409,7 +409,7 @@ local methods = {
         local count, trackers = private:GetObjectiveWidgetCount(widget)
         widget:SetUserData("count", count)
         widget:SetUserData("trackers", trackers)
-        widget.count:SetText(addon:iformat(count, 2, true))
+        widget.count:SetText(private.db.profile.style.buttons.abbreviateCount and addon:iformat(count, 2, true) or count)
         widget:SetObjective()
     end,
 

@@ -184,6 +184,18 @@ function private:GetSettingsOptions()
                                     name = L["Button Size"],
                                     desc = L["Set the default size of bar buttons."],
                                 },
+                                abbreviateCount = {
+                                    order = 3,
+                                    type = "toggle",
+                                    name = L["Abbreviate Count"],
+                                    desc = L["Abbreviate large numbers on buttons' objective counts."],
+                                    set = function(info, value)
+                                        private.db.profile.style.buttons[info[#info]] = value
+                                        for _, bar in pairs(private.bars) do
+                                            bar:UpdateButtons()
+                                        end
+                                    end,
+                                },
                             },
                         },
                     },
