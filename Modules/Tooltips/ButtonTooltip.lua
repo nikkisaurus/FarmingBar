@@ -95,14 +95,14 @@ function private:GetButtonTooltip(widget)
                     trackerIcon = currency and currency.iconFileID
                 end
 
-                local count = addon:iformat(private:GetTrackerCount(tracker), 1, true)
+                local count = private:GetTrackerCount(tracker)
                 local totalTrackerGoal = private:GetTrackerObjectiveCount(widget, trackerKey)
-                local completed = floor((tonumber(count) or 0) / tracker.objective)
+                local completed = floor(count / tracker.objective)
 
                 local progressColor = GetProgressColor(completed)
-                local countStr = format("%s (%s%d/%s|r)", addon:ColorFontString(completed, progressColor), progressColor, count, addon:iformat(tracker.objective, 1))
+                local countStr = format("%s (%s%s/%s|r)", addon:ColorFontString(addon:iformat(completed, 1), progressColor), progressColor, addon:iformat(count, 1), addon:iformat(tracker.objective, 1))
                 if totalTrackerGoal > 0 then
-                    countStr = format("%s (%s%d/%s|r) [%s]", addon:ColorFontString(completed, progressColor), progressColor, count, addon:iformat(tracker.objective, 1), addon:ColorFontString(addon:iformat(totalTrackerGoal, 1), GetGoalColor(tonumber(count) >= totalTrackerGoal)))
+                    countStr = format("%s (%s%s/%s|r) [%s]", addon:ColorFontString(completed, progressColor), progressColor, addon:iformat(count, 1), addon:iformat(tracker.objective, 1), addon:ColorFontString(addon:iformat(totalTrackerGoal, 1), GetGoalColor(count >= totalTrackerGoal)))
                 end
 
                 tinsert(pendingLines, {
