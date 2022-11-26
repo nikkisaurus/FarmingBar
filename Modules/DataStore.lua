@@ -30,7 +30,6 @@ function private:GetDataStoreItemCount(itemID, trackerInfo)
     local characters = DS:HashValueToSortedArray(DS:GetCharacters())
     for _, character in pairs(characters) do
         if trackerInfo.includeAlts or character == DS:GetCharacter() then
-            -- local bags, bank = DS:GetContainerItemCount(character, itemID)
             local bags, bank, void, reagentBank, reagentBag = DS:GetContainerItemCount(character, itemID)
             bags = bags + reagentBag
             bank = bank + void + reagentBank
