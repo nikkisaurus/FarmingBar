@@ -78,7 +78,11 @@ function private:GetTrackerCount(trackerInfo, bar, buttonID, overrideObjective)
         local altCount
 
         if altInfo.type == "ITEM" then
-            altCount = floor(GetItemCount(altInfo.id, trackerInfo.includeBank) * altInfo.multiplier)
+            if DS then
+                altCount = floor(private:GetDataStoreItemCount(altInfo.id, trackerInfo) * altInfo.multiplier)
+            else
+                altCount = floor(GetItemCount(altInfo.id, trackerInfo.includeBank) * altInfo.multiplier)
+            end
         elseif altInfo.type == "CURRENCY" then
             if DS and trackerInfo.includeAlts then
                 altCount = private:GetDataStoreCurrencyCount(altInfo.id)
