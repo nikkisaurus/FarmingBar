@@ -256,7 +256,7 @@ function private:ParseTrackerAlert(alert, alertInfo)
     local remainder = alertInfo.goal and (alertInfo.trackerGoalTotal - alertInfo.newCount) or ""
 
     local diffColor = alertInfo.difference > 0 and "|cff00ff00" or "|cffff0000"
-    local progressColor = alertInfo.trackerGoal >= alertInfo.trackerGoalTotal and "|cff00ff00" or "|cffffcc00"
+    local progressColor = alertInfo.newCount >= alertInfo.trackerGoalTotal and "|cff00ff00" or "|cffffcc00"
 
     -- Replaces placeholders with data: colors come first so things like %c, %d, and %p don't get changed before colors can be evaluated
     alert = alert:gsub("%%color%%", "|r"):gsub("%%diffColor%%", diffColor):gsub("%%progressColor%%", progressColor):gsub("%%green%%", private.lists.alertColors.green):gsub("%%gold%%", private.lists.alertColors.gold):gsub("%%red%%", private.lists.alertColors.red):gsub("%%c", alertInfo.newCount):gsub("%%C", alertInfo.oldCount):gsub("%%d", (alertInfo.difference > 0 and "+" or "") .. alertInfo.difference):gsub("%%g", alertInfo.goal or ""):gsub("%%G", alertInfo.trackerGoalTotal or ""):gsub("%%p", percent):gsub("%%r", remainder):gsub("%%t", alertInfo.title or ""):gsub("%%T", alertInfo.trackerName)

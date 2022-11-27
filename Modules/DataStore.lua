@@ -31,8 +31,8 @@ function private:GetDataStoreItemCount(itemID, trackerInfo)
     for _, character in pairs(characters) do
         if trackerInfo.includeAlts or character == DS:GetCharacter() then
             local bags, bank, void, reagentBank, reagentBag = DS:GetContainerItemCount(character, itemID)
-            bags = bags + reagentBag
-            bank = bank + void + reagentBank
+            bags = (bags or 0) + (reagentBag or 0)
+            bank = (bank or 0) + (void or 0) + (reagentBank or 0)
             local mail = DS:GetMailItemCount(character, itemID) or 0
             local auction = DS:GetAuctionHouseItemCount(character, itemID) or 0
             local inventory = DS:GetInventoryItemCount(character, itemID) or 0
