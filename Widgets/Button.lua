@@ -116,7 +116,11 @@ local postClickMethods = {
     end,
 }
 
-local function ProcessKeybinds(frame, buttonClicked, ...)
+local function ProcessKeybinds(frame, buttonClicked, down)
+    if not down then
+        return
+    end
+
     for keybind, keybindInfo in pairs(private.db.global.settings.keybinds) do
         if buttonClicked == keybindInfo.button then
             local modifier = addon:GetModifierString()
@@ -125,7 +129,7 @@ local function ProcessKeybinds(frame, buttonClicked, ...)
             if modifier == keybindInfo.modifier and (keybindInfo.type == "drag" and isDragging or not isDragging) then
                 local func = postClickMethods[keybind]
                 if func then
-                    func(frame, keybindInfo, buttonClicked, ...)
+                    func(frame, keybindInfo, buttonClicked, down)
                     return
                 end
             end
@@ -253,7 +257,7 @@ local scripts = {
         PlaceObjectiveInfo(frame.obj)
     end,
 
-    PostClick = function(frame, buttonClicked, ...)
+    PostClick = function(frame, buttonClicked, down)
         local widget = frame.obj
         local cursorType, itemID = GetCursorInfo()
 
@@ -267,7 +271,7 @@ local scripts = {
         end
 
         C_Timer.After(0.2, function()
-            ProcessKeybinds(frame, buttonClicked)
+            ProcessKeybinds(frame, buttonClicked, down)
         end)
     end,
 }

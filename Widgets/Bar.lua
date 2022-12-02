@@ -34,7 +34,11 @@ local scripts = {
 }
 
 local anchorScripts = {
-    OnClick = function(anchor, mouseButton)
+    OnClick = function(anchor, mouseButton, down)
+        if not down then
+            return
+        end
+
         local widget = anchor.obj
         if IsControlKeyDown() and mouseButton == "LeftButton" then
             widget:SetDBValue("movable", false)
