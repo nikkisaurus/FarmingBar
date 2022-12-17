@@ -258,6 +258,10 @@ local scripts = {
     end,
 
     PostClick = function(frame, buttonClicked, down)
+        if not down then
+            return
+        end
+
         local widget = frame.obj
         local cursorType, itemID = GetCursorInfo()
 
