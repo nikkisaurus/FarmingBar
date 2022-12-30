@@ -95,7 +95,7 @@ function private:GetButtonTooltip(widget)
                     trackerIcon = currency and currency.iconFileID
                 end
 
-                local count = private:GetTrackerCount(tracker)
+                local count = private:GetTrackerCount(tracker, nil, nil, 1)
                 local totalTrackerGoal = private:GetTrackerObjectiveCount(widget, trackerKey)
                 local completed = floor(count / tracker.objective)
 
