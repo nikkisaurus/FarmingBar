@@ -428,7 +428,11 @@ local function Constructor()
     anchor:SetFrameLevel(2)
     anchor:SetMovable(true)
     anchor:RegisterForDrag("LeftButton")
-    anchor:RegisterForClicks("AnyUp", "AnyDown")
+    if select(4, GetBuildInfo()) < 100000 then
+        anchor:RegisterForClicks("AnyDown")
+    else
+        anchor:RegisterForClicks("AnyUp", "AnyDown")
+    end
     anchor:SetClampedToScreen(true)
     anchor.text = anchor:CreateFontString(nil, "OVERLAY", "NumberFontNormal")
     anchor.text:SetPoint("CENTER", 0, 0)
