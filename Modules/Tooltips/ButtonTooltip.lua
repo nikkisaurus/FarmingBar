@@ -15,7 +15,7 @@ local function GetIncludeCount(trackers, include)
 
     for _, tracker in pairs(trackers) do
         if type(tracker[include]) ~= "table" then
-            count = count + 1
+            count = count + (tracker[include] and 1 or 0)
         else
             for _, included in pairs(tracker[include]) do
                 if included then
