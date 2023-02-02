@@ -222,7 +222,7 @@ function private:GetButtonTooltip(widget)
     }
 
     for action, actionInfo in pairs(private.db.global.settings.keybinds) do
-        if not isEmpty or action == "showQuickAddEditBox" or action == "showQuickAddCurrencyEditBox" then
+        if not isEmpty or action == "showQuickAddEditBox" or action == "showQuickAddCurrencyEditBox" or action == "showObjectiveEditor" then
             tinsert(pendingLines, {
                 line = L.ButtonHints(action, actionInfo),
                 hidden = not showDetails and not showHints,

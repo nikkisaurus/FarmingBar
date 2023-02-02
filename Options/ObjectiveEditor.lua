@@ -39,18 +39,19 @@ function private:GetObjectiveEditorGeneralContent(widget)
 
     local _, buttonDB = widget:GetDB()
     local barID, buttonID = widget:GetID()
+    local args = {}
 
-    local args = {
-        icon = {
+    if buttonDB then
+        args.icon = {
             order = 1,
             type = "execute",
             dialogControl = "FarmingBar_Icon",
             image = private:GetObjectiveIcon(buttonDB),
             width = 0.25,
             name = buttonDB.title,
-        },
+        }
 
-        title = {
+        args.title = {
             order = 2,
             type = "input",
             width = 2,
@@ -61,9 +62,9 @@ function private:GetObjectiveEditorGeneralContent(widget)
             set = function(info, value)
                 widget:SetDBValue(info[#info], value)
             end,
-        },
+        }
 
-        iconType = {
+        args.iconType = {
             order = 3,
             type = "select",
             name = L["Icon"],
@@ -76,9 +77,9 @@ function private:GetObjectiveEditorGeneralContent(widget)
                 private:RefreshObjectiveEditor(widget)
                 widget:SetIconTextures()
             end,
-        },
+        }
 
-        iconID = {
+        args.iconID = {
             order = 3,
             type = "input",
             name = L["Icon ID"],
@@ -94,9 +95,9 @@ function private:GetObjectiveEditorGeneralContent(widget)
                 private:RefreshObjectiveEditor(widget)
                 widget:SetIconTextures()
             end,
-        },
+        }
 
-        iconSelector = {
+        args.iconSelector = {
             order = 4,
             type = "execute",
             name = L["Choose"],
@@ -120,9 +121,9 @@ function private:GetObjectiveEditorGeneralContent(widget)
                     private:LoadObjectiveEditor(widget)
                 end)
             end,
-        },
+        }
 
-        mute = {
+        args.mute = {
             order = 5,
             type = "toggle",
             name = L["Mute"],
@@ -133,9 +134,9 @@ function private:GetObjectiveEditorGeneralContent(widget)
             set = function(info, value)
                 widget:SetDBValue("mute", value)
             end,
-        },
+        }
 
-        onUse = {
+        args.onUse = {
             order = 6,
             type = "group",
             inline = true,
@@ -216,9 +217,9 @@ function private:GetObjectiveEditorGeneralContent(widget)
                     end,
                 },
             },
-        },
+        }
 
-        clear = {
+        args.clear = {
             order = 7,
             type = "execute",
             name = L["Clear"],
@@ -229,9 +230,9 @@ function private:GetObjectiveEditorGeneralContent(widget)
             confirm = function()
                 return L["Are you sure you want to clear this button?"]
             end,
-        },
+        }
 
-        saveTemplate = {
+        args.saveTemplate = {
             order = 8,
             type = "execute",
             name = L["Save as Template"],
@@ -240,33 +241,33 @@ function private:GetObjectiveEditorGeneralContent(widget)
                 private:CloseObjectiveEditor()
                 private:LoadOptions("objectiveTemplates", newObjectiveTitle)
             end,
-        },
+        }
+    end
 
-        applyTemplate = {
-            order = 9,
-            type = "select",
-            style = "dropdown",
-            name = L["Apply Objective Template"],
-            values = function()
-                local values = {}
+    args.applyTemplate = {
+        order = 9,
+        type = "select",
+        style = "dropdown",
+        name = L["Apply Objective Template"],
+        values = function()
+            local values = {}
 
-                for templateName, _ in pairs(private.db.global.objectives) do
-                    values[templateName] = templateName
-                end
+            for templateName, _ in pairs(private.db.global.objectives) do
+                values[templateName] = templateName
+            end
 
-                return values
-            end,
-            set = function(_, value)
-                widget:SetObjectiveInfo(addon:CloneTable(private.db.global.objectives[value]))
-                private:RefreshObjectiveEditor(widget)
-            end,
-            confirm = function(_, value)
-                return format(L["Are you sure you want to overwrite Bar %d Button %d with objective template \"%s\"?"], barID, buttonID, value)
-            end,
-            disabled = function()
-                return addon:tcount(private.db.global.objectives) == 0
-            end,
-        },
+            return values
+        end,
+        set = function(_, value)
+            widget:SetObjectiveInfo(addon:CloneTable(private.db.global.objectives[value]))
+            private:RefreshObjectiveEditor(widget)
+        end,
+        confirm = function(_, value)
+            return format(L["Are you sure you want to overwrite Bar %d Button %d with objective template \"%s\"?"], barID, buttonID, value)
+        end,
+        disabled = function()
+            return addon:tcount(private.db.global.objectives) == 0
+        end,
     }
 
     return args
@@ -291,6 +292,10 @@ function private:GetObjectiveEditorTrackersContent(widget)
 
     local _, buttonDB = widget:GetDB()
     local barID, buttonID = widget:GetID()
+
+    if not buttonDB then
+        return {}
+    end
 
     local args = {
         conditionType = {

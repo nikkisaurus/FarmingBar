@@ -98,9 +98,7 @@ local postClickMethods = {
 
     showObjectiveEditor = function(frame)
         local widget = frame.obj
-        if not widget:IsEmpty() then
-            private:LoadObjectiveEditor(widget)
-        end
+        private:LoadObjectiveEditor(widget)
     end,
 
     showQuickAddCurrencyEditBox = function(frame)
