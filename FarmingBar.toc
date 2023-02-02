@@ -1,5 +1,5 @@
-## Interface: 100002
-## Interface-Wrath: 30400
+## Interface: 100005
+## Interface-Wrath: 30401
 
 ## Title: FarmingBar
 ## Notes: Action bar to display and track objective goals.
