@@ -36,8 +36,13 @@ body:
           required: true
     - type: textarea
       attributes:
+          label: Did you encounter any Lua errors related to this issue? If so, please provide them here.
+      validations:
+          required: true
+    - type: textarea
+      attributes:
           label: Please supply any screenshots relevant to this issue.
     - type: textarea
       attributes:
-          label: Please supply a copy of your saved variables.
+          label: Please supply a copy of your saved variables. You may need to save the file as a .txt file to upload here.
           description: ./WTF/Account/YOURACCOUNTNAME/SavedVariables
