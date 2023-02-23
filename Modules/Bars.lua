@@ -22,14 +22,15 @@ function addon:SPELL_UPDATE_COOLDOWN()
         if buttons then
             for _, button in pairs(buttons) do
                 local barDB, buttonDB = button:GetDB()
+                button.cooldown:SetCooldown(0, 0)
+                button.cooldown:Hide()
                 if not button:IsEmpty() and barDB.showCooldown and buttonDB.onUse.type == "ITEM" then
                     local startTime, duration, enable = C_Container.GetItemCooldown(buttonDB.onUse.itemID)
-                    button.cooldown:SetDrawEdge(barDB.fontstrings.Cooldown.showEdge)
-                    button.cooldown:SetCooldown(startTime, duration)
-                    button.cooldown:Show()
-                else
-                    button.cooldown:SetCooldown(0, 0)
-                    button.cooldown:Hide()
+                    if type(startTime) == "number" or type(duration) == "number" then
+                        button.cooldown:SetDrawEdge(barDB.fontstrings.Cooldown.showEdge)
+                        button.cooldown:SetCooldown(startTime, duration)
+                        button.cooldown:Show()
+                    end
                 end
             end
         end
