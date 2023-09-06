@@ -228,7 +228,11 @@ function private:GetButtonTooltip(widget)
     }
 
     for action, actionInfo in pairs(private.db.global.settings.keybinds) do
-        if not isEmpty or action == "showQuickAddEditBox" or action == "showQuickAddCurrencyEditBox" or action == "showObjectiveEditor" then
+        local showCurrency = action == "showQuickAddCurrencyEditBox" and private:IsCurrencySupported()
+        local validEmptyAction = isEmpty and (action == "showQuickAddEditBox" or action == "showObjectiveEditor" or showCurrency)
+        local validNotEmptyAction = (not isEmpty) and (action ~= "showQuickAddCurrencyEditBox" or showCurrency)
+
+        if validEmptyAction or validNotEmptyAction then
             tinsert(pendingLines, {
                 line = L.ButtonHints(action, actionInfo),
                 hidden = not showDetails and not showHints,
