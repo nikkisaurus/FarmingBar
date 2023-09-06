@@ -90,7 +90,7 @@ function private:GetMissingDataStoreModules()
         tinsert(missing, "DataStore_Containers")
     end
 
-    if WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC and WOW_PROJECT_ID ~= WOW_PROJECT_BURNING_CRUSADE_CLASSIC then
+    if private:IsCurrencySupported() then
         if not IsAddOnLoaded("DataStore_Currencies") then
             tinsert(missing, "DataStore_Currencies")
         end

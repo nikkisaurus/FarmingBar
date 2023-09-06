@@ -322,6 +322,9 @@ private.lists = {
     },
 }
 
+if not private:IsCurrencySupported() then
+    private.lists.newTrackerType.CURRENCY = nil
+end
 local function MSQ_Callback(...)
     for _, bar in pairs(private.bars) do
         bar:UpdateButtonTextures()
@@ -392,6 +395,10 @@ function private:InitializeMasque()
 
         private.MSQ.button:SetCallback(MSQ_Callback)
     end
+end
+
+function private:IsCurrencySupported()
+    return WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC and WOW_PROJECT_ID ~= WOW_PROJECT_BURNING_CRUSADE_CLASSIC
 end
 
 function private:RegisterMedia()
