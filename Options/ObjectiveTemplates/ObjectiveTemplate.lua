@@ -570,7 +570,7 @@ function private:GetObjectiveTemplateOptions(objectiveTemplateName)
                         num = tonumber(num)
                         den = tonumber(den)
                         if num and den and den ~= 0 then
-                            multiplier = addon:round(num / den, 3)
+                            multiplier = num / den
                         else
                             multiplier = 1
                         end
