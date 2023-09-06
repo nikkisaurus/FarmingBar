@@ -158,6 +158,12 @@ function private:GetButtonTooltip(widget)
             },
             {
                 double = true,
+                k = L["Include All Factions"],
+                v = format("%d/%d", GetIncludeCount(trackers, "includeAllFactions"), addon:tcount(trackers)),
+                hidden = not showDetails or private:MissingDataStore(),
+            },
+            {
+                double = true,
                 k = L["Include Guild Bank"],
                 v = format("%d/%d", GetIncludeCount(trackers, "includeGuildBank"), addon:tcount(trackers)),
                 hidden = not showDetails or private:MissingDataStore(),

@@ -446,8 +446,17 @@ function private:GetObjectiveEditorTrackersContent(widget)
                                 return private:MissingDataStore()
                             end,
                         },
+                        AllFactions = {
+                            order = 3,
+                            type = "toggle",
+                            name = L["All Factions"],
+                            desc = L["Include counts from all factions for this tracker."],
+                            hidden = function()
+                                return private:MissingDataStore()
+                            end,
+                        },
                         GuildBank = {
-                            order = 2,
+                            order = 4,
                             type = "multiselect",
                             name = L["Guild Bank"],
                             desc = L["Include counts from the selected guild bank(s) for this tracker."],

@@ -160,6 +160,7 @@ end]],
     --        type = "ITEM", -- "CURRENCY"
     --        id = 0000,
     --        objective = 1,
+    --        includeAllFactions = false,
     --        includeAlts = false,
     --        includeBank = false,
     --        includeGuildBank = {
@@ -404,6 +405,7 @@ end]],
         id = false,
         name = "",
         objective = 1,
+        includeAllFactions = false,
         includeAlts = false,
         includeBank = false,
         includeGuildBank = {},
@@ -640,7 +642,7 @@ function private:InitializeDatabase()
     if private.db.global.version == 5 then
         private:ConvertDB_V5()
     end
-    private.db.global.version = 6
+    private.db.global.version = 7
 
     private.db.RegisterCallback(addon, "OnProfileChanged", "OnProfile_")
     private.db.RegisterCallback(addon, "OnProfileCopied", "OnProfile_")

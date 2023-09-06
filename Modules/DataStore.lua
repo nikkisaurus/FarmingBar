@@ -28,8 +28,11 @@ function private:GetDataStoreItemCount(itemID, trackerInfo)
     local count = 0
 
     local characters = DS:HashValueToSortedArray(DS:GetCharacters())
+    local thisCharacter = DS:GetCharacter()
+    local faction = UnitFactionGroup("player")
+
     for _, character in pairs(characters) do
-        if trackerInfo.includeAlts or character == DS:GetCharacter() then
+        if (trackerInfo.includeAlts and (trackerInfo.includeAllFactions or DS:GetCharacterFaction(character) == faction)) or character == thisCharacter then
             local bags, bank, void, reagentBank, reagentBag = DS:GetContainerItemCount(character, itemID)
             bags = (bags or 0) + (reagentBag or 0)
             bank = (bank or 0) + (void or 0) + (reagentBank or 0)
@@ -44,7 +47,7 @@ function private:GetDataStoreItemCount(itemID, trackerInfo)
     local guilds = DS:HashValueToSortedArray(DS:GetGuilds())
     for guildName, guild in pairs(guilds) do
         -- From what I see, there is no function in DataStore to check the guild faction by the ID, so checking from the db instead
-        if trackerInfo.includeGuildBank[guild] and DS.db.global.Guilds[guild].faction == UnitFactionGroup("player") then
+        if trackerInfo.includeGuildBank[guild] and (trackerInfo.includeAllFactions or DS.db.global.Guilds[guild].faction == faction) then
             count = count + DS:GetGuildBankItemCount(guild, itemID)
         end
     end
