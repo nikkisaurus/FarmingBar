@@ -1,0 +1,24 @@
+{
+    "Lua.diagnostics.globals": [
+        "StaticPopupDialogs",
+        "StaticPopup_Show",
+        "ALL",
+        "NONE",
+        "CANCEL",
+        "DEFAULT_CHAT_FRAME",
+        "UIErrorsFrame",
+        "REMOVE",
+        "RESET",
+        "NUM_CHAT_WINDOWS",
+        "NEW",
+        "DELETE",
+        "GameFontNormalLarge",
+        "RegisterStateDriver",
+        "SEARCH",
+        "PREVIOUS",
+        "NEXT",
+        "ACCEPT",
+        "ChatFontNormal",
+        "GetCursorPosition"
+    ]
+}
