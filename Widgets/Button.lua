@@ -102,6 +102,10 @@ local postClickMethods = {
     end,
 
     showQuickAddCurrencyEditBox = function(frame)
+        if not private:IsCurrencySupported() then
+            return
+        end
+
         local widget = frame.obj
         widget:SetUserData("editType", "currency")
         widget.editbox:Show()
