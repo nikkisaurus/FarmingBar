@@ -17,7 +17,7 @@ body:
     - type: input
       attributes:
           label: AddOn Version
-          placeholder: e.g. v3.0.0 or v3.0.0-wrath
+          placeholder: e.g. v3.0.0 or v3.0.0-classic or v3.0.0-wrath
       validations:
           required: true
     - type: dropdown
