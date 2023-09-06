@@ -90,11 +90,11 @@ function private:GetMissingDataStoreModules()
         tinsert(missing, "DataStore_Containers")
     end
 
-    --@retail@
-    if not IsAddOnLoaded("DataStore_Currencies") then
-        tinsert(missing, "DataStore_Currencies")
+    if WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC and WOW_PROJECT_ID ~= WOW_PROJECT_BURNING_CRUSADE_CLASSIC then
+        if not IsAddOnLoaded("DataStore_Currencies") then
+            tinsert(missing, "DataStore_Currencies")
+        end
     end
-    --@end-retail@
 
     if not IsAddOnLoaded("DataStore_Inventory") then
         tinsert(missing, "DataStore_Inventory")
