@@ -61,12 +61,10 @@ local postClickMethods = {
             return
         end
 
-        addon:RegisterEvent("BAG_UPDATE_DELAYED")
         private:MoveObjectiveToBank(widget)
     end,
 
     moveAllToBank = function(frame)
-        addon:RegisterEvent("BAG_UPDATE_DELAYED")
         private:MoveObjectiveToBank(frame.obj)
     end,
 

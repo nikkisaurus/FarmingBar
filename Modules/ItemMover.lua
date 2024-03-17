@@ -6,7 +6,6 @@ function addon:BAG_UPDATE_DELAYED()
     if private.status.pendingMove == 0 then
         private.status.itemMover = nil
         private.status.pendingMove = nil
-        addon:UnregisterEvent("BAG_UPDATE_DELAYED")
     elseif private.status.itemMover then
         private:MoveObjectiveToBank(private.status.itemMover)
     end
@@ -90,12 +89,7 @@ function private:MoveObjectiveToBank(widget)
                     end
                 end
 
-                local pendingMove = private.status.pendingMove
-                    or (
-                        buttonDB.objective ~= 0
-                            and min(private:GetTrackerObjectiveCount(widget, trackerKey), itemCount)
-                        or itemCount
-                    )
+                local pendingMove = private.status.pendingMove or (buttonDB.objective ~= 0 and min(private:GetTrackerObjectiveCount(widget, trackerKey), itemCount) or itemCount)
 
                 if ceil(pendingMove / itemStackCount) > freeSlots then
                     addon:Print(L["Bank does not have enough slots to move items."])
