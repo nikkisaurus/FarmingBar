@@ -218,6 +218,15 @@ function private:GetSettingsOptions()
                             name = L["Auto Loot"],
                             desc = L["Automatically loot items when using an objective, regardless of whether auto loot is enabled in game settings."],
                         },
+                        includeAuctions = {
+                            order = 1,
+                            type = "toggle",
+                            name = L["Include Auctions"],
+                            desc = L["Include items listed on the auction house in objective counts."],
+                            hidden = function()
+                                return private:MissingDataStore()
+                            end,
+                        },
                     },
                 },
             },
