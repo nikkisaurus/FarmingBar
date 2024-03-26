@@ -478,6 +478,7 @@ function private:InitializeDatabase()
             },
             settings = {
                 autoLoot = false,
+                includeAuctions = true,
                 alerts = {
                     button = {
                         sound = true,

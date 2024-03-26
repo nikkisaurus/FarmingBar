@@ -37,7 +37,7 @@ function private:GetDataStoreItemCount(itemID, trackerInfo)
             bags = (bags or 0) + (reagentBag or 0)
             bank = (bank or 0) + (void or 0) + (reagentBank or 0)
             local mail = DS:GetMailItemCount(character, itemID) or 0
-            local auction = DS:GetAuctionHouseItemCount(character, itemID) or 0
+            local auction = private.db.global.settings.includeAuctions and DS:GetAuctionHouseItemCount(character, itemID) or 0
             local inventory = DS:GetInventoryItemCount(character, itemID) or 0
 
             count = count + bags + (trackerInfo.includeBank and bank or 0) + mail + auction + inventory
