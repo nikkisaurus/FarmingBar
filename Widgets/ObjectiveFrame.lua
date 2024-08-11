@@ -12,7 +12,7 @@ local function frame_OnEvent(self, event, buttonClicked, ...)
     local hasObjective, altWidget = self:GetObjective()
     if event == "GLOBAL_MOUSE_DOWN" and (hasObjective or altWidget) then
         -- Clear objective when right clicking or not dropping item on button
-        if buttonClicked == "RightButton" or not strfind(GetMouseFocus():GetName() or "", "^FarmingBar_Button%d") then
+        if buttonClicked == "RightButton" or not strfind(GetMouseFoci()[1]:GetName() or "", "^FarmingBar_Button%d") then
             self:Clear()
             if altWidget then
                 altWidget:Clear()
