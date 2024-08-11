@@ -1,9 +1,8 @@
 ## Interface: 90205
-## Interface-Retail: 90205
 
 ## Title: FarmingBar
 ## Notes: Action bar to display and track objective goals.
-## Version: @project-version@
+## Version: v4.0-beta3
 ## Author: Nikketa-Hyjal-US
 
 ## SavedVariables: FarmingBarDB, FarmingBarDevDB
@@ -13,8 +12,10 @@
 ## X-WoWI-ID: 25440
 ## X-Wago-ID: BO67dYK3
 
-Libs\libs.xml
+libs.xml
 Locales\Locale-enUS.lua
+Media\FileData.lua
+Media\FileDataClassic.lua
 Widgets\embeds.xml
 Modules\embeds.xml
 Options\embeds.xml

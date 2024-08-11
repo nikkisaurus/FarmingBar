@@ -1580,6 +1580,10 @@ private.templates = {
             itemID = 171315,
             objectiveTitle = "item:Nightshade",
         },
+        {
+            itemID = 187699,
+            objectiveTitle = "item:First Flower",
+        },
     },
     --@end-retail@
 
@@ -1901,6 +1905,10 @@ private.templates = {
         {
             itemID = 171833,
             objectiveTitle = "item:Elethium Ore",
+        },
+        {
+            itemID = 187700,
+            objectiveTitle = "item:Progenium Ore",
         },
     },
     --@end-retail@

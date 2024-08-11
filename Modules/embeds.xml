@@ -1,13 +1,18 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/..\FrameXML\UI.xsd">
-    <Include file="Database.lua"/>
-    <Include file="Tooltips/Tooltips.lua"/>
-    <Include file="Tooltips/ButtonTooltip.lua"/>
-    <Include file="Core.lua"/>
+    <Include file="Alerts.lua"/>
     <Include file="Bars.lua"/>
-    <Include file="DataStore.lua"/>
     <Include file="Counts.lua"/>
-    <Include file="ObjectiveFrame.lua"/>
+    <Include file="Database/Database.lua"/>
+    <Include file="Database/Database-v4.lua"/>
+    <Include file="DataStore.lua"/>
+    <Include file="Helpers.lua"/>
+    <Include file="ItemMover.lua"/>
     <Include file="ObjectiveTemplates.lua"/>
+    <Include file="Skins.lua"/>
+    <Include file="SlashCommands.lua"/>
     <Include file="Templates/BuiltInTemplates.lua"/>
     <Include file="Templates/Templates.lua"/>
+    <Include file="Tooltips/BarTooltip.lua"/>
+    <Include file="Tooltips/ButtonTooltip.lua"/>
+    <Include file="Tooltips/Tooltips.lua"/>
 </Ui>

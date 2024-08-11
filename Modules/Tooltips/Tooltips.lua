@@ -2,19 +2,45 @@ local addonName, private = ...
 local addon = LibStub("AceAddon-3.0"):GetAddon(addonName)
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 
-function private:InitializeTooltip()
-    FarmingBar_Tooltip = FarmingBar_Tooltip
-        or CreateFrame("GameTooltip", "FarmingBar_Tooltip", UIParent, "GameTooltipTemplate")
+function private:ClearTooltip()
+    local tooltip = private:GetTooltip()
+    tooltip:ClearLines()
+    tooltip:Hide()
 end
 
 function private:GetTooltip()
     return private.db.global.settings.tooltips.useGameTooltip and GameTooltip or FarmingBar_Tooltip
 end
 
-function private:ClearTooltip()
-    local tooltip = private:GetTooltip()
-    tooltip:ClearLines()
-    tooltip:Hide()
+function private:GetTooltipBlankLine(hidden)
+    return {
+        line = " ",
+        hidden = hidden,
+    }
+end
+
+function private:GetTooltipTextureLine(hidden)
+    return {
+        line = 389194,
+        hidden = hidden,
+        texture = true,
+        size = {
+            width = 200,
+            height = 10,
+        },
+    }
+end
+
+function private:InitializeTooltip()
+    FarmingBar_Tooltip = FarmingBar_Tooltip
+        or CreateFrame("GameTooltip", "FarmingBar_Tooltip", UIParent, "GameTooltipTemplate")
+end
+
+function private:InsertPendingTooltipLines(lines, pendingLines)
+    for _, line in pairs(pendingLines) do
+        tinsert(lines, line)
+    end
+    wipe(pendingLines)
 end
 
 function private:LoadTooltip(owner, anchor, x, y, lines)
@@ -42,30 +68,4 @@ function private:LoadTooltip(owner, anchor, x, y, lines)
     end
 
     tooltip:Show()
-end
-
-function private:GetTooltipBlankLine(hidden)
-    return {
-        line = " ",
-        hidden = hidden,
-    }
-end
-
-function private:GetTooltipTextureLine(hidden)
-    return {
-        line = 389194,
-        hidden = hidden,
-        texture = true,
-        size = {
-            width = 200,
-            height = 10,
-        },
-    }
-end
-
-function private:InsertPendingTooltipLines(lines, pendingLines)
-    for _, line in pairs(pendingLines) do
-        tinsert(lines, line)
-    end
-    wipe(pendingLines)
 end

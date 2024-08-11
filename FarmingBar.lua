@@ -2,29 +2,41 @@ local addonName, private = ...
 local addon = LibStub("AceAddon-3.0"):GetAddon(addonName)
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 
---[[ OnInitialize ]]
-function addon:OnInitialize()
-    private:InitializeDatabase()
-    private:InitializeSlashCommands()
-    private:InitializeOptions()
-    private:RegisterMedia()
+function addon:OnDisable()
+    private:ReleaseAllBars()
+    private:RefreshOptions("settings")
+    addon:UnregisterEvent("CURSOR_CHANGED")
+    addon:UnregisterEvent("SPELL_UPDATE_COOLDOWN")
+    addon:UnregisterEvent("BANKFRAME_OPENED")
+    addon:UnregisterEvent("BANKFRAME_CLOSED")
 end
 
---[[ OnEnable ]]
 function addon:OnEnable()
-    private:InitializeTooltip()
-    private:InitializeObjectiveFrame()
-    private:InitializeMasque()
     private:InitializeBars()
     addon:RegisterEvent("CURSOR_CHANGED")
     addon:RegisterEvent("SPELL_UPDATE_COOLDOWN")
+    addon:RegisterEvent("BANKFRAME_OPENED")
+    addon:RegisterEvent("BANKFRAME_CLOSED")
 
     if private.db.global.debug.enabled then
         C_Timer.After(1, private.StartDebug)
     end
 end
 
---[[ StartDebug ]]
-function private:StartDebug()
-    private:LoadOptions("config", "bar1", "appearance")
+function addon:OnInitialize()
+    private:InitializeDatabase()
+    private:InitializeOptions()
+    private:RegisterMedia()
+    private:RegisterDataObject()
+    private:InitializeTooltip()
+    private:InitializeObjectiveFrame()
+    private:InitializeMasque()
+    private:InitializeSlashCommands()
+    private.bars = {}
+end
+
+function addon:OnProfile_(...)
+    addon:SetEnabledState(private.db.profile.enabled)
+    private:InitializeBars()
+    private:RefreshOptions("profiles")
 end

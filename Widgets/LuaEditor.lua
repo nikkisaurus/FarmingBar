@@ -7,19 +7,21 @@ local LSM = LibStub("LibSharedMedia-3.0")
 local Type = "FarmingBar_LuaEditor"
 local Version = 1
 
--- [[ Scripts ]]
 local scripts = {
+    OnTextChanged = function(editbox)
+        editbox.obj.button:Enable()
+    end,
+
     OnTextSet = function(editbox)
-        -- TODO: Disable if nothing has changed
         editbox.obj.button:Enable()
     end,
 }
 
---[[ Methods ]]
 local methods = {
     OnAcquire = function(widget)
         widget:Show()
         addon.indent.enable(widget.editbox, _, 4) -- adds syntax highlighting
+        widget.status = {}
     end,
 
     OnRelease = function(widget)
@@ -35,12 +37,16 @@ local methods = {
     LoadCode = function(widget, sourceEditbox, OnEnterPressed, validate)
         widget.editbox:SetText(sourceEditbox:GetText())
         widget.editbox.obj:SetCallback("OnEnterPressed", function(...)
-            private:LoadOptions()
-            widget.window:Release()
-
             local validated = validate(select(3, ...))
             if type(validated) == "boolean" and validated then
+                private:LoadOptions()
+                widget.window:Release()
+
                 OnEnterPressed(...)
+            else
+                C_Timer.After(0.25, function()
+                    widget.button:Enable()
+                end)
             end
         end)
     end,
@@ -54,7 +60,6 @@ local methods = {
     end,
 }
 
---[[ Constructor ]]
 local function Constructor()
     local window = AceGUI:Create("Window")
     window:SetLayout("FILL")
@@ -89,6 +94,7 @@ local function Constructor()
         title = window.title,
         frame = frame,
         editbox = editbox.editBox,
+        button = editbox.button,
     }
 
     window.obj, frame.obj, editbox.obj = widget, widget, widget

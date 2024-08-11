@@ -2,16 +2,6 @@ local addonName, private = ...
 local addon = LibStub("AceAddon-3.0"):GetAddon(addonName)
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 
-function private:TemplateExists(templateName)
-    return private.db.global.templates[templateName]
-end
-
-function private:SaveTemplate(barID, templateName)
-    local widget = private.bars[barID]
-    local barDB = widget:GetDB()
-    private.db.global.templates[templateName] = addon.CloneTable(barDB.buttons)
-end
-
 function private:LoadTemplate(barID, templateName)
     local bar = private.bars[barID]
     local template = private.templates[templateName]
@@ -21,6 +11,7 @@ function private:LoadTemplate(barID, templateName)
     bar:DrawButtons()
     bar:LayoutButtons()
     for key, item in addon.pairs(template) do
+        private:CacheItem(item.itemID)
         local itemName, itemIcon = private:GetTrackerInfo("ITEM", item.itemID)
 
         local objectiveTemplate = addon.CloneTable(private.defaults.objective)
@@ -37,4 +28,14 @@ function private:LoadTemplate(barID, templateName)
         bar:GetButtons()[key]:SetObjectiveInfo(objectiveTemplate)
     end
     bar:UpdateButtons()
+end
+
+function private:SaveTemplate(barID, templateName)
+    local widget = private.bars[barID]
+    local barDB = widget:GetDB()
+    private.db.global.templates[templateName] = addon.CloneTable(barDB.buttons)
+end
+
+function private:TemplateExists(templateName)
+    return private.db.global.templates[templateName]
 end

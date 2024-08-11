@@ -7,36 +7,73 @@ function private:GetObjectiveWidgetCount(widget)
         return
     end
 
-    local _, buttonDB = widget:GetDB()
-    local trackers = buttonDB.trackers
+    local barDB, buttonDB = widget:GetDB()
+    local _, buttonID = widget:GetID()
+    local trackers = {}
     local condition = buttonDB.condition
 
     local count = 0
 
     if condition.type == "ALL" then
         for trackerKey, trackerInfo in pairs(buttonDB.trackers) do
-            local trackerCount = private:GetTrackerCount(trackerInfo)
+            local trackerCount =
+                private:GetTrackerCount(trackerInfo, barDB.limitMats and widget:GetBar(), barDB.limitMats and buttonID)
             count = count > 0 and min(count, trackerCount) or trackerCount
+            trackers[trackerKey] = private:GetTrackerCount(
+                trackerInfo,
+                barDB.limitMats and widget:GetBar(),
+                barDB.limitMats and buttonID,
+                1
+            )
         end
     elseif condition.type == "ANY" then
         for trackerKey, trackerInfo in pairs(buttonDB.trackers) do
-            count = count + private:GetTrackerCount(trackerInfo)
+            local trackerCount =
+                private:GetTrackerCount(trackerInfo, barDB.limitMats and widget:GetBar(), barDB.limitMats and buttonID)
+            count = count + trackerCount
+            trackers[trackerKey] = private:GetTrackerCount(
+                trackerInfo,
+                barDB.limitMats and widget:GetBar(),
+                barDB.limitMats and buttonID,
+                1
+            )
         end
     elseif condition.type == "CUSTOM" then
+        local func = loadstring("return " .. buttonDB.condition.func)
+        if type(func) == "function" then
+            local success, userFunc = pcall(func)
+            if success and type(userFunc) == "function" then
+                count = count + (userFunc(buttonDB.trackers, private.GetTrackerCount) or 0)
+            end
+        end
     end
 
-    return count
+    return count, trackers
 end
 
-function private:GetTrackerCount(trackerInfo)
+function private:GetObjectiveWidgetObjective(widget)
+    if widget:IsEmpty() then
+        return
+    end
+
+    local _, buttonDB = widget:GetDB()
+    return buttonDB.objective
+end
+
+function private:GetTrackerCount(trackerInfo, bar, buttonID, overrideObjective)
     local DS = #private:GetMissingDataStoreModules() == 0
 
+    if not trackerInfo then
+        return 0
+    end
+
+    local objective = overrideObjective or trackerInfo.objective
     local count = 0
     if trackerInfo.type == "ITEM" then
         if DS then
-            count = floor(private:GetDataStoreItemCount(trackerInfo.id, trackerInfo) / trackerInfo.objective)
+            count = floor(private:GetDataStoreItemCount(trackerInfo.id, trackerInfo) / objective)
         else
-            count = floor(GetItemCount(trackerInfo.id, trackerInfo.includeBank) / trackerInfo.objective)
+            count = floor(GetItemCount(trackerInfo.id, trackerInfo.includeBank) / objective)
         end
     elseif trackerInfo.type == "CURRENCY" then
         local quantity
@@ -44,7 +81,7 @@ function private:GetTrackerCount(trackerInfo)
             quantity = private:GetDataStoreCurrencyCount(trackerInfo.id)
         else
             local currency = C_CurrencyInfo.GetCurrencyInfo(trackerInfo.id)
-            quantity = currency and floor(currency.quantity / trackerInfo.objective) or 0
+            quantity = currency and floor(currency.quantity / objective) or 0
         end
         count = count + quantity
     end
@@ -66,16 +103,28 @@ function private:GetTrackerCount(trackerInfo)
         count = count + altCount
     end
 
-    return count, trackerInfo.objective
-end
-
-function private:GetObjectiveWidgetObjective(widget)
-    if widget:IsEmpty() then
-        return
+    if bar then
+        for ButtonID, button in pairs(bar:GetButtons()) do
+            if ButtonID ~= buttonID and not button:IsEmpty() then
+                local _, buttonDB = button:GetDB()
+                for trackerKey, tracker in pairs(buttonDB.trackers) do
+                    if tracker.type == trackerInfo.type and tracker.id == trackerInfo.id then
+                        if buttonDB.objective > 0 then
+                            count = count - private:GetTrackerObjectiveCount(button, trackerKey)
+                        else
+                            count = count - private:GetTrackerCount(tracker)
+                        end
+                    end
+                end
+            elseif ButtonID == buttonID then
+                break
+            end
+        end
     end
 
-    local _, buttonDB = widget:GetDB()
-    return buttonDB.objective
+    count = count >= 0 and count or 0
+
+    return count, trackerInfo.objective
 end
 
 function private:GetTrackerObjectiveCount(widget, trackerKey)
