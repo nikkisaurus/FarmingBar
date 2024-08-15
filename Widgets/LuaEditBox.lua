@@ -4,6 +4,8 @@ local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 local AceGUI = LibStub("AceGUI-3.0")
 local LSM = LibStub("LibSharedMedia-3.0")
 
+local IsAddOnLoaded = C_AddOns.IsAddOnLoaded or IsAddOnLoaded
+
 --[[-----------------------------------------------------------------------------
 "FarmingBar_LuaEditBox" - Adapted from AceGUI-3.0 "MultiLineEditBox", 29
 -------------------------------------------------------------------------------]]
@@ -310,8 +312,7 @@ local function Constructor()
     button:SetScript("OnClick", OnClick)
     button:Disable()
 
-    local expandButton =
-        CreateFrame("Button", ("%s%dExpandButton"):format(Type, widgetNum), frame, "UIPanelButtonTemplate")
+    local expandButton = CreateFrame("Button", ("%s%dExpandButton"):format(Type, widgetNum), frame, "UIPanelButtonTemplate")
     expandButton:SetPoint("LEFT", button, "RIGHT", 2, 0)
     expandButton:SetHeight(22)
     expandButton:SetWidth(label:GetStringWidth() + 24)
@@ -329,8 +330,7 @@ local function Constructor()
     scrollBG:SetBackdropColor(0, 0, 0)
     scrollBG:SetBackdropBorderColor(0.4, 0.4, 0.4)
 
-    local scrollFrame =
-        CreateFrame("ScrollFrame", ("%s%dScrollFrame"):format(Type, widgetNum), frame, "UIPanelScrollFrameTemplate")
+    local scrollFrame = CreateFrame("ScrollFrame", ("%s%dScrollFrame"):format(Type, widgetNum), frame, "UIPanelScrollFrameTemplate")
 
     local scrollBar = _G[scrollFrame:GetName() .. "ScrollBar"]
     scrollBar:ClearAllPoints()
