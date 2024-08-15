@@ -3,6 +3,8 @@ local addon = LibStub("AceAddon-3.0"):GetAddon(addonName)
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 local LSM = LibStub("LibSharedMedia-3.0")
 
+local version = select(4, GetBuildInfo())
+
 private.anchorPoints = {
     ROW = {
         button1 = {
@@ -379,6 +381,15 @@ function private:GetMixedBarDBValues(info, path, path2)
             end
         end
         return r, g, b, a
+    end
+end
+
+function private:GetMouseFocusName()
+    if version >= 110000 then
+        local frame = GetMouseFoci()
+        return frame and frame[1]:GetName()
+    else
+        return GetMouseFocus():GetName()
     end
 end
 
