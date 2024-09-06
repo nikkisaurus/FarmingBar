@@ -53,7 +53,7 @@ function private:GetDataStoreItemCount(itemID, trackerInfo)
         end
     end
 
-    count = count == 0 and GetItemCount(itemID, trackerInfo.includeBank) or count
+    count = count == 0 and GetItemCount(itemID, trackerInfo.includeBank, nil, trackerInfo.includeBank) or count
 
     return count
 end
