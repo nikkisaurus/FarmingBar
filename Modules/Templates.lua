@@ -17211,6 +17211,1971 @@ if version >= 100000 then
     private.templates = Mixin(private.templates, df)
 end
 
+local tww = {
+    ["JEWELCRAFTING (TWW)"] = {
+    {
+    ["onUse"] = {
+    ["macrotext"] = "",
+    ["type"] = "ITEM",
+    ["itemID"] = 212498,
+    },
+    ["trackers"] = {
+    {
+    ["type"] = "ITEM",
+    ["objective"] = 1,
+    ["includeAllFactions"] = false,
+    ["id"] = 212498,
+    ["includeBank"] = false,
+    ["name"] = "Ambivalent Amber",
+    ["includeGuildBank"] = {
+    },
+    ["altIDs"] = {
+    },
+    ["includeAlts"] = false,
+    },
+    },
+    ["objective"] = 0,
+    ["mute"] = false,
+    ["title"] = "Ambivalent Amber",
+    ["icon"] = {
+    ["id"] = 5931415,
+    ["type"] = "AUTO",
+    },
+    ["condition"] = {
+    ["func"] = "function(trackers, GetTrackerCount)\n    -- This is the structure of the tracker table:\n    --trackers = {\n    --    [1] = {\n    --        type = \"ITEM\", -- \"CURRENCY\"\n    --        id = 0000,\n    --        objective = 1,\n    --        includeAllFactions = false,\n    --        includeAlts = false,\n    --        includeBank = false,\n    --        includeGuildBank = {\n    --             [\"GuildKey\"] = true\n    --        },\n    --        altIDs = {\n    --            {\n    --                type = \"ITEM\", -- \"CURRENCY\"\n    --                name = \"\",\n    --                id = 0000,\n    --                multiplier = 1,\n    --            }\n    --        },\n    --    },\n    --}\n    \n    -- NOTE: make sure the first argument of GetTrackerCount is nil\n    -- This function is not necessary, but available if your custom function is simple and doesn't change the way each tracker is calculated.\n    --local count =  GetTrackerCount(_, trackers[1])\n    \n    return GetTrackerCount(_, trackers[1])\nend",
+    ["type"] = "ALL",
+    },
+    },
+    {
+    ["onUse"] = {
+    ["macrotext"] = "",
+    ["type"] = "ITEM",
+    ["itemID"] = 213219,
+    },
+    ["trackers"] = {
+    {
+    ["type"] = "ITEM",
+    ["objective"] = 1,
+    ["includeAllFactions"] = false,
+    ["id"] = 213219,
+    ["includeBank"] = false,
+    ["name"] = "Crushed Gemstones",
+    ["includeGuildBank"] = {
+    },
+    ["altIDs"] = {
+    {
+    ["id"] = 213221,
+    ["type"] = "ITEM",
+    ["multiplier"] = 1,
+    ["name"] = "Crushed Gemstones",
+    },
+    {
+    ["id"] = 213220,
+    ["type"] = "ITEM",
+    ["multiplier"] = 1,
+    ["name"] = "Crushed Gemstones",
+    },
+    },
+    ["includeAlts"] = false,
+    },
+    },
+    ["objective"] = 0,
+    ["mute"] = false,
+    ["title"] = "Crushed Gemstones",
+    ["icon"] = {
+    ["id"] = 134386,
+    ["type"] = "AUTO",
+    },
+    ["condition"] = {
+    ["func"] = "function(trackers, GetTrackerCount)\n    -- This is the structure of the tracker table:\n    --trackers = {\n    --    [1] = {\n    --        type = \"ITEM\", -- \"CURRENCY\"\n    --        id = 0000,\n    --        objective = 1,\n    --        includeAllFactions = false,\n    --        includeAlts = false,\n    --        includeBank = false,\n    --        includeGuildBank = {\n    --             [\"GuildKey\"] = true\n    --        },\n    --        altIDs = {\n    --            {\n    --                type = \"ITEM\", -- \"CURRENCY\"\n    --                name = \"\",\n    --                id = 0000,\n    --                multiplier = 1,\n    --            }\n    --        },\n    --    },\n    --}\n    \n    -- NOTE: make sure the first argument of GetTrackerCount is nil\n    -- This function is not necessary, but available if your custom function is simple and doesn't change the way each tracker is calculated.\n    --local count =  GetTrackerCount(_, trackers[1])\n    \n    return GetTrackerCount(_, trackers[1])\nend",
+    ["type"] = "ALL",
+    },
+    },
+    {
+    ["onUse"] = {
+    ["macrotext"] = "",
+    ["type"] = "ITEM",
+    ["itemID"] = 212505,
+    },
+    ["trackers"] = {
+    {
+    ["type"] = "ITEM",
+    ["objective"] = 1,
+    ["includeAllFactions"] = false,
+    ["id"] = 212505,
+    ["includeBank"] = false,
+    ["name"] = "Extravagant Emerald",
+    ["includeGuildBank"] = {
+    },
+    ["altIDs"] = {
+    },
+    ["includeAlts"] = false,
+    },
+    },
+    ["objective"] = 0,
+    ["mute"] = false,
+    ["title"] = "Extravagant Emerald",
+    ["icon"] = {
+    ["id"] = 5931413,
+    ["type"] = "AUTO",
+    },
+    ["condition"] = {
+    ["func"] = "function(trackers, GetTrackerCount)\n    -- This is the structure of the tracker table:\n    --trackers = {\n    --    [1] = {\n    --        type = \"ITEM\", -- \"CURRENCY\"\n    --        id = 0000,\n    --        objective = 1,\n    --        includeAllFactions = false,\n    --        includeAlts = false,\n    --        includeBank = false,\n    --        includeGuildBank = {\n    --             [\"GuildKey\"] = true\n    --        },\n    --        altIDs = {\n    --            {\n    --                type = \"ITEM\", -- \"CURRENCY\"\n    --                name = \"\",\n    --                id = 0000,\n    --                multiplier = 1,\n    --            }\n    --        },\n    --    },\n    --}\n    \n    -- NOTE: make sure the first argument of GetTrackerCount is nil\n    -- This function is not necessary, but available if your custom function is simple and doesn't change the way each tracker is calculated.\n    --local count =  GetTrackerCount(_, trackers[1])\n    \n    return GetTrackerCount(_, trackers[1])\nend",
+    ["type"] = "ALL",
+    },
+    },
+    {
+    ["onUse"] = {
+    ["macrotext"] = "",
+    ["type"] = "ITEM",
+    ["itemID"] = 213399,
+    },
+    ["trackers"] = {
+    {
+    ["type"] = "ITEM",
+    ["objective"] = 1,
+    ["includeAllFactions"] = false,
+    ["id"] = 213399,
+    ["includeBank"] = false,
+    ["name"] = "Glittering Glass",
+    ["includeGuildBank"] = {
+    },
+    ["altIDs"] = {
+    },
+    ["includeAlts"] = false,
+    },
+    },
+    ["objective"] = 0,
+    ["mute"] = false,
+    ["title"] = "Glittering Glass",
+    ["icon"] = {
+    ["id"] = 441143,
+    ["type"] = "AUTO",
+    },
+    ["condition"] = {
+    ["func"] = "function(trackers, GetTrackerCount)\n    -- This is the structure of the tracker table:\n    --trackers = {\n    --    [1] = {\n    --        type = \"ITEM\", -- \"CURRENCY\"\n    --        id = 0000,\n    --        objective = 1,\n    --        includeAllFactions = false,\n    --        includeAlts = false,\n    --        includeBank = false,\n    --        includeGuildBank = {\n    --             [\"GuildKey\"] = true\n    --        },\n    --        altIDs = {\n    --            {\n    --                type = \"ITEM\", -- \"CURRENCY\"\n    --                name = \"\",\n    --                id = 0000,\n    --                multiplier = 1,\n    --            }\n    --        },\n    --    },\n    --}\n    \n    -- NOTE: make sure the first argument of GetTrackerCount is nil\n    -- This function is not necessary, but available if your custom function is simple and doesn't change the way each tracker is calculated.\n    --local count =  GetTrackerCount(_, trackers[1])\n    \n    return GetTrackerCount(_, trackers[1])\nend",
+    ["type"] = "ALL",
+    },
+    },
+    {
+    ["onUse"] = {
+    ["macrotext"] = "",
+    ["type"] = "ITEM",
+    ["itemID"] = 213398,
+    },
+    ["trackers"] = {
+    {
+    ["type"] = "ITEM",
+    ["objective"] = 1,
+    ["includeAllFactions"] = false,
+    ["id"] = 213398,
+    ["includeBank"] = false,
+    ["name"] = "Handful of Pebbles",
+    ["includeGuildBank"] = {
+    },
+    ["altIDs"] = {
+    },
+    ["includeAlts"] = false,
+    },
+    },
+    ["objective"] = 0,
+    ["mute"] = false,
+    ["title"] = "Handful of Pebbles",
+    ["icon"] = {
+    ["id"] = 4548932,
+    ["type"] = "AUTO",
+    },
+    ["condition"] = {
+    ["func"] = "function(trackers, GetTrackerCount)\n    -- This is the structure of the tracker table:\n    --trackers = {\n    --    [1] = {\n    --        type = \"ITEM\", -- \"CURRENCY\"\n    --        id = 0000,\n    --        objective = 1,\n    --        includeAllFactions = false,\n    --        includeAlts = false,\n    --        includeBank = false,\n    --        includeGuildBank = {\n    --             [\"GuildKey\"] = true\n    --        },\n    --        altIDs = {\n    --            {\n    --                type = \"ITEM\", -- \"CURRENCY\"\n    --                name = \"\",\n    --                id = 0000,\n    --                multiplier = 1,\n    --            }\n    --        },\n    --    },\n    --}\n    \n    -- NOTE: make sure the first argument of GetTrackerCount is nil\n    -- This function is not necessary, but available if your custom function is simple and doesn't change the way each tracker is calculated.\n    --local count =  GetTrackerCount(_, trackers[1])\n    \n    return GetTrackerCount(_, trackers[1])\nend",
+    ["type"] = "ALL",
+    },
+    },
+    {
+    ["onUse"] = {
+    ["macrotext"] = "",
+    ["type"] = "ITEM",
+    ["itemID"] = 212511,
+    },
+    ["trackers"] = {
+    {
+    ["type"] = "ITEM",
+    ["objective"] = 1,
+    ["includeAllFactions"] = false,
+    ["id"] = 212511,
+    ["includeBank"] = false,
+    ["name"] = "Ostentatious Onyx",
+    ["includeGuildBank"] = {
+    },
+    ["altIDs"] = {
+    },
+    ["includeAlts"] = false,
+    },
+    },
+    ["objective"] = 0,
+    ["mute"] = false,
+    ["title"] = "Ostentatious Onyx",
+    ["icon"] = {
+    ["id"] = 5931412,
+    ["type"] = "AUTO",
+    },
+    ["condition"] = {
+    ["func"] = "function(trackers, GetTrackerCount)\n    -- This is the structure of the tracker table:\n    --trackers = {\n    --    [1] = {\n    --        type = \"ITEM\", -- \"CURRENCY\"\n    --        id = 0000,\n    --        objective = 1,\n    --        includeAllFactions = false,\n    --        includeAlts = false,\n    --        includeBank = false,\n    --        includeGuildBank = {\n    --             [\"GuildKey\"] = true\n    --        },\n    --        altIDs = {\n    --            {\n    --                type = \"ITEM\", -- \"CURRENCY\"\n    --                name = \"\",\n    --                id = 0000,\n    --                multiplier = 1,\n    --            }\n    --        },\n    --    },\n    --}\n    \n    -- NOTE: make sure the first argument of GetTrackerCount is nil\n    -- This function is not necessary, but available if your custom function is simple and doesn't change the way each tracker is calculated.\n    --local count =  GetTrackerCount(_, trackers[1])\n    \n    return GetTrackerCount(_, trackers[1])\nend",
+    ["type"] = "ALL",
+    },
+    },
+    {
+    ["onUse"] = {
+    ["macrotext"] = "",
+    ["type"] = "ITEM",
+    ["itemID"] = 212495,
+    },
+    ["trackers"] = {
+    {
+    ["type"] = "ITEM",
+    ["objective"] = 1,
+    ["includeAllFactions"] = false,
+    ["id"] = 212495,
+    ["includeBank"] = false,
+    ["name"] = "Radiant Ruby",
+    ["includeGuildBank"] = {
+    },
+    ["altIDs"] = {
+    },
+    ["includeAlts"] = false,
+    },
+    },
+    ["objective"] = 0,
+    ["mute"] = false,
+    ["title"] = "Radiant Ruby",
+    ["icon"] = {
+    ["id"] = 5931416,
+    ["type"] = "AUTO",
+    },
+    ["condition"] = {
+    ["func"] = "function(trackers, GetTrackerCount)\n    -- This is the structure of the tracker table:\n    --trackers = {\n    --    [1] = {\n    --        type = \"ITEM\", -- \"CURRENCY\"\n    --        id = 0000,\n    --        objective = 1,\n    --        includeAllFactions = false,\n    --        includeAlts = false,\n    --        includeBank = false,\n    --        includeGuildBank = {\n    --             [\"GuildKey\"] = true\n    --        },\n    --        altIDs = {\n    --            {\n    --                type = \"ITEM\", -- \"CURRENCY\"\n    --                name = \"\",\n    --                id = 0000,\n    --                multiplier = 1,\n    --            }\n    --        },\n    --    },\n    --}\n    \n    -- NOTE: make sure the first argument of GetTrackerCount is nil\n    -- This function is not necessary, but available if your custom function is simple and doesn't change the way each tracker is calculated.\n    --local count =  GetTrackerCount(_, trackers[1])\n    \n    return GetTrackerCount(_, trackers[1])\nend",
+    ["type"] = "ALL",
+    },
+    },
+    {
+    ["onUse"] = {
+    ["macrotext"] = "",
+    ["type"] = "ITEM",
+    ["itemID"] = 212508,
+    },
+    ["trackers"] = {
+    {
+    ["type"] = "ITEM",
+    ["objective"] = 1,
+    ["includeAllFactions"] = false,
+    ["id"] = 212508,
+    ["includeBank"] = false,
+    ["name"] = "Stunning Sapphire",
+    ["includeGuildBank"] = {
+    },
+    ["altIDs"] = {
+    },
+    ["includeAlts"] = false,
+    },
+    },
+    ["objective"] = 0,
+    ["mute"] = false,
+    ["title"] = "Stunning Sapphire",
+    ["icon"] = {
+    ["id"] = 5931414,
+    ["type"] = "AUTO",
+    },
+    ["condition"] = {
+    ["func"] = "function(trackers, GetTrackerCount)\n    -- This is the structure of the tracker table:\n    --trackers = {\n    --    [1] = {\n    --        type = \"ITEM\", -- \"CURRENCY\"\n    --        id = 0000,\n    --        objective = 1,\n    --        includeAllFactions = false,\n    --        includeAlts = false,\n    --        includeBank = false,\n    --        includeGuildBank = {\n    --             [\"GuildKey\"] = true\n    --        },\n    --        altIDs = {\n    --            {\n    --                type = \"ITEM\", -- \"CURRENCY\"\n    --                name = \"\",\n    --                id = 0000,\n    --                multiplier = 1,\n    --            }\n    --        },\n    --    },\n    --}\n    \n    -- NOTE: make sure the first argument of GetTrackerCount is nil\n    -- This function is not necessary, but available if your custom function is simple and doesn't change the way each tracker is calculated.\n    --local count =  GetTrackerCount(_, trackers[1])\n    \n    return GetTrackerCount(_, trackers[1])\nend",
+    ["type"] = "ALL",
+    },
+    },
+    },
+    ["MINING (TWW)"] = {
+    {
+    ["onUse"] = {
+    ["macrotext"] = "",
+    ["type"] = "ITEM",
+    ["itemID"] = 210933,
+    },
+    ["trackers"] = {
+    {
+    ["type"] = "ITEM",
+    ["objective"] = 1,
+    ["includeAllFactions"] = false,
+    ["id"] = 210933,
+    ["includeBank"] = false,
+    ["name"] = "Aqirite",
+    ["includeGuildBank"] = {
+    },
+    ["altIDs"] = {
+    {
+    ["id"] = 210934,
+    ["type"] = "ITEM",
+    ["multiplier"] = 1,
+    ["name"] = "Aqirite",
+    },
+    {
+    ["id"] = 210935,
+    ["type"] = "ITEM",
+    ["multiplier"] = 1,
+    ["name"] = "Aqirite",
+    },
+    },
+    ["includeAlts"] = false,
+    },
+    },
+    ["objective"] = 0,
+    ["mute"] = false,
+    ["title"] = "Aqirite",
+    ["icon"] = {
+    ["id"] = 5704419,
+    ["type"] = "AUTO",
+    },
+    ["condition"] = {
+    ["func"] = "function(trackers, GetTrackerCount)\n    -- This is the structure of the tracker table:\n    --trackers = {\n    --    [1] = {\n    --        type = \"ITEM\", -- \"CURRENCY\"\n    --        id = 0000,\n    --        objective = 1,\n    --        includeAllFactions = false,\n    --        includeAlts = false,\n    --        includeBank = false,\n    --        includeGuildBank = {\n    --             [\"GuildKey\"] = true\n    --        },\n    --        altIDs = {\n    --            {\n    --                type = \"ITEM\", -- \"CURRENCY\"\n    --                name = \"\",\n    --                id = 0000,\n    --                multiplier = 1,\n    --            }\n    --        },\n    --    },\n    --}\n    \n    -- NOTE: make sure the first argument of GetTrackerCount is nil\n    -- This function is not necessary, but available if your custom function is simple and doesn't change the way each tracker is calculated.\n    --local count =  GetTrackerCount(_, trackers[1])\n    \n    return GetTrackerCount(_, trackers[1])\nend",
+    ["type"] = "ALL",
+    },
+    },
+    {
+    ["onUse"] = {
+    ["macrotext"] = "",
+    ["type"] = "ITEM",
+    ["itemID"] = 210930,
+    },
+    ["trackers"] = {
+    {
+    ["type"] = "ITEM",
+    ["objective"] = 1,
+    ["includeAllFactions"] = false,
+    ["id"] = 210930,
+    ["includeBank"] = false,
+    ["name"] = "Bismuth",
+    ["includeGuildBank"] = {
+    },
+    ["altIDs"] = {
+    {
+    ["id"] = 210931,
+    ["type"] = "ITEM",
+    ["multiplier"] = 1,
+    ["name"] = "Bismuth",
+    },
+    {
+    ["id"] = 210932,
+    ["type"] = "ITEM",
+    ["multiplier"] = 1,
+    ["name"] = "Bismuth",
+    },
+    },
+    ["includeAlts"] = false,
+    },
+    },
+    ["objective"] = 0,
+    ["mute"] = false,
+    ["title"] = "Bismuth",
+    ["icon"] = {
+    ["id"] = 5728051,
+    ["type"] = "AUTO",
+    },
+    ["condition"] = {
+    ["func"] = "function(trackers, GetTrackerCount)\n    -- This is the structure of the tracker table:\n    --trackers = {\n    --    [1] = {\n    --        type = \"ITEM\", -- \"CURRENCY\"\n    --        id = 0000,\n    --        objective = 1,\n    --        includeAllFactions = false,\n    --        includeAlts = false,\n    --        includeBank = false,\n    --        includeGuildBank = {\n    --             [\"GuildKey\"] = true\n    --        },\n    --        altIDs = {\n    --            {\n    --                type = \"ITEM\", -- \"CURRENCY\"\n    --                name = \"\",\n    --                id = 0000,\n    --                multiplier = 1,\n    --            }\n    --        },\n    --    },\n    --}\n    \n    -- NOTE: make sure the first argument of GetTrackerCount is nil\n    -- This function is not necessary, but available if your custom function is simple and doesn't change the way each tracker is calculated.\n    --local count =  GetTrackerCount(_, trackers[1])\n    \n    return GetTrackerCount(_, trackers[1])\nend",
+    ["type"] = "ALL",
+    },
+    },
+    {
+    ["onUse"] = {
+    ["macrotext"] = "",
+    ["type"] = "ITEM",
+    ["itemID"] = 217707,
+    },
+    ["trackers"] = {
+    {
+    ["type"] = "ITEM",
+    ["objective"] = 1,
+    ["includeAllFactions"] = false,
+    ["id"] = 217707,
+    ["includeBank"] = false,
+    ["name"] = "Imperfect Null Stone",
+    ["includeGuildBank"] = {
+    },
+    ["altIDs"] = {
+    },
+    ["includeAlts"] = false,
+    },
+    },
+    ["objective"] = 0,
+    ["mute"] = false,
+    ["title"] = "Imperfect Null Stone",
+    ["icon"] = {
+    ["id"] = 2057562,
+    ["type"] = "AUTO",
+    },
+    ["condition"] = {
+    ["func"] = "function(trackers, GetTrackerCount)\n    -- This is the structure of the tracker table:\n    --trackers = {\n    --    [1] = {\n    --        type = \"ITEM\", -- \"CURRENCY\"\n    --        id = 0000,\n    --        objective = 1,\n    --        includeAllFactions = false,\n    --        includeAlts = false,\n    --        includeBank = false,\n    --        includeGuildBank = {\n    --             [\"GuildKey\"] = true\n    --        },\n    --        altIDs = {\n    --            {\n    --                type = \"ITEM\", -- \"CURRENCY\"\n    --                name = \"\",\n    --                id = 0000,\n    --                multiplier = 1,\n    --            }\n    --        },\n    --    },\n    --}\n    \n    -- NOTE: make sure the first argument of GetTrackerCount is nil\n    -- This function is not necessary, but available if your custom function is simple and doesn't change the way each tracker is calculated.\n    --local count =  GetTrackerCount(_, trackers[1])\n    \n    return GetTrackerCount(_, trackers[1])\nend",
+    ["type"] = "ALL",
+    },
+    },
+    {
+    ["onUse"] = {
+    ["macrotext"] = "",
+    ["type"] = "ITEM",
+    ["itemID"] = 210936,
+    },
+    ["trackers"] = {
+    {
+    ["type"] = "ITEM",
+    ["objective"] = 1,
+    ["includeAllFactions"] = false,
+    ["id"] = 210936,
+    ["includeBank"] = false,
+    ["name"] = "Ironclaw Ore",
+    ["includeGuildBank"] = {
+    },
+    ["altIDs"] = {
+    {
+    ["id"] = 210937,
+    ["type"] = "ITEM",
+    ["multiplier"] = 1,
+    ["name"] = "Ironclaw Ore",
+    },
+    {
+    ["id"] = 210938,
+    ["type"] = "ITEM",
+    ["multiplier"] = 1,
+    ["name"] = "Ironclaw Ore",
+    },
+    },
+    ["includeAlts"] = false,
+    },
+    },
+    ["objective"] = 0,
+    ["mute"] = false,
+    ["title"] = "Ironclaw Ore",
+    ["icon"] = {
+    ["id"] = 5735005,
+    ["type"] = "AUTO",
+    },
+    ["condition"] = {
+    ["func"] = "function(trackers, GetTrackerCount)\n    -- This is the structure of the tracker table:\n    --trackers = {\n    --    [1] = {\n    --        type = \"ITEM\", -- \"CURRENCY\"\n    --        id = 0000,\n    --        objective = 1,\n    --        includeAllFactions = false,\n    --        includeAlts = false,\n    --        includeBank = false,\n    --        includeGuildBank = {\n    --             [\"GuildKey\"] = true\n    --        },\n    --        altIDs = {\n    --            {\n    --                type = \"ITEM\", -- \"CURRENCY\"\n    --                name = \"\",\n    --                id = 0000,\n    --                multiplier = 1,\n    --            }\n    --        },\n    --    },\n    --}\n    \n    -- NOTE: make sure the first argument of GetTrackerCount is nil\n    -- This function is not necessary, but available if your custom function is simple and doesn't change the way each tracker is calculated.\n    --local count =  GetTrackerCount(_, trackers[1])\n    \n    return GetTrackerCount(_, trackers[1])\nend",
+    ["type"] = "ALL",
+    },
+    },
+    {
+    ["onUse"] = {
+    ["macrotext"] = "",
+    ["type"] = "ITEM",
+    ["itemID"] = 210939,
+    },
+    ["trackers"] = {
+    {
+    ["type"] = "ITEM",
+    ["objective"] = 1,
+    ["includeAllFactions"] = false,
+    ["id"] = 210939,
+    ["includeBank"] = false,
+    ["name"] = "Null Stone",
+    ["includeGuildBank"] = {
+    },
+    ["altIDs"] = {
+    {
+    ["id"] = 210940,
+    ["type"] = "ITEM",
+    ["multiplier"] = 1,
+    ["name"] = "Null Stone",
+    },
+    {
+    ["id"] = 210941,
+    ["type"] = "ITEM",
+    ["multiplier"] = 1,
+    ["name"] = "Null Stone",
+    },
+    },
+    ["includeAlts"] = false,
+    },
+    },
+    ["objective"] = 0,
+    ["mute"] = false,
+    ["title"] = "Null Stone",
+    ["icon"] = {
+    ["id"] = 5976940,
+    ["type"] = "AUTO",
+    },
+    ["condition"] = {
+    ["func"] = "function(trackers, GetTrackerCount)\n    -- This is the structure of the tracker table:\n    --trackers = {\n    --    [1] = {\n    --        type = \"ITEM\", -- \"CURRENCY\"\n    --        id = 0000,\n    --        objective = 1,\n    --        includeAllFactions = false,\n    --        includeAlts = false,\n    --        includeBank = false,\n    --        includeGuildBank = {\n    --             [\"GuildKey\"] = true\n    --        },\n    --        altIDs = {\n    --            {\n    --                type = \"ITEM\", -- \"CURRENCY\"\n    --                name = \"\",\n    --                id = 0000,\n    --                multiplier = 1,\n    --            }\n    --        },\n    --    },\n    --}\n    \n    -- NOTE: make sure the first argument of GetTrackerCount is nil\n    -- This function is not necessary, but available if your custom function is simple and doesn't change the way each tracker is calculated.\n    --local count =  GetTrackerCount(_, trackers[1])\n    \n    return GetTrackerCount(_, trackers[1])\nend",
+    ["type"] = "ALL",
+    },
+    },
+    },
+    ["HERBALISM (TWW)"] = {
+    {
+    ["onUse"] = {
+    ["macrotext"] = "",
+    ["type"] = "ITEM",
+    ["itemID"] = 210808,
+    },
+    ["trackers"] = {
+    {
+    ["type"] = "ITEM",
+    ["objective"] = 1,
+    ["includeAllFactions"] = false,
+    ["id"] = 210808,
+    ["includeBank"] = false,
+    ["name"] = "Arathor's Spear",
+    ["includeGuildBank"] = {
+    },
+    ["includeAlts"] = false,
+    ["altIDs"] = {
+    {
+    ["id"] = 210810,
+    ["type"] = "ITEM",
+    ["multiplier"] = 1,
+    ["name"] = "Arathor's Spear",
+    },
+    {
+    ["id"] = 210809,
+    ["type"] = "ITEM",
+    ["multiplier"] = 1,
+    ["name"] = "Arathor's Spear",
+    },
+    },
+    },
+    },
+    ["objective"] = 0,
+    ["mute"] = false,
+    ["condition"] = {
+    ["func"] = "function(trackers, GetTrackerCount)\n    -- This is the structure of the tracker table:\n    --trackers = {\n    --    [1] = {\n    --        type = \"ITEM\", -- \"CURRENCY\"\n    --        id = 0000,\n    --        objective = 1,\n    --        includeAllFactions = false,\n    --        includeAlts = false,\n    --        includeBank = false,\n    --        includeGuildBank = {\n    --             [\"GuildKey\"] = true\n    --        },\n    --        altIDs = {\n    --            {\n    --                type = \"ITEM\", -- \"CURRENCY\"\n    --                name = \"\",\n    --                id = 0000,\n    --                multiplier = 1,\n    --            }\n    --        },\n    --    },\n    --}\n    \n    -- NOTE: make sure the first argument of GetTrackerCount is nil\n    -- This function is not necessary, but available if your custom function is simple and doesn't change the way each tracker is calculated.\n    --local count =  GetTrackerCount(_, trackers[1])\n    \n    return GetTrackerCount(_, trackers[1])\nend",
+    ["type"] = "ALL",
+    },
+    ["icon"] = {
+    ["id"] = 5536644,
+    ["type"] = "AUTO",
+    },
+    ["title"] = "Arathor's Spear",
+    },
+    {
+    ["onUse"] = {
+    ["macrotext"] = "",
+    ["type"] = "ITEM",
+    ["itemID"] = 210805,
+    },
+    ["trackers"] = {
+    {
+    ["type"] = "ITEM",
+    ["objective"] = 1,
+    ["includeAllFactions"] = false,
+    ["id"] = 210805,
+    ["includeBank"] = false,
+    ["name"] = "Blessing Blossom",
+    ["includeGuildBank"] = {
+    },
+    ["includeAlts"] = false,
+    ["altIDs"] = {
+    {
+    ["id"] = 210807,
+    ["type"] = "ITEM",
+    ["multiplier"] = 1,
+    ["name"] = "Blessing Blossom",
+    },
+    {
+    ["id"] = 210806,
+    ["type"] = "ITEM",
+    ["multiplier"] = 1,
+    ["name"] = "Blessing Blossom",
+    },
+    },
+    },
+    },
+    ["objective"] = 0,
+    ["mute"] = false,
+    ["condition"] = {
+    ["func"] = "function(trackers, GetTrackerCount)\n    -- This is the structure of the tracker table:\n    --trackers = {\n    --    [1] = {\n    --        type = \"ITEM\", -- \"CURRENCY\"\n    --        id = 0000,\n    --        objective = 1,\n    --        includeAllFactions = false,\n    --        includeAlts = false,\n    --        includeBank = false,\n    --        includeGuildBank = {\n    --             [\"GuildKey\"] = true\n    --        },\n    --        altIDs = {\n    --            {\n    --                type = \"ITEM\", -- \"CURRENCY\"\n    --                name = \"\",\n    --                id = 0000,\n    --                multiplier = 1,\n    --            }\n    --        },\n    --    },\n    --}\n    \n    -- NOTE: make sure the first argument of GetTrackerCount is nil\n    -- This function is not necessary, but available if your custom function is simple and doesn't change the way each tracker is calculated.\n    --local count =  GetTrackerCount(_, trackers[1])\n    \n    return GetTrackerCount(_, trackers[1])\nend",
+    ["type"] = "ALL",
+    },
+    ["icon"] = {
+    ["id"] = 5525212,
+    ["type"] = "AUTO",
+    },
+    ["title"] = "Blessing Blossom",
+    },
+    {
+    ["onUse"] = {
+    ["macrotext"] = "",
+    ["type"] = "ITEM",
+    ["itemID"] = 210799,
+    },
+    ["trackers"] = {
+    {
+    ["type"] = "ITEM",
+    ["objective"] = 1,
+    ["includeAllFactions"] = false,
+    ["id"] = 210799,
+    ["includeBank"] = false,
+    ["name"] = "Luredrop",
+    ["includeGuildBank"] = {
+    },
+    ["includeAlts"] = false,
+    ["altIDs"] = {
+    {
+    ["id"] = 210800,
+    ["type"] = "ITEM",
+    ["multiplier"] = 1,
+    ["name"] = "Luredrop",
+    },
+    {
+    ["id"] = 210801,
+    ["type"] = "ITEM",
+    ["multiplier"] = 1,
+    ["name"] = "Luredrop",
+    },
+    },
+    },
+    },
+    ["objective"] = 0,
+    ["mute"] = false,
+    ["condition"] = {
+    ["func"] = "function(trackers, GetTrackerCount)\n    -- This is the structure of the tracker table:\n    --trackers = {\n    --    [1] = {\n    --        type = \"ITEM\", -- \"CURRENCY\"\n    --        id = 0000,\n    --        objective = 1,\n    --        includeAllFactions = false,\n    --        includeAlts = false,\n    --        includeBank = false,\n    --        includeGuildBank = {\n    --             [\"GuildKey\"] = true\n    --        },\n    --        altIDs = {\n    --            {\n    --                type = \"ITEM\", -- \"CURRENCY\"\n    --                name = \"\",\n    --                id = 0000,\n    --                multiplier = 1,\n    --            }\n    --        },\n    --    },\n    --}\n    \n    -- NOTE: make sure the first argument of GetTrackerCount is nil\n    -- This function is not necessary, but available if your custom function is simple and doesn't change the way each tracker is calculated.\n    --local count =  GetTrackerCount(_, trackers[1])\n    \n    return GetTrackerCount(_, trackers[1])\nend",
+    ["type"] = "ALL",
+    },
+    ["icon"] = {
+    ["id"] = 5525213,
+    ["type"] = "AUTO",
+    },
+    ["title"] = "Luredrop",
+    },
+    {
+    ["onUse"] = {
+    ["macrotext"] = "",
+    ["type"] = "ITEM",
+    ["itemID"] = 210796,
+    },
+    ["trackers"] = {
+    {
+    ["type"] = "ITEM",
+    ["objective"] = 1,
+    ["includeAllFactions"] = false,
+    ["id"] = 210796,
+    ["includeBank"] = false,
+    ["name"] = "Mycobloom",
+    ["includeGuildBank"] = {
+    },
+    ["includeAlts"] = false,
+    ["altIDs"] = {
+    {
+    ["id"] = 210797,
+    ["type"] = "ITEM",
+    ["multiplier"] = 1,
+    ["name"] = "Mycobloom",
+    },
+    {
+    ["id"] = 210798,
+    ["type"] = "ITEM",
+    ["multiplier"] = 1,
+    ["name"] = "Mycobloom",
+    },
+    },
+    },
+    },
+    ["objective"] = 0,
+    ["mute"] = false,
+    ["condition"] = {
+    ["func"] = "function(trackers, GetTrackerCount)\n    -- This is the structure of the tracker table:\n    --trackers = {\n    --    [1] = {\n    --        type = \"ITEM\", -- \"CURRENCY\"\n    --        id = 0000,\n    --        objective = 1,\n    --        includeAllFactions = false,\n    --        includeAlts = false,\n    --        includeBank = false,\n    --        includeGuildBank = {\n    --             [\"GuildKey\"] = true\n    --        },\n    --        altIDs = {\n    --            {\n    --                type = \"ITEM\", -- \"CURRENCY\"\n    --                name = \"\",\n    --                id = 0000,\n    --                multiplier = 1,\n    --            }\n    --        },\n    --    },\n    --}\n    \n    -- NOTE: make sure the first argument of GetTrackerCount is nil\n    -- This function is not necessary, but available if your custom function is simple and doesn't change the way each tracker is calculated.\n    --local count =  GetTrackerCount(_, trackers[1])\n    \n    return GetTrackerCount(_, trackers[1])\nend",
+    ["type"] = "ALL",
+    },
+    ["icon"] = {
+    ["id"] = 5525214,
+    ["type"] = "AUTO",
+    },
+    ["title"] = "Mycobloom",
+    },
+    {
+    ["onUse"] = {
+    ["macrotext"] = "",
+    ["type"] = "ITEM",
+    ["itemID"] = 213197,
+    },
+    ["trackers"] = {
+    {
+    ["type"] = "ITEM",
+    ["objective"] = 1,
+    ["includeAllFactions"] = false,
+    ["id"] = 213197,
+    ["includeBank"] = false,
+    ["name"] = "Null Lotus",
+    ["includeGuildBank"] = {
+    },
+    ["includeAlts"] = false,
+    ["altIDs"] = {
+    },
+    },
+    },
+    ["objective"] = 0,
+    ["mute"] = false,
+    ["condition"] = {
+    ["func"] = "function(trackers, GetTrackerCount)\n    -- This is the structure of the tracker table:\n    --trackers = {\n    --    [1] = {\n    --        type = \"ITEM\", -- \"CURRENCY\"\n    --        id = 0000,\n    --        objective = 1,\n    --        includeAllFactions = false,\n    --        includeAlts = false,\n    --        includeBank = false,\n    --        includeGuildBank = {\n    --             [\"GuildKey\"] = true\n    --        },\n    --        altIDs = {\n    --            {\n    --                type = \"ITEM\", -- \"CURRENCY\"\n    --                name = \"\",\n    --                id = 0000,\n    --                multiplier = 1,\n    --            }\n    --        },\n    --    },\n    --}\n    \n    -- NOTE: make sure the first argument of GetTrackerCount is nil\n    -- This function is not necessary, but available if your custom function is simple and doesn't change the way each tracker is calculated.\n    --local count =  GetTrackerCount(_, trackers[1])\n    \n    return GetTrackerCount(_, trackers[1])\nend",
+    ["type"] = "ALL",
+    },
+    ["icon"] = {
+    ["id"] = 5976934,
+    ["type"] = "AUTO",
+    },
+    ["title"] = "Null Lotus",
+    },
+    {
+    ["onUse"] = {
+    ["macrotext"] = "",
+    ["type"] = "ITEM",
+    ["itemID"] = 210802,
+    },
+    ["trackers"] = {
+    {
+    ["type"] = "ITEM",
+    ["objective"] = 1,
+    ["includeAllFactions"] = false,
+    ["id"] = 210802,
+    ["includeBank"] = false,
+    ["name"] = "Orbinid",
+    ["includeGuildBank"] = {
+    },
+    ["includeAlts"] = false,
+    ["altIDs"] = {
+    {
+    ["id"] = 210803,
+    ["type"] = "ITEM",
+    ["multiplier"] = 1,
+    ["name"] = "Orbinid",
+    },
+    {
+    ["id"] = 210804,
+    ["type"] = "ITEM",
+    ["multiplier"] = 1,
+    ["name"] = "Orbinid",
+    },
+    },
+    },
+    },
+    ["objective"] = 0,
+    ["mute"] = false,
+    ["icon"] = {
+    ["id"] = 5536646,
+    ["type"] = "AUTO",
+    },
+    ["condition"] = {
+    ["func"] = "function(trackers, GetTrackerCount)\n    -- This is the structure of the tracker table:\n    --trackers = {\n    --    [1] = {\n    --        type = \"ITEM\", -- \"CURRENCY\"\n    --        id = 0000,\n    --        objective = 1,\n    --        includeAllFactions = false,\n    --        includeAlts = false,\n    --        includeBank = false,\n    --        includeGuildBank = {\n    --             [\"GuildKey\"] = true\n    --        },\n    --        altIDs = {\n    --            {\n    --                type = \"ITEM\", -- \"CURRENCY\"\n    --                name = \"\",\n    --                id = 0000,\n    --                multiplier = 1,\n    --            }\n    --        },\n    --    },\n    --}\n    \n    -- NOTE: make sure the first argument of GetTrackerCount is nil\n    -- This function is not necessary, but available if your custom function is simple and doesn't change the way each tracker is calculated.\n    --local count =  GetTrackerCount(_, trackers[1])\n    \n    return GetTrackerCount(_, trackers[1])\nend",
+    ["type"] = "ALL",
+    },
+    ["title"] = "Orbinid",
+    },
+    },
+    ["ENCHANTING (TWW)"] = {
+    {
+    ["onUse"] = {
+    ["macrotext"] = "",
+    ["type"] = "ITEM",
+    ["itemID"] = 219946,
+    },
+    ["trackers"] = {
+    {
+    ["type"] = "ITEM",
+    ["objective"] = 1,
+    ["includeAllFactions"] = false,
+    ["id"] = 219946,
+    ["includeBank"] = false,
+    ["name"] = "Storm Dust",
+    ["includeGuildBank"] = {
+    },
+    ["altIDs"] = {
+    {
+    ["id"] = 219947,
+    ["type"] = "ITEM",
+    ["multiplier"] = 1,
+    ["name"] = "Storm Dust",
+    },
+    {
+    ["id"] = 219948,
+    ["type"] = "ITEM",
+    ["multiplier"] = 1,
+    ["name"] = "Storm Dust",
+    },
+    },
+    ["includeAlts"] = false,
+    },
+    },
+    ["objective"] = 0,
+    ["mute"] = false,
+    ["title"] = "Storm Dust",
+    ["condition"] = {
+    ["func"] = "function(trackers, GetTrackerCount)\n    -- This is the structure of the tracker table:\n    --trackers = {\n    --    [1] = {\n    --        type = \"ITEM\", -- \"CURRENCY\"\n    --        id = 0000,\n    --        objective = 1,\n    --        includeAllFactions = false,\n    --        includeAlts = false,\n    --        includeBank = false,\n    --        includeGuildBank = {\n    --             [\"GuildKey\"] = true\n    --        },\n    --        altIDs = {\n    --            {\n    --                type = \"ITEM\", -- \"CURRENCY\"\n    --                name = \"\",\n    --                id = 0000,\n    --                multiplier = 1,\n    --            }\n    --        },\n    --    },\n    --}\n    \n    -- NOTE: make sure the first argument of GetTrackerCount is nil\n    -- This function is not necessary, but available if your custom function is simple and doesn't change the way each tracker is calculated.\n    --local count =  GetTrackerCount(_, trackers[1])\n    \n    return GetTrackerCount(_, trackers[1])\nend",
+    ["type"] = "ALL",
+    },
+    ["icon"] = {
+    ["id"] = 5929576,
+    ["type"] = "AUTO",
+    },
+    },
+    {
+    ["onUse"] = {
+    ["macrotext"] = "",
+    ["type"] = "ITEM",
+    ["itemID"] = 219949,
+    },
+    ["trackers"] = {
+    {
+    ["type"] = "ITEM",
+    ["objective"] = 1,
+    ["includeAllFactions"] = false,
+    ["id"] = 219949,
+    ["includeBank"] = false,
+    ["name"] = "Gleaming Shard",
+    ["includeGuildBank"] = {
+    },
+    ["includeAlts"] = false,
+    ["altIDs"] = {
+    {
+    ["id"] = 219950,
+    ["type"] = "ITEM",
+    ["multiplier"] = 1,
+    ["name"] = "Gleaming Shard",
+    },
+    {
+    ["id"] = 219951,
+    ["type"] = "ITEM",
+    ["multiplier"] = 1,
+    ["name"] = "Gleaming Shard",
+    },
+    },
+    },
+    },
+    ["objective"] = 0,
+    ["mute"] = false,
+    ["condition"] = {
+    ["func"] = "function(trackers, GetTrackerCount)\n    -- This is the structure of the tracker table:\n    --trackers = {\n    --    [1] = {\n    --        type = \"ITEM\", -- \"CURRENCY\"\n    --        id = 0000,\n    --        objective = 1,\n    --        includeAllFactions = false,\n    --        includeAlts = false,\n    --        includeBank = false,\n    --        includeGuildBank = {\n    --             [\"GuildKey\"] = true\n    --        },\n    --        altIDs = {\n    --            {\n    --                type = \"ITEM\", -- \"CURRENCY\"\n    --                name = \"\",\n    --                id = 0000,\n    --                multiplier = 1,\n    --            }\n    --        },\n    --    },\n    --}\n    \n    -- NOTE: make sure the first argument of GetTrackerCount is nil\n    -- This function is not necessary, but available if your custom function is simple and doesn't change the way each tracker is calculated.\n    --local count =  GetTrackerCount(_, trackers[1])\n    \n    return GetTrackerCount(_, trackers[1])\nend",
+    ["type"] = "ALL",
+    },
+    ["icon"] = {
+    ["id"] = 5929581,
+    ["type"] = "AUTO",
+    },
+    ["title"] = "Gleaming Shard",
+    },
+    {
+    ["onUse"] = {
+    ["macrotext"] = "",
+    ["type"] = "ITEM",
+    ["itemID"] = 219952,
+    },
+    ["trackers"] = {
+    {
+    ["type"] = "ITEM",
+    ["objective"] = 1,
+    ["includeAllFactions"] = false,
+    ["id"] = 219952,
+    ["includeBank"] = false,
+    ["name"] = "Refulgent Crystal",
+    ["includeGuildBank"] = {
+    },
+    ["includeAlts"] = false,
+    ["altIDs"] = {
+    {
+    ["id"] = 219954,
+    ["type"] = "ITEM",
+    ["multiplier"] = 1,
+    ["name"] = "Refulgent Crystal",
+    },
+    {
+    ["id"] = 219955,
+    ["type"] = "ITEM",
+    ["multiplier"] = 1,
+    ["name"] = "Refulgent Crystal",
+    },
+    },
+    },
+    },
+    ["objective"] = 0,
+    ["mute"] = false,
+    ["condition"] = {
+    ["func"] = "function(trackers, GetTrackerCount)\n    -- This is the structure of the tracker table:\n    --trackers = {\n    --    [1] = {\n    --        type = \"ITEM\", -- \"CURRENCY\"\n    --        id = 0000,\n    --        objective = 1,\n    --        includeAllFactions = false,\n    --        includeAlts = false,\n    --        includeBank = false,\n    --        includeGuildBank = {\n    --             [\"GuildKey\"] = true\n    --        },\n    --        altIDs = {\n    --            {\n    --                type = \"ITEM\", -- \"CURRENCY\"\n    --                name = \"\",\n    --                id = 0000,\n    --                multiplier = 1,\n    --            }\n    --        },\n    --    },\n    --}\n    \n    -- NOTE: make sure the first argument of GetTrackerCount is nil\n    -- This function is not necessary, but available if your custom function is simple and doesn't change the way each tracker is calculated.\n    --local count =  GetTrackerCount(_, trackers[1])\n    \n    return GetTrackerCount(_, trackers[1])\nend",
+    ["type"] = "ALL",
+    },
+    ["icon"] = {
+    ["id"] = 5929570,
+    ["type"] = "AUTO",
+    },
+    ["title"] = "Refulgent Crystal",
+    },
+    },
+    ["CLOTH (TWW)"] = {
+    {
+    ["onUse"] = {
+    ["macrotext"] = "",
+    ["type"] = "ITEM",
+    ["itemID"] = 224826,
+    },
+    ["trackers"] = {
+    {
+    ["type"] = "ITEM",
+    ["objective"] = 1,
+    ["includeAllFactions"] = false,
+    ["id"] = 224826,
+    ["includeBank"] = false,
+    ["name"] = "Dawnweave",
+    ["includeGuildBank"] = {
+    },
+    ["includeAlts"] = false,
+    ["altIDs"] = {
+    {
+    ["id"] = 228235,
+    ["type"] = "ITEM",
+    ["multiplier"] = 1,
+    ["name"] = "Dawnweave",
+    },
+    {
+    ["id"] = 228236,
+    ["type"] = "ITEM",
+    ["multiplier"] = 1,
+    ["name"] = "Dawnweave",
+    },
+    },
+    },
+    },
+    ["objective"] = 0,
+    ["mute"] = false,
+    ["condition"] = {
+    ["func"] = "function(trackers, GetTrackerCount)\n    -- This is the structure of the tracker table:\n    --trackers = {\n    --    [1] = {\n    --        type = \"ITEM\", -- \"CURRENCY\"\n    --        id = 0000,\n    --        objective = 1,\n    --        includeAllFactions = false,\n    --        includeAlts = false,\n    --        includeBank = false,\n    --        includeGuildBank = {\n    --             [\"GuildKey\"] = true\n    --        },\n    --        altIDs = {\n    --            {\n    --                type = \"ITEM\", -- \"CURRENCY\"\n    --                name = \"\",\n    --                id = 0000,\n    --                multiplier = 1,\n    --            }\n    --        },\n    --    },\n    --}\n    \n    -- NOTE: make sure the first argument of GetTrackerCount is nil\n    -- This function is not necessary, but available if your custom function is simple and doesn't change the way each tracker is calculated.\n    --local count =  GetTrackerCount(_, trackers[1])\n    \n    return GetTrackerCount(_, trackers[1])\nend",
+    ["type"] = "ALL",
+    },
+    ["icon"] = {
+    ["id"] = 4549279,
+    ["type"] = "AUTO",
+    },
+    ["title"] = "Dawnweave",
+    },
+    {
+    ["onUse"] = {
+    ["macrotext"] = "",
+    ["type"] = "ITEM",
+    ["itemID"] = 224824,
+    },
+    ["trackers"] = {
+    {
+    ["type"] = "ITEM",
+    ["objective"] = 1,
+    ["includeAllFactions"] = false,
+    ["id"] = 224824,
+    ["includeBank"] = false,
+    ["name"] = "Duskweave",
+    ["includeGuildBank"] = {
+    },
+    ["includeAlts"] = false,
+    ["altIDs"] = {
+    {
+    ["id"] = 228233,
+    ["type"] = "ITEM",
+    ["multiplier"] = 1,
+    ["name"] = "Duskweave",
+    },
+    {
+    ["id"] = 228234,
+    ["type"] = "ITEM",
+    ["multiplier"] = 1,
+    ["name"] = "Duskweave",
+    },
+    },
+    },
+    },
+    ["objective"] = 0,
+    ["mute"] = false,
+    ["condition"] = {
+    ["func"] = "function(trackers, GetTrackerCount)\n    -- This is the structure of the tracker table:\n    --trackers = {\n    --    [1] = {\n    --        type = \"ITEM\", -- \"CURRENCY\"\n    --        id = 0000,\n    --        objective = 1,\n    --        includeAllFactions = false,\n    --        includeAlts = false,\n    --        includeBank = false,\n    --        includeGuildBank = {\n    --             [\"GuildKey\"] = true\n    --        },\n    --        altIDs = {\n    --            {\n    --                type = \"ITEM\", -- \"CURRENCY\"\n    --                name = \"\",\n    --                id = 0000,\n    --                multiplier = 1,\n    --            }\n    --        },\n    --    },\n    --}\n    \n    -- NOTE: make sure the first argument of GetTrackerCount is nil\n    -- This function is not necessary, but available if your custom function is simple and doesn't change the way each tracker is calculated.\n    --local count =  GetTrackerCount(_, trackers[1])\n    \n    return GetTrackerCount(_, trackers[1])\nend",
+    ["type"] = "ALL",
+    },
+    ["icon"] = {
+    ["id"] = 4549278,
+    ["type"] = "AUTO",
+    },
+    ["title"] = "Duskweave",
+    },
+    },
+    ["FISHING (TWW)"] = {
+    {
+    ["onUse"] = {
+    ["macrotext"] = "",
+    ["type"] = "ITEM",
+    ["itemID"] = 220145,
+    },
+    ["trackers"] = {
+    {
+    ["type"] = "ITEM",
+    ["objective"] = 1,
+    ["includeAllFactions"] = false,
+    ["id"] = 220145,
+    ["includeBank"] = false,
+    ["name"] = "Arathor Hammerfish",
+    ["includeGuildBank"] = {
+    },
+    ["altIDs"] = {
+    },
+    ["includeAlts"] = false,
+    },
+    },
+    ["objective"] = 0,
+    ["mute"] = false,
+    ["title"] = "Arathor Hammerfish",
+    ["icon"] = {
+    ["id"] = 349504,
+    ["type"] = "AUTO",
+    },
+    ["condition"] = {
+    ["func"] = "function(trackers, GetTrackerCount)\n    -- This is the structure of the tracker table:\n    --trackers = {\n    --    [1] = {\n    --        type = \"ITEM\", -- \"CURRENCY\"\n    --        id = 0000,\n    --        objective = 1,\n    --        includeAllFactions = false,\n    --        includeAlts = false,\n    --        includeBank = false,\n    --        includeGuildBank = {\n    --             [\"GuildKey\"] = true\n    --        },\n    --        altIDs = {\n    --            {\n    --                type = \"ITEM\", -- \"CURRENCY\"\n    --                name = \"\",\n    --                id = 0000,\n    --                multiplier = 1,\n    --            }\n    --        },\n    --    },\n    --}\n    \n    -- NOTE: make sure the first argument of GetTrackerCount is nil\n    -- This function is not necessary, but available if your custom function is simple and doesn't change the way each tracker is calculated.\n    --local count =  GetTrackerCount(_, trackers[1])\n    \n    return GetTrackerCount(_, trackers[1])\nend",
+    ["type"] = "ALL",
+    },
+    },
+    {
+    ["onUse"] = {
+    ["macrotext"] = "",
+    ["type"] = "ITEM",
+    ["itemID"] = 220153,
+    },
+    ["trackers"] = {
+    {
+    ["type"] = "ITEM",
+    ["objective"] = 1,
+    ["includeAllFactions"] = false,
+    ["id"] = 220153,
+    ["includeBank"] = false,
+    ["name"] = "Awoken Coelacanth",
+    ["includeGuildBank"] = {
+    },
+    ["altIDs"] = {
+    },
+    ["includeAlts"] = false,
+    },
+    },
+    ["objective"] = 0,
+    ["mute"] = false,
+    ["title"] = "Awoken Coelacanth",
+    ["icon"] = {
+    ["id"] = 2564610,
+    ["type"] = "AUTO",
+    },
+    ["condition"] = {
+    ["func"] = "function(trackers, GetTrackerCount)\n    -- This is the structure of the tracker table:\n    --trackers = {\n    --    [1] = {\n    --        type = \"ITEM\", -- \"CURRENCY\"\n    --        id = 0000,\n    --        objective = 1,\n    --        includeAllFactions = false,\n    --        includeAlts = false,\n    --        includeBank = false,\n    --        includeGuildBank = {\n    --             [\"GuildKey\"] = true\n    --        },\n    --        altIDs = {\n    --            {\n    --                type = \"ITEM\", -- \"CURRENCY\"\n    --                name = \"\",\n    --                id = 0000,\n    --                multiplier = 1,\n    --            }\n    --        },\n    --    },\n    --}\n    \n    -- NOTE: make sure the first argument of GetTrackerCount is nil\n    -- This function is not necessary, but available if your custom function is simple and doesn't change the way each tracker is calculated.\n    --local count =  GetTrackerCount(_, trackers[1])\n    \n    return GetTrackerCount(_, trackers[1])\nend",
+    ["type"] = "ALL",
+    },
+    },
+    {
+    ["onUse"] = {
+    ["macrotext"] = "",
+    ["type"] = "ITEM",
+    ["itemID"] = 220137,
+    },
+    ["trackers"] = {
+    {
+    ["type"] = "ITEM",
+    ["objective"] = 1,
+    ["includeAllFactions"] = false,
+    ["id"] = 220137,
+    ["includeBank"] = false,
+    ["name"] = "Bismuth Bitterling",
+    ["includeGuildBank"] = {
+    },
+    ["altIDs"] = {
+    },
+    ["includeAlts"] = false,
+    },
+    },
+    ["objective"] = 0,
+    ["mute"] = false,
+    ["title"] = "Bismuth Bitterling",
+    ["icon"] = {
+    ["id"] = 1387364,
+    ["type"] = "AUTO",
+    },
+    ["condition"] = {
+    ["func"] = "function(trackers, GetTrackerCount)\n    -- This is the structure of the tracker table:\n    --trackers = {\n    --    [1] = {\n    --        type = \"ITEM\", -- \"CURRENCY\"\n    --        id = 0000,\n    --        objective = 1,\n    --        includeAllFactions = false,\n    --        includeAlts = false,\n    --        includeBank = false,\n    --        includeGuildBank = {\n    --             [\"GuildKey\"] = true\n    --        },\n    --        altIDs = {\n    --            {\n    --                type = \"ITEM\", -- \"CURRENCY\"\n    --                name = \"\",\n    --                id = 0000,\n    --                multiplier = 1,\n    --            }\n    --        },\n    --    },\n    --}\n    \n    -- NOTE: make sure the first argument of GetTrackerCount is nil\n    -- This function is not necessary, but available if your custom function is simple and doesn't change the way each tracker is calculated.\n    --local count =  GetTrackerCount(_, trackers[1])\n    \n    return GetTrackerCount(_, trackers[1])\nend",
+    ["type"] = "ALL",
+    },
+    },
+    {
+    ["onUse"] = {
+    ["macrotext"] = "",
+    ["type"] = "ITEM",
+    ["itemID"] = 220135,
+    },
+    ["trackers"] = {
+    {
+    ["type"] = "ITEM",
+    ["objective"] = 1,
+    ["includeAllFactions"] = false,
+    ["id"] = 220135,
+    ["includeBank"] = false,
+    ["name"] = "Bloody Perch",
+    ["includeGuildBank"] = {
+    },
+    ["altIDs"] = {
+    },
+    ["includeAlts"] = false,
+    },
+    },
+    ["objective"] = 0,
+    ["mute"] = false,
+    ["title"] = "Bloody Perch",
+    ["icon"] = {
+    ["id"] = 133908,
+    ["type"] = "AUTO",
+    },
+    ["condition"] = {
+    ["func"] = "function(trackers, GetTrackerCount)\n    -- This is the structure of the tracker table:\n    --trackers = {\n    --    [1] = {\n    --        type = \"ITEM\", -- \"CURRENCY\"\n    --        id = 0000,\n    --        objective = 1,\n    --        includeAllFactions = false,\n    --        includeAlts = false,\n    --        includeBank = false,\n    --        includeGuildBank = {\n    --             [\"GuildKey\"] = true\n    --        },\n    --        altIDs = {\n    --            {\n    --                type = \"ITEM\", -- \"CURRENCY\"\n    --                name = \"\",\n    --                id = 0000,\n    --                multiplier = 1,\n    --            }\n    --        },\n    --    },\n    --}\n    \n    -- NOTE: make sure the first argument of GetTrackerCount is nil\n    -- This function is not necessary, but available if your custom function is simple and doesn't change the way each tracker is calculated.\n    --local count =  GetTrackerCount(_, trackers[1])\n    \n    return GetTrackerCount(_, trackers[1])\nend",
+    ["type"] = "ALL",
+    },
+    },
+    {
+    ["onUse"] = {
+    ["macrotext"] = "",
+    ["type"] = "ITEM",
+    ["itemID"] = 220136,
+    },
+    ["trackers"] = {
+    {
+    ["type"] = "ITEM",
+    ["objective"] = 1,
+    ["includeAllFactions"] = false,
+    ["id"] = 220136,
+    ["includeBank"] = false,
+    ["name"] = "Crystalline Sturgeon",
+    ["includeGuildBank"] = {
+    },
+    ["altIDs"] = {
+    },
+    ["includeAlts"] = false,
+    },
+    },
+    ["objective"] = 0,
+    ["mute"] = false,
+    ["title"] = "Crystalline Sturgeon",
+    ["icon"] = {
+    ["id"] = 970826,
+    ["type"] = "AUTO",
+    },
+    ["condition"] = {
+    ["func"] = "function(trackers, GetTrackerCount)\n    -- This is the structure of the tracker table:\n    --trackers = {\n    --    [1] = {\n    --        type = \"ITEM\", -- \"CURRENCY\"\n    --        id = 0000,\n    --        objective = 1,\n    --        includeAllFactions = false,\n    --        includeAlts = false,\n    --        includeBank = false,\n    --        includeGuildBank = {\n    --             [\"GuildKey\"] = true\n    --        },\n    --        altIDs = {\n    --            {\n    --                type = \"ITEM\", -- \"CURRENCY\"\n    --                name = \"\",\n    --                id = 0000,\n    --                multiplier = 1,\n    --            }\n    --        },\n    --    },\n    --}\n    \n    -- NOTE: make sure the first argument of GetTrackerCount is nil\n    -- This function is not necessary, but available if your custom function is simple and doesn't change the way each tracker is calculated.\n    --local count =  GetTrackerCount(_, trackers[1])\n    \n    return GetTrackerCount(_, trackers[1])\nend",
+    ["type"] = "ALL",
+    },
+    },
+    {
+    ["onUse"] = {
+    ["macrotext"] = "",
+    ["type"] = "ITEM",
+    ["itemID"] = 220152,
+    },
+    ["trackers"] = {
+    {
+    ["type"] = "ITEM",
+    ["objective"] = 1,
+    ["includeAllFactions"] = false,
+    ["id"] = 220152,
+    ["includeBank"] = false,
+    ["name"] = "Cursed Ghoulfish",
+    ["includeGuildBank"] = {
+    },
+    ["altIDs"] = {
+    },
+    ["includeAlts"] = false,
+    },
+    },
+    ["objective"] = 0,
+    ["mute"] = false,
+    ["title"] = "Cursed Ghoulfish",
+    ["icon"] = {
+    ["id"] = 631038,
+    ["type"] = "AUTO",
+    },
+    ["condition"] = {
+    ["func"] = "function(trackers, GetTrackerCount)\n    -- This is the structure of the tracker table:\n    --trackers = {\n    --    [1] = {\n    --        type = \"ITEM\", -- \"CURRENCY\"\n    --        id = 0000,\n    --        objective = 1,\n    --        includeAllFactions = false,\n    --        includeAlts = false,\n    --        includeBank = false,\n    --        includeGuildBank = {\n    --             [\"GuildKey\"] = true\n    --        },\n    --        altIDs = {\n    --            {\n    --                type = \"ITEM\", -- \"CURRENCY\"\n    --                name = \"\",\n    --                id = 0000,\n    --                multiplier = 1,\n    --            }\n    --        },\n    --    },\n    --}\n    \n    -- NOTE: make sure the first argument of GetTrackerCount is nil\n    -- This function is not necessary, but available if your custom function is simple and doesn't change the way each tracker is calculated.\n    --local count =  GetTrackerCount(_, trackers[1])\n    \n    return GetTrackerCount(_, trackers[1])\nend",
+    ["type"] = "ALL",
+    },
+    },
+    {
+    ["onUse"] = {
+    ["macrotext"] = "",
+    ["type"] = "ITEM",
+    ["itemID"] = 220134,
+    },
+    ["trackers"] = {
+    {
+    ["type"] = "ITEM",
+    ["objective"] = 1,
+    ["includeAllFactions"] = false,
+    ["id"] = 220134,
+    ["includeBank"] = false,
+    ["name"] = "Dilly-Dally Dace",
+    ["includeGuildBank"] = {
+    },
+    ["altIDs"] = {
+    },
+    ["includeAlts"] = false,
+    },
+    },
+    ["objective"] = 0,
+    ["mute"] = false,
+    ["title"] = "Dilly-Dally Dace",
+    ["icon"] = {
+    ["id"] = 4539687,
+    ["type"] = "AUTO",
+    },
+    ["condition"] = {
+    ["func"] = "function(trackers, GetTrackerCount)\n    -- This is the structure of the tracker table:\n    --trackers = {\n    --    [1] = {\n    --        type = \"ITEM\", -- \"CURRENCY\"\n    --        id = 0000,\n    --        objective = 1,\n    --        includeAllFactions = false,\n    --        includeAlts = false,\n    --        includeBank = false,\n    --        includeGuildBank = {\n    --             [\"GuildKey\"] = true\n    --        },\n    --        altIDs = {\n    --            {\n    --                type = \"ITEM\", -- \"CURRENCY\"\n    --                name = \"\",\n    --                id = 0000,\n    --                multiplier = 1,\n    --            }\n    --        },\n    --    },\n    --}\n    \n    -- NOTE: make sure the first argument of GetTrackerCount is nil\n    -- This function is not necessary, but available if your custom function is simple and doesn't change the way each tracker is calculated.\n    --local count =  GetTrackerCount(_, trackers[1])\n    \n    return GetTrackerCount(_, trackers[1])\nend",
+    ["type"] = "ALL",
+    },
+    },
+    {
+    ["onUse"] = {
+    ["macrotext"] = "",
+    ["type"] = "ITEM",
+    ["itemID"] = 220143,
+    },
+    ["trackers"] = {
+    {
+    ["type"] = "ITEM",
+    ["objective"] = 1,
+    ["includeAllFactions"] = false,
+    ["id"] = 220143,
+    ["includeBank"] = false,
+    ["name"] = "Dornish Pike",
+    ["includeGuildBank"] = {
+    },
+    ["altIDs"] = {
+    },
+    ["includeAlts"] = false,
+    },
+    },
+    ["objective"] = 0,
+    ["mute"] = false,
+    ["title"] = "Dornish Pike",
+    ["icon"] = {
+    ["id"] = 630619,
+    ["type"] = "AUTO",
+    },
+    ["condition"] = {
+    ["func"] = "function(trackers, GetTrackerCount)\n    -- This is the structure of the tracker table:\n    --trackers = {\n    --    [1] = {\n    --        type = \"ITEM\", -- \"CURRENCY\"\n    --        id = 0000,\n    --        objective = 1,\n    --        includeAllFactions = false,\n    --        includeAlts = false,\n    --        includeBank = false,\n    --        includeGuildBank = {\n    --             [\"GuildKey\"] = true\n    --        },\n    --        altIDs = {\n    --            {\n    --                type = \"ITEM\", -- \"CURRENCY\"\n    --                name = \"\",\n    --                id = 0000,\n    --                multiplier = 1,\n    --            }\n    --        },\n    --    },\n    --}\n    \n    -- NOTE: make sure the first argument of GetTrackerCount is nil\n    -- This function is not necessary, but available if your custom function is simple and doesn't change the way each tracker is calculated.\n    --local count =  GetTrackerCount(_, trackers[1])\n    \n    return GetTrackerCount(_, trackers[1])\nend",
+    ["type"] = "ALL",
+    },
+    },
+    {
+    ["onUse"] = {
+    ["macrotext"] = "",
+    ["type"] = "ITEM",
+    ["itemID"] = 222533,
+    },
+    ["trackers"] = {
+    {
+    ["type"] = "ITEM",
+    ["objective"] = 1,
+    ["includeAllFactions"] = false,
+    ["id"] = 222533,
+    ["includeBank"] = false,
+    ["name"] = "Goldengill Trout",
+    ["includeGuildBank"] = {
+    },
+    ["altIDs"] = {
+    },
+    ["includeAlts"] = false,
+    },
+    },
+    ["objective"] = 0,
+    ["mute"] = false,
+    ["title"] = "Goldengill Trout",
+    ["icon"] = {
+    ["id"] = 133929,
+    ["type"] = "AUTO",
+    },
+    ["condition"] = {
+    ["func"] = "function(trackers, GetTrackerCount)\n    -- This is the structure of the tracker table:\n    --trackers = {\n    --    [1] = {\n    --        type = \"ITEM\", -- \"CURRENCY\"\n    --        id = 0000,\n    --        objective = 1,\n    --        includeAllFactions = false,\n    --        includeAlts = false,\n    --        includeBank = false,\n    --        includeGuildBank = {\n    --             [\"GuildKey\"] = true\n    --        },\n    --        altIDs = {\n    --            {\n    --                type = \"ITEM\", -- \"CURRENCY\"\n    --                name = \"\",\n    --                id = 0000,\n    --                multiplier = 1,\n    --            }\n    --        },\n    --    },\n    --}\n    \n    -- NOTE: make sure the first argument of GetTrackerCount is nil\n    -- This function is not necessary, but available if your custom function is simple and doesn't change the way each tracker is calculated.\n    --local count =  GetTrackerCount(_, trackers[1])\n    \n    return GetTrackerCount(_, trackers[1])\nend",
+    ["type"] = "ALL",
+    },
+    },
+    {
+    ["onUse"] = {
+    ["macrotext"] = "",
+    ["type"] = "ITEM",
+    ["itemID"] = 220147,
+    },
+    ["trackers"] = {
+    {
+    ["type"] = "ITEM",
+    ["objective"] = 1,
+    ["includeAllFactions"] = false,
+    ["id"] = 220147,
+    ["includeBank"] = false,
+    ["name"] = "Kaheti Slum Shark",
+    ["includeGuildBank"] = {
+    },
+    ["altIDs"] = {
+    },
+    ["includeAlts"] = false,
+    },
+    },
+    ["objective"] = 0,
+    ["mute"] = false,
+    ["title"] = "Kaheti Slum Shark",
+    ["icon"] = {
+    ["id"] = 1339352,
+    ["type"] = "AUTO",
+    },
+    ["condition"] = {
+    ["func"] = "function(trackers, GetTrackerCount)\n    -- This is the structure of the tracker table:\n    --trackers = {\n    --    [1] = {\n    --        type = \"ITEM\", -- \"CURRENCY\"\n    --        id = 0000,\n    --        objective = 1,\n    --        includeAllFactions = false,\n    --        includeAlts = false,\n    --        includeBank = false,\n    --        includeGuildBank = {\n    --             [\"GuildKey\"] = true\n    --        },\n    --        altIDs = {\n    --            {\n    --                type = \"ITEM\", -- \"CURRENCY\"\n    --                name = \"\",\n    --                id = 0000,\n    --                multiplier = 1,\n    --            }\n    --        },\n    --    },\n    --}\n    \n    -- NOTE: make sure the first argument of GetTrackerCount is nil\n    -- This function is not necessary, but available if your custom function is simple and doesn't change the way each tracker is calculated.\n    --local count =  GetTrackerCount(_, trackers[1])\n    \n    return GetTrackerCount(_, trackers[1])\nend",
+    ["type"] = "ALL",
+    },
+    },
+    {
+    ["onUse"] = {
+    ["macrotext"] = "",
+    ["type"] = "ITEM",
+    ["itemID"] = 220138,
+    },
+    ["trackers"] = {
+    {
+    ["type"] = "ITEM",
+    ["objective"] = 1,
+    ["includeAllFactions"] = false,
+    ["id"] = 220138,
+    ["includeBank"] = false,
+    ["name"] = "Nibbling Minnow",
+    ["includeGuildBank"] = {
+    },
+    ["altIDs"] = {
+    },
+    ["includeAlts"] = false,
+    },
+    },
+    ["objective"] = 0,
+    ["mute"] = false,
+    ["title"] = "Nibbling Minnow",
+    ["icon"] = {
+    ["id"] = 630618,
+    ["type"] = "AUTO",
+    },
+    ["condition"] = {
+    ["func"] = "function(trackers, GetTrackerCount)\n    -- This is the structure of the tracker table:\n    --trackers = {\n    --    [1] = {\n    --        type = \"ITEM\", -- \"CURRENCY\"\n    --        id = 0000,\n    --        objective = 1,\n    --        includeAllFactions = false,\n    --        includeAlts = false,\n    --        includeBank = false,\n    --        includeGuildBank = {\n    --             [\"GuildKey\"] = true\n    --        },\n    --        altIDs = {\n    --            {\n    --                type = \"ITEM\", -- \"CURRENCY\"\n    --                name = \"\",\n    --                id = 0000,\n    --                multiplier = 1,\n    --            }\n    --        },\n    --    },\n    --}\n    \n    -- NOTE: make sure the first argument of GetTrackerCount is nil\n    -- This function is not necessary, but available if your custom function is simple and doesn't change the way each tracker is calculated.\n    --local count =  GetTrackerCount(_, trackers[1])\n    \n    return GetTrackerCount(_, trackers[1])\nend",
+    ["type"] = "ALL",
+    },
+    },
+    {
+    ["onUse"] = {
+    ["macrotext"] = "",
+    ["type"] = "ITEM",
+    ["itemID"] = 220148,
+    },
+    ["trackers"] = {
+    {
+    ["type"] = "ITEM",
+    ["objective"] = 1,
+    ["includeAllFactions"] = false,
+    ["id"] = 220148,
+    ["includeBank"] = false,
+    ["name"] = "Pale Huskfish",
+    ["includeGuildBank"] = {
+    },
+    ["altIDs"] = {
+    },
+    ["includeAlts"] = false,
+    },
+    },
+    ["objective"] = 0,
+    ["mute"] = false,
+    ["title"] = "Pale Huskfish",
+    ["icon"] = {
+    ["id"] = 970827,
+    ["type"] = "AUTO",
+    },
+    ["condition"] = {
+    ["func"] = "function(trackers, GetTrackerCount)\n    -- This is the structure of the tracker table:\n    --trackers = {\n    --    [1] = {\n    --        type = \"ITEM\", -- \"CURRENCY\"\n    --        id = 0000,\n    --        objective = 1,\n    --        includeAllFactions = false,\n    --        includeAlts = false,\n    --        includeBank = false,\n    --        includeGuildBank = {\n    --             [\"GuildKey\"] = true\n    --        },\n    --        altIDs = {\n    --            {\n    --                type = \"ITEM\", -- \"CURRENCY\"\n    --                name = \"\",\n    --                id = 0000,\n    --                multiplier = 1,\n    --            }\n    --        },\n    --    },\n    --}\n    \n    -- NOTE: make sure the first argument of GetTrackerCount is nil\n    -- This function is not necessary, but available if your custom function is simple and doesn't change the way each tracker is calculated.\n    --local count =  GetTrackerCount(_, trackers[1])\n    \n    return GetTrackerCount(_, trackers[1])\nend",
+    ["type"] = "ALL",
+    },
+    },
+    {
+    ["onUse"] = {
+    ["macrotext"] = "",
+    ["type"] = "ITEM",
+    ["itemID"] = 220151,
+    },
+    ["trackers"] = {
+    {
+    ["type"] = "ITEM",
+    ["objective"] = 1,
+    ["includeAllFactions"] = false,
+    ["id"] = 220151,
+    ["includeBank"] = false,
+    ["name"] = "Queen's Lurefish",
+    ["includeGuildBank"] = {
+    },
+    ["altIDs"] = {
+    },
+    ["includeAlts"] = false,
+    },
+    },
+    ["objective"] = 0,
+    ["mute"] = false,
+    ["title"] = "Queen's Lurefish",
+    ["icon"] = {
+    ["id"] = 133920,
+    ["type"] = "AUTO",
+    },
+    ["condition"] = {
+    ["func"] = "function(trackers, GetTrackerCount)\n    -- This is the structure of the tracker table:\n    --trackers = {\n    --    [1] = {\n    --        type = \"ITEM\", -- \"CURRENCY\"\n    --        id = 0000,\n    --        objective = 1,\n    --        includeAllFactions = false,\n    --        includeAlts = false,\n    --        includeBank = false,\n    --        includeGuildBank = {\n    --             [\"GuildKey\"] = true\n    --        },\n    --        altIDs = {\n    --            {\n    --                type = \"ITEM\", -- \"CURRENCY\"\n    --                name = \"\",\n    --                id = 0000,\n    --                multiplier = 1,\n    --            }\n    --        },\n    --    },\n    --}\n    \n    -- NOTE: make sure the first argument of GetTrackerCount is nil\n    -- This function is not necessary, but available if your custom function is simple and doesn't change the way each tracker is calculated.\n    --local count =  GetTrackerCount(_, trackers[1])\n    \n    return GetTrackerCount(_, trackers[1])\nend",
+    ["type"] = "ALL",
+    },
+    },
+    {
+    ["onUse"] = {
+    ["macrotext"] = "",
+    ["type"] = "ITEM",
+    ["itemID"] = 220142,
+    },
+    ["trackers"] = {
+    {
+    ["type"] = "ITEM",
+    ["objective"] = 1,
+    ["includeAllFactions"] = false,
+    ["id"] = 220142,
+    ["includeBank"] = false,
+    ["name"] = "Quiet River Bass",
+    ["includeGuildBank"] = {
+    },
+    ["altIDs"] = {
+    },
+    ["includeAlts"] = false,
+    },
+    },
+    ["objective"] = 0,
+    ["mute"] = false,
+    ["title"] = "Quiet River Bass",
+    ["icon"] = {
+    ["id"] = 350870,
+    ["type"] = "AUTO",
+    },
+    ["condition"] = {
+    ["func"] = "function(trackers, GetTrackerCount)\n    -- This is the structure of the tracker table:\n    --trackers = {\n    --    [1] = {\n    --        type = \"ITEM\", -- \"CURRENCY\"\n    --        id = 0000,\n    --        objective = 1,\n    --        includeAllFactions = false,\n    --        includeAlts = false,\n    --        includeBank = false,\n    --        includeGuildBank = {\n    --             [\"GuildKey\"] = true\n    --        },\n    --        altIDs = {\n    --            {\n    --                type = \"ITEM\", -- \"CURRENCY\"\n    --                name = \"\",\n    --                id = 0000,\n    --                multiplier = 1,\n    --            }\n    --        },\n    --    },\n    --}\n    \n    -- NOTE: make sure the first argument of GetTrackerCount is nil\n    -- This function is not necessary, but available if your custom function is simple and doesn't change the way each tracker is calculated.\n    --local count =  GetTrackerCount(_, trackers[1])\n    \n    return GetTrackerCount(_, trackers[1])\nend",
+    ["type"] = "ALL",
+    },
+    },
+    {
+    ["onUse"] = {
+    ["macrotext"] = "",
+    ["type"] = "ITEM",
+    ["itemID"] = 220146,
+    },
+    ["trackers"] = {
+    {
+    ["type"] = "ITEM",
+    ["objective"] = 1,
+    ["includeAllFactions"] = false,
+    ["id"] = 220146,
+    ["includeBank"] = false,
+    ["name"] = "Regal Dottyback",
+    ["includeGuildBank"] = {
+    },
+    ["altIDs"] = {
+    },
+    ["includeAlts"] = false,
+    },
+    },
+    ["objective"] = 0,
+    ["mute"] = false,
+    ["title"] = "Regal Dottyback",
+    ["icon"] = {
+    ["id"] = 632356,
+    ["type"] = "AUTO",
+    },
+    ["condition"] = {
+    ["func"] = "function(trackers, GetTrackerCount)\n    -- This is the structure of the tracker table:\n    --trackers = {\n    --    [1] = {\n    --        type = \"ITEM\", -- \"CURRENCY\"\n    --        id = 0000,\n    --        objective = 1,\n    --        includeAllFactions = false,\n    --        includeAlts = false,\n    --        includeBank = false,\n    --        includeGuildBank = {\n    --             [\"GuildKey\"] = true\n    --        },\n    --        altIDs = {\n    --            {\n    --                type = \"ITEM\", -- \"CURRENCY\"\n    --                name = \"\",\n    --                id = 0000,\n    --                multiplier = 1,\n    --            }\n    --        },\n    --    },\n    --}\n    \n    -- NOTE: make sure the first argument of GetTrackerCount is nil\n    -- This function is not necessary, but available if your custom function is simple and doesn't change the way each tracker is calculated.\n    --local count =  GetTrackerCount(_, trackers[1])\n    \n    return GetTrackerCount(_, trackers[1])\nend",
+    ["type"] = "ALL",
+    },
+    },
+    {
+    ["onUse"] = {
+    ["macrotext"] = "",
+    ["type"] = "ITEM",
+    ["itemID"] = 220144,
+    },
+    ["trackers"] = {
+    {
+    ["type"] = "ITEM",
+    ["objective"] = 1,
+    ["includeAllFactions"] = false,
+    ["id"] = 220144,
+    ["includeBank"] = false,
+    ["name"] = "Roaring Anglerseeker",
+    ["includeGuildBank"] = {
+    },
+    ["altIDs"] = {
+    },
+    ["includeAlts"] = false,
+    },
+    },
+    ["objective"] = 0,
+    ["mute"] = false,
+    ["title"] = "Roaring Anglerseeker",
+    ["icon"] = {
+    ["id"] = 348529,
+    ["type"] = "AUTO",
+    },
+    ["condition"] = {
+    ["func"] = "function(trackers, GetTrackerCount)\n    -- This is the structure of the tracker table:\n    --trackers = {\n    --    [1] = {\n    --        type = \"ITEM\", -- \"CURRENCY\"\n    --        id = 0000,\n    --        objective = 1,\n    --        includeAllFactions = false,\n    --        includeAlts = false,\n    --        includeBank = false,\n    --        includeGuildBank = {\n    --             [\"GuildKey\"] = true\n    --        },\n    --        altIDs = {\n    --            {\n    --                type = \"ITEM\", -- \"CURRENCY\"\n    --                name = \"\",\n    --                id = 0000,\n    --                multiplier = 1,\n    --            }\n    --        },\n    --    },\n    --}\n    \n    -- NOTE: make sure the first argument of GetTrackerCount is nil\n    -- This function is not necessary, but available if your custom function is simple and doesn't change the way each tracker is calculated.\n    --local count =  GetTrackerCount(_, trackers[1])\n    \n    return GetTrackerCount(_, trackers[1])\nend",
+    ["type"] = "ALL",
+    },
+    },
+    {
+    ["onUse"] = {
+    ["macrotext"] = "",
+    ["type"] = "ITEM",
+    ["itemID"] = 220149,
+    },
+    ["trackers"] = {
+    {
+    ["type"] = "ITEM",
+    ["objective"] = 1,
+    ["includeAllFactions"] = false,
+    ["id"] = 220149,
+    ["includeBank"] = false,
+    ["name"] = "Sanguine Dogfish",
+    ["includeGuildBank"] = {
+    },
+    ["altIDs"] = {
+    },
+    ["includeAlts"] = false,
+    },
+    },
+    ["objective"] = 0,
+    ["mute"] = false,
+    ["title"] = "Sanguine Dogfish",
+    ["icon"] = {
+    ["id"] = 4554374,
+    ["type"] = "AUTO",
+    },
+    ["condition"] = {
+    ["func"] = "function(trackers, GetTrackerCount)\n    -- This is the structure of the tracker table:\n    --trackers = {\n    --    [1] = {\n    --        type = \"ITEM\", -- \"CURRENCY\"\n    --        id = 0000,\n    --        objective = 1,\n    --        includeAllFactions = false,\n    --        includeAlts = false,\n    --        includeBank = false,\n    --        includeGuildBank = {\n    --             [\"GuildKey\"] = true\n    --        },\n    --        altIDs = {\n    --            {\n    --                type = \"ITEM\", -- \"CURRENCY\"\n    --                name = \"\",\n    --                id = 0000,\n    --                multiplier = 1,\n    --            }\n    --        },\n    --    },\n    --}\n    \n    -- NOTE: make sure the first argument of GetTrackerCount is nil\n    -- This function is not necessary, but available if your custom function is simple and doesn't change the way each tracker is calculated.\n    --local count =  GetTrackerCount(_, trackers[1])\n    \n    return GetTrackerCount(_, trackers[1])\nend",
+    ["type"] = "ALL",
+    },
+    },
+    {
+    ["onUse"] = {
+    ["macrotext"] = "",
+    ["type"] = "ITEM",
+    ["itemID"] = 220141,
+    },
+    ["trackers"] = {
+    {
+    ["type"] = "ITEM",
+    ["objective"] = 1,
+    ["includeAllFactions"] = false,
+    ["id"] = 220141,
+    ["includeBank"] = false,
+    ["name"] = "Specular Rainbowfish",
+    ["includeGuildBank"] = {
+    },
+    ["altIDs"] = {
+    },
+    ["includeAlts"] = false,
+    },
+    },
+    ["objective"] = 0,
+    ["mute"] = false,
+    ["title"] = "Specular Rainbowfish",
+    ["icon"] = {
+    ["id"] = 237324,
+    ["type"] = "AUTO",
+    },
+    ["condition"] = {
+    ["func"] = "function(trackers, GetTrackerCount)\n    -- This is the structure of the tracker table:\n    --trackers = {\n    --    [1] = {\n    --        type = \"ITEM\", -- \"CURRENCY\"\n    --        id = 0000,\n    --        objective = 1,\n    --        includeAllFactions = false,\n    --        includeAlts = false,\n    --        includeBank = false,\n    --        includeGuildBank = {\n    --             [\"GuildKey\"] = true\n    --        },\n    --        altIDs = {\n    --            {\n    --                type = \"ITEM\", -- \"CURRENCY\"\n    --                name = \"\",\n    --                id = 0000,\n    --                multiplier = 1,\n    --            }\n    --        },\n    --    },\n    --}\n    \n    -- NOTE: make sure the first argument of GetTrackerCount is nil\n    -- This function is not necessary, but available if your custom function is simple and doesn't change the way each tracker is calculated.\n    --local count =  GetTrackerCount(_, trackers[1])\n    \n    return GetTrackerCount(_, trackers[1])\nend",
+    ["type"] = "ALL",
+    },
+    },
+    {
+    ["onUse"] = {
+    ["macrotext"] = "",
+    ["type"] = "ITEM",
+    ["itemID"] = 220150,
+    },
+    ["trackers"] = {
+    {
+    ["type"] = "ITEM",
+    ["objective"] = 1,
+    ["includeAllFactions"] = false,
+    ["id"] = 220150,
+    ["includeBank"] = false,
+    ["name"] = "Spiked Sea Raven",
+    ["includeGuildBank"] = {
+    },
+    ["altIDs"] = {
+    },
+    ["includeAlts"] = false,
+    },
+    },
+    ["objective"] = 0,
+    ["mute"] = false,
+    ["title"] = "Spiked Sea Raven",
+    ["icon"] = {
+    ["id"] = 4539689,
+    ["type"] = "AUTO",
+    },
+    ["condition"] = {
+    ["func"] = "function(trackers, GetTrackerCount)\n    -- This is the structure of the tracker table:\n    --trackers = {\n    --    [1] = {\n    --        type = \"ITEM\", -- \"CURRENCY\"\n    --        id = 0000,\n    --        objective = 1,\n    --        includeAllFactions = false,\n    --        includeAlts = false,\n    --        includeBank = false,\n    --        includeGuildBank = {\n    --             [\"GuildKey\"] = true\n    --        },\n    --        altIDs = {\n    --            {\n    --                type = \"ITEM\", -- \"CURRENCY\"\n    --                name = \"\",\n    --                id = 0000,\n    --                multiplier = 1,\n    --            }\n    --        },\n    --    },\n    --}\n    \n    -- NOTE: make sure the first argument of GetTrackerCount is nil\n    -- This function is not necessary, but available if your custom function is simple and doesn't change the way each tracker is calculated.\n    --local count =  GetTrackerCount(_, trackers[1])\n    \n    return GetTrackerCount(_, trackers[1])\nend",
+    ["type"] = "ALL",
+    },
+    },
+    {
+    ["onUse"] = {
+    ["macrotext"] = "",
+    ["type"] = "ITEM",
+    ["itemID"] = 220139,
+    },
+    ["trackers"] = {
+    {
+    ["type"] = "ITEM",
+    ["objective"] = 1,
+    ["includeAllFactions"] = false,
+    ["id"] = 220139,
+    ["includeBank"] = false,
+    ["name"] = "Whispering Stargazer",
+    ["includeGuildBank"] = {
+    },
+    ["altIDs"] = {
+    },
+    ["includeAlts"] = false,
+    },
+    },
+    ["objective"] = 0,
+    ["mute"] = false,
+    ["title"] = "Whispering Stargazer",
+    ["icon"] = {
+    ["id"] = 2921473,
+    ["type"] = "AUTO",
+    },
+    ["condition"] = {
+    ["func"] = "function(trackers, GetTrackerCount)\n    -- This is the structure of the tracker table:\n    --trackers = {\n    --    [1] = {\n    --        type = \"ITEM\", -- \"CURRENCY\"\n    --        id = 0000,\n    --        objective = 1,\n    --        includeAllFactions = false,\n    --        includeAlts = false,\n    --        includeBank = false,\n    --        includeGuildBank = {\n    --             [\"GuildKey\"] = true\n    --        },\n    --        altIDs = {\n    --            {\n    --                type = \"ITEM\", -- \"CURRENCY\"\n    --                name = \"\",\n    --                id = 0000,\n    --                multiplier = 1,\n    --            }\n    --        },\n    --    },\n    --}\n    \n    -- NOTE: make sure the first argument of GetTrackerCount is nil\n    -- This function is not necessary, but available if your custom function is simple and doesn't change the way each tracker is calculated.\n    --local count =  GetTrackerCount(_, trackers[1])\n    \n    return GetTrackerCount(_, trackers[1])\nend",
+    ["type"] = "ALL",
+    },
+    },
+    },
+    ["SKINNING (TWW)"] = {
+    {
+    ["onUse"] = {
+    ["macrotext"] = "",
+    ["type"] = "ITEM",
+    ["itemID"] = 212664,
+    },
+    ["trackers"] = {
+    {
+    ["type"] = "ITEM",
+    ["objective"] = 1,
+    ["includeAllFactions"] = false,
+    ["id"] = 212664,
+    ["includeBank"] = false,
+    ["name"] = "Stormcharged Leather",
+    ["includeGuildBank"] = {
+    },
+    ["altIDs"] = {
+    {
+    ["id"] = 212665,
+    ["type"] = "ITEM",
+    ["multiplier"] = 1,
+    ["name"] = "Stormcharged Leather",
+    },
+    {
+    ["id"] = 212666,
+    ["type"] = "ITEM",
+    ["multiplier"] = 1,
+    ["name"] = "Stormcharged Leather",
+    },
+    },
+    ["includeAlts"] = false,
+    },
+    },
+    ["objective"] = 0,
+    ["mute"] = false,
+    ["title"] = "Stormcharged Leather",
+    ["icon"] = {
+    ["id"] = 5929562,
+    ["type"] = "AUTO",
+    },
+    ["condition"] = {
+    ["func"] = "function(trackers, GetTrackerCount)\n    -- This is the structure of the tracker table:\n    --trackers = {\n    --    [1] = {\n    --        type = \"ITEM\", -- \"CURRENCY\"\n    --        id = 0000,\n    --        objective = 1,\n    --        includeAllFactions = false,\n    --        includeAlts = false,\n    --        includeBank = false,\n    --        includeGuildBank = {\n    --             [\"GuildKey\"] = true\n    --        },\n    --        altIDs = {\n    --            {\n    --                type = \"ITEM\", -- \"CURRENCY\"\n    --                name = \"\",\n    --                id = 0000,\n    --                multiplier = 1,\n    --            }\n    --        },\n    --    },\n    --}\n    \n    -- NOTE: make sure the first argument of GetTrackerCount is nil\n    -- This function is not necessary, but available if your custom function is simple and doesn't change the way each tracker is calculated.\n    --local count =  GetTrackerCount(_, trackers[1])\n    \n    return GetTrackerCount(_, trackers[1])\nend",
+    ["type"] = "ALL",
+    },
+    },
+    {
+    ["onUse"] = {
+    ["macrotext"] = "",
+    ["type"] = "ITEM",
+    ["itemID"] = 212667,
+    },
+    ["trackers"] = {
+    {
+    ["type"] = "ITEM",
+    ["objective"] = 1,
+    ["includeAllFactions"] = false,
+    ["id"] = 212667,
+    ["includeBank"] = false,
+    ["name"] = "Gloom Chitin",
+    ["includeGuildBank"] = {
+    },
+    ["altIDs"] = {
+    {
+    ["id"] = 212668,
+    ["type"] = "ITEM",
+    ["multiplier"] = 1,
+    ["name"] = "Gloom Chitin",
+    },
+    {
+    ["id"] = 212669,
+    ["type"] = "ITEM",
+    ["multiplier"] = 1,
+    ["name"] = "Gloom Chitin",
+    },
+    },
+    ["includeAlts"] = false,
+    },
+    },
+    ["objective"] = 0,
+    ["mute"] = false,
+    ["title"] = "Gloom Chitin",
+    ["icon"] = {
+    ["id"] = 5929557,
+    ["type"] = "AUTO",
+    },
+    ["condition"] = {
+    ["func"] = "function(trackers, GetTrackerCount)\n    -- This is the structure of the tracker table:\n    --trackers = {\n    --    [1] = {\n    --        type = \"ITEM\", -- \"CURRENCY\"\n    --        id = 0000,\n    --        objective = 1,\n    --        includeAllFactions = false,\n    --        includeAlts = false,\n    --        includeBank = false,\n    --        includeGuildBank = {\n    --             [\"GuildKey\"] = true\n    --        },\n    --        altIDs = {\n    --            {\n    --                type = \"ITEM\", -- \"CURRENCY\"\n    --                name = \"\",\n    --                id = 0000,\n    --                multiplier = 1,\n    --            }\n    --        },\n    --    },\n    --}\n    \n    -- NOTE: make sure the first argument of GetTrackerCount is nil\n    -- This function is not necessary, but available if your custom function is simple and doesn't change the way each tracker is calculated.\n    --local count =  GetTrackerCount(_, trackers[1])\n    \n    return GetTrackerCount(_, trackers[1])\nend",
+    ["type"] = "ALL",
+    },
+    },
+    {
+    ["onUse"] = {
+    ["macrotext"] = "",
+    ["type"] = "ITEM",
+    ["itemID"] = 212670,
+    },
+    ["trackers"] = {
+    {
+    ["type"] = "ITEM",
+    ["objective"] = 1,
+    ["includeAllFactions"] = false,
+    ["id"] = 212670,
+    ["includeBank"] = false,
+    ["name"] = "Thunderous Hide",
+    ["includeGuildBank"] = {
+    },
+    ["altIDs"] = {
+    {
+    ["id"] = 212672,
+    ["type"] = "ITEM",
+    ["multiplier"] = 1,
+    ["name"] = "Thunderous Hide",
+    },
+    {
+    ["id"] = 212673,
+    ["type"] = "ITEM",
+    ["multiplier"] = 1,
+    ["name"] = "Thunderous Hide",
+    },
+    },
+    ["includeAlts"] = false,
+    },
+    },
+    ["objective"] = 0,
+    ["mute"] = false,
+    ["title"] = "Thunderous Hide",
+    ["icon"] = {
+    ["id"] = 5929567,
+    ["type"] = "AUTO",
+    },
+    ["condition"] = {
+    ["func"] = "function(trackers, GetTrackerCount)\n    -- This is the structure of the tracker table:\n    --trackers = {\n    --    [1] = {\n    --        type = \"ITEM\", -- \"CURRENCY\"\n    --        id = 0000,\n    --        objective = 1,\n    --        includeAllFactions = false,\n    --        includeAlts = false,\n    --        includeBank = false,\n    --        includeGuildBank = {\n    --             [\"GuildKey\"] = true\n    --        },\n    --        altIDs = {\n    --            {\n    --                type = \"ITEM\", -- \"CURRENCY\"\n    --                name = \"\",\n    --                id = 0000,\n    --                multiplier = 1,\n    --            }\n    --        },\n    --    },\n    --}\n    \n    -- NOTE: make sure the first argument of GetTrackerCount is nil\n    -- This function is not necessary, but available if your custom function is simple and doesn't change the way each tracker is calculated.\n    --local count =  GetTrackerCount(_, trackers[1])\n    \n    return GetTrackerCount(_, trackers[1])\nend",
+    ["type"] = "ALL",
+    },
+    },
+    {
+    ["onUse"] = {
+    ["macrotext"] = "",
+    ["type"] = "ITEM",
+    ["itemID"] = 212674,
+    },
+    ["trackers"] = {
+    {
+    ["type"] = "ITEM",
+    ["objective"] = 1,
+    ["includeAllFactions"] = false,
+    ["id"] = 212674,
+    ["includeBank"] = false,
+    ["name"] = "Sunless Carapace",
+    ["includeGuildBank"] = {
+    },
+    ["altIDs"] = {
+    {
+    ["id"] = 212675,
+    ["type"] = "ITEM",
+    ["multiplier"] = 1,
+    ["name"] = "Sunless Carapace",
+    },
+    {
+    ["id"] = 212676,
+    ["type"] = "ITEM",
+    ["multiplier"] = 1,
+    ["name"] = "Sunless Carapace",
+    },
+    },
+    ["includeAlts"] = false,
+    },
+    },
+    ["objective"] = 0,
+    ["mute"] = false,
+    ["title"] = "Sunless Carapace",
+    ["icon"] = {
+    ["id"] = 5929564,
+    ["type"] = "AUTO",
+    },
+    ["condition"] = {
+    ["func"] = "function(trackers, GetTrackerCount)\n    -- This is the structure of the tracker table:\n    --trackers = {\n    --    [1] = {\n    --        type = \"ITEM\", -- \"CURRENCY\"\n    --        id = 0000,\n    --        objective = 1,\n    --        includeAllFactions = false,\n    --        includeAlts = false,\n    --        includeBank = false,\n    --        includeGuildBank = {\n    --             [\"GuildKey\"] = true\n    --        },\n    --        altIDs = {\n    --            {\n    --                type = \"ITEM\", -- \"CURRENCY\"\n    --                name = \"\",\n    --                id = 0000,\n    --                multiplier = 1,\n    --            }\n    --        },\n    --    },\n    --}\n    \n    -- NOTE: make sure the first argument of GetTrackerCount is nil\n    -- This function is not necessary, but available if your custom function is simple and doesn't change the way each tracker is calculated.\n    --local count =  GetTrackerCount(_, trackers[1])\n    \n    return GetTrackerCount(_, trackers[1])\nend",
+    ["type"] = "ALL",
+    },
+    },
+    {
+    ["onUse"] = {
+    ["macrotext"] = "",
+    ["type"] = "ITEM",
+    ["itemID"] = 218338,
+    },
+    ["trackers"] = {
+    {
+    ["type"] = "ITEM",
+    ["objective"] = 1,
+    ["includeAllFactions"] = false,
+    ["id"] = 218338,
+    ["includeBank"] = false,
+    ["name"] = "Bottled Storm",
+    ["includeGuildBank"] = {
+    },
+    ["altIDs"] = {
+    },
+    ["includeAlts"] = false,
+    },
+    },
+    ["objective"] = 0,
+    ["mute"] = false,
+    ["title"] = "Bottled Storm",
+    ["icon"] = {
+    ["id"] = 136111,
+    ["type"] = "AUTO",
+    },
+    ["condition"] = {
+    ["func"] = "function(trackers, GetTrackerCount)\n    -- This is the structure of the tracker table:\n    --trackers = {\n    --    [1] = {\n    --        type = \"ITEM\", -- \"CURRENCY\"\n    --        id = 0000,\n    --        objective = 1,\n    --        includeAllFactions = false,\n    --        includeAlts = false,\n    --        includeBank = false,\n    --        includeGuildBank = {\n    --             [\"GuildKey\"] = true\n    --        },\n    --        altIDs = {\n    --            {\n    --                type = \"ITEM\", -- \"CURRENCY\"\n    --                name = \"\",\n    --                id = 0000,\n    --                multiplier = 1,\n    --            }\n    --        },\n    --    },\n    --}\n    \n    -- NOTE: make sure the first argument of GetTrackerCount is nil\n    -- This function is not necessary, but available if your custom function is simple and doesn't change the way each tracker is calculated.\n    --local count =  GetTrackerCount(_, trackers[1])\n    \n    return GetTrackerCount(_, trackers[1])\nend",
+    ["type"] = "ALL",
+    },
+    },
+    {
+    ["onUse"] = {
+    ["macrotext"] = "",
+    ["type"] = "ITEM",
+    ["itemID"] = 218339,
+    },
+    ["trackers"] = {
+    {
+    ["type"] = "ITEM",
+    ["objective"] = 1,
+    ["includeAllFactions"] = false,
+    ["id"] = 218339,
+    ["includeBank"] = false,
+    ["name"] = "Burning Cinderbee Setae",
+    ["includeGuildBank"] = {
+    },
+    ["altIDs"] = {
+    },
+    ["includeAlts"] = false,
+    },
+    },
+    ["objective"] = 0,
+    ["mute"] = false,
+    ["title"] = "Burning Cinderbee Setae",
+    ["icon"] = {
+    ["id"] = 237421,
+    ["type"] = "AUTO",
+    },
+    ["condition"] = {
+    ["func"] = "function(trackers, GetTrackerCount)\n    -- This is the structure of the tracker table:\n    --trackers = {\n    --    [1] = {\n    --        type = \"ITEM\", -- \"CURRENCY\"\n    --        id = 0000,\n    --        objective = 1,\n    --        includeAllFactions = false,\n    --        includeAlts = false,\n    --        includeBank = false,\n    --        includeGuildBank = {\n    --             [\"GuildKey\"] = true\n    --        },\n    --        altIDs = {\n    --            {\n    --                type = \"ITEM\", -- \"CURRENCY\"\n    --                name = \"\",\n    --                id = 0000,\n    --                multiplier = 1,\n    --            }\n    --        },\n    --    },\n    --}\n    \n    -- NOTE: make sure the first argument of GetTrackerCount is nil\n    -- This function is not necessary, but available if your custom function is simple and doesn't change the way each tracker is calculated.\n    --local count =  GetTrackerCount(_, trackers[1])\n    \n    return GetTrackerCount(_, trackers[1])\nend",
+    ["type"] = "ALL",
+    },
+    },
+    {
+    ["onUse"] = {
+    ["macrotext"] = "",
+    ["type"] = "ITEM",
+    ["itemID"] = 218337,
+    },
+    ["trackers"] = {
+    {
+    ["type"] = "ITEM",
+    ["objective"] = 1,
+    ["includeAllFactions"] = false,
+    ["id"] = 218337,
+    ["includeBank"] = false,
+    ["name"] = "Honed Bone Shards",
+    ["includeGuildBank"] = {
+    },
+    ["altIDs"] = {
+    },
+    ["includeAlts"] = false,
+    },
+    },
+    ["objective"] = 0,
+    ["mute"] = false,
+    ["title"] = "Honed Bone Shards",
+    ["icon"] = {
+    ["id"] = 133724,
+    ["type"] = "AUTO",
+    },
+    ["condition"] = {
+    ["func"] = "function(trackers, GetTrackerCount)\n    -- This is the structure of the tracker table:\n    --trackers = {\n    --    [1] = {\n    --        type = \"ITEM\", -- \"CURRENCY\"\n    --        id = 0000,\n    --        objective = 1,\n    --        includeAllFactions = false,\n    --        includeAlts = false,\n    --        includeBank = false,\n    --        includeGuildBank = {\n    --             [\"GuildKey\"] = true\n    --        },\n    --        altIDs = {\n    --            {\n    --                type = \"ITEM\", -- \"CURRENCY\"\n    --                name = \"\",\n    --                id = 0000,\n    --                multiplier = 1,\n    --            }\n    --        },\n    --    },\n    --}\n    \n    -- NOTE: make sure the first argument of GetTrackerCount is nil\n    -- This function is not necessary, but available if your custom function is simple and doesn't change the way each tracker is calculated.\n    --local count =  GetTrackerCount(_, trackers[1])\n    \n    return GetTrackerCount(_, trackers[1])\nend",
+    ["type"] = "ALL",
+    },
+    },
+    {
+    ["onUse"] = {
+    ["macrotext"] = "",
+    ["type"] = "ITEM",
+    ["itemID"] = 218336,
+    },
+    ["trackers"] = {
+    {
+    ["type"] = "ITEM",
+    ["objective"] = 1,
+    ["includeAllFactions"] = false,
+    ["id"] = 218336,
+    ["includeBank"] = false,
+    ["name"] = "Kaheti Swarm Chitin",
+    ["includeGuildBank"] = {
+    },
+    ["altIDs"] = {
+    },
+    ["includeAlts"] = false,
+    },
+    },
+    ["objective"] = 0,
+    ["mute"] = false,
+    ["title"] = "Kaheti Swarm Chitin",
+    ["icon"] = {
+    ["id"] = 5929558,
+    ["type"] = "AUTO",
+    },
+    ["condition"] = {
+    ["func"] = "function(trackers, GetTrackerCount)\n    -- This is the structure of the tracker table:\n    --trackers = {\n    --    [1] = {\n    --        type = \"ITEM\", -- \"CURRENCY\"\n    --        id = 0000,\n    --        objective = 1,\n    --        includeAllFactions = false,\n    --        includeAlts = false,\n    --        includeBank = false,\n    --        includeGuildBank = {\n    --             [\"GuildKey\"] = true\n    --        },\n    --        altIDs = {\n    --            {\n    --                type = \"ITEM\", -- \"CURRENCY\"\n    --                name = \"\",\n    --                id = 0000,\n    --                multiplier = 1,\n    --            }\n    --        },\n    --    },\n    --}\n    \n    -- NOTE: make sure the first argument of GetTrackerCount is nil\n    -- This function is not necessary, but available if your custom function is simple and doesn't change the way each tracker is calculated.\n    --local count =  GetTrackerCount(_, trackers[1])\n    \n    return GetTrackerCount(_, trackers[1])\nend",
+    ["type"] = "ALL",
+    },
+    },
+    },
+    }
+
+if version >= 110000 then
+    private.templates = Mixin(private.templates, tww)
+end
+
 function private:SaveTemplate(barID, templateName)
     local widget = private.bars[barID]
     local barDB = widget:GetDB()
