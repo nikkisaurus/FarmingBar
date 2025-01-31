@@ -404,6 +404,14 @@ L.OptionsHelp = function()
             "Sometimes alert progress will be inaccurate when using a tracker's altID. This has been partially remedied in Farming Bar Version 3.9.0, but may require an additional step from you. The issue is caused by previous versions' rounding multipliers to 3 decimal points, which when factored into count calculations results in values less than 1 when it's expected to equal 1 (for example, 1/3 is rounded to 0.333, but when 3 of the item are acquired, the calculations equate to 0.999). Because rounding can result from different ratios (1/75, 1/76, 1/77, 1/78, 1/79, 1/80, for example, all round to 0.013), I've opted not to automatically fix misrounded multipliers. To fix any trackers causing this error, you will need to edit the tracker and reenter the appropriate multiplier ratio. The addon will no longer round the resulting decimal, and alerts should resume as expected. Please remember that any changes to an Objective Template (accessed through the main options frame) will not automatically apply to anything added to a bar. You must manually overwrite the objective on the bar with your updated template or directly edit the objective via the Objective Editor. For any additional questions, please refer to Github Issue #61 or create a new ticket.",
         },
         {
+            3,
+            "Addon Maintenance",
+        },
+        {
+            1,
+            "I am no longer actively playing World of Warcraft, so updates may not come as frequently. If there are any breaking errors, I will do my best to log in to try to address the issues, but additional features may not be added often. If you are interested in minor maintenance of this addon, please message me directly via Discord (nikketa) to discuss.",
+        },
+        {
             2,
             "Alerts",
             {
