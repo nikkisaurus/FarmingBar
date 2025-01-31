@@ -154,7 +154,7 @@ function private:GetButtonTooltip(widget)
                 double = true,
                 k = L["Include Warbank"],
                 v = format("%d/%d", GetIncludeCount(trackers, "includeWarbank"), addon:tcount(trackers)),
-                hidden = not showDetails,
+                hidden = not showDetails or select(4, GetBuildInfo()) < 110000,
             },
             {
                 double = true,

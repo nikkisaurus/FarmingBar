@@ -442,6 +442,9 @@ function private:GetObjectiveEditorTrackersContent(widget)
                             type = "toggle",
                             name = L["Warbank"],
                             desc = L["Include counts from the warbank for this tracker."],
+                            hidden = function()
+                                return select(4, GetBuildInfo()) < 110000
+                            end,
                         },
                         Alts = {
                             order = 3,

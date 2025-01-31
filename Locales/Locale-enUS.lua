@@ -188,6 +188,7 @@ L["Include counts from the selected guild bank(s) for this tracker."] = true
 L["Include counts from the warbank for this tracker."] = true
 L["Include Guild Bank"] = true
 L["Include items listed on the auction house in objective counts."] = true
+L["Include Warbank"] = true
 L["Insets"] = true
 L["Invalid Alt ID"] = true
 L["Invalid alpha value. Please provide an integer between 0 and 1."] = true
