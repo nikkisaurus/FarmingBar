@@ -409,7 +409,7 @@ L.OptionsHelp = function()
         },
         {
             1,
-            "I am no longer actively playing World of Warcraft, so updates may not come as frequently. If there are any breaking errors, I will do my best to log in to try to address the issues, but additional features may not be added often. If you are interested in helping with minor maintenance of this addon, please message me directly via Discord (nikketa) to discuss.",
+            format("I am no longer actively playing World of Warcraft, so updates may not come as frequently. If there are any breaking errors, I will do my best to log in to try to address the issues, but additional features may not be added often. If you are interested in helping with minor maintenance of this addon, please message me directly via Discord (%s) to discuss.", addon:ColorFontString("nikketa", "LIGHTBLUE")),
         },
         {
             2,
