@@ -31,11 +31,11 @@ function private:MoveObjectiveToBank(widget)
     local slots = {}
     for trackerKey, tracker in pairs(buttonDB.trackers) do
         local objective = private:GetTrackerObjectiveCount(widget, trackerKey)
-        if tracker.type == "ITEM" and GetItemCount(tracker.id) > 0 then
+        if tracker.type == "ITEM" and C_Item.GetItemCount(tracker.id) > 0 then
             addon.CacheItem(tracker.id, function(itemID)
                 private.status.itemMover = widget
                 local _, _, _, _, _, _, _, itemStackCount = GetItemInfo(itemID)
-                local itemCount = GetItemCount(itemID)
+                local itemCount = C_Item.GetItemCount(itemID)
 
                 -- Find bag slots with item
                 for bagID = 0, NUM_BAG_SLOTS do

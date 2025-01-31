@@ -61,7 +61,7 @@ function private:GetTrackerCount(trackerInfo, bar, buttonID, overrideObjective)
         if DS then
             count = floor(private:GetDataStoreItemCount(trackerInfo.id, trackerInfo) / objective)
         else
-            count = floor(GetItemCount(trackerInfo.id, trackerInfo.includeBank, nil, trackerInfo.includeBank) / objective)
+            count = floor(C_Item.GetItemCount(trackerInfo.id, trackerInfo.includeBank, nil, trackerInfo.includeBank, trackerInfo.includeWarbank) / objective)
         end
     elseif trackerInfo.type == "CURRENCY" then
         local quantity
@@ -81,7 +81,7 @@ function private:GetTrackerCount(trackerInfo, bar, buttonID, overrideObjective)
             if DS then
                 altCount = floor(private:GetDataStoreItemCount(altInfo.id, trackerInfo) * altInfo.multiplier)
             else
-                altCount = floor(GetItemCount(altInfo.id, trackerInfo.includeBank, nil, trackerInfo.includeBank) * altInfo.multiplier)
+                altCount = floor(C_Item.GetItemCount(altInfo.id, trackerInfo.includeBank, nil, trackerInfo.includeBank, trackerInfo.includeWarbank) * altInfo.multiplier)
             end
         elseif altInfo.type == "CURRENCY" then
             if DS and trackerInfo.includeAlts then

@@ -152,6 +152,12 @@ function private:GetButtonTooltip(widget)
             },
             {
                 double = true,
+                k = L["Include Warbank"],
+                v = format("%d/%d", GetIncludeCount(trackers, "includeWarbank"), addon:tcount(trackers)),
+                hidden = not showDetails,
+            },
+            {
+                double = true,
                 k = L["Include Alts"],
                 v = format("%d/%d", GetIncludeCount(trackers, "includeAlts"), addon:tcount(trackers)),
                 hidden = not showDetails or private:MissingDataStore(),

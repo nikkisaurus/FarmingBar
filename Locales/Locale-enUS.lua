@@ -185,6 +185,7 @@ L["Include counts from all factions for this tracker."] = true
 L["Include counts from alts for this tracker."] = true
 L["Include counts from the bank for this tracker."] = true
 L["Include counts from the selected guild bank(s) for this tracker."] = true
+L["Include counts from the warbank for this tracker."] = true
 L["Include Guild Bank"] = true
 L["Include items listed on the auction house in objective counts."] = true
 L["Insets"] = true
@@ -370,6 +371,7 @@ L["Use GameTooltip"] = true
 L["Use the GameTooltip for bar and button tooltips instead of Farming Bar's default tooltip."] = true
 L["User Templates"] = true
 L["View Code"] = true
+L["Warbank"] = true
 L["X-Offset"] = true
 L["Y-Offset"] = true
 

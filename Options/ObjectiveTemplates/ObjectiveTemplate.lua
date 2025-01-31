@@ -416,8 +416,14 @@ function private:GetObjectiveTemplateOptions(objectiveTemplateName)
                             name = L["Bank"],
                             desc = L["Include counts from the bank for this tracker."],
                         },
-                        Alts = {
+                        Warbank = {
                             order = 2,
+                            type = "toggle",
+                            name = L["Warbank"],
+                            desc = L["Include counts from the warbank for this tracker."],
+                        },
+                        Alts = {
+                            order = 3,
                             type = "toggle",
                             name = L["Alts"],
                             desc = L["Include counts from alts for this tracker."],
@@ -426,7 +432,7 @@ function private:GetObjectiveTemplateOptions(objectiveTemplateName)
                             end,
                         },
                         AllFactions = {
-                            order = 3,
+                            order = 4,
                             type = "toggle",
                             name = L["All Factions"],
                             desc = L["Include counts from all factions for this tracker."],
@@ -435,7 +441,7 @@ function private:GetObjectiveTemplateOptions(objectiveTemplateName)
                             end,
                         },
                         GuildBank = {
-                            order = 4,
+                            order = 5,
                             type = "multiselect",
                             name = L["Guild Bank"],
                             desc = L["Include counts from the selected guild bank(s) for this tracker."],

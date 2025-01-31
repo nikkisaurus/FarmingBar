@@ -42,6 +42,9 @@ function private:GetDataStoreItemCount(itemID, trackerInfo)
             local inventory = DS:GetInventoryItemCount(character, itemID) or 0
 
             count = count + bags + (trackerInfo.includeBank and bank or 0) + mail + auction + inventory
+
+            local warbank = C_Item.GetItemCount(itemID, trackerInfo.includeBank, nil, trackerInfo.includeBank, trackerInfo.includeWarbank) - count
+            count = count + (trackerInfo.includeWarbank and warbank or 0)
         end
     end
 
@@ -53,7 +56,7 @@ function private:GetDataStoreItemCount(itemID, trackerInfo)
         end
     end
 
-    count = count == 0 and GetItemCount(itemID, trackerInfo.includeBank, nil, trackerInfo.includeBank) or count
+    count = count == 0 and C_Item.GetItemCount(itemID, trackerInfo.includeBank, nil, trackerInfo.includeBank, trackerInfo.includeWarbank) or count
 
     return count
 end
