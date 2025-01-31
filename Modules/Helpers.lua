@@ -302,6 +302,7 @@ private.lists = {
         highlight = L["Highlight"],
         icon = L["Icon"],
         iconBorder = L["Icon Border"],
+        iconTier = L["Icon Tier"],
         normal = L["Normal"],
         pushed = L["Pushed"],
         shadow = L["Shadow"],
@@ -322,6 +323,15 @@ private.lists = {
         OVERLAY = "Overlay",
         HIGHLIGHT = "Highlight",
     },
+}
+
+private.iconTiers = {
+    [0] = { 18 / 64, 35 / 64, 18 / 64, 32 / 64 },
+    [1] = { 36 / 64, 52 / 64, 18 / 64, 32 / 64 },
+    [2] = { 18 / 64, 35 / 64, 34 / 64, 48 / 64 },
+    [3] = { 18 / 64, 35 / 64, 48 / 64, 62 / 64 },
+    [4] = { 36 / 64, 52 / 64, 34 / 64, 48 / 64 },
+    [5] = { 36 / 64, 52 / 64, 48 / 64, 62 / 64 },
 }
 
 local function MSQ_Callback(...)
@@ -416,6 +426,7 @@ end
 function private:RegisterMedia()
     LSM:Register(LSM.MediaType.BACKGROUND, L["UI EmptySlot White"], [[INTERFACE\BUTTONS\UI-EMPTYSLOT-WHITE]])
     LSM:Register(LSM.MediaType.BACKGROUND, L["UI ActionButton Border"], [[Interface\Buttons\UI-ActionButton-Border]])
+    LSM:Register(LSM.MediaType.BACKGROUND, L["Professions Quality Icons"], [[interface/professions/professionsqualityicons]])
     LSM:Register(LSM.MediaType.BACKGROUND, L["Icon Border Thick"], [[Interface\AddOns\FarmingBar\Media\IconBorderThick]])
     LSM:Register(LSM.MediaType.BACKGROUND, L["Icon Border"], [[Interface\AddOns\FarmingBar\Media\IconBorder]])
     LSM:Register(LSM.MediaType.BORDER, L["Solid Border"], [[Interface\AddOns\FarmingBar\Media\SolidBorder]])

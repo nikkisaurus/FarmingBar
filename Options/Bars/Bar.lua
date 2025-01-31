@@ -437,6 +437,7 @@ function private:GetBarOptions(barID)
             set = function(info, value)
                 private.db.profile.bars[barID][info[#info]] = value
                 private.bars[barID]:SetPoints()
+                private.bars[barID]:UpdateButtons()
             end,
             args = {
                 barAnchor = {

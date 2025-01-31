@@ -353,6 +353,12 @@ local methods = {
         return widget:GetUserData("barID"), widget:GetUserData("buttonID")
     end,
 
+    GetProfessionQuality = function(widget)
+        local _, buttonDB = widget:GetDB()
+
+        return buttonDB.onUse.itemID
+    end,
+
     Hide = function(widget)
         widget.frame:Hide()
     end,
@@ -467,10 +473,14 @@ local methods = {
         if isEmpty then
             widget.icon:SetTexture()
             widget.iconBorder:Hide()
+            widget.iconTier:SetTexCoord(0, 1, 0, 1)
+            widget.iconTier:Hide()
         else
+            -- Icon
             local icon = private:GetObjectiveIcon(buttonDB)
             widget.icon:SetTexture(icon)
 
+            -- Icon Border
             local skin = private.db.global.skins[barDB.skin]
             if not skin.buttonTextures.iconBorder.hidden and buttonDB.onUse.type == "ITEM" then
                 addon:CacheItem(buttonDB.onUse.itemID, function(success, id, widget)
@@ -487,6 +497,15 @@ local methods = {
                 end, { widget })
             else
                 widget.iconBorder:Hide()
+            end
+
+            -- Icon Tier
+            local tier = private.iconTiers[C_TradeSkillUI.GetItemReagentQualityByItemInfo(widget:GetProfessionQuality())]
+            if tier then
+                widget.iconTier:SetTexCoord(unpack(tier))
+                widget.iconTier:Show()
+            else
+                widget.iconTier:Hide()
             end
         end
     end,
@@ -562,6 +581,7 @@ local methods = {
                 layer:SetTexCoord(addon:unpack(textureInfo.texCoords, { 0, 1, 0, 1 }))
                 layer:SetBlendMode(textureInfo.blendMode)
                 layer:SetDrawLayer(textureInfo.drawLayer, textureInfo.layer)
+                layer:SetSize(barDB.buttonSize * (textureInfo.scale or 1), barDB.buttonSize * (textureInfo.scale or 1))
 
                 if textureInfo.hidden then
                     layer:Hide()
@@ -574,6 +594,10 @@ local methods = {
                     layer:SetPoint("RIGHT", textureInfo.insets.right, 0)
                     layer:SetPoint("TOP", 0, textureInfo.insets.top)
                     layer:SetPoint("BOTTOM", 0, textureInfo.insets.bottom)
+                elseif textureInfo.points then
+                    for k, v in pairs(textureInfo.points) do
+                        layer:SetPoint(v[1], widget.frame, v[2] or v[1], v[3], v[4])
+                    end
                 else
                     layer:SetAllPoints(widget.frame)
                 end
@@ -692,6 +716,7 @@ local function Constructor()
     local highlight = frame:CreateTexture("$parentHighlight")
     local icon = frame:CreateTexture("$parentIcon")
     local iconBorder = frame:CreateTexture("$parentIconBorder")
+    local iconTier = frame:CreateTexture("$parentIconTier")
     local mask = frame:CreateTexture("$parentMask")
     local normal = frame:CreateTexture("$parentNormal")
     local objective = frame:CreateFontString("$parentObjective", "OVERLAY", "GameFontHighlight")
@@ -708,6 +733,7 @@ local function Constructor()
         highlight = highlight,
         icon = icon,
         iconBorder = iconBorder,
+        iconTier = iconTier,
         mask = mask,
         normal = normal,
         objective = objective,

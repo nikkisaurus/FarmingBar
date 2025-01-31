@@ -259,6 +259,7 @@ function private:GetConfigOptions()
                     set = function(info, value)
                         private:SetMixedBarDBValues(info, value, _, function(barID)
                             private.bars[barID]:SetPoints()
+                            private.bars[barID]:UpdateButtons()
                         end)
                     end,
                     args = {
