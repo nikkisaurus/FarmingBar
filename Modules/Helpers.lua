@@ -352,10 +352,9 @@ function private:GetMixedBarDBValues(info, path, path2)
     local key = info[#info]
     if info.option.type == "toggle" then
         local count, total = 0, 0
-        for _, bar in pairs(private.bars) do
+        for barID, bar in pairs(private.bars) do
             local barDB = bar:GetDB()
-
-            if (path2 and barDB[path][path2][key]) or (path and barDB[path][key]) or barDB[key] then
+            if (path2 and barDB[path][path2][key]) or (path and barDB[path][key]) or (not path and barDB[key]) then
                 count = count + 1
             end
             total = total + 1
@@ -373,7 +372,7 @@ function private:GetMixedBarDBValues(info, path, path2)
         for _, bar in pairs(private.bars) do
             local barDB = bar:GetDB()
             if not value then
-                value = (path2 and barDB[path][path2][key]) or (path and barDB[path][key]) or barDB[key]
+                value = (path2 and barDB[path][path2][key]) or (path and barDB[path][key]) or (not path and barDB[key])
             elseif value ~= ((path2 and barDB[path][path2][key]) or (path and barDB[path][key]) or barDB[key]) then
                 return
             end
@@ -426,7 +425,7 @@ end
 function private:RegisterMedia()
     LSM:Register(LSM.MediaType.BACKGROUND, L["UI EmptySlot White"], [[INTERFACE\BUTTONS\UI-EMPTYSLOT-WHITE]])
     LSM:Register(LSM.MediaType.BACKGROUND, L["UI ActionButton Border"], [[Interface\Buttons\UI-ActionButton-Border]])
-    LSM:Register(LSM.MediaType.BACKGROUND, L["Professions Quality Icons"], [[interface/professions/professionsqualityicons]])
+    LSM:Register(LSM.MediaType.BACKGROUND, L["Profession Quality Icon"], [[interface/professions/professionsqualityicons]])
     LSM:Register(LSM.MediaType.BACKGROUND, L["Icon Border Thick"], [[Interface\AddOns\FarmingBar\Media\IconBorderThick]])
     LSM:Register(LSM.MediaType.BACKGROUND, L["Icon Border"], [[Interface\AddOns\FarmingBar\Media\IconBorder]])
     LSM:Register(LSM.MediaType.BORDER, L["Solid Border"], [[Interface\AddOns\FarmingBar\Media\SolidBorder]])

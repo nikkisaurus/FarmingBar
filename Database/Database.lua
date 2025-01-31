@@ -17,6 +17,13 @@ private.defaults = {
         buttons = {},
         buttonsPerAxis = 6,
         buttonSize = 40,
+        iconTier = {
+            enabled = true,
+            scale = 0.5,
+            anchor = "CENTER",
+            x = 5,
+            y = -2,
+        },
         fontstrings = {
             Cooldown = {
                 enabled = true,
@@ -299,12 +306,10 @@ end]],
                     hidden = false,
                 },
                 iconTier = {
-                    texture = "Professions Quality Icons",
+                    texture = "Profession Quality Icon",
                     texCoords = { 0, 1, 0, 1 },
                     color = { 1, 1, 1, 1 },
                     blendMode = "BLEND",
-                    points = { { "LEFT" } },
-                    scale = 0.75,
                     drawLayer = "OVERLAY",
                     layer = 2,
                     hidden = false,
@@ -409,12 +414,10 @@ end]],
                     hidden = false,
                 },
                 iconTier = {
-                    texture = "Professions Quality Icons",
+                    texture = "Profession Quality Icon",
                     texCoords = { 0, 1, 0, 1 },
                     color = { 1, 1, 1, 1 },
                     blendMode = "BLEND",
-                    points = { { "LEFT" } },
-                    scale = 0.75,
                     drawLayer = "OVERLAY",
                     layer = 2,
                     hidden = false,
@@ -667,7 +670,12 @@ function private:InitializeDatabase()
     if private.db.global.version == 5 then
         private:ConvertDB_V5()
     end
-    private.db.global.version = 7
+
+    if private.db.global.version <= 8 then
+        private:ConvertDB_V8()
+    end
+
+    private.db.global.version = 8
 
     private.db.RegisterCallback(addon, "OnProfileChanged", "OnProfile_")
     private.db.RegisterCallback(addon, "OnProfileCopied", "OnProfile_")

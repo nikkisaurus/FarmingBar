@@ -247,6 +247,38 @@ function private:GetConfigOptions()
                                 end)
                             end,
                         },
+                        iconTier = {
+                            order = 6,
+                            type = "group",
+                            inline = true,
+                            name = L["Profession Quality Icon"],
+                            get = function(info)
+                                return private:GetMixedBarDBValues(info, "iconTier")
+                            end,
+                            set = function(info, value, ...)
+                                private:SetMixedBarDBValues(info, value, "iconTier", function(barID)
+                                    private.bars[barID]:SetPoints()
+                                    private.bars[barID]:UpdateButtons()
+                                end)
+                            end,
+                            args = {
+                                enabled = {
+                                    order = 1,
+                                    type = "toggle",
+                                    tristate = true,
+                                    name = L["Enable"],
+                                },
+                                scale = {
+                                    order = 2,
+                                    type = "range",
+                                    min = private.CONST.MIN_SCALE,
+                                    max = private.CONST.MAX_SCALE,
+                                    step = 0.01,
+                                    isPercent = true,
+                                    name = L["Scale"],
+                                },
+                            },
+                        },
                     },
                 },
                 layout = {
@@ -336,6 +368,46 @@ function private:GetConfigOptions()
                                     max = private.CONST.MAX_BUTTON_SIZE,
                                     step = 1,
                                     name = L["Button Size"],
+                                },
+                            },
+                        },
+                        iconTier = {
+                            order = 5,
+                            type = "group",
+                            inline = true,
+                            name = L["Profession Quality Icon"],
+                            get = function(info)
+                                return private:GetMixedBarDBValues(info, "iconTier")
+                            end,
+                            set = function(info, value, ...)
+                                private:SetMixedBarDBValues(info, value, "iconTier", function(barID)
+                                    private.bars[barID]:SetPoints()
+                                    private.bars[barID]:UpdateButtons()
+                                end)
+                            end,
+                            args = {
+                                anchor = {
+                                    order = 1,
+                                    type = "select",
+                                    style = "dropdown",
+                                    name = L["Anchor"],
+                                    values = private.lists.anchors,
+                                },
+                                x = {
+                                    order = 2,
+                                    type = "range",
+                                    min = -private.CONST.MIN_MAX_XOFFSET,
+                                    max = private.CONST.MIN_MAX_XOFFSET,
+                                    step = 1,
+                                    name = L["X-Offset"],
+                                },
+                                y = {
+                                    order = 3,
+                                    type = "range",
+                                    min = -private.CONST.MIN_MAX_YOFFSET,
+                                    max = private.CONST.MIN_MAX_YOFFSET,
+                                    step = 1,
+                                    name = L["Y-Offset"],
                                 },
                             },
                         },

@@ -295,7 +295,7 @@ function private:GetBarOptions(barID)
                     end,
                 },
                 scale = {
-                    order = 2,
+                    order = 3,
                     type = "range",
                     min = private.CONST.MIN_SCALE,
                     max = private.CONST.MAX_SCALE,
@@ -308,7 +308,7 @@ function private:GetBarOptions(barID)
                     end,
                 },
                 mouseover = {
-                    order = 3,
+                    order = 4,
                     type = "toggle",
                     name = L["Mouseover"],
                     desc = L["Show this bar only on mouseover."],
@@ -318,7 +318,7 @@ function private:GetBarOptions(barID)
                     end,
                 },
                 showEmpty = {
-                    order = 3,
+                    order = 5,
                     type = "toggle",
                     name = L["Show Empty"],
                     desc = L["Shows a backdrop on empty buttons."],
@@ -328,7 +328,7 @@ function private:GetBarOptions(barID)
                     end,
                 },
                 showCooldown = {
-                    order = 4,
+                    order = 6,
                     type = "toggle",
                     name = L["Show Cooldown"],
                     desc = L["Shows the cooldown swipe animation on buttons."],
@@ -338,7 +338,7 @@ function private:GetBarOptions(barID)
                     end,
                 },
                 hidden = {
-                    order = 5,
+                    order = 7,
                     type = "group",
                     inline = true,
                     name = L["Hidden"],
@@ -422,6 +422,36 @@ function private:GetBarOptions(barID)
                             confirm = function()
                                 return L["Are you sure you want to reset this bar's hidden function?"]
                             end,
+                        },
+                    },
+                },
+                iconTier = {
+                    order = 8,
+                    type = "group",
+                    inline = true,
+                    name = L["Profession Quality Icon"],
+                    get = function(info)
+                        return barDB.iconTier[info[#info]]
+                    end,
+                    set = function(info, value)
+                        private.db.profile.bars[barID].iconTier[info[#info]] = value
+                        private.bars[barID]:SetPoints()
+                        private.bars[barID]:UpdateButtons()
+                    end,
+                    args = {
+                        enabled = {
+                            order = 1,
+                            type = "toggle",
+                            name = L["Enable"],
+                        },
+                        scale = {
+                            order = 2,
+                            type = "range",
+                            min = private.CONST.MIN_SCALE,
+                            max = private.CONST.MAX_SCALE,
+                            step = 0.01,
+                            isPercent = true,
+                            name = L["Scale"],
                         },
                     },
                 },
@@ -511,6 +541,45 @@ function private:GetBarOptions(barID)
                             max = private.CONST.MAX_BUTTON_SIZE,
                             step = 1,
                             name = L["Button Size"],
+                        },
+                    },
+                },
+                iconTier = {
+                    order = 5,
+                    type = "group",
+                    inline = true,
+                    name = L["Profession Quality Icon"],
+                    get = function(info)
+                        return barDB.iconTier[info[#info]]
+                    end,
+                    set = function(info, value)
+                        private.db.profile.bars[barID].iconTier[info[#info]] = value
+                        private.bars[barID]:SetPoints()
+                        private.bars[barID]:UpdateButtons()
+                    end,
+                    args = {
+                        anchor = {
+                            order = 1,
+                            type = "select",
+                            style = "dropdown",
+                            name = L["Anchor"],
+                            values = private.lists.anchors,
+                        },
+                        x = {
+                            order = 2,
+                            type = "range",
+                            min = -private.CONST.MIN_MAX_XOFFSET,
+                            max = private.CONST.MIN_MAX_XOFFSET,
+                            step = 1,
+                            name = L["X-Offset"],
+                        },
+                        y = {
+                            order = 3,
+                            type = "range",
+                            min = -private.CONST.MIN_MAX_YOFFSET,
+                            max = private.CONST.MIN_MAX_YOFFSET,
+                            step = 1,
+                            name = L["Y-Offset"],
                         },
                     },
                 },

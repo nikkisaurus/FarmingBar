@@ -4,4 +4,5 @@
     <Include file="Database-v2.lua"/>
     <Include file="Database-v4.lua"/>
     <Include file="Database-v5.lua"/>
+    <Include file="Database-v8.lua"/>
 </Ui>

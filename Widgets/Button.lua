@@ -501,8 +501,12 @@ local methods = {
 
             -- Icon Tier
             local tier = private.iconTiers[C_TradeSkillUI.GetItemReagentQualityByItemInfo(widget:GetProfessionQuality())]
-            if tier then
+            if tier and barDB.iconTier.enabled then
                 widget.iconTier:SetTexCoord(unpack(tier))
+                widget.iconTier:ClearAllPoints()
+                widget.iconTier:SetSize(barDB.buttonSize * barDB.iconTier.scale, barDB.buttonSize * barDB.iconTier.scale)
+                widget.iconTier:SetPoint(barDB.iconTier.anchor, widget.frame, barDB.iconTier.anchor, barDB.iconTier.x, barDB.iconTier.y)
+
                 widget.iconTier:Show()
             else
                 widget.iconTier:Hide()
@@ -581,7 +585,6 @@ local methods = {
                 layer:SetTexCoord(addon:unpack(textureInfo.texCoords, { 0, 1, 0, 1 }))
                 layer:SetBlendMode(textureInfo.blendMode)
                 layer:SetDrawLayer(textureInfo.drawLayer, textureInfo.layer)
-                layer:SetSize(barDB.buttonSize * (textureInfo.scale or 1), barDB.buttonSize * (textureInfo.scale or 1))
 
                 if textureInfo.hidden then
                     layer:Hide()
@@ -594,10 +597,6 @@ local methods = {
                     layer:SetPoint("RIGHT", textureInfo.insets.right, 0)
                     layer:SetPoint("TOP", 0, textureInfo.insets.top)
                     layer:SetPoint("BOTTOM", 0, textureInfo.insets.bottom)
-                elseif textureInfo.points then
-                    for k, v in pairs(textureInfo.points) do
-                        layer:SetPoint(v[1], widget.frame, v[2] or v[1], v[3], v[4])
-                    end
                 else
                     layer:SetAllPoints(widget.frame)
                 end
