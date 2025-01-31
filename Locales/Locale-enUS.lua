@@ -381,7 +381,7 @@ L.OptionsHelp = function()
     local strs = {
         {
             3,
-            "Farming Bar - Version 3.9.0",
+            "Farming Bar - Version 4.0.0",
         },
         {
             1,
