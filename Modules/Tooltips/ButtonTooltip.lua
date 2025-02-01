@@ -189,6 +189,7 @@ function private:GetButtonTooltip(widget)
             {
                 texture = true,
                 line = onUseIcon or 134400,
+                tier = C_TradeSkillUI.GetItemReagentQualityByItemInfo(buttonDB.onUse.itemID),
                 hidden = not showDetails or onUseType ~= "ITEM",
             },
             private:GetTooltipBlankLine(not showDetails),
