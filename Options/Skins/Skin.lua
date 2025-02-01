@@ -167,6 +167,9 @@ function private:GetSkinOptions(skinName)
                 private.db.global.skins[skinName].buttonTextures[layerName][info[#info]] = value
                 private:UpdateBarSkins(skinName)
             end,
+            hidden = function()
+                return layerName == "iconTier"
+            end,
             args = {
                 texture = {
                     order = 1,
