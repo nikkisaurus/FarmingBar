@@ -115,6 +115,7 @@ function private:GetButtonTooltip(widget)
                 tinsert(pendingLines, {
                     texture = true,
                     line = trackerIcon or 134400,
+                    tier = C_TradeSkillUI.GetItemReagentQualityByItemInfo(tracker.id),
                 })
             else
                 tinsert(pendingLines, {

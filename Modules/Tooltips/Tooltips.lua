@@ -56,7 +56,10 @@ function private:LoadTooltip(owner, anchor, x, y, lines)
             if line.link then
                 tooltip:SetHyperlink(line.line)
             elseif line.texture then
-                tooltip:AddTexture(line.line, line.size)
+                tooltip:AddTexture(line.line)
+                if line.tier then
+                    tooltip:AddAtlas(format("Professions-Icon-Quality-Tier%d-Inv", line.tier))
+                end
             elseif line.double then
                 tooltip:AddDoubleLine(line.k, line.v, addon:unpack(line.color, private.CONST.TOOLTIP_KEYVALUE))
             else
