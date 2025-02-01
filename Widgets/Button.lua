@@ -356,7 +356,19 @@ local methods = {
     GetProfessionQuality = function(widget)
         local _, buttonDB = widget:GetDB()
 
-        return buttonDB.onUse.itemID
+        local quality
+        for _, tracker in pairs(buttonDB.trackers) do
+            if tracker.id then
+                local trackerQuality = C_TradeSkillUI.GetItemReagentQualityByItemInfo(tracker.id)
+                if not quality then
+                    quality = trackerQuality
+                elseif trackerQuality ~= quality then
+                    return 0
+                end
+            end
+        end
+
+        return quality or C_TradeSkillUI.GetItemReagentQualityByItemInfo(buttonDB.onUse.itemID)
     end,
 
     Hide = function(widget)
@@ -500,7 +512,7 @@ local methods = {
             end
 
             -- Icon Tier
-            local tier = private.iconTiers[C_TradeSkillUI.GetItemReagentQualityByItemInfo(widget:GetProfessionQuality())]
+            local tier = private.iconTiers[widget:GetProfessionQuality()]
             if tier and barDB.iconTier.enabled then
                 widget.iconTier:SetTexCoord(unpack(tier))
                 widget.iconTier:ClearAllPoints()
