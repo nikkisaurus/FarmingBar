@@ -26,10 +26,10 @@ jobs:
               with:
                   args: -g classic -w 0
 
-            - name: Package and release for Wrath
+            - name: Package and release for Cata
               uses: BigWigsMods/packager@master
               with:
-                  args: -g wrath -w 0
+                  args: -g cata -w 0
 
             - name: Package and release for Retail
               uses: BigWigsMods/packager@master
