@@ -224,7 +224,7 @@ function private:GetObjectiveTemplateOptions(objectiveTemplateName)
                                 return itemID and tostring(itemID) or ""
                             end,
                             set = function(info, value)
-                                private.db.global.objectives[objectiveTemplateName].onUse[info[#info]] = tonumber(value)
+                                private.db.global.objectives[objectiveTemplateName].onUse[info[#info]] = tonumber(value) or tonumber(string.match(value, "item:(%d+)"))
                                 private:RefreshOptions()
                             end,
                             validate = function(_, value)

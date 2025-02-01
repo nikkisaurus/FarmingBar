@@ -108,11 +108,11 @@ function private:GetObjectiveIcon(objectiveInfo)
     if objectiveInfo.icon.type == "FALLBACK" then
         return objectiveInfo.icon.id
     elseif objectiveInfo.onUse.type == "ITEM" then
-        return GetItemIcon(objectiveInfo.onUse.itemID)
+        return objectiveInfo.onUse.itemID and GetItemIcon(objectiveInfo.onUse.itemID) or 134400
     elseif not objectiveInfo.trackers[1] then
         return 134400
     elseif objectiveInfo.trackers[1].type == "ITEM" then
-        return GetItemIcon(objectiveInfo.trackers[1].id)
+        return objectiveInfo.trackers[1].id and GetItemIcon(objectiveInfo.trackers[1].id) or 134400
     else
         return C_CurrencyInfo.GetCurrencyInfo(objectiveInfo.trackers[1].id).iconFileID
     end

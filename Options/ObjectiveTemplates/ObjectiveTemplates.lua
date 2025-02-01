@@ -24,7 +24,8 @@ function private:GetObjectiveTemplatesOptions()
             type = "execute",
             name = NEW,
             func = function()
-                private:AddObjectiveTemplate()
+                local newObjectiveTemplateName = private:AddObjectiveTemplate()
+                private:SelectOptionsPath("objectiveTemplates", newObjectiveTemplateName)
             end,
         },
 
@@ -207,12 +208,17 @@ function private:GetObjectiveTemplatesOptions()
             image = private:GetObjectiveIcon(objectiveTemplate),
             width = 0.25,
             name = objectiveTemplateName,
-            desc = L["Left-click to pickup this objective.\nRight-click to edit this objective."],
+            desc = L["Left-click to pickup this objective.\nRight-click to edit this objective.\nAlt+control+shift+right-click to delete this objective."],
             func = function(_, mouseButton)
                 if mouseButton == "LeftButton" then
                     private:PickupObjectiveTemplate(objectiveTemplateName)
                 elseif mouseButton == "RightButton" then
-                    private:SelectOptionsPath("objectiveTemplates", objectiveTemplateName)
+                    if IsAltKeyDown() and IsControlKeyDown() and IsShiftKeyDown() then
+                        private:DeleteObjectiveTemplate(objectiveTemplateName)
+                        private:RefreshOptions()
+                    else
+                        private:SelectOptionsPath("objectiveTemplates", objectiveTemplateName)
+                    end
                 end
             end,
         }
