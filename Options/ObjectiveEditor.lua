@@ -196,7 +196,7 @@ function private:GetObjectiveEditorGeneralContent(widget)
                         return itemID and tostring(itemID) or ""
                     end,
                     set = function(info, value)
-                        widget:SetDBValue("onUse", info[#info], tonumber(value))
+                        widget:SetDBValue("onUse", info[#info], tonumber(value) or tonumber(string.match(value, "item:(%d+)")))
                         private:RefreshObjectiveEditor(widget)
                         widget:SetAttributes()
                     end,
