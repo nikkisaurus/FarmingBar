@@ -87,12 +87,14 @@ function private:GetButtonTooltip(widget)
         -- Trackers
         for trackerKey, tracker in pairs(trackers) do
             if trackerKey <= 5 or showDetails then
-                local trackerIcon
+                local trackerIcon, trackerName
                 if tracker.type == "ITEM" then
                     trackerIcon = GetItemIcon(tracker.id)
+                    trackerName = tracker.name or GetItemInfo(tracker.id)
                 elseif tracker.type == "CURRENCY" then
                     local currency = C_CurrencyInfo.GetCurrencyInfo(tracker.id)
                     trackerIcon = currency and currency.iconFileID
+                    trackerName = tracker.name
                 end
 
                 local count = private:GetTrackerCount(tracker, nil, nil, 1)
@@ -108,7 +110,7 @@ function private:GetButtonTooltip(widget)
                 tinsert(pendingLines, {
                     double = true,
                     color = private.CONST.TOOLTIP_KEYVALUE2,
-                    k = addon:GetSubstring(tracker.name, 30) or L["Tracker"] .. " " .. trackerKey,
+                    k = addon:GetSubstring(trackerName, 30) or L["Tracker"] .. " " .. trackerKey,
                     v = countStr,
                 })
 
@@ -189,7 +191,7 @@ function private:GetButtonTooltip(widget)
             {
                 texture = true,
                 line = onUseIcon or 134400,
-                tier = C_TradeSkillUI.GetItemReagentQualityByItemInfo(buttonDB.onUse.itemID),
+                tier = buttonDB.onUse.itemID and C_TradeSkillUI.GetItemReagentQualityByItemInfo(buttonDB.onUse.itemID),
                 hidden = not showDetails or onUseType ~= "ITEM",
             },
             private:GetTooltipBlankLine(not showDetails),
