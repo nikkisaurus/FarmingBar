@@ -153,10 +153,11 @@ function private:GetObjectiveEditorGeneralContent(widget)
                     order = 1,
                     type = "description",
                     name = buttonDB.onUse.itemID and addon:CacheItem(buttonDB.onUse.itemID, function(success, id)
-                        if success then
-                            return (GetItemInfo(id))
-                        end
-                    end) or "",
+                            if success then
+                                -- name = format("%s |A:Professions-Icon-Quality-Tier%d-Inv:20:20|a", tracker.name ~= "" and tracker.name or L["Tracker"] .. " " .. trackerKey, C_TradeSkillUI.GetItemReagentQualityByItemInfo(tracker.id)),
+                                return (format("%s |A:Professions-Icon-Quality-Tier%d-Inv:20:20|a", GetItemInfo(id), C_TradeSkillUI.GetItemReagentQualityByItemInfo(id)))
+                            end
+                        end) or "",
                     image = function()
                         local itemID = buttonDB.onUse.itemID
                         if not itemID then
@@ -386,7 +387,7 @@ function private:GetObjectiveEditorTrackersContent(widget)
         args["tracker" .. trackerKey] = {
             order = i,
             type = "group",
-            name = tracker.name ~= "" and tracker.name or L["Tracker"] .. " " .. trackerKey,
+            name = format("%s |A:Professions-Icon-Quality-Tier%d-Inv:20:20|a", tracker.name ~= "" and tracker.name or L["Tracker"] .. " " .. trackerKey, C_TradeSkillUI.GetItemReagentQualityByItemInfo(tracker.id)),
             icon = trackerIcon or 134400,
             args = {
                 trackerKey = {
