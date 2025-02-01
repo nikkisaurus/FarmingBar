@@ -153,11 +153,10 @@ function private:GetObjectiveEditorGeneralContent(widget)
                     order = 1,
                     type = "description",
                     name = buttonDB.onUse.itemID and addon:CacheItem(buttonDB.onUse.itemID, function(success, id)
-                            if success then
-                                -- name = format("%s |A:Professions-Icon-Quality-Tier%d-Inv:20:20|a", tracker.name ~= "" and tracker.name or L["Tracker"] .. " " .. trackerKey, C_TradeSkillUI.GetItemReagentQualityByItemInfo(tracker.id)),
-                                return (format("%s |A:Professions-Icon-Quality-Tier%d-Inv:20:20|a", GetItemInfo(id), C_TradeSkillUI.GetItemReagentQualityByItemInfo(id)))
-                            end
-                        end) or "",
+                        if success then
+                            return (format("%s |A:Professions-Icon-Quality-Tier%d-Inv:20:20|a", GetItemInfo(id), C_TradeSkillUI.GetItemReagentQualityByItemInfo(id)))
+                        end
+                    end) or "",
                     image = function()
                         local itemID = buttonDB.onUse.itemID
                         if not itemID then
@@ -597,7 +596,7 @@ function private:GetObjectiveEditorTrackersContent(widget)
                 order = I,
                 type = "description",
                 width = 3 / 2,
-                name = altInfo.name ~= "" and altInfo.name or L["Alt ID"] .. " " .. altKey,
+                name = format("%s |A:Professions-Icon-Quality-Tier%d-Inv:20:20|a", altInfo.name ~= "" and altInfo.name or L["Alt ID"] .. " " .. altKey, C_TradeSkillUI.GetItemReagentQualityByItemInfo(altInfo.id)),
                 image = altIDIcon or 134400,
                 imageWidth = 20,
                 imageHeight = 20,

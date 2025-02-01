@@ -183,7 +183,7 @@ function private:GetObjectiveTemplateOptions(objectiveTemplateName)
                             type = "description",
                             name = objectiveTemplate.onUse.itemID and addon:CacheItem(objectiveTemplate.onUse.itemID, function(success, id)
                                 if success then
-                                    return (GetItemInfo(id))
+                                    return (format("%s |A:Professions-Icon-Quality-Tier%d-Inv:20:20|a", GetItemInfo(id), C_TradeSkillUI.GetItemReagentQualityByItemInfo(id)))
                                 end
                             end) or "",
                             image = function()
@@ -364,7 +364,7 @@ function private:GetObjectiveTemplateOptions(objectiveTemplateName)
         options.trackers.args["tracker" .. trackerKey] = {
             order = i,
             type = "group",
-            name = tracker.name ~= "" and tracker.name or L["Tracker"] .. " " .. trackerKey,
+            name = format("%s |A:Professions-Icon-Quality-Tier%d-Inv:20:20|a", tracker.name ~= "" and tracker.name or L["Tracker"] .. " " .. trackerKey, C_TradeSkillUI.GetItemReagentQualityByItemInfo(tracker.id)),
             desc = function()
                 return format("%s:%d", tracker.type, tracker.id)
             end,
@@ -569,7 +569,7 @@ function private:GetObjectiveTemplateOptions(objectiveTemplateName)
                 order = I,
                 type = "description",
                 width = 3 / 2,
-                name = altInfo.name ~= "" and altInfo.name or L["Alt ID"] .. " " .. altKey,
+                name = format("%s |A:Professions-Icon-Quality-Tier%d-Inv:20:20|a", altInfo.name ~= "" and altInfo.name or L["Alt ID"] .. " " .. altKey, C_TradeSkillUI.GetItemReagentQualityByItemInfo(altInfo.id)),
                 image = altIDIcon or 134400,
                 imageWidth = 20,
                 imageHeight = 20,
