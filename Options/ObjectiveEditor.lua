@@ -146,7 +146,7 @@ function private:GetObjectiveEditorGeneralContent(widget)
             end,
             set = function(info, value)
                 widget:SetDBValue("onUse", info[#info], value)
-                widget:SetAttributes()
+                widget:UpdateAttributes()
             end,
             args = {
                 itemPreview = {
@@ -179,7 +179,7 @@ function private:GetObjectiveEditorGeneralContent(widget)
                     set = function(info, value)
                         widget:SetDBValue("onUse", info[#info], value)
                         private:RefreshObjectiveEditor(widget)
-                        widget:SetAttributes()
+                        widget:UpdateAttributes()
                     end,
                 },
 
@@ -198,7 +198,7 @@ function private:GetObjectiveEditorGeneralContent(widget)
                     set = function(info, value)
                         widget:SetDBValue("onUse", info[#info], tonumber(value) or tonumber(string.match(value, "item:(%d+)")))
                         private:RefreshObjectiveEditor(widget)
-                        widget:SetAttributes()
+                        widget:UpdateAttributes()
                     end,
                     validate = function(_, value)
                         return private:ValidateItem(value)
