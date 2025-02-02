@@ -252,6 +252,9 @@ function private:GetConfigOptions()
                             type = "group",
                             inline = true,
                             name = L["Profession Quality Icon"],
+                            hidden = function()
+                                return select(4, GetBuildInfo()) < 110000
+                            end,
                             get = function(info)
                                 return private:GetMixedBarDBValues(info, "iconTier")
                             end,
@@ -376,6 +379,9 @@ function private:GetConfigOptions()
                             type = "group",
                             inline = true,
                             name = L["Profession Quality Icon"],
+                            hidden = function()
+                                return select(4, GetBuildInfo()) < 110000
+                            end,
                             get = function(info)
                                 return private:GetMixedBarDBValues(info, "iconTier")
                             end,

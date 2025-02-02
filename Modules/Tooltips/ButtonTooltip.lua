@@ -89,7 +89,7 @@ function private:GetButtonTooltip(widget)
             if trackerKey <= 5 or showDetails then
                 local trackerIcon, trackerName
                 if tracker.type == "ITEM" then
-                    trackerIcon = GetItemIcon(tracker.id)
+                    trackerIcon = C_Item.GetItemIconByID(tracker.id)
                     trackerName = tracker.name or GetItemInfo(tracker.id)
                 elseif tracker.type == "CURRENCY" then
                     local currency = C_CurrencyInfo.GetCurrencyInfo(tracker.id)
@@ -117,7 +117,7 @@ function private:GetButtonTooltip(widget)
                 tinsert(pendingLines, {
                     texture = true,
                     line = trackerIcon or 134400,
-                    tier = C_TradeSkillUI.GetItemReagentQualityByItemInfo(tracker.id),
+                    tier = select(4, GetBuildInfo()) >= 110000 and C_TradeSkillUI.GetItemReagentQualityByItemInfo(tracker.id),
                 })
             else
                 tinsert(pendingLines, {
@@ -191,7 +191,7 @@ function private:GetButtonTooltip(widget)
             {
                 texture = true,
                 line = onUseIcon or 134400,
-                tier = buttonDB.onUse.itemID and C_TradeSkillUI.GetItemReagentQualityByItemInfo(buttonDB.onUse.itemID),
+                tier = buttonDB.onUse.itemID and select(4, GetBuildInfo()) >= 110000 and C_TradeSkillUI.GetItemReagentQualityByItemInfo(buttonDB.onUse.itemID),
                 hidden = not showDetails or onUseType ~= "ITEM",
             },
             private:GetTooltipBlankLine(not showDetails),

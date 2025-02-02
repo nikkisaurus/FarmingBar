@@ -512,6 +512,10 @@ local methods = {
             end
 
             -- Icon Tier
+            if select(4, GetBuildInfo()) < 110000 then
+                return
+            end
+
             local tier = private.iconTiers[widget:GetProfessionQuality()]
             if tier and barDB.iconTier.enabled then
                 widget.iconTier:SetTexCoord(unpack(tier))

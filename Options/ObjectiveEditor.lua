@@ -154,7 +154,13 @@ function private:GetObjectiveEditorGeneralContent(widget)
                     type = "description",
                     name = buttonDB.onUse.itemID and addon:CacheItem(buttonDB.onUse.itemID, function(success, id)
                         if success then
-                            return (format("%s |A:Professions-Icon-Quality-Tier%d-Inv:20:20|a", GetItemInfo(id), C_TradeSkillUI.GetItemReagentQualityByItemInfo(id)))
+                            local name
+                            if select(4, GetBuildInfo()) < 110000 then
+                                name = GetItemInfo(id)
+                            else
+                                name = (format("%s |A:Professions-Icon-Quality-Tier%d-Inv:20:20|a", GetItemInfo(id), C_TradeSkillUI.GetItemReagentQualityByItemInfo(id)))
+                            end
+                            return name
                         end
                     end) or "",
                     image = function()
@@ -163,7 +169,7 @@ function private:GetObjectiveEditorGeneralContent(widget)
                             return ""
                         end
 
-                        return GetItemIcon(itemID), 24, 24
+                        return C_Item.GetItemIconByID(itemID), 24, 24
                     end,
                     hidden = function()
                         return buttonDB.onUse.type ~= "ITEM"
@@ -383,10 +389,17 @@ function private:GetObjectiveEditorTrackersContent(widget)
     for trackerKey, tracker in addon:pairs(buttonDB.trackers) do
         local trackerName, trackerIcon = private:GetTrackerInfo(tracker.type, tracker.id)
 
+        local name
+        if select(4, GetBuildInfo()) < 110000 then
+            name = tracker.name ~= "" and tracker.name or L["Tracker"] .. " " .. trackerKey
+        else
+            name = format("%s |A:Professions-Icon-Quality-Tier%d-Inv:20:20|a", tracker.name ~= "" and tracker.name or L["Tracker"] .. " " .. trackerKey, C_TradeSkillUI.GetItemReagentQualityByItemInfo(tracker.id))
+        end
+
         args["tracker" .. trackerKey] = {
             order = i,
             type = "group",
-            name = format("%s |A:Professions-Icon-Quality-Tier%d-Inv:20:20|a", tracker.name ~= "" and tracker.name or L["Tracker"] .. " " .. trackerKey, C_TradeSkillUI.GetItemReagentQualityByItemInfo(tracker.id)),
+            name = name,
             icon = trackerIcon or 134400,
             args = {
                 trackerKey = {

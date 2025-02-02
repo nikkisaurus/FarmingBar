@@ -108,11 +108,11 @@ function private:GetObjectiveIcon(objectiveInfo)
     if objectiveInfo.icon.type == "FALLBACK" then
         return objectiveInfo.icon.id
     elseif objectiveInfo.onUse.type == "ITEM" then
-        return objectiveInfo.onUse.itemID and GetItemIcon(objectiveInfo.onUse.itemID) or 134400
+        return objectiveInfo.onUse.itemID and C_Item.GetItemIconByID(objectiveInfo.onUse.itemID) or 134400
     elseif not objectiveInfo.trackers[1] then
         return 134400
     elseif objectiveInfo.trackers[1].type == "ITEM" then
-        return objectiveInfo.trackers[1].id and GetItemIcon(objectiveInfo.trackers[1].id) or 134400
+        return objectiveInfo.trackers[1].id and C_Item.GetItemIconByID(objectiveInfo.trackers[1].id) or 134400
     else
         return C_CurrencyInfo.GetCurrencyInfo(objectiveInfo.trackers[1].id).iconFileID
     end
@@ -120,7 +120,7 @@ end
 
 function private:GetObjectiveTemplateTrackerIcon(trackerType, trackerKey)
     if trackerType == "ITEM" then
-        return GetItemIcon(trackerKey)
+        return C_Item.GetItemIconByID(trackerKey)
     elseif trackerType == "CURRENCY" then
         return C_CurrencyInfo.GetCurrencyInfo(trackerKey).iconFileID
     end
@@ -130,7 +130,7 @@ function private:GetTrackerInfo(Type, id)
     local name, icon
     if Type == "ITEM" then
         name = GetItemInfo(id)
-        icon = GetItemIcon(id)
+        icon = C_Item.GetItemIconByID(id)
     elseif Type == "CURRENCY" then
         local currency = C_CurrencyInfo.GetCurrencyInfo(id or tonumber(id) or 0)
         name = currency and currency.name

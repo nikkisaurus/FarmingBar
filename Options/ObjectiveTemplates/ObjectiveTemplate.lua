@@ -183,7 +183,13 @@ function private:GetObjectiveTemplateOptions(objectiveTemplateName)
                             type = "description",
                             name = objectiveTemplate.onUse.itemID and addon:CacheItem(objectiveTemplate.onUse.itemID, function(success, id)
                                 if success then
-                                    return (format("%s |A:Professions-Icon-Quality-Tier%d-Inv:20:20|a", GetItemInfo(id), C_TradeSkillUI.GetItemReagentQualityByItemInfo(id)))
+                                    local name
+                                    if select(4, GetBuildInfo()) < 110000 then
+                                        name = GetItemInfo(id)
+                                    else
+                                        name = (format("%s |A:Professions-Icon-Quality-Tier%d-Inv:20:20|a", GetItemInfo(id), C_TradeSkillUI.GetItemReagentQualityByItemInfo(id)))
+                                    end
+                                    return name
                                 end
                             end) or "",
                             image = function()
@@ -192,7 +198,7 @@ function private:GetObjectiveTemplateOptions(objectiveTemplateName)
                                     return ""
                                 end
 
-                                return GetItemIcon(itemID), 24, 24
+                                return C_Item.GetItemIconByID(itemID), 24, 24
                             end,
                             hidden = function()
                                 return objectiveTemplate.onUse.type ~= "ITEM"
@@ -354,17 +360,24 @@ function private:GetObjectiveTemplateOptions(objectiveTemplateName)
         local trackerName, trackerIcon
         if tracker.type == "ITEM" then
             trackerName = GetItemInfo(tracker.id)
-            trackerIcon = GetItemIcon(tracker.id)
+            trackerIcon = C_Item.GetItemIconByID(tracker.id)
         elseif tracker.type == "CURRENCY" then
             local currency = C_CurrencyInfo.GetCurrencyInfo(tracker.id)
             trackerName = currency and currency.name
             trackerIcon = currency and currency.iconFileID
         end
 
+        local name
+        if select(4, GetBuildInfo()) < 110000 then
+            name = tracker.name ~= "" and tracker.name or L["Tracker"] .. " " .. trackerKey
+        else
+            name = format("%s |A:Professions-Icon-Quality-Tier%d-Inv:20:20|a", tracker.name ~= "" and tracker.name or L["Tracker"] .. " " .. trackerKey, C_TradeSkillUI.GetItemReagentQualityByItemInfo(tracker.id))
+        end
+
         options.trackers.args["tracker" .. trackerKey] = {
             order = i,
             type = "group",
-            name = format("%s |A:Professions-Icon-Quality-Tier%d-Inv:20:20|a", tracker.name ~= "" and tracker.name or L["Tracker"] .. " " .. trackerKey, C_TradeSkillUI.GetItemReagentQualityByItemInfo(tracker.id)),
+            name = name,
             desc = function()
                 return format("%s:%d", tracker.type, tracker.id)
             end,
@@ -565,11 +578,18 @@ function private:GetObjectiveTemplateOptions(objectiveTemplateName)
         for altKey, altInfo in addon:pairs(tracker.altIDs) do
             local _, altIDIcon = private:GetTrackerInfo(altInfo.type, altInfo.id)
 
+            local name
+            if select(4, GetBuildInfo()) < 110000 then
+                name = altInfo.name ~= "" and altInfo.name or L["Alt ID"] .. " " .. altKey
+            else
+                name = format("%s |A:Professions-Icon-Quality-Tier%d-Inv:20:20|a", altInfo.name ~= "" and altInfo.name or L["Alt ID"] .. " " .. altKey, C_TradeSkillUI.GetItemReagentQualityByItemInfo(altInfo.id))
+            end
+
             options.trackers.args["tracker" .. trackerKey].args.altIDs.args.altIDsList.args["altID" .. altKey] = {
                 order = I,
                 type = "description",
                 width = 3 / 2,
-                name = format("%s |A:Professions-Icon-Quality-Tier%d-Inv:20:20|a", altInfo.name ~= "" and altInfo.name or L["Alt ID"] .. " " .. altKey, C_TradeSkillUI.GetItemReagentQualityByItemInfo(altInfo.id)),
+                name = name,
                 image = altIDIcon or 134400,
                 imageWidth = 20,
                 imageHeight = 20,

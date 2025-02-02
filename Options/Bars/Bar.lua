@@ -430,6 +430,9 @@ function private:GetBarOptions(barID)
                     type = "group",
                     inline = true,
                     name = L["Profession Quality Icon"],
+                    hidden = function()
+                        return select(4, GetBuildInfo()) < 110000
+                    end,
                     get = function(info)
                         return barDB.iconTier[info[#info]]
                     end,
@@ -549,6 +552,9 @@ function private:GetBarOptions(barID)
                     type = "group",
                     inline = true,
                     name = L["Profession Quality Icon"],
+                    hidden = function()
+                        return select(4, GetBuildInfo()) < 110000
+                    end,
                     get = function(info)
                         return barDB.iconTier[info[#info]]
                     end,

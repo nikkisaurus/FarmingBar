@@ -134,7 +134,7 @@ function private:ConvertDB_V2()
                         template.condition.type = "ALL"
                         template.title = objective.title ~= "" and objective.title or L["Converted Item"]
                         template.icon.type = "FALLBACK"
-                        template.icon.id = GetItemIcon(objective.itemID) or 134400
+                        template.icon.id = C_Item.GetItemIconByID(objective.itemID) or 134400
                         local tracker = addon:CloneTable(private.defaults.tracker)
                         tracker.id = objective.itemID
                         tracker.objective = objective.objective or 1
@@ -330,7 +330,7 @@ function private:ConvertDB_V2()
                             template.condition.type = "ALL"
                             template.title = objective.title ~= "" and objective.title or L["Converted Item"]
                             template.icon.type = "FALLBACK"
-                            template.icon.id = GetItemIcon(objective.itemID) or 134400
+                            template.icon.id = C_Item.GetItemIconByID(objective.itemID) or 134400
                             local tracker = addon:CloneTable(private.defaults.tracker)
                             tracker.id = objective.itemID
                             tracker.objective = objective.objective or 1
