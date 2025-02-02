@@ -56,15 +56,25 @@ function private:LoadTooltip(owner, anchor, x, y, lines)
             if line.link then
                 tooltip:SetHyperlink(line.line)
             elseif line.texture then
-                tooltip:AddTexture(line.line)
+                if select(4, GetBuildInfo()) >= 110000 then
+                    tooltip:AddTexture(line.line)
+                end
                 if line.tier then
                     tooltip:AddAtlas(format("Professions-Icon-Quality-Tier%d-Inv", line.tier))
                 end
             elseif line.double then
-                tooltip:AddDoubleLine(line.k, line.v, addon:unpack(line.color, private.CONST.TOOLTIP_KEYVALUE))
+                if select(4, GetBuildInfo()) < 110000 and line.icon then
+                    tooltip:AddDoubleLine(format("|T%s:12:12|t %s", line.icon, line.k), line.v, addon:unpack(line.color, private.CONST.TOOLTIP_KEYVALUE))
+                else
+                    tooltip:AddDoubleLine(line.k, line.v, addon:unpack(line.color, private.CONST.TOOLTIP_KEYVALUE))
+                end
             else
                 local r, g, b = addon:unpack(line.color, private.CONST.TOOLTIP_DESC)
-                tooltip:AddLine(line.line, r, g, b, line.wrap)
+                if select(4, GetBuildInfo()) < 110000 and line.icon then
+                    tooltip:AddLine(format("|T%s:12:12|t %s", line.icon, line.line), r, g, b, line.wrap)
+                else
+                    tooltip:AddLine(line.line, r, g, b, line.wrap)
+                end
             end
         end
     end

@@ -112,6 +112,7 @@ function private:GetButtonTooltip(widget)
                     color = private.CONST.TOOLTIP_KEYVALUE2,
                     k = addon:GetSubstring(trackerName, 30) or L["Tracker"] .. " " .. trackerKey,
                     v = countStr,
+                    icon = trackerIcon or 134400,
                 })
 
                 tinsert(pendingLines, {
@@ -186,6 +187,7 @@ function private:GetButtonTooltip(widget)
             },
             {
                 line = addon:GetSubstring(onUsePreview, 30),
+                icon = onUseIcon or 134400,
                 hidden = not showDetails or onUseType == "NONE",
             },
             {
