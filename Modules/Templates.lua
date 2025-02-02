@@ -2,7 +2,7 @@ local addonName, private = ...
 local addon = LibStub("AceAddon-3.0"):GetAddon(addonName)
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 
-local version = select(4, GetBuildInfo())
+local version = private:GetGameVersion()
 
 private.templates = {
     ["CLOTH"] = {

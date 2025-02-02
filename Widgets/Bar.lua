@@ -428,7 +428,7 @@ local function Constructor()
     anchor:SetFrameLevel(2)
     anchor:SetMovable(true)
     anchor:RegisterForDrag("LeftButton")
-    if select(4, GetBuildInfo()) < 100000 then
+    if private:GetGameVersion() < 100000 then
         anchor:RegisterForClicks("AnyDown")
     else
         anchor:RegisterForClicks("AnyUp", "AnyDown")

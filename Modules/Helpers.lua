@@ -3,8 +3,6 @@ local addon = LibStub("AceAddon-3.0"):GetAddon(addonName)
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 local LSM = LibStub("LibSharedMedia-3.0")
 
-local version = select(4, GetBuildInfo())
-
 private.anchorPoints = {
     ROW = {
         button1 = {
@@ -217,6 +215,17 @@ private.CONST = {
     TOOLTIP_KEYVALUE = { 1, 0.82, 0, 1, 1, 1 },
     TOOLTIP_KEYVALUE2 = { 1, 1, 1, 1, 1, 1 },
     TOOLTIP_TITLE = { 1, 0.82, 0 },
+
+    GAME_VERSION = select(4, GetBuildInfo()),
+}
+
+private.iconTiers = {
+    [0] = { 18 / 64, 35 / 64, 18 / 64, 32 / 64 },
+    [1] = { 36 / 64, 52 / 64, 18 / 64, 32 / 64 },
+    [2] = { 18 / 64, 35 / 64, 34 / 64, 48 / 64 },
+    [3] = { 18 / 64, 35 / 64, 48 / 64, 62 / 64 },
+    [4] = { 36 / 64, 52 / 64, 34 / 64, 48 / 64 },
+    [5] = { 36 / 64, 52 / 64, 48 / 64, 62 / 64 },
 }
 
 private.lists = {
@@ -325,15 +334,6 @@ private.lists = {
     },
 }
 
-private.iconTiers = {
-    [0] = { 18 / 64, 35 / 64, 18 / 64, 32 / 64 },
-    [1] = { 36 / 64, 52 / 64, 18 / 64, 32 / 64 },
-    [2] = { 18 / 64, 35 / 64, 34 / 64, 48 / 64 },
-    [3] = { 18 / 64, 35 / 64, 48 / 64, 62 / 64 },
-    [4] = { 36 / 64, 52 / 64, 34 / 64, 48 / 64 },
-    [5] = { 36 / 64, 52 / 64, 48 / 64, 62 / 64 },
-}
-
 local function MSQ_Callback(...)
     for _, bar in pairs(private.bars) do
         bar:UpdateButtonTextures()
@@ -346,6 +346,10 @@ end
 
 function addon:BANKFRAME_OPENED()
     private.status.bankOpen = true
+end
+
+function private:GetGameVersion()
+    return private.CONST.GAME_VERSION
 end
 
 function private:GetMixedBarDBValues(info, path, path2)
@@ -394,7 +398,7 @@ function private:GetMixedBarDBValues(info, path, path2)
 end
 
 function private:GetMouseFocusName()
-    if version >= 110000 then
+    if private:GetGameVersion() >= 110000 then
         local frame = GetMouseFoci()
         return frame and frame[1]:GetName()
     else

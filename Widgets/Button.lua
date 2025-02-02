@@ -512,7 +512,7 @@ local methods = {
             end
 
             -- Icon Tier
-            if select(4, GetBuildInfo()) < 110000 then
+            if private:GetGameVersion() < 110000 then
                 return
             end
 
@@ -700,7 +700,7 @@ local function Constructor()
     frame:SetMovable(true)
     frame:EnableMouse(true)
     frame:RegisterForDrag("LeftButton", "RightButton")
-    if select(4, GetBuildInfo()) < 100000 then
+    if private:GetGameVersion() < 100000 then
         frame:RegisterForClicks("AnyDown")
     else
         frame:RegisterForClicks("AnyUp", "AnyDown")

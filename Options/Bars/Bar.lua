@@ -431,7 +431,7 @@ function private:GetBarOptions(barID)
                     inline = true,
                     name = L["Profession Quality Icon"],
                     hidden = function()
-                        return select(4, GetBuildInfo()) < 110000
+                        return private:GetGameVersion() < 110000
                     end,
                     get = function(info)
                         return barDB.iconTier[info[#info]]
@@ -553,7 +553,7 @@ function private:GetBarOptions(barID)
                     inline = true,
                     name = L["Profession Quality Icon"],
                     hidden = function()
-                        return select(4, GetBuildInfo()) < 110000
+                        return private:GetGameVersion() < 110000
                     end,
                     get = function(info)
                         return barDB.iconTier[info[#info]]

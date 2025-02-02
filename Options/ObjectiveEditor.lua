@@ -155,7 +155,7 @@ function private:GetObjectiveEditorGeneralContent(widget)
                     name = buttonDB.onUse.itemID and addon:CacheItem(buttonDB.onUse.itemID, function(success, id)
                         if success then
                             local name
-                            if select(4, GetBuildInfo()) < 110000 then
+                            if private:GetGameVersion() < 110000 then
                                 name = GetItemInfo(id)
                             else
                                 name = (format("%s |A:Professions-Icon-Quality-Tier%d-Inv:20:20|a", GetItemInfo(id), C_TradeSkillUI.GetItemReagentQualityByItemInfo(id)))
@@ -390,7 +390,7 @@ function private:GetObjectiveEditorTrackersContent(widget)
         local trackerName, trackerIcon = private:GetTrackerInfo(tracker.type, tracker.id)
 
         local name
-        if select(4, GetBuildInfo()) < 110000 then
+        if private:GetGameVersion() < 110000 then
             name = tracker.name ~= "" and tracker.name or L["Tracker"] .. " " .. trackerKey
         else
             name = format("%s |A:Professions-Icon-Quality-Tier%d-Inv:20:20|a", tracker.name ~= "" and tracker.name or L["Tracker"] .. " " .. trackerKey, C_TradeSkillUI.GetItemReagentQualityByItemInfo(tracker.id))
@@ -456,7 +456,7 @@ function private:GetObjectiveEditorTrackersContent(widget)
                             name = L["Warbank"],
                             desc = L["Include counts from the warbank for this tracker."],
                             hidden = function()
-                                return select(4, GetBuildInfo()) < 110000
+                                return private:GetGameVersion() < 110000
                             end,
                         },
                         Alts = {

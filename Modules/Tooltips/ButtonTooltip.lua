@@ -118,7 +118,7 @@ function private:GetButtonTooltip(widget)
                 tinsert(pendingLines, {
                     texture = true,
                     line = trackerIcon or 134400,
-                    tier = select(4, GetBuildInfo()) >= 110000 and C_TradeSkillUI.GetItemReagentQualityByItemInfo(tracker.id),
+                    tier = private:GetGameVersion() >= 110000 and C_TradeSkillUI.GetItemReagentQualityByItemInfo(tracker.id),
                 })
             else
                 tinsert(pendingLines, {
@@ -158,7 +158,7 @@ function private:GetButtonTooltip(widget)
                 double = true,
                 k = L["Include Warbank"],
                 v = format("%d/%d", GetIncludeCount(trackers, "includeWarbank"), addon:tcount(trackers)),
-                hidden = not showDetails or select(4, GetBuildInfo()) < 110000,
+                hidden = not showDetails or private:GetGameVersion() < 110000,
             },
             {
                 double = true,
@@ -193,7 +193,7 @@ function private:GetButtonTooltip(widget)
             {
                 texture = true,
                 line = onUseIcon or 134400,
-                tier = buttonDB.onUse.itemID and select(4, GetBuildInfo()) >= 110000 and C_TradeSkillUI.GetItemReagentQualityByItemInfo(buttonDB.onUse.itemID),
+                tier = buttonDB.onUse.itemID and private:GetGameVersion() >= 110000 and C_TradeSkillUI.GetItemReagentQualityByItemInfo(buttonDB.onUse.itemID),
                 hidden = not showDetails or onUseType ~= "ITEM",
             },
             private:GetTooltipBlankLine(not showDetails),

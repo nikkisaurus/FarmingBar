@@ -53,7 +53,7 @@ local methods = {
     LoadIcons = function(self, filter)
         -- Get displayed icons
         local icons = {}
-        local fileData = (select(4, GetBuildInfo())) < 90207 and private.FileDataClassic or private.FileData
+        local fileData = private:GetGameVersion() < 90207 and private.FileDataClassic or private.FileData
         for iconID, iconName in pairs(fileData) do
             if not filter or filter == "" or strfind(strlower(iconName), strlower(filter)) or tonumber(filter) and strfind(iconID, tonumber(filter)) then
                 tinsert(icons, { iconID = iconID, iconName = iconName })
@@ -112,7 +112,7 @@ local methods = {
                 end)
 
                 -- Setup tooltip
-                local fileData = (select(4, GetBuildInfo())) < 90207 and private.FileDataClassic or private.FileData
+                local fileData = private:GetGameVersion() < 90207 and private.FileDataClassic or private.FileData
                 icon:SetCallback("OnEnter", function()
                     private:LoadTooltip(icon.frame, "ANCHOR_BOTTOMRIGHT", 0, 0, {
                         {
@@ -148,7 +148,7 @@ local methods = {
 
         icon = icon or iconID
 
-        local fileData = (select(4, GetBuildInfo())) < 90207 and private.FileDataClassic or private.FileData
+        local fileData = private:GetGameVersion() < 90207 and private.FileDataClassic or private.FileData
         self.icon:SetImage(icon)
         self.icon:SetText(format("%d (%s)", icon, fileData[icon]))
 

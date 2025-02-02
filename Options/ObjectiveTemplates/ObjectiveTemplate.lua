@@ -184,7 +184,7 @@ function private:GetObjectiveTemplateOptions(objectiveTemplateName)
                             name = objectiveTemplate.onUse.itemID and addon:CacheItem(objectiveTemplate.onUse.itemID, function(success, id)
                                 if success then
                                     local name
-                                    if select(4, GetBuildInfo()) < 110000 then
+                                    if private:GetGameVersion() < 110000 then
                                         name = GetItemInfo(id)
                                     else
                                         name = (format("%s |A:Professions-Icon-Quality-Tier%d-Inv:20:20|a", GetItemInfo(id), C_TradeSkillUI.GetItemReagentQualityByItemInfo(id)))
@@ -368,7 +368,7 @@ function private:GetObjectiveTemplateOptions(objectiveTemplateName)
         end
 
         local name
-        if select(4, GetBuildInfo()) < 110000 then
+        if private:GetGameVersion() < 110000 then
             name = tracker.name ~= "" and tracker.name or L["Tracker"] .. " " .. trackerKey
         else
             name = format("%s |A:Professions-Icon-Quality-Tier%d-Inv:20:20|a", tracker.name ~= "" and tracker.name or L["Tracker"] .. " " .. trackerKey, C_TradeSkillUI.GetItemReagentQualityByItemInfo(tracker.id))
@@ -435,7 +435,7 @@ function private:GetObjectiveTemplateOptions(objectiveTemplateName)
                             name = L["Warbank"],
                             desc = L["Include counts from the warbank for this tracker."],
                             hidden = function()
-                                return select(4, GetBuildInfo()) < 110000
+                                return private:GetGameVersion() < 110000
                             end,
                         },
                         Alts = {
@@ -579,7 +579,7 @@ function private:GetObjectiveTemplateOptions(objectiveTemplateName)
             local _, altIDIcon = private:GetTrackerInfo(altInfo.type, altInfo.id)
 
             local name
-            if select(4, GetBuildInfo()) < 110000 then
+            if private:GetGameVersion() < 110000 then
                 name = altInfo.name ~= "" and altInfo.name or L["Alt ID"] .. " " .. altKey
             else
                 name = format("%s |A:Professions-Icon-Quality-Tier%d-Inv:20:20|a", altInfo.name ~= "" and altInfo.name or L["Alt ID"] .. " " .. altKey, C_TradeSkillUI.GetItemReagentQualityByItemInfo(altInfo.id))
