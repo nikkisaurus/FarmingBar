@@ -605,11 +605,18 @@ function private:GetObjectiveEditorTrackersContent(widget)
         for altKey, altInfo in addon:pairs(tracker.altIDs) do
             local _, altIDIcon = private:GetTrackerInfo(altInfo.type, altInfo.id)
 
+            local name
+            if private:GetGameVersion() < 110000 then
+                name = altInfo.name ~= "" and altInfo.name or L["Alt ID"] .. " " .. altKey
+            else
+                name = format("%s |A:Professions-Icon-Quality-Tier%d-Inv:20:20|a", altInfo.name ~= "" and altInfo.name or L["Alt ID"] .. " " .. altKey, C_TradeSkillUI.GetItemReagentQualityByItemInfo(altInfo.id))
+            end
+
             args["tracker" .. trackerKey].args.altIDs.args.altIDsList.args["altID" .. altKey] = {
                 order = I,
                 type = "description",
                 width = 3 / 2,
-                name = format("%s |A:Professions-Icon-Quality-Tier%d-Inv:20:20|a", altInfo.name ~= "" and altInfo.name or L["Alt ID"] .. " " .. altKey, C_TradeSkillUI.GetItemReagentQualityByItemInfo(altInfo.id)),
+                name = name,
                 image = altIDIcon or 134400,
                 imageWidth = 20,
                 imageHeight = 20,
