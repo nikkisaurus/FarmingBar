@@ -140,7 +140,6 @@ function private:GetBarOptions(barID)
                                 },
                                 builtInTemplates = {
                                     order = 2,
-                                    disabled = true,
                                     type = "select",
                                     style = "dropdown",
                                     name = L["Templates"],

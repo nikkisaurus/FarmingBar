@@ -33,7 +33,7 @@ function private:GetSlashCommandOptions()
             bar = {
                 type = "group",
                 name = "bar",
-                desc = GetCommandDesc("/farmingbar bar", L["Configure bar settings."], "alpha", "axis", "buttons", "grow", "movable", "padding", "scale", "size"),
+                desc = GetCommandDesc("/farmingbar bar", L["Configure bar settings."], "alpha", "axis", "buttons", "grow", "hidden", "movable", "padding", "scale", "size"),
                 args = {
                     alpha = {
                         type = "execute",
@@ -162,6 +162,51 @@ function private:GetSlashCommandOptions()
                                 private.db.profile.bars[barID].buttonGrowth = buttonGrowth
                                 private.bars[barID]:SetPoints()
                             end
+                        end,
+                    },
+                    hidden = {
+                        type = "execute",
+                        name = "",
+                        desc = GetCommandDesc("/farmingbar bar hidden", L["Set bar hidden."], "barID | 0", "true | false | toggle"),
+                        validate = function(info)
+                            local _, command, barID = strsplit(" ", info.input:trim())
+                            barID = tonumber(barID)
+
+                            if not barID or (barID ~= 0 and not private.bars[barID]) then
+                                return L["Invalid barID. To apply to all bars, use barID 0."]
+                            end
+
+                            return true
+                        end,
+                        func = function(info)
+                            local _, command, barID, hidden = strsplit(" ", info.input:trim())
+                            barID = tonumber(barID)
+                            hidden = hidden or "toggle"
+
+                            local function SetHidden(barID)
+                                if hidden == "true" then
+                                    private.db.profile.bars[barID].overrideHidden = true
+                                elseif hidden == "false" then
+                                    private.db.profile.bars[barID].overrideHidden = false
+                                elseif hidden == "toggle" then
+                                    if private.db.profile.bars[barID].overrideHidden then
+                                        private.db.profile.bars[barID].overrideHidden = false
+                                    else
+                                        private.db.profile.bars[barID].overrideHidden = true
+                                    end
+                                end
+                                private.bars[barID]:SetHidden()
+                            end
+
+                            if barID == 0 then
+                                for BarID, _ in pairs(private.bars) do
+                                    SetHidden(BarID)
+                                end
+                            else
+                                SetHidden(barID)
+                            end
+
+                            print(barID, hidden)
                         end,
                     },
                     movable = {

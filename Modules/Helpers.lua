@@ -127,7 +127,6 @@ private.anchorPoints = {
             BOTTOMLEFT = {
                 anchor = "BOTTOMLEFT",
                 relAnchor = "BOTTOMRIGHT",
-                relAnchor = "BOTTOMRIGHT",
                 xCo = 1,
                 yCo = 0,
             },
