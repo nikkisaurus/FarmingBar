@@ -754,8 +754,40 @@ function private:GetSettingsOptions()
                     },
                 },
 
-                chatFrame = {
+                global = {
                     order = 5,
+                    type = "group",
+                    inline = true,
+                    name = L["Global ChatFrame"],
+                    get = function(info)
+                        return private.db.global.settings.chatFrame[info[#info]]
+                    end,
+                    set = function(info, value)
+                        private.db.global.settings.chatFrame[info[#info]] = value
+                        private:UpdateChatFrame()
+                    end,
+                    args = {
+                        note = {
+                            order = 1,
+                            type = "description",
+                            name = L["Enabling Farming Bar's global chat frame will override any chat frame preferences set by profiles."],
+                        },
+                        enabled = {
+                            order = 2,
+                            type = "toggle",
+                            name = L["Enable"],
+                        },
+                        docked = {
+                            order = 3,
+                            type = "toggle",
+                            name = L["Dock"],
+                            desc = L["Attach to default chat dock."],
+                        },
+                    },
+                },
+
+                chatFrame = {
+                    order = 6,
                     type = "select",
                     name = L["Chat Frame"],
                     desc = L["Default chat frame for chat alerts. * Profile"],

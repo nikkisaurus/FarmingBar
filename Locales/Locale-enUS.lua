@@ -63,6 +63,7 @@ L["Are you sure you want to reset bar alerts format?"] = true
 L["Are you sure you want to reset button alerts format?"] = true
 L["Are you sure you want to reset this bar's hidden function?"] = true
 L["Are you sure you want to reset tracker alerts format?"] = true
+L["Attach to default chat dock."] = true
 L["Auction Close"] = true
 L["Auction Open"] = true
 L["Auto Loot"] = true
@@ -126,6 +127,7 @@ L["Disable active profile."] = true
 L["Disable all tooltips."] = true
 L["Disable"] = true
 L["Disabled"] = true
+L["Dock"] = true
 L["dragObjective"] = "Drag Objective"
 L["Draw Layer"] = true
 L["Duplicate"] = true
@@ -136,6 +138,7 @@ L["Enable screen alerts."] = true
 L["Enable sound alerts."] = true
 L["Enable this slash command."] = true
 L["Enable"] = true
+L["Enabling Farming Bar's global chat frame will override any chat frame preferences set by profiles."] = true
 L["Event \"%s\" doesn't exist."] = true
 L["Events"] = true
 L["Expand Tooltip"] = true
@@ -153,6 +156,7 @@ L["Format Type"] = true
 L["Format"] = true
 L["Function"] = true
 L["General"] = true
+L["Global ChatFrame"] = true
 L["Gloss"] = true
 L["Goal Cleared"] = true
 L["Goal Complete"] = true
@@ -385,7 +389,7 @@ L.OptionsHelp = function()
     local strs = {
         {
             3,
-            "Farming Bar - Version 4.0.0",
+            "Farming Bar - Version " .. private.CONST.VERSION,
         },
         {
             1,

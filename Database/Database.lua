@@ -679,7 +679,7 @@ function private:InitializeDatabase()
         private:ConvertDB_V8()
     end
 
-    private.db.global.version = 8
+    private.db.global.version = 9
 
     private.db.RegisterCallback(addon, "OnProfileChanged", "OnProfile_")
     private.db.RegisterCallback(addon, "OnProfileCopied", "OnProfile_")
@@ -689,5 +689,11 @@ function private:InitializeDatabase()
         private:ConvertDB_V4()
     elseif private.version == 2 then
         private:ConvertDB_V2()
+    end
+
+    if private.CONST.GAME_VERSION <= 110105 then
+        C_Timer.After(1, function()
+            addon:Print(private.defaultChatFrame, "Non-retail builds of Farming Bar are currently experimental as I do not have an active subscription to test changes in classic versions. Please report any bugs on Github so I can address the issue (See Settings > Help > Issues for the URL). Thank you!")
+        end)
     end
 end
