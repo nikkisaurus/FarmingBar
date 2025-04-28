@@ -693,7 +693,7 @@ function private:InitializeDatabase()
 
     if private.CONST.GAME_VERSION < 110105 then
         C_Timer.After(1, function()
-            addon:Print(private.defaultChatFrame, "Non-retail builds of Farming Bar are currently experimental as I do not have an active subscription to test changes in classic versions. Please report any bugs on Github so I can address the issue (See Settings > Help > Issues for the URL). Thank you!")
+            addon:Print(private.defaultChatFrame, "Non-retail builds of Farming Bar are currently experimental as I do not have an active subscription to test changes in classic versions. Please reinstall the last stable update and report any bugs on Github so I can address the issue (See Settings > Help > Issues for the URL). Thank you!")
         end)
     end
 end
