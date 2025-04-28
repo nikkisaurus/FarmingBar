@@ -237,7 +237,7 @@ local methods = {
 
     SetHidden = function(widget)
         if UnitAffectingCombat("player") then
-            addon:Print(L["Visibility cannot be changed during combat. An attempt may be made once you leave combat; otherwise, try again when out of combat."])
+            addon:Print(private.defaultChatFrame, L["Visibility cannot be changed during combat. An attempt may be made once you leave combat; otherwise, try again when out of combat."])
             return
         end
 

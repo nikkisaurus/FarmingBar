@@ -29,7 +29,7 @@ function private:CraftRecipe(recipeName)
         end
     end
 
-    addon:Print(L.UnknownRecipe(recipeName))
+    addon:Print(private.defaultChatFrame, L.UnknownRecipe(recipeName))
 end
 
 function addon:CraftTradeSkill(input)
@@ -46,10 +46,10 @@ function addon:CraftTradeSkill(input)
     skillID = tradeskillIDs[strupper(skillID)]
 
     if not skillID then
-        addon:Print(L["Invalid tradeskill name."])
+        addon:Print(private.defaultChatFrame, L["Invalid tradeskill name."])
         return
     elseif not recipeName or recipeName == "" then
-        addon:Print(L["Please specify a tradeskill recipe name."])
+        addon:Print(private.defaultChatFrame, L["Please specify a tradeskill recipe name."])
         return
     end
 
@@ -66,12 +66,7 @@ function addon:HandleSlashCommand(input)
     if not input or input == "" then
         private:LoadOptions()
     else
-        LibStub("AceConfigCmd-3.0").HandleCommand(
-            addon,
-            "farmingbar",
-            addonName .. "Commands",
-            strlower(input) ~= "help" and input or ""
-        )
+        LibStub("AceConfigCmd-3.0").HandleCommand(addon, "farmingbar", addonName .. "Commands", strlower(input) ~= "help" and input or "")
     end
 end
 

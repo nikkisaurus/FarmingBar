@@ -172,7 +172,7 @@ local editboxScripts = {
             if currencyID then
                 private:AddObjective(widget, "CURRENCY", currencyID)
             else
-                addon:Print(L["Invalid currency ID."])
+                addon:Print(private.defaultChatFrame, L["Invalid currency ID."])
             end
         end
 

@@ -14,7 +14,7 @@ end
 function private:MoveObjectiveToBank(widget)
     local _, buttonDB = widget:GetDB()
     if not private.status.bankOpen then
-        addon:Print(L["Move canceled; please open bank frame."])
+        addon:Print(private.defaultChatFrame, L["Move canceled; please open bank frame."])
         return
     elseif not buttonDB then
         return
@@ -92,7 +92,7 @@ function private:MoveObjectiveToBank(widget)
                 local pendingMove = private.status.pendingMove or (buttonDB.objective ~= 0 and min(private:GetTrackerObjectiveCount(widget, trackerKey), itemCount) or itemCount)
 
                 if ceil(pendingMove / itemStackCount) > freeSlots then
-                    addon:Print(L["Bank does not have enough slots to move items."])
+                    addon:Print(private.defaultChatFrame, L["Bank does not have enough slots to move items."])
                     private.status.itemMover = nil
                     return
                 elseif pendingMove == 0 then

@@ -580,6 +580,10 @@ function private:InitializeDatabase()
                         objectiveMet = L["Quest Complete"],
                     },
                 },
+                chatFrame = {
+                    enabled = true,
+                    docked = false,
+                },
                 tooltips = {
                     useGameTooltip = false,
                     modifier = "Alt",

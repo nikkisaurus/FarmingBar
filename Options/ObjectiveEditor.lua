@@ -531,10 +531,10 @@ function private:GetObjectiveEditorTrackersContent(widget)
                                         validID = validID == L["Tracker already exists for this objective."] and id or validID
 
                                         if widget:TrackerAltIDExists(trackerKey, pendingAltIDType, validID) then
-                                            addon:Print(L["Alt ID already exists for this tracker."])
+                                            addon:Print(private.defaultChatFrame, L["Alt ID already exists for this tracker."])
                                             return
                                         elseif not validID then
-                                            addon:Print(L["Invalid Alt ID"])
+                                            addon:Print(private.defaultChatFrame, L["Invalid Alt ID"])
                                             return
                                         end
 
@@ -542,7 +542,7 @@ function private:GetObjectiveEditorTrackersContent(widget)
                                         widget:SetCount()
                                         private:RefreshObjectiveEditor(widget)
                                     else
-                                        addon:Print(L["Invalid Alt ID"])
+                                        addon:Print(private.defaultChatFrame, L["Invalid Alt ID"])
                                     end
                                 end, { private, widget, pendingAltIDType, trackerKey })
                             end,

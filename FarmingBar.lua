@@ -22,6 +22,7 @@ function addon:OnEnable()
     addon:RegisterEvent("SPELL_UPDATE_COOLDOWN")
     addon:RegisterEvent("BANKFRAME_OPENED")
     addon:RegisterEvent("BANKFRAME_CLOSED")
+    addon:RegisterEvent("PLAYER_ENTERING_WORLD")
 
     if private.db.global.debug.enabled then
         C_Timer.After(1, private.StartDebug)

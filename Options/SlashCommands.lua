@@ -205,8 +205,6 @@ function private:GetSlashCommandOptions()
                             else
                                 SetHidden(barID)
                             end
-
-                            print(barID, hidden)
                         end,
                     },
                     movable = {

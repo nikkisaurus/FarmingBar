@@ -507,17 +507,17 @@ function private:GetObjectiveTemplateOptions(objectiveTemplateName)
                                         local validID = private:ValidateTracker(objectiveTemplateName, pendingAltIDType, value)
 
                                         if private:ObjectiveTemplateTrackerAltIDExists(objectiveTemplateName, trackerKey, pendingAltIDType, validID) then
-                                            addon:Print(L["Alt ID already exists for this tracker."])
+                                            addon:Print(private.defaultChatFrame, L["Alt ID already exists for this tracker."])
                                             return
                                         elseif not validID then
-                                            addon:Print(L["Invalid Alt ID"])
+                                            addon:Print(private.defaultChatFrame, L["Invalid Alt ID"])
                                             return
                                         end
 
                                         private:AddObjectiveTrackerAltID(objectiveTemplateName, trackerKey, pendingAltIDType, validID)
                                         private:RefreshOptions()
                                     else
-                                        addon:Print(L["Invalid Alt ID"])
+                                        addon:Print(private.defaultChatFrame, L["Invalid Alt ID"])
                                     end
                                 end, { private, objectiveTemplateName, pendingAltIDType, trackerKey })
                             end,

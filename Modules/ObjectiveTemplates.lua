@@ -21,7 +21,7 @@ function private:AddObjective(widget, Type, id, alert)
 
             widget:SetObjectiveInfo(template)
         elseif alert then
-            addon:Print(alert)
+            addon:Print(private.defaultChatFrame, alert)
         end
     end, { private, widget, Type, id, alert })
 end
