@@ -216,7 +216,7 @@ private.CONST = {
     TOOLTIP_TITLE = { 1, 0.82, 0 },
 
     GAME_VERSION = select(4, GetBuildInfo()),
-    VERSION = "4.2.0",
+    VERSION = "4.2.1",
 }
 
 private.iconTiers = {
