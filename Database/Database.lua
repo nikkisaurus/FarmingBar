@@ -500,6 +500,7 @@ function private:InitializeDatabase()
 
     private.db = LibStub("AceDB-3.0"):New("FarmingBarDB", {
         global = {
+            version = 9,
             debug = {
                 -- enabled = true,
             },

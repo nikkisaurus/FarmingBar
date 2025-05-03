@@ -96,63 +96,63 @@ function private:ConvertDB_V2()
                 private.db.global.settings.tooltips.button = tooltips.button
             end
         end
-    end
 
-    if private.backup.global.templates then
-        for templateName, template in pairs(private.backup.global.templates) do
-            private.db.global.templates[templateName] = {}
-            for buttonID, objective in pairs(template) do
-                buttonID = tonumber(buttonID)
-                local Type = objective.type
-                if buttonID <= private.CONST.MAX_BUTTONS and Type then
-                    local template = addon:CloneTable(private.defaults.objective)
+        if private.backup.global.templates then
+            for templateName, template in pairs(private.backup.global.templates) do
+                private.db.global.templates[templateName] = {}
+                for buttonID, objective in pairs(template) do
+                    buttonID = tonumber(buttonID)
+                    local Type = objective.type
+                    if buttonID <= private.CONST.MAX_BUTTONS and Type then
+                        local template = addon:CloneTable(private.defaults.objective)
 
-                    if Type == "mixedItems" then -- ANY
-                        template.condition.type = "ANY"
-                        template.title = objective.title or ""
-                        template.icon.type = "FALLBACK"
-                        template.icon.id = objective.icon or 134400
+                        if Type == "mixedItems" then -- ANY
+                            template.condition.type = "ANY"
+                            template.title = objective.title or ""
+                            template.icon.type = "FALLBACK"
+                            template.icon.id = objective.icon or 134400
 
-                        for _, itemID in pairs(objective.items) do
+                            for _, itemID in pairs(objective.items) do
+                                local tracker = addon:CloneTable(private.defaults.tracker)
+                                tracker.id = itemID
+                                tinsert(template.trackers, tracker)
+                            end
+                        elseif Type == "shoppingList" then -- ALL
+                            template.condition.type = "ALL"
+                            template.title = objective.title or ""
+                            template.icon.type = "FALLBACK"
+                            template.icon.id = objective.icon or 134400
+
+                            for itemID, count in pairs(objective.items) do
+                                local tracker = addon:CloneTable(private.defaults.tracker)
+                                tracker.id = itemID
+                                tracker.objective = count or 1
+                                tinsert(template.trackers, tracker)
+                            end
+                        elseif Type == "item" then
+                            template.condition.type = "ALL"
+                            template.title = objective.title ~= "" and objective.title or L["Converted Item"]
+                            template.icon.type = "FALLBACK"
+                            template.icon.id = C_Item.GetItemIconByID(objective.itemID) or 134400
                             local tracker = addon:CloneTable(private.defaults.tracker)
-                            tracker.id = itemID
+                            tracker.id = objective.itemID
+                            tracker.objective = objective.objective or 1
+                            tinsert(template.trackers, tracker)
+                        elseif Type == "currency" then
+                            template.condition.type = "ALL"
+                            template.title = objective.title ~= "" and objective.title or L["Converted Currency"]
+                            template.icon.type = "FALLBACK"
+                            local currency = C_CurrencyInfo.GetCurrencyInfo(objective.currencyID)
+                            template.icon.id = currency and currency.iconFileID or 134400
+                            local tracker = addon:CloneTable(private.defaults.tracker)
+                            tracker.type = "CURRENCY"
+                            tracker.id = objective.currencyID
+                            tracker.objective = objective.objective or 1
                             tinsert(template.trackers, tracker)
                         end
-                    elseif Type == "shoppingList" then -- ALL
-                        template.condition.type = "ALL"
-                        template.title = objective.title or ""
-                        template.icon.type = "FALLBACK"
-                        template.icon.id = objective.icon or 134400
 
-                        for itemID, count in pairs(objective.items) do
-                            local tracker = addon:CloneTable(private.defaults.tracker)
-                            tracker.id = itemID
-                            tracker.objective = count or 1
-                            tinsert(template.trackers, tracker)
-                        end
-                    elseif Type == "item" then
-                        template.condition.type = "ALL"
-                        template.title = objective.title ~= "" and objective.title or L["Converted Item"]
-                        template.icon.type = "FALLBACK"
-                        template.icon.id = C_Item.GetItemIconByID(objective.itemID) or 134400
-                        local tracker = addon:CloneTable(private.defaults.tracker)
-                        tracker.id = objective.itemID
-                        tracker.objective = objective.objective or 1
-                        tinsert(template.trackers, tracker)
-                    elseif Type == "currency" then
-                        template.condition.type = "ALL"
-                        template.title = objective.title ~= "" and objective.title or L["Converted Currency"]
-                        template.icon.type = "FALLBACK"
-                        local currency = C_CurrencyInfo.GetCurrencyInfo(objective.currencyID)
-                        template.icon.id = currency and currency.iconFileID or 134400
-                        local tracker = addon:CloneTable(private.defaults.tracker)
-                        tracker.type = "CURRENCY"
-                        tracker.id = objective.currencyID
-                        tracker.objective = objective.objective or 1
-                        tinsert(template.trackers, tracker)
+                        private.db.global.templates[templateName][buttonID] = addon:CloneTable(template)
                     end
-
-                    private.db.global.templates[templateName][buttonID] = addon:CloneTable(template)
                 end
             end
         end
