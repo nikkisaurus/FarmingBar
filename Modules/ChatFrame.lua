@@ -11,6 +11,8 @@ function addon:PLAYER_ENTERING_WORLD()
     end
 
     private:UpdateChatFrame()
+
+    self:UnregisterEvent("PLAYER_ENTERING_WORLD")
 end
 
 function private:GetChatFrame()
