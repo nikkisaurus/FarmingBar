@@ -500,7 +500,6 @@ function private:InitializeDatabase()
 
     private.db = LibStub("AceDB-3.0"):New("FarmingBarDB", {
         global = {
-            version = 9,
             debug = {
                 -- enabled = true,
             },
@@ -582,7 +581,7 @@ function private:InitializeDatabase()
                     },
                 },
                 chatFrame = {
-                    enabled = true,
+                    enabled = false,
                     docked = false,
                 },
                 tooltips = {
@@ -672,15 +671,6 @@ function private:InitializeDatabase()
 
     addon:SetEnabledState(private.db.profile.enabled)
 
-    if private.db.global.version == 5 then
-        private:ConvertDB_V5()
-    end
-
-    if private.db.global.version <= 8 then
-        private:ConvertDB_V8()
-    end
-
-    private.db.global.version = 9
 
     private.db.RegisterCallback(addon, "OnProfileChanged", "OnProfile_")
     private.db.RegisterCallback(addon, "OnProfileCopied", "OnProfile_")
@@ -691,6 +681,18 @@ function private:InitializeDatabase()
     elseif private.version == 2 then
         private:ConvertDB_V2()
     end
+    
+    if private.db.global.version then
+        if private.db.global.version == 5 then
+            private:ConvertDB_V5()
+        end
+
+        if private.db.global.version <= 8 then
+            private:ConvertDB_V8()
+        end
+    end
+
+    private.db.global.version = 9
 
     if private.CONST.GAME_VERSION < 110105 then
         C_Timer.After(1, function()
