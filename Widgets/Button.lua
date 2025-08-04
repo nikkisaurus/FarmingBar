@@ -346,6 +346,9 @@ local methods = {
         local _, buttonDB = widget:GetDB()
         if buttonDB.onUse.type == "ITEM" and buttonDB.onUse.itemID then
             return strjoin(":", strlower(buttonDB.onUse.type), buttonDB.onUse.itemID)
+        elseif buttonDB.trackers[1] and buttonDB.trackers[1].type == "CURRENCY" and buttonDB.trackers[1].id ~= 0000 then
+            -- Currencies typically won't have an onUse item set, so we need to check the first tracker to see if it's a currency. I don't think there's a need to show the tooltip for item trackers without an onUse set at this point, as to not change existing behavior, and to give the user more control over items being shown. I could see in the future adding the option to specify a currency "onUse", simply for using it as the tooltip. Or, maybe an option to select a specific tracker to use on tooltips.
+            return strjoin(":", strlower(buttonDB.trackers[1].type), buttonDB.trackers[1].id)
         end
     end,
 
