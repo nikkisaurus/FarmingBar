@@ -58,7 +58,7 @@ function private:Alert(widget, ...)
     end
 
     if alertSettings.chat then
-        addon:Print(private.defaultChatFrame, _G[barDB.alerts.chatFrame], alert)
+        addon:Print(private.defaultChatFrame == DEFAULT_CHAT_FRAME and _G[barDB.alerts.chatFrame] or private.defaultChatFrame, alert)
     end
 
     if alertSettings.screen then
@@ -117,7 +117,7 @@ function private:AlertBar(widget, progress, total, newProgress, newTotal)
     end
 
     if alertSettings.chat then
-        addon:Print(private.defaultChatFrame, _G[barDB.alerts.chatFrame], alert)
+        addon:Print(private.defaultChatFrame == DEFAULT_CHAT_FRAME and _G[barDB.alerts.chatFrame] or private.defaultChatFrame, alert)
     end
 
     if alertSettings.screen then
@@ -183,7 +183,7 @@ function private:AlertTracker(widget, trackerKey, ...)
             end
 
             if alertSettings.chat then
-                addon:Print(private.defaultChatFrame, _G[barDB.alerts.chatFrame], alert)
+                addon:Print(private.defaultChatFrame == DEFAULT_CHAT_FRAME and _G[barDB.alerts.chatFrame] or private.defaultChatFrame, alert)
             end
 
             if alertSettings.screen then
