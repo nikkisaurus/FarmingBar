@@ -27,10 +27,10 @@ jobs:
               with:
                   args: -g classic
 
-            - name: Package and release for Cata
+            - name: Package and release for Mists
               uses: BigWigsMods/packager@master
               with:
-                  args: -g cata
+                  args: -g mists
 
             - name: Package and release for Retail
               uses: BigWigsMods/packager@master
