@@ -1,6 +1,6 @@
 ## Interface: 110107
 ## Interface-Classic: 11506
-## Interface-Cata: 40401
+## Interface-Mists: 50500
 
 ## Title: FarmingBar
 ## Notes: Action bar to display and track objective goals.
