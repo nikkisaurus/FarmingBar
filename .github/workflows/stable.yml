@@ -22,15 +22,15 @@ jobs:
             - name: Clone project
               uses: actions/checkout@v1
 
-            - name: Package and release for Classic
-              uses: BigWigsMods/packager@master
-              with:
-                  args: -g classic
+            # - name: Package and release for Classic
+            #   uses: BigWigsMods/packager@master
+            #   with:
+            #       args: -g classic
 
-            - name: Package and release for Mists
-              uses: BigWigsMods/packager@master
-              with:
-                  args: -g mists
+            # - name: Package and release for Mists
+            #   uses: BigWigsMods/packager@master
+            #   with:
+            #       args: -g mists
 
             - name: Package and release for Retail
               uses: BigWigsMods/packager@master
