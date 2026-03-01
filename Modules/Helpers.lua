@@ -426,6 +426,15 @@ if not private:IsCurrencySupported() then
     private.lists.newTrackerType.CURRENCY = nil
 end
 
+function private:AppendTable(tbl1, tbl2)
+    local tbl = addon:CloneTable(tbl1)
+
+    for _, v in pairs(tbl2) do
+        tinsert(tbl, addon:CloneTable(v))
+    end
+
+    return tbl
+end
 function private:RegisterMedia()
     LSM:Register(LSM.MediaType.BACKGROUND, L["UI EmptySlot White"], [[INTERFACE\BUTTONS\UI-EMPTYSLOT-WHITE]])
     LSM:Register(LSM.MediaType.BACKGROUND, L["UI ActionButton Border"], [[Interface\Buttons\UI-ActionButton-Border]])

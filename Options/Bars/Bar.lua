@@ -156,7 +156,12 @@ function private:GetBarOptions(barID)
                                         return values
                                     end,
                                     set = function(_, value)
-                                        private.db.profile.bars[barID].buttons = addon:CloneTable(private.templates[value])
+                                        local template = addon:CloneTable(private.templates[value])
+                                        if private.db.profile.bars[barID].appendTemplates then
+                                            private.db.profile.bars[barID].buttons = private:AppendTable(private.db.profile.bars[barID].buttons, template)
+                                        else
+                                            private.db.profile.bars[barID].buttons = template
+                                        end
                                         private.bars[barID]:UpdateButtons()
                                     end,
                                 },
@@ -178,7 +183,13 @@ function private:GetBarOptions(barID)
                                         return values
                                     end,
                                     set = function(_, value)
-                                        private.db.profile.bars[barID].buttons = addon:CloneTable(private.db.global.templates[value])
+                                        local template = addon:CloneTable(private.db.global.templates[value])
+                                        if private.db.profile.bars[barID].appendTemplates then
+                                            private.db.profile.bars[barID].buttons = private:AppendTable(private.db.profile.bars[barID].buttons, template)
+                                        else
+                                            private.db.profile.bars[barID].buttons = template
+                                        end
+
                                         private.bars[barID]:UpdateButtons()
                                     end,
                                 },
@@ -195,6 +206,16 @@ function private:GetBarOptions(barID)
                                     end,
                                     confirm = function()
                                         return format(L["Are you sure you want to clear Bar %d?"], barID)
+                                    end,
+                                },
+                                appendTemplates = {
+                                    order = 4,
+                                    type = "toggle",
+                                    name = L["Append Templates"],
+                                    desc = L["Adds template items to the bar without clearing the bar first. *Duplicates are not filtered."],
+                                    set = function(info, value)
+                                        private.db.profile.bars[barID][info[#info]] = value
+                                        private.bars[barID]:SetMouseover()
                                     end,
                                 },
                             },

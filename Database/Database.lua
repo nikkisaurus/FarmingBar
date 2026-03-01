@@ -75,6 +75,7 @@ private.defaults = {
         showCooldown = true,
         showEmpty = true,
         skin = "FarmingBar_Default",
+        appendTemplates = false,
     },
 
     barAlert = [[function(info, colors)
@@ -671,7 +672,6 @@ function private:InitializeDatabase()
 
     addon:SetEnabledState(private.db.profile.enabled)
 
-
     private.db.RegisterCallback(addon, "OnProfileChanged", "OnProfile_")
     private.db.RegisterCallback(addon, "OnProfileCopied", "OnProfile_")
     private.db.RegisterCallback(addon, "OnProfileReset", "OnProfile_")
@@ -681,7 +681,7 @@ function private:InitializeDatabase()
     elseif private.version == 2 then
         private:ConvertDB_V2()
     end
-    
+
     if private.db.global.version then
         if private.db.global.version == 5 then
             private:ConvertDB_V5()
