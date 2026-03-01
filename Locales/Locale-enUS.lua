@@ -353,6 +353,7 @@ L["String"] = true
 L["Style"] = true
 L["Swap profiles."] = true
 L["Template exists."] = true
+L["Template Export Frame (Dev)"] = true
 L["Templates"] = true
 L["TexCoords"] = true
 L["Texture"] = true

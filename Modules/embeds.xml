@@ -8,6 +8,7 @@
     <Include file="Helpers.lua"/>
     <Include file="ItemMover.lua"/>
     <Include file="ObjectiveTemplates.lua"/>
+    <Include file="Serpent.lua"/>
     <Include file="Skins.lua"/>
     <Include file="SlashCommands.lua"/>
     <Include file="Templates.lua"/>

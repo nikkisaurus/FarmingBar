@@ -1,6 +1,7 @@
 local addonName, private = ...
 local addon = LibStub("AceAddon-3.0"):GetAddon(addonName)
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
+local AceGUI = LibStub("AceGUI-3.0")
 
 local tradeskillIDs = {
     FIRSTAID = 129,
@@ -62,6 +63,30 @@ function addon:CraftTradeSkill(input)
     end
 end
 
+function addon:ExportTemplate(barID)
+    local barID = tonumber(barID)
+    local bar = private.db.profile.bars[barID]
+
+    if bar then
+        local exportFrame = private.DevExportFrame or AceGUI:Create("Frame")
+        exportFrame:SetTitle(L.addonName .. " - " .. L["Template Export Frame (Dev)"])
+        exportFrame:SetLayout("Fill")
+        exportFrame:SetCallback("OnClose", function(self)
+            self:Release()
+        end)
+        private.DevExportFrame = exportFrame
+
+        local editbox = private.DevExportEditbox or AceGUI:Create("MultiLineEditBox")
+        editbox:SetLabel("Label")
+        editbox:DisableButton(true)
+        exportFrame:AddChild(editbox)
+        editbox:SetText(LibSerpent.block(bar.buttons, { comment = false }))
+        editbox:SetFocus()
+        editbox:HighlightText()
+        private.DevExportEditbox = editbox
+    end
+end
+
 function addon:HandleSlashCommand(input)
     if not input or input == "" then
         private:LoadOptions()
@@ -80,4 +105,5 @@ function private:InitializeSlashCommands()
     end
 
     addon:RegisterChatCommand("craft", "CraftTradeSkill")
+    addon:RegisterChatCommand("exporttemplate", "ExportTemplate")
 end
