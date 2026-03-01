@@ -412,7 +412,7 @@ L.OptionsHelp = function()
         },
         {
             1,
-            format("For any bugs or feature requests, please create a ticket at %s. General questions should be left as comments at %s.", addon:ColorFontString("tinyurl.com/farmingbarissues", "LIGHTBLUE"), addon:ColorFontString("tinyurl.com/farmingbarwow", "LIGHTBLUE")),
+            format("For any bugs or feature requests, please create a ticket at %s. General questions should be left as comments at %s. Alternatively, you may contact me through my Discord server at %s. It is preferred that bugs are reported through Github via the issues link provided.", addon:ColorFontString("tinyurl.com/farmingbarissues", "LIGHTBLUE"), addon:ColorFontString("tinyurl.com/farmingbarwow", "LIGHTBLUE"), addon:ColorFontString("tinyurl.com/farmingbardiscord", "LIGHTBLUE")),
         },
         {
             3,
