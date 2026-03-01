@@ -166,7 +166,8 @@ local editboxScripts = {
                 end
             end
         elseif editType == "item" then
-            private:AddObjective(widget, "ITEM", tonumber(input), L["Invalid item ID."])
+            local csv = { strsplit(",", string.gsub(editbox:GetText(), "%s+", ""), 99) }
+            private:AddObjective(widget, "ITEM", tonumber(csv[1]), L["Invalid item ID."], csv)
         elseif editType == "currency" then
             local currencyID = private:ValidateCurrency(input or 0)
             if currencyID then

@@ -2,8 +2,8 @@ local addonName, private = ...
 local addon = LibStub("AceAddon-3.0"):GetAddon(addonName)
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 
-function private:AddObjective(widget, Type, id, alert)
-    return addon:Cache(strlower(Type), id, function(success, id, private, widget, Type, id, alert)
+function private:AddObjective(widget, Type, id, alert, csv)
+    return addon:Cache(strlower(Type), id, function(success, id, private, widget, Type, alert, csv)
         if success then
             local name, icon = private:GetTrackerInfo(Type, id)
 
@@ -19,11 +19,31 @@ function private:AddObjective(widget, Type, id, alert)
             tracker.name = name or ""
             tinsert(template.trackers, tracker)
 
+            if type(csv) == "table" then
+                for k, v in pairs(csv) do
+                    if k ~= 1 then
+                        addon:Cache(strlower(Type), v, function(success, v, private, Type, alert, trackers)
+                            if success then
+                                local name = private:GetTrackerInfo(Type, v)
+
+                                local tracker = addon:CloneTable(private.defaults.tracker)
+                                tracker.type = Type
+                                tracker.id = v
+                                tracker.name = name or ""
+                                tinsert(trackers, tracker)
+                            elseif alert then
+                                addon:Print(private.defaultChatFrame, alert)
+                            end
+                        end, { private, Type, alert, template.trackers })
+                    end
+                end
+            end
+
             widget:SetObjectiveInfo(template)
         elseif alert then
             addon:Print(private.defaultChatFrame, alert)
         end
-    end, { private, widget, Type, id, alert })
+    end, { private, widget, Type, alert, csv })
 end
 
 function private:AddObjectiveTemplate(objectiveInfo, title)
