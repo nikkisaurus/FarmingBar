@@ -400,6 +400,14 @@ L.OptionsHelp = function()
         },
         {
             3,
+            "What's New?",
+        },
+        {
+            1,
+            "You may now create an objective with multiple trackers directly through the quick add editbox. Simply separate the item IDs with commas and the objective will be created with a tracker for each item. For example, entering \"116053, 116054, 116055\" will create an objective with three trackers, one for each of the items. For the time being, this is only compatible with item trackers, but the possibility of implementing this feature for currencies may be considered. If this is something you are interested in, please let me know via the contact methods listed in the Issues section below.",
+        },
+        {
+            3,
             "Issues",
         },
         {
