@@ -68,22 +68,21 @@ function addon:ExportTemplate(barID)
     local bar = private.db.profile.bars[barID]
 
     if bar then
-        local exportFrame = private.DevExportFrame or AceGUI:Create("Frame")
+        local exportFrame = AceGUI:Create("Frame")
         exportFrame:SetTitle(L.addonName .. " - " .. L["Template Export Frame (Dev)"])
         exportFrame:SetLayout("Fill")
         exportFrame:SetCallback("OnClose", function(self)
             self:Release()
         end)
-        private.DevExportFrame = exportFrame
+        exportFrame:Show()
 
-        local editbox = private.DevExportEditbox or AceGUI:Create("MultiLineEditBox")
+        local editbox = AceGUI:Create("MultiLineEditBox")
         editbox:SetLabel("Label")
         editbox:DisableButton(true)
         exportFrame:AddChild(editbox)
         editbox:SetText(LibSerpent.block(bar.buttons, { comment = false }))
         editbox:SetFocus()
         editbox:HighlightText()
-        private.DevExportEditbox = editbox
     end
 end
 
