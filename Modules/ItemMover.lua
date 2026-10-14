@@ -34,7 +34,7 @@ function private:MoveObjectiveToBank(widget)
         if tracker.type == "ITEM" and C_Item.GetItemCount(tracker.id) > 0 then
             addon.CacheItem(tracker.id, function(itemID)
                 private.status.itemMover = widget
-                local _, _, _, _, _, _, _, itemStackCount = GetItemInfo(itemID)
+                local _, _, _, _, _, _, _, itemStackCount = C_Item.GetItemInfo(itemID)
                 local itemCount = C_Item.GetItemCount(itemID)
 
                 -- Find bag slots with item

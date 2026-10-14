@@ -90,7 +90,7 @@ function private:GetButtonTooltip(widget)
                 local trackerIcon, trackerName
                 if tracker.type == "ITEM" then
                     trackerIcon = C_Item.GetItemIconByID(tracker.id)
-                    trackerName = tracker.name or GetItemInfo(tracker.id)
+                    trackerName = tracker.name or C_Item.GetItemInfo(tracker.id)
                 elseif tracker.type == "CURRENCY" then
                     local currency = C_CurrencyInfo.GetCurrencyInfo(tracker.id)
                     trackerIcon = currency and currency.iconFileID

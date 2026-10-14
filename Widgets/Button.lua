@@ -501,7 +501,7 @@ local methods = {
             if not skin.buttonTextures.iconBorder.hidden and buttonDB.onUse.type == "ITEM" then
                 addon:CacheItem(buttonDB.onUse.itemID, function(success, id, widget)
                     if success then
-                        local _, _, rarity = GetItemInfo(id)
+                        local _, _, rarity = C_Item.GetItemInfo(id)
                         if rarity and rarity >= 2 then
                             local r, g, b = GetItemQualityColor(rarity)
                             widget.iconBorder:Show()

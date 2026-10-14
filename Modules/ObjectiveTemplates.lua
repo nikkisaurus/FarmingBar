@@ -149,7 +149,7 @@ end
 function private:GetTrackerInfo(Type, id)
     local name, icon
     if Type == "ITEM" then
-        name = GetItemInfo(id)
+        name = C_Item.GetItemInfo(id)
         icon = C_Item.GetItemIconByID(id)
     elseif Type == "CURRENCY" then
         local currency = C_CurrencyInfo.GetCurrencyInfo(id or tonumber(id) or 0)

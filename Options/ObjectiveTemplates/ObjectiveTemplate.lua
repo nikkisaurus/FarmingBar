@@ -185,9 +185,9 @@ function private:GetObjectiveTemplateOptions(objectiveTemplateName)
                                 if success then
                                     local name
                                     if private:GetGameVersion() < 110000 then
-                                        name = GetItemInfo(id)
+                                        name = C_Item.GetItemInfo(id)
                                     else
-                                        name = (format("%s |A:Professions-Icon-Quality-Tier%d-Inv:20:20|a", GetItemInfo(id), C_TradeSkillUI.GetItemReagentQualityByItemInfo(id)))
+                                        name = (format("%s |A:Professions-Icon-Quality-Tier%d-Inv:20:20|a", C_Item.GetItemInfo(id), C_TradeSkillUI.GetItemReagentQualityByItemInfo(id)))
                                     end
                                     return name
                                 end
@@ -359,7 +359,7 @@ function private:GetObjectiveTemplateOptions(objectiveTemplateName)
     for trackerKey, tracker in addon:pairs(objectiveTemplate.trackers) do
         local trackerName, trackerIcon
         if tracker.type == "ITEM" then
-            trackerName = GetItemInfo(tracker.id)
+            trackerName = C_Item.GetItemInfo(tracker.id)
             trackerIcon = C_Item.GetItemIconByID(tracker.id)
         elseif tracker.type == "CURRENCY" then
             local currency = C_CurrencyInfo.GetCurrencyInfo(tracker.id)

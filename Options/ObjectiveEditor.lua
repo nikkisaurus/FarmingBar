@@ -156,9 +156,9 @@ function private:GetObjectiveEditorGeneralContent(widget)
                         if success then
                             local name
                             if private:GetGameVersion() < 110000 then
-                                name = GetItemInfo(id)
+                                name = C_Item.GetItemInfo(id)
                             else
-                                name = (format("%s |A:Professions-Icon-Quality-Tier%d-Inv:20:20|a", GetItemInfo(id), C_TradeSkillUI.GetItemReagentQualityByItemInfo(id)))
+                                name = (format("%s |A:Professions-Icon-Quality-Tier%d-Inv:20:20|a", C_Item.GetItemInfo(id), C_TradeSkillUI.GetItemReagentQualityByItemInfo(id)))
                             end
                             return name
                         end

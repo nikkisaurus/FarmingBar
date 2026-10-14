@@ -529,7 +529,7 @@ function private:ValidateItem(itemID)
         return
     end
 
-    local _, itemLink = GetItemInfo(itemID)
+    local _, itemLink = C_Item.GetItemInfo(itemID)
     if itemLink then
         local itemString = select(3, strfind(itemLink, "|H(.+)|h"))
         local _, itemId = strsplit(":", itemString)
