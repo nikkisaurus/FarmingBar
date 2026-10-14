@@ -503,7 +503,7 @@ local methods = {
                     if success then
                         local _, _, rarity = C_Item.GetItemInfo(id)
                         if rarity and rarity >= 2 then
-                            local r, g, b = GetItemQualityColor(rarity)
+                            local r, g, b = C_Item.GetItemQualityColor(rarity)
                             widget.iconBorder:Show()
                             widget.iconBorder:SetVertexColor(r, g, b, 1)
                         else
