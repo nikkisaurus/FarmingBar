@@ -13,9 +13,15 @@ end
 
 function addon:OnEnable()
     -- This is for DBV2 conversion to update each toon's profile key
-    local realmKey = GetRealmName()
-    local charKey = UnitName("player") .. " - " .. realmKey
-    private.db:SetProfile(FarmingBarDB.profileKeys[charKey])
+    if select(4, GetBuildInfo()) == 16001 then
+        local fName, lName = UnitName("player")
+        local charKey = fName .. " " .. lName
+        private.db:SetProfile(FarmingBarDB.profileKeys[charKey])
+    else
+        local realmKey = GetRealmName()
+        local charKey = UnitName("player") .. " - " .. realmKey
+        private.db:SetProfile(FarmingBarDB.profileKeys[charKey])
+    end
 
     private:InitializeBars()
     addon:RegisterEvent("CURSOR_CHANGED")
