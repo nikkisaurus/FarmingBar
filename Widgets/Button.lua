@@ -517,6 +517,7 @@ local methods = {
 
             -- Icon Tier
             if private:GetGameVersion() < 110000 then
+                widget.iconTier:Hide()
                 return
             end
 
