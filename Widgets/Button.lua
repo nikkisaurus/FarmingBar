@@ -73,7 +73,7 @@ local postClickMethods = {
         local _, buttonDB = widget:GetDB()
         local itemID = buttonDB and buttonDB.onUse.itemID
 
-        if widget:IsEmpty() or buttonDB.onUse.type == "NONE" or not itemID or not GetItemSpell(itemID) then
+        if widget:IsEmpty() or buttonDB.onUse.type == "NONE" or not itemID or not C_Item.GetItemSpell(itemID) then
             return
         end
 
