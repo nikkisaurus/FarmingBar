@@ -13,7 +13,7 @@ end
 
 function addon:OnEnable()
     -- This is for DBV2 conversion to update each toon's profile key
-    if select(4, GetBuildInfo()) == 16001 then
+    if private:GetGameVersion() == 16001 then
         local fName, lName = UnitName("player")
         local charKey = fName .. " " .. lName
         private.db:SetProfile(FarmingBarDB.profileKeys[charKey])

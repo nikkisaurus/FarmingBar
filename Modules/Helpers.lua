@@ -216,6 +216,7 @@ private.CONST = {
     TOOLTIP_TITLE = { 1, 0.82, 0 },
 
     GAME_VERSION = select(4, GetBuildInfo()),
+    RETAIL = 120105,
     VERSION = "4.4.0",
 }
 
@@ -398,7 +399,7 @@ function private:GetMixedBarDBValues(info, path, path2)
 end
 
 function private:GetMouseFocusName()
-    if private:GetGameVersion() >= 110000 then
+    if private:GetGameVersion() >= private.CONST.RETAIL then
         local frame = GetMouseFoci()
         return frame and frame[1]:GetName()
     else
@@ -438,7 +439,7 @@ end
 function private:RegisterMedia()
     LSM:Register(LSM.MediaType.BACKGROUND, L["UI EmptySlot White"], [[INTERFACE\BUTTONS\UI-EMPTYSLOT-WHITE]])
     LSM:Register(LSM.MediaType.BACKGROUND, L["UI ActionButton Border"], [[Interface\Buttons\UI-ActionButton-Border]])
-    if private.CONST.GAME_VERSION >= 120105 then
+    if private:GetGameVersion() >= private.CONST.RETAIL then
         LSM:Register(LSM.MediaType.BACKGROUND, L["Profession Quality Icon"], [[interface/professions/professionsqualityicons]])
     end
     LSM:Register(LSM.MediaType.BACKGROUND, L["Icon Border Thick"], [[Interface\AddOns\FarmingBar\Media\IconBorderThick]])

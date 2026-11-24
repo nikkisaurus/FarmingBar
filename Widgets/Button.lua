@@ -516,7 +516,7 @@ local methods = {
             end
 
             -- Icon Tier
-            if private:GetGameVersion() < 110000 then
+            if private:GetGameVersion() < private.CONST.RETAIL then
                 widget.iconTier:Hide()
                 return
             end
@@ -705,7 +705,7 @@ local function Constructor()
     frame:SetMovable(true)
     frame:EnableMouse(true)
     frame:RegisterForDrag("LeftButton", "RightButton")
-    if private:GetGameVersion() < 100000 then
+    if private:GetGameVersion() < private.CONST.RETAIL then
         frame:RegisterForClicks("AnyDown")
     else
         frame:RegisterForClicks("AnyUp", "AnyDown")

@@ -599,11 +599,7 @@ function lib.colorCodeCode(code, colorTable, caretPosition)
             break
         end
 
-        if
-            tokenType == tokens.TOKEN_COLORCODE_START
-            or tokenType == tokens.TOKEN_COLORCODE_STOP
-            or tokenType == tokens.TOKEN_UNKNOWN
-        then
+        if tokenType == tokens.TOKEN_COLORCODE_START or tokenType == tokens.TOKEN_COLORCODE_STOP or tokenType == tokens.TOKEN_UNKNOWN then
             -- ignore color codes
         elseif tokenType == tokens.TOKEN_LINEBREAK or tokenType == tokens.TOKEN_WHITESPACE then
             if tokenType == tokens.TOKEN_LINEBREAK then
@@ -772,11 +768,7 @@ function lib.indentCode(code, tabWidth, colorTable, caretPosition)
                 workingTable2[tsize2] = s
                 totalLen2 = totalLen2 + stringlen(s)
             end
-        elseif
-            tokenType == tokens.TOKEN_COLORCODE_START
-            or tokenType == tokens.TOKEN_COLORCODE_STOP
-            or tokenType == tokens.TOKEN_UNKNOWN
-        then
+        elseif tokenType == tokens.TOKEN_COLORCODE_START or tokenType == tokens.TOKEN_COLORCODE_STOP or tokenType == tokens.TOKEN_UNKNOWN then
             -- skip these, though they shouldn't be encountered here anyway
         else
             hitNonWhitespace = true
