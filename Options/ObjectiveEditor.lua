@@ -456,7 +456,7 @@ function private:GetObjectiveEditorTrackersContent(widget)
                             name = L["Warbank"],
                             desc = L["Include counts from the warbank for this tracker."],
                             hidden = function()
-                                return private:GetGameVersion() < private.CONST.retail
+                                return private:GetGameVersion() < private.CONST.RETAIL
                             end,
                         },
                         Alts = {

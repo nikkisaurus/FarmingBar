@@ -253,7 +253,7 @@ function private:GetConfigOptions()
                             inline = true,
                             name = L["Profession Quality Icon"],
                             hidden = function()
-                                return private:GetGameVersion() < private.CONST.retail
+                                return private:GetGameVersion() < private.CONST.RETAIL
                             end,
                             get = function(info)
                                 return private:GetMixedBarDBValues(info, "iconTier")
@@ -380,7 +380,7 @@ function private:GetConfigOptions()
                             inline = true,
                             name = L["Profession Quality Icon"],
                             hidden = function()
-                                return private:GetGameVersion() < private.CONST.retail
+                                return private:GetGameVersion() < private.CONST.RETAIL
                             end,
                             get = function(info)
                                 return private:GetMixedBarDBValues(info, "iconTier")
