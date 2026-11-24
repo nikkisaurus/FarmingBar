@@ -1,4 +1,4 @@
-## Interface: 11508, 16001, 20506, 50503, 120105
+## Interface: 11509, 16001, 20506, 50503, 120105
 
 ## Title: FarmingBar
 ## Notes: Action bar to display and track objective goals.
