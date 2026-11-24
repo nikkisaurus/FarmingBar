@@ -438,7 +438,9 @@ end
 function private:RegisterMedia()
     LSM:Register(LSM.MediaType.BACKGROUND, L["UI EmptySlot White"], [[INTERFACE\BUTTONS\UI-EMPTYSLOT-WHITE]])
     LSM:Register(LSM.MediaType.BACKGROUND, L["UI ActionButton Border"], [[Interface\Buttons\UI-ActionButton-Border]])
-    LSM:Register(LSM.MediaType.BACKGROUND, L["Profession Quality Icon"], [[interface/professions/professionsqualityicons]])
+    if private.CONST.GAME_VERSION < 120105 then
+        LSM:Register(LSM.MediaType.BACKGROUND, L["Profession Quality Icon"], [[interface/professions/professionsqualityicons]])
+    end
     LSM:Register(LSM.MediaType.BACKGROUND, L["Icon Border Thick"], [[Interface\AddOns\FarmingBar\Media\IconBorderThick]])
     LSM:Register(LSM.MediaType.BACKGROUND, L["Icon Border"], [[Interface\AddOns\FarmingBar\Media\IconBorder]])
     LSM:Register(LSM.MediaType.BORDER, L["Solid Border"], [[Interface\AddOns\FarmingBar\Media\SolidBorder]])
