@@ -77,7 +77,7 @@ local postClickMethods = {
             return
         end
 
-        if not GetCVar("autoLootDefault") and private.db.global.settings.autoLoot and GetNumLootItems() > 0 then
+        if (not GetCVar("autoLootDefault") or GetCVar("autoLootDefault") == "0") and private.db.global.settings.autoLoot then
             C_Timer.After(0.5, function()
                 for i = 1, GetNumLootItems() do
                     LootSlot(i)
