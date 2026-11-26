@@ -157,12 +157,48 @@ function private:GetBarOptions(barID)
                                     end,
                                     set = function(_, value)
                                         local template = addon:CloneTable(private.templates[value])
-                                        if private.db.profile.bars[barID].appendTemplates then
-                                            private.db.profile.bars[barID].buttons = private:AppendTable(private.db.profile.bars[barID].buttons, template)
-                                        else
-                                            private.db.profile.bars[barID].buttons = template
+                                        local numTemplates = addon:tcount(template)
+                                        local buttonsProcessed = 0
+
+                                        local ApplyTemplate = function(button, buttonID, trackersProcessed)
+                                            if trackersProcessed == addon:tcount(button.trackers) then
+                                                if not template[buttonID].title or template[buttonID].title == "" then
+                                                    local name = template[buttonID].trackers[1] and template[buttonID].trackers[1].name or ""
+                                                    template[buttonID].title = name
+                                                end
+                                                buttonsProcessed = buttonsProcessed + 1
+                                            end
+
+                                            if numTemplates == buttonsProcessed then
+                                                if private.db.profile.bars[barID].appendTemplates then
+                                                    private.db.profile.bars[barID].buttons = private:AppendTable(private.db.profile.bars[barID].buttons, template)
+                                                else
+                                                    private.db.profile.bars[barID].buttons = template
+                                                end
+                                                private.bars[barID]:UpdateButtons()
+                                            end
                                         end
-                                        private.bars[barID]:UpdateButtons()
+
+                                        for buttonID, button in pairs(template) do
+                                            local trackersProcessed = 0
+                                            for trackerKey, tracker in pairs(button.trackers) do
+                                                if not tracker.name or tracker.name == "" then
+                                                    addon:Cache(strlower(tracker.type), tracker.id, function(success, id, tracker, buttonID, trackerKey)
+                                                        trackersProcessed = trackersProcessed + 1
+
+                                                        if success then
+                                                            local name = private:GetTrackerInfo(tracker.type, id)
+                                                            template[buttonID].trackers[trackerKey].name = name or L["Tracker"] .. " " .. trackerKey
+                                                        end
+
+                                                        ApplyTemplate(button, buttonID, trackersProcessed)
+                                                    end, { tracker, buttonID, trackerKey })
+                                                else
+                                                    trackersProcessed = trackersProcessed + 1
+                                                    ApplyTemplate(button, buttonID, trackersProcessed)
+                                                end
+                                            end
+                                        end
                                     end,
                                 },
                                 userTemplates = {
