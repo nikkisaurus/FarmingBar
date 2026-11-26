@@ -217,7 +217,7 @@ private.CONST = {
 
     GAME_VERSION = select(4, GetBuildInfo()),
     RETAIL = 120105,
-    VERSION = "4.7.0",
+    VERSION = "4.7.1",
 }
 
 private.iconTiers = {
