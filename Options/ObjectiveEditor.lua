@@ -152,17 +152,40 @@ function private:GetObjectiveEditorGeneralContent(widget)
                 itemPreview = {
                     order = 1,
                     type = "description",
-                    name = buttonDB.onUse.itemID and addon:CacheItem(buttonDB.onUse.itemID, function(success, id)
-                        if success then
+                    name = function()
+                        local itemID = buttonDB.onUse.itemID
+                        if not itemID then
+                            return ""
+                        end
+
+                        local FormatName = function()
                             local name
-                            if private:GetGameVersion() < private.CONST.RETAIL then
-                                name = C_Item.GetItemInfo(id)
+                            local itemName = C_Item.GetItemInfo(itemID)
+                            local tier = private:GetGameVersion() >= private.CONST.RETAIL and C_TradeSkillUI.GetItemReagentQualityByItemInfo(itemID)
+
+                            if not itemName then
+                                name = L["Item not cached..."]
+                            elseif not tier then
+                                name = itemName
                             else
-                                name = (format("%s |A:Professions-Icon-Quality-Tier%d-Inv:20:20|a", C_Item.GetItemInfo(id), C_TradeSkillUI.GetItemReagentQualityByItemInfo(id)))
+                                name = (format("%s |A:Professions-Icon-Quality-Tier%d-Inv:20:20|a", itemName, tier))
                             end
+
                             return name
                         end
-                    end) or "",
+
+                        local name = FormatName()
+                        if not name or name == L["Item not cached..."] then
+                            addon:CacheItem(itemID, function(success, id)
+                                if success then
+                                    private:NotifyChange()
+                                end
+                            end)
+                            return ""
+                        else
+                            return name
+                        end
+                    end,
                     image = function()
                         local itemID = buttonDB.onUse.itemID
                         if not itemID then
@@ -390,7 +413,7 @@ function private:GetObjectiveEditorTrackersContent(widget)
         local trackerName, trackerIcon = private:GetTrackerInfo(tracker.type, tracker.id)
 
         local name
-        local tier = private:GetGameVersion() >= private.CONST.RETAIL and C_TradeSkillUI.GetItemReagentQualityByItemInfo(id)
+        local tier = private:GetGameVersion() >= private.CONST.RETAIL and C_TradeSkillUI.GetItemReagentQualityByItemInfo(tracker.id)
         if not tier then
             name = tracker.name ~= "" and tracker.name or L["Tracker"] .. " " .. trackerKey
         else

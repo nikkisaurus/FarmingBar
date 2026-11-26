@@ -210,6 +210,7 @@ L["Invalid Tracker/Alt ID"] = true
 L["Invalid tradeskill name."] = true
 L["Item ID"] = true
 L["Item"] = true
+L["Item not cached..."] = true
 L["Keybinds"] = true
 L["Label"] = true
 L["Last"] = true

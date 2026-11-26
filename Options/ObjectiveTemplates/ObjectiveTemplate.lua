@@ -181,18 +181,40 @@ function private:GetObjectiveTemplateOptions(objectiveTemplateName)
                         itemPreview = {
                             order = 1,
                             type = "description",
-                            name = objectiveTemplate.onUse.itemID and addon:CacheItem(objectiveTemplate.onUse.itemID, function(success, id)
-                                if success then
+                            name = function()
+                                local itemID = objectiveTemplate.onUse.itemID
+                                if not itemID then
+                                    return ""
+                                end
+
+                                local FormatName = function()
                                     local name
-                                    local tier = private:GetGameVersion() >= private.CONST.RETAIL and C_TradeSkillUI.GetItemReagentQualityByItemInfo(id)
-                                    if not tier then
-                                        name = C_Item.GetItemInfo(id)
+                                    local itemName = C_Item.GetItemInfo(itemID)
+                                    local tier = private:GetGameVersion() >= private.CONST.RETAIL and C_TradeSkillUI.GetItemReagentQualityByItemInfo(itemID)
+
+                                    if not itemName then
+                                        name = L["Item not cached..."]
+                                    elseif not tier then
+                                        name = itemName
                                     else
-                                        name = (format("%s |A:Professions-Icon-Quality-Tier%d-Inv:20:20|a", C_Item.GetItemInfo(id), tier))
+                                        name = (format("%s |A:Professions-Icon-Quality-Tier%d-Inv:20:20|a", itemName, tier))
                                     end
+
                                     return name
                                 end
-                            end) or "",
+
+                                local name = FormatName()
+                                if not name or name == L["Item not cached..."] then
+                                    addon:CacheItem(itemID, function(success, id)
+                                        if success then
+                                            private:NotifyChange()
+                                        end
+                                    end)
+                                    return ""
+                                else
+                                    return name
+                                end
+                            end,
                             image = function()
                                 local itemID = objectiveTemplate.onUse.itemID
                                 if not itemID then
