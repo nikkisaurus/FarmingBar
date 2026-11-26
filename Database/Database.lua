@@ -188,9 +188,9 @@ end]],
     
     -- NOTE: make sure the first argument of GetTrackerCount is nil
     -- This function is not necessary, but available if your custom function is simple and doesn't change the way each tracker is calculated.
-    --local count =  GetTrackerCount(_, trackers[1])
+    --local count =  GetTrackerCount(nil, trackers[1])
     
-    return GetTrackerCount(_, trackers[1])
+    return GetTrackerCount(nil, trackers[1])
 end]],
         },
         icon = {

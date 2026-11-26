@@ -141,7 +141,7 @@ function private:GetConfigOptions()
                             desc = L["Objectives on this bar cannot use materials already accounted for by another objective on the same bar."],
                             descStyle = "inline",
                             set = function(info, value)
-                                private:SetMixedBarDBValues(info, value, _, function(barID)
+                                private:SetMixedBarDBValues(info, value, nil, function(barID)
                                     private.bars[barID]:UpdateButtons()
                                 end)
                             end,
@@ -168,7 +168,7 @@ function private:GetConfigOptions()
                                 return values
                             end,
                             set = function(info, value)
-                                private:SetMixedBarDBValues(info, value, _, function(barID)
+                                private:SetMixedBarDBValues(info, value, nil, function(barID)
                                     private.bars[barID]:SetBackdrop()
                                     private.bars[barID]:UpdateButtonTextures()
                                 end)
@@ -183,7 +183,7 @@ function private:GetConfigOptions()
                             isPercent = true,
                             name = L["Alpha"],
                             set = function(info, value)
-                                private:SetMixedBarDBValues(info, value, _, function(barID)
+                                private:SetMixedBarDBValues(info, value, nil, function(barID)
                                     private.bars[barID]:SetMouseover()
                                 end)
                             end,
@@ -197,7 +197,7 @@ function private:GetConfigOptions()
                             isPercent = true,
                             name = L["Scale"],
                             set = function(info, value)
-                                private:SetMixedBarDBValues(info, value, _, function(barID)
+                                private:SetMixedBarDBValues(info, value, nil, function(barID)
                                     private.bars[barID]:SetScale()
                                 end)
                             end,
@@ -208,7 +208,7 @@ function private:GetConfigOptions()
                             name = L["Mouseover"],
                             desc = L["Show this bar only on mouseover."],
                             set = function(info, value)
-                                private:SetMixedBarDBValues(info, value, _, function(barID)
+                                private:SetMixedBarDBValues(info, value, nil, function(barID)
                                     private.bars[barID]:SetMouseover()
                                 end)
                             end,
@@ -219,7 +219,7 @@ function private:GetConfigOptions()
                             name = L["Show Empty"],
                             desc = L["Shows a backdrop on empty buttons."],
                             set = function(info, value)
-                                private:SetMixedBarDBValues(info, value, _, function(barID)
+                                private:SetMixedBarDBValues(info, value, nil, function(barID)
                                     private.bars[barID]:SetMouseover()
                                 end)
                             end,
@@ -230,7 +230,7 @@ function private:GetConfigOptions()
                             name = L["Show Cooldown"],
                             desc = L["Shows the cooldown swipe animation on buttons."],
                             set = function(info, value)
-                                private:SetMixedBarDBValues(info, value, _, function(barID)
+                                private:SetMixedBarDBValues(info, value, nil, function(barID)
                                     addon:SPELL_UPDATE_COOLDOWN()
                                 end)
                             end,
@@ -242,7 +242,7 @@ function private:GetConfigOptions()
                             name = L["Hidden (Override Func)"],
                             desc = L["Hides the bar, regardless of the output from the custom hidden function."],
                             set = function(info, value)
-                                private:SetMixedBarDBValues(info, value, _, function(barID)
+                                private:SetMixedBarDBValues(info, value, nil, function(barID)
                                     private.bars[barID]:SetHidden()
                                 end)
                             end,
@@ -292,7 +292,7 @@ function private:GetConfigOptions()
                         return private:GetMixedBarDBValues(info)
                     end,
                     set = function(info, value)
-                        private:SetMixedBarDBValues(info, value, _, function(barID)
+                        private:SetMixedBarDBValues(info, value, nil, function(barID)
                             private.bars[barID]:SetPoints()
                             private.bars[barID]:UpdateButtons()
                         end)
@@ -319,7 +319,7 @@ function private:GetConfigOptions()
                             type = "toggle",
                             name = L["Movable"],
                             set = function(info, value)
-                                private:SetMixedBarDBValues(info, value, _, function(barID)
+                                private:SetMixedBarDBValues(info, value, nil, function(barID)
                                     private.bars[barID]:SetMovable()
                                 end)
                             end,
@@ -339,7 +339,7 @@ function private:GetConfigOptions()
                                     name = L["Buttons"],
                                     desc = L["Set the number of buttons per bar."],
                                     set = function(info, value)
-                                        private:SetMixedBarDBValues(info, value, _, function(barID)
+                                        private:SetMixedBarDBValues(info, value, nil, function(barID)
                                             private.bars[barID]:DrawButtons()
                                             private.bars[barID]:LayoutButtons()
                                             private.bars[barID]:SetScale()

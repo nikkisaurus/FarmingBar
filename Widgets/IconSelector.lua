@@ -107,7 +107,7 @@ local methods = {
                     if IsShiftKeyDown() then
                         SelectIcon(self, iconID)
                     else
-                        self:SetIcon(_, iconID)
+                        self:SetIcon(nil, iconID)
                     end
                 end)
 

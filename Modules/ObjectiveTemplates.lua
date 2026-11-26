@@ -76,6 +76,7 @@ function private:AddObjectiveTracker(objective, trackerType, trackerID)
             if type(objective) == "string" then
                 tracker = private.db.global.objectives[objective].trackers[trackerKey]
             else
+                local _
                 _, tracker = objective:AddTracker(trackerType, id)
             end
 
