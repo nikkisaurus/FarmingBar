@@ -184,10 +184,11 @@ function private:GetObjectiveTemplateOptions(objectiveTemplateName)
                             name = objectiveTemplate.onUse.itemID and addon:CacheItem(objectiveTemplate.onUse.itemID, function(success, id)
                                 if success then
                                     local name
-                                    if private:GetGameVersion() < private.CONST.RETAIL then
+                                    local tier = private:GetGameVersion() >= private.CONST.RETAIL and C_TradeSkillUI.GetItemReagentQualityByItemInfo(id)
+                                    if not tier then
                                         name = C_Item.GetItemInfo(id)
                                     else
-                                        name = (format("%s |A:Professions-Icon-Quality-Tier%d-Inv:20:20|a", C_Item.GetItemInfo(id), C_TradeSkillUI.GetItemReagentQualityByItemInfo(id)))
+                                        name = (format("%s |A:Professions-Icon-Quality-Tier%d-Inv:20:20|a", C_Item.GetItemInfo(id), tier))
                                     end
                                     return name
                                 end

@@ -390,7 +390,8 @@ function private:GetObjectiveEditorTrackersContent(widget)
         local trackerName, trackerIcon = private:GetTrackerInfo(tracker.type, tracker.id)
 
         local name
-        if private:GetGameVersion() < private.CONST.RETAIL then
+        local tier = private:GetGameVersion() >= private.CONST.RETAIL and C_TradeSkillUI.GetItemReagentQualityByItemInfo(id)
+        if not tier then
             name = tracker.name ~= "" and tracker.name or L["Tracker"] .. " " .. trackerKey
         else
             name = format("%s |A:Professions-Icon-Quality-Tier%d-Inv:20:20|a", tracker.name ~= "" and tracker.name or L["Tracker"] .. " " .. trackerKey, C_TradeSkillUI.GetItemReagentQualityByItemInfo(tracker.id))
