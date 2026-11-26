@@ -399,12 +399,8 @@ function private:GetMixedBarDBValues(info, path, path2)
 end
 
 function private:GetMouseFocusName()
-    if private:GetGameVersion() >= private.CONST.RETAIL then
-        local frame = GetMouseFoci()
-        return frame and frame[1]:GetName()
-    else
-        return GetMouseFocus():GetName()
-    end
+    local frame = GetMouseFoci()
+    return frame and frame[1]:GetName()
 end
 
 function private:InitializeMasque()
